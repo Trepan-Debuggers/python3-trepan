@@ -1,3 +1,6 @@
-__pycache__
-*~
 
+*~
+/COPYING
+/build
+/how-to-make-a-release.txt
+__pycache__
