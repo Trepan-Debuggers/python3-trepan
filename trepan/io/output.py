@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009,2013 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,12 +15,12 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger output. """
 
-import types, StringIO
+import types, io
 
 from import_relative import *
-Mbase_io  = import_relative('base_io', top_name='pydbgr')
+Mbase  = import_relative('base', top_name='pydbgr')
 
-class DebuggerUserOutput(Mbase_io.DebuggerOutputBase):
+class TrepanOutput(Mbase.TrepanOutputBase):
     """Debugger output shown directly to what we think of as end-user
     ouptut as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
@@ -38,15 +38,17 @@ class DebuggerUserOutput(Mbase_io.DebuggerOutputBase):
     def open(self, output, opts=None):
         """Use this to set where to write to. output can be a 
         file object or a string. This code raises IOError on error."""
-        if isinstance(output, types.FileType) or \
-           isinstance(output, StringIO.StringIO) or \
+        if isinstance(output, io.TextIOWrapper) or \
+           isinstance(output, io.StringIO) or \
            output == sys.stdout:
             pass
-        elif isinstance(output, types.StringType):
+        elif isinstance(output, 'string'.__class__): # FIXME
             output = open(output, 'w')
         else:
-            raise IOError, ("Invalid output type (%s) for %s" % (type(output), 
-                                                                 output))
+            raise IOError("Invalid output type (%s) for %s" %
+                          (inp.__class__.__name__, output))
+            #raise IOError("Invalid output type (%s) for %s" % (type(output), 
+            #                                                     output))
         self.output = output
         return
 
@@ -61,7 +63,7 @@ class DebuggerUserOutput(Mbase_io.DebuggerOutputBase):
 
 # Demo
 if __name__=='__main__':
-    out = DebuggerOutput()
+    out = TrepanOutput()
     out.writeline("Hello, world!")
     out.write("Hello");
     out.writeline(", again.");

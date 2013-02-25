@@ -4,7 +4,7 @@
 import operator, os, sys, unittest
 from import_relative import *
 
-Minput = import_relative('io.dbg_input', '...trepan')
+Minput = import_relative('io.input', '...trepan')
 
 class TestDebuggerInput(unittest.TestCase):
     

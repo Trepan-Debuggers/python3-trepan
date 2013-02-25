@@ -3,4 +3,5 @@
 /COPYING
 /build
 /how-to-make-a-release.txt
+/trepan.egg-info
 __pycache__

@@ -9,5 +9,6 @@
     :license: GPL3, see LICENSE for details.
 """
 
-__docformat__ = 'restructuredtext'
-__all__ = ['base']
+from import_relative import import_relative
+Mmisc = import_relative('misc', '..', 'trepan')
+__all__ = [ Mmisc.pyfiles() ]
