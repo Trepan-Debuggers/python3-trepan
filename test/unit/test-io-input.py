@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'Unit test for pydbgr.io.dbg_input'
+'Unit test for trepan.io.dbg_input'
 import operator, os, sys, unittest
 from import_relative import *
 
-Minput = import_relative('io.dbg_input', '...pydbgr')
+Minput = import_relative('io.dbg_input', '...trepan')
 
 class TestDebuggerInput(unittest.TestCase):
     
