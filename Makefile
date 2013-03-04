@@ -28,28 +28,30 @@ test-unit:
 
 #: Run unit (white-box) tests
 test-unit-short: 
-	$(PYTHON) ./setup.py nosetests | \
+	$(PYTHON) ./setup.py nosetests --quiet | \
 	$(PYTHON) ./make-check-filter.py
 
 #: Run functional tests
 test-functional: 
 	@echo === Functional tests skipped for now
-	# (cd test/functional && $(PYTHON) ./setup.py nosetests)
+#	(cd test/functional && $(PYTHON) ./setup.py nosetests)
 
 #: Run functional tests
 test-functional-short: 
-	(cd test/functional && $(PYTHON) ./setup.py nosetests) | \
-	$(PYTHON) ./make-check-filter.py
+	@echo === Functional tests skipped for now
+#	(cd test/functional && $(PYTHON) ./setup.py nosetests) | \
+#	$(PYTHON) ./make-check-filter.py
 
 #: Run integration (black-box) tests
 test-integration: 
 	@echo === Integration tests skipped for now
-	# (cd test/integration && $(PYTHON) ./setup.py nosetests) | \
-	#$(PYTHON) ./make-check-filter.py
+#	 (cd test/integration && $(PYTHON) ./setup.py nosetests) | \
+#	$(PYTHON) ./make-check-filter.py
 
 #: Run integration (black-box) tests
 test-integration-short: 
-	(cd test/integration && $(PYTHON) ./setup.py nosetests) 
+	@echo === Integration tests skipped for now
+#	(cd test/integration && $(PYTHON) ./setup.py nosetests) 
 
 #: Clean up temporary files
 clean: 
@@ -70,12 +72,13 @@ bdist_egg:
 
 # It is too much work to figure out how to add a new command to distutils
 # to do the following. I'm sure distutils will someday get there.
-DISTCLEAN_FILES = build dist *.egg-info *.pyc
+DISTCLEAN_FILES = build dist *.pyc
 
 #: Remove ALL dervied files 
 distclean: clean
 	-rm -fr $(DISTCLEAN_FILES) || true
 	-find . -name \*.pyc -exec rm -v {} \;
+	-find . -name \*.egg-info -exec rm -v {} \;
 
 #: Install package locally
 verbose-install: 
