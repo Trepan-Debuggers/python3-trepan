@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for the debugger lib breakpoint'
 import operator, os, re, sys, unittest
 from import_relative import *

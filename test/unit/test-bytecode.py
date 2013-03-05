@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for trepan.bytecode'
 import inspect, os, sys, unittest
 from import_relative import *

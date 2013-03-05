@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 'Unit test for trepan.io.dbg_input'
 import operator, os, sys, unittest
