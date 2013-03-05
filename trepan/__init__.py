@@ -10,4 +10,5 @@
 """
 
 __docformat__ = 'restructuredtext'
+__import__('pkg_resources').declare_namespace(__name__)
 __all__ = ['io', 'lib', 'misc', 'VERSION']
