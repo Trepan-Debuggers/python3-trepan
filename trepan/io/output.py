@@ -18,9 +18,9 @@
 import types, io
 
 from import_relative import *
-Mbase  = import_relative('base', top_name='pydbgr')
+Mbase  = import_relative('base', top_name='trepan')
 
-class TrepanOutput(Mbase.TrepanOutputBase):
+class TrepanUserOutput(Mbase.TrepanOutputBase):
     """Debugger output shown directly to what we think of as end-user
     ouptut as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
@@ -63,7 +63,7 @@ class TrepanOutput(Mbase.TrepanOutputBase):
 
 # Demo
 if __name__=='__main__':
-    out = TrepanOutput()
+    out = TrepanUserOutput()
     out.writeline("Hello, world!")
     out.write("Hello");
     out.writeline(", again.");

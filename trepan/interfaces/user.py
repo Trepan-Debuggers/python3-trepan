@@ -34,7 +34,7 @@ class UserInterface(Minterface.TrepanInterface):
         atexit.register(self.finalize)
         self.interactive = True # Or at least so we think initially
         self.input       = inp or Minput.TrepanUserInput()
-        self.output      = out or Moutput.TrepanOutput()
+        self.output      = out or Moutput.TrepanUserOutput()
         return
 
     def close(self):
