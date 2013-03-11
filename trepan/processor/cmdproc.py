@@ -37,16 +37,16 @@ def arg_split(s,posix=False):
 
     This is a modified version of the standard library's shlex.split()
     function, but with a default of posix=False for splitting, so that quotes
-    in inputs are respected. 
+    in inputs are respected.
     """
-    
+
     args_list = [[]]
     lex = shlex.shlex(s, posix=posix)
 
     lex.whitespace_split = True
     args = list(lex)
     for arg in args:
-        if ';;' == arg: 
+        if ';;' == arg:
             args_list.append([])
         else:
             args_list[-1].append(arg)
@@ -99,7 +99,7 @@ def resolve_name(obj, command_name):
         if command_name in obj.aliases:
             command_name = obj.aliases[command_name]
             pass
-        else: 
+        else:
             return None
         pass
     try:
@@ -147,10 +147,10 @@ def print_source_location_info(print_fn, filename, lineno, fn_name=None,
 def print_location(proc_obj):
     """Show where we are. GUI's and front-end interfaces often
     use this to update displays. So it is helpful to make sure
-    we give at least some place that's located in a file.      
+    we give at least some place that's located in a file.
     """
     i_stack = proc_obj.curindex
-    if i_stack is None or proc_obj.stack is None: 
+    if i_stack is None or proc_obj.stack is None:
         return False
     core_obj = proc_obj.core
     dbgr_obj = proc_obj.debugger
@@ -167,7 +167,7 @@ def print_location(proc_obj):
         frame, lineno = frame_lineno
 
 #         # Next check to see that local variable breadcrumb exists and
-#         # has the magic dynamic value. 
+#         # has the magic dynamic value.
 #         # If so, it's us and we don't normally show this.a
 #         if 'breadcrumb' in frame.f_locals:
 #             if self.run == frame.f_locals['breadcrumb']:
@@ -201,18 +201,18 @@ def print_location(proc_obj):
             }
         line = pyficache.getline(filename, lineno, opts)
         if not line:
-            line = linecache.getline(filename, lineno, 
+            line = linecache.getline(filename, lineno,
                                      proc_obj.curframe.f_globals)
             pass
 
         if line and len(line.strip()) != 0:
             if proc_obj.event:
-                print_source_line(intf_obj.msg, lineno, line, 
+                print_source_line(intf_obj.msg, lineno, line,
                                   proc_obj.event2short[proc_obj.event])
             pass
         if '<string>' != filename: break
         pass
-    
+
     if proc_obj.event in ['return', 'exception']:
         val = proc_obj.event_arg
         intf_obj.msg('R=> %s' % proc_obj._saferepr(val))
@@ -223,7 +223,7 @@ def print_location(proc_obj):
 DEFAULT_PROC_OPTS = {
     # A list of debugger initialization files to read on first command
     # loop entry.  Often this something like [~/.trepan3krc] which the
-    # front-end sets. 
+    # front-end sets.
     'initfile_list' : []
 }
 
@@ -233,7 +233,7 @@ class CommandProcessor(Mprocessor.Processor):
         get_option = lambda key: \
             Mmisc.option_set(opts, key, DEFAULT_PROC_OPTS)
         Mprocessor.Processor.__init__(self, core_obj)
-        
+
         self.continue_running = False  # True if we should leave command loop
         self.event2short      = dict(EVENT2SHORT)
         self.event2short['signal'] = '?!'
@@ -252,7 +252,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.intf             = core_obj.debugger.intf
         self.last_command     = None   # Initially a no-op
         self.precmd_hooks     = []
-        
+
         self.location         = lambda : print_location(self)
 
         self.preloop_hooks    = []
@@ -364,8 +364,8 @@ class CommandProcessor(Mprocessor.Processor):
         if self.thread_name != 'MainThread':
             prompt += ':' + self.thread_name
             pass
-        self.prompt_str = '%s%s%s ' % ('(' * self.debug_nest, 
-                                       prompt, 
+        self.prompt_str = '%s%s%s ' % ('(' * self.debug_nest,
+                                       prompt,
                                        ')' * self.debug_nest)
         self.process_commands()
         return True
@@ -419,11 +419,11 @@ class CommandProcessor(Mprocessor.Processor):
 
     def parse_position(self, arg, old_mod=None):
         """parse_position(self, arg)->(fn, name, lineno)
-    
+
         Parse arg as [filename:]lineno | function | module
         Make sure it works for C:\foo\bar.py:12
         """
-        colon = arg.rfind(':') 
+        colon = arg.rfind(':')
         if colon >= 0:
             # First handle part before the colon
             arg1 = arg[:colon].rstrip()
@@ -432,7 +432,7 @@ class CommandProcessor(Mprocessor.Processor):
                                                                  False)
             if filename is None: filename = self.core.canonic(arg1)
             # Next handle part after the colon
-            val = self.get_an_int(lineno_str, "Bad line number: %s" % 
+            val = self.get_an_int(lineno_str, "Bad line number: %s" %
                                   lineno_str)
             if val is not None: lineno = val
         else:
@@ -442,9 +442,9 @@ class CommandProcessor(Mprocessor.Processor):
         return mf, filename, lineno
 
     def parse_position_one_arg(self, arg, old_mod=None, show_errmsg=True):
-        """parse_position_one_arg(self, arg, show_errmsg) -> 
+        """parse_position_one_arg(self, arg, show_errmsg) ->
               (module/function, file, lineno)
-        
+
         See if arg is a line number, function name, or module name.
         Return what we've found. None can be returned as a value in
         the triple.
@@ -493,7 +493,7 @@ class CommandProcessor(Mprocessor.Processor):
                 return (None, None, None)
             pass
         return (modfunc, self.core.canonic(filename), lineno)
-    
+
     def get_an_int(self, arg, msg_on_error, min_value=None, max_value=None):
         """Like cmdfns.get_an_int(), but if there's a stack frame use that
         in evaluation."""
@@ -512,7 +512,7 @@ class CommandProcessor(Mprocessor.Processor):
         elif max_value and ret_value > max_value:
             self.errmsg('Expecting integer value to be at most %d, got: %d.' %
                         (max_value, ret_value))
-            return None        
+            return None
         return ret_value
 
     def get_int_noerr(self, arg):
@@ -526,7 +526,7 @@ class CommandProcessor(Mprocessor.Processor):
             l = locals()
             pass
         try:
-            val = int(eval(arg, g, l)) 
+            val = int(eval(arg, g, l))
         except (SyntaxError, NameError, ValueError, TypeError):
             return None
         return val
@@ -552,9 +552,9 @@ class CommandProcessor(Mprocessor.Processor):
         if default < min_value:
             if cmdname:
                 self.errmsg(("Command '%s' expects an integer at least" +
-                             ' %d; got: %d.') 
+                             ' %d; got: %d.')
                             % (cmdname, min_value, default))
-            else: 
+            else:
                 self.errmsg(("Expecting a positive integer at least" +
                              ' %d; got: %d')
                             % (min_value, default))
@@ -563,9 +563,9 @@ class CommandProcessor(Mprocessor.Processor):
         elif at_most and default > at_most:
             if cmdname:
                 self.errmsg(("Command '%s' expects an integer at most" +
-                             ' %d; got: %d.') 
+                             ' %d; got: %d.')
                             % (cmdname, at_most, default))
-            else: 
+            else:
                 self.errmsg(("Expecting an integer at most %d; got: %d")
                             % (at_most, default))
                 pass
@@ -592,24 +592,24 @@ class CommandProcessor(Mprocessor.Processor):
         '''
         if hasattr(cmd_obj, 'execution_set'):
             if not (self.core.execution_status in cmd_obj.execution_set):
-                part1 = ("Command '%s' is not available for execution status:" 
+                part1 = ("Command '%s' is not available for execution status:"
                          % name)
                 self.errmsg(Mmisc.wrapped_lines(part1, self.core.execution_status,
                                                 self.debugger.settings['width']))
                 return False
             pass
         if self.frame is None and cmd_obj.need_stack:
-            self.intf[-1].errmsg("Command '%s' needs an execution stack." 
+            self.intf[-1].errmsg("Command '%s' needs an execution stack."
                                  % name)
             return False
         if nargs < cmd_obj.min_args:
-            self.errmsg(("Command '%s' needs at least %d argument(s); " + 
-                             "got %d.") % 
+            self.errmsg(("Command '%s' needs at least %d argument(s); " +
+                             "got %d.") %
                              (name, cmd_obj.min_args, nargs))
             return False
         elif cmd_obj.max_args is not None and nargs > cmd_obj.max_args:
-            self.errmsg(("Command '%s' can take at most %d argument(s);" + 
-                              " got %d.") % 
+            self.errmsg(("Command '%s' can take at most %d argument(s);" +
+                              " got %d.") %
                              (name, cmd_obj.max_args, nargs))
             return False
         return True
@@ -659,14 +659,14 @@ class CommandProcessor(Mprocessor.Processor):
         else:
             current_command = (
                 self.intf[-1].read_command(self.prompt_str).strip())
-            if '' == current_command and self.intf[-1].interactive: 
+            if '' == current_command and self.intf[-1].interactive:
                 current_command = self.last_command
                 pass
             pass
         # Look for comments
         if '' == current_command:
             if self.intf[-1].interactive:
-                self.errmsg("No previous command registered, " + 
+                self.errmsg("No previous command registered, " +
                             "so this is a no-op.")
                 pass
             return False
@@ -702,7 +702,7 @@ class CommandProcessor(Mprocessor.Processor):
                                              current_command))
                                 return False
                             pass
-                        
+
                         first = current_command[0]
                         args =  first.split()
                         self.cmd_queue + [current_command[1:]]
@@ -715,7 +715,7 @@ class CommandProcessor(Mprocessor.Processor):
                                                        current_command))
                         return False
                     pass
-                
+
                 self.cmd_name = args[0]
                 cmd_name = resolve_name(self, self.cmd_name)
                 self.cmd_argstr = current_command[len(self.cmd_name):].lstrip()
@@ -727,12 +727,12 @@ class CommandProcessor(Mprocessor.Processor):
                             self.current_command = current_command
                             result = cmd_obj.run(args)
                             if result: return result
-                        except (Mexcept.DebuggerQuit, 
+                        except (Mexcept.DebuggerQuit,
                                 Mexcept.DebuggerRestart, SystemExit):
                             # Let these exceptions propagate through
                             raise
                         except:
-                            self.errmsg("INTERNAL ERROR: " + 
+                            self.errmsg("INTERNAL ERROR: " +
                                         traceback.format_exc())
                             pass
                         pass
@@ -745,7 +745,7 @@ class CommandProcessor(Mprocessor.Processor):
                 pass
             pass
         return False
-        
+
     def remove_preloop_hook(self, hook):
         try:
             position = self.preloop_hooks.index(hook)
@@ -800,7 +800,7 @@ class CommandProcessor(Mprocessor.Processor):
         elif is_readable is None:
             self.errmsg("source file '%s' doesn't exist" % expanded_cmdfile)
         else:
-            self.errmsg("source file '%s' is not readable" % 
+            self.errmsg("source file '%s' is not readable" %
                         expanded_cmdfile)
             pass
         return
@@ -843,19 +843,21 @@ class CommandProcessor(Mprocessor.Processor):
             if mod_name in ('info_sub', 'set_sub', 'show_sub',):
                 pass
             import_name = "command." + mod_name
-            try:
-                command_mod = getattr(__import__(import_name), mod_name)
-            except:
-                print('Error importing %s: %s' % (mod_name, sys.exc_info()[0]))
-                continue
-                
-            classnames = [ tup[0] for tup in 
+            #            try:
+            command_mod = getattr(__import__(import_name), mod_name)
+            # except:
+            #     print('Error importing module %s name %s: %s' % (mod_name,
+            #                                                      import_name,
+            #                                                      sys.exc_info()[0]))
+            #     continue
+
+            classnames = [ tup[0] for tup in
                            inspect.getmembers(command_mod, inspect.isclass)
-                           if ('DebuggerCommand' != tup[0] and 
+                           if ('DebuggerCommand' != tup[0] and
                                tup[0].endswith('Command')) ]
             for classname in classnames:
                 eval_cmd = eval_cmd_template % classname
-                try: 
+                try:
                     instance = eval(eval_cmd)
                     cmd_instances.append(instance)
                 except:
@@ -875,7 +877,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.category = {}
 #         self.short_help = {}
         for cmd_instance in self.cmd_instances:
-            if not hasattr(cmd_instance, 'aliases'): continue 
+            if not hasattr(cmd_instance, 'aliases'): continue
             alias_names = cmd_instance.aliases
             cmd_name = cmd_instance.name
             self.commands[cmd_name] = cmd_instance
@@ -946,7 +948,7 @@ if __name__=='__main__':
 
     print(cmdproc.commands)
     fn = cmdproc.commands['quit']
-    
+
     print('Removing non-existing quit hook: %s' % cmdproc.remove_preloop_hook(fn))
     cmdproc.add_preloop_hook(fn)
     print(cmdproc.preloop_hooks)
