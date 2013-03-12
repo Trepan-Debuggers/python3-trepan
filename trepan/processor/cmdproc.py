@@ -113,7 +113,7 @@ def print_source_line(msg, lineno, line, event_str=None):
     line in:
         (/tmp.py:2):  <module>
         L -- 2 import sys,os
-        (Trepan3k)
+        (trepan3k)
 
     We define this method
     specifically so it can be customized for such applications
@@ -129,7 +129,7 @@ def print_source_location_info(print_fn, filename, lineno, fn_name=None,
     line in:
         (/tmp.py:2):  <module>
         L -- 2 import sys,os
-        (Trepan3k)
+        (trepan3k)
     """
     mess = '(%s:%s' % (filename, lineno)
     if remapped_file:
@@ -259,7 +259,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.postcmd_hooks    = []
 
         self._populate_cmd_lists()
-        self.prompt_str     = '(Trepan3k) '
+        self.prompt_str     = '(trepan3k) '
 
         # Stop only if line/file is different from last time
         self.different_line = None
@@ -338,7 +338,7 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return filename
 
-    def event_processor(self, frame, event, event_arg, prompt='Trepan3k'):
+    def event_processor(self, frame, event, event_arg, prompt='trepan3k'):
         'command event processor: reading a commands do something with them.'
         self.frame     = frame
         self.event     = event
@@ -783,7 +783,7 @@ class CommandProcessor(Mprocessor.Processor):
         if self.curframe:
             self.list_lineno = \
                 max(1, inspect.getlineno(self.curframe) \
-                        - (self.settings('listsize') / 2)) - 1
+                        - int(self.settings('listsize') / 2)) - 1
         else:
             self.list_lineno = None
             pass

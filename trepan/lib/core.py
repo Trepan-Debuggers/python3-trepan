@@ -104,7 +104,7 @@ class TrepanCore:
         # We also will cache the last frame and thread number encountered
         # so we don't have to compute the current level all the time.
         self.last_frame      = None
-        self.last_level      = None
+        self.last_level      = 10000
         self.last_thread     = None
         self.stop_level      = None
         self.stop_on_finish  = False
