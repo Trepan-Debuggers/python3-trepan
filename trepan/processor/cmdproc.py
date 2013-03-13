@@ -323,7 +323,7 @@ class CommandProcessor(Mprocessor.Processor):
 
         self.curindex = pos
         self.curframe = self.stack[self.curindex][0]
-        self.print_location()
+        self.location()
         self.list_lineno = None
         return
 
