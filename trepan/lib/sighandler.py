@@ -305,8 +305,7 @@ class SignalManager:
             # This has come from dbgr's info command
             if len(args) == 1:
                 # Show all signal handlers
-                self.dbgr.intf[-1].msg(self.header)
-                self.dbgr.intf[-1].msg("")
+                self.dbgr.core.processor.section(self.header)
                 for signame in self.siglist:
                     self.print_info_signal_entry(signame)
                 return True
@@ -316,7 +315,7 @@ class SignalManager:
             pass
 
         signame = self.is_name_or_number(signame)
-        self.dbgr.intf[-1].msg(self.header)
+        self.dbgr.core.processor.section(self.header)
         self.print_info_signal_entry(signame)
         return True
 

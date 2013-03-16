@@ -47,7 +47,7 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
     for i in range(len(val)):
         if not (type(val[i]) in [bool, float, int]):
             numeric = False
-            if not (type(val[i]) in [bool, float, int, string]):
+            if not (type(val[i]) in [bool, float, int, bytes]):
                 return False
             pass
         pass
