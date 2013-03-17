@@ -89,8 +89,11 @@ verbose-install:
 install: 
 	$(PYTHON) ./setup.py install >/dev/null
 
+rmChangeLog: 
+	rm ChangeLog || true
+
 #: Create a ChangeLog from git via git log and git2cl
-ChangeLog:
+ChangeLog: rmChangeLog
 	git log --pretty --numstat --summary | $(GIT2CL) >$@
 
 .PHONY: $(PHONY)
