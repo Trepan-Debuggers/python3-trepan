@@ -48,15 +48,15 @@ modname            = 'trepan'
 namespace_packages = [
     'trepan', 
 #    'trepan.bwprocessor',
-#    'trepan.interfaces',
+    'trepan.interfaces',
     'trepan.io',
     'trepan.lib',
-#    'trepan.processor',
-#    'trepan.processor.command',
+    'trepan.processor',
+    'trepan.processor.command',
 #    'trepan.processor.command.ipython_magic',
-#    'trepan.processor.command.info_subcmd',
+    'trepan.processor.command.info_subcmd',
 #    'trepan.processor.command.set_subcmd',
-#    'trepan.processor.command.show_subcmd'
+    'trepan.processor.command.show_subcmd'
 ]
 packages           = namespace_packages
 py_modules         = None
@@ -78,4 +78,3 @@ zip_safe = False
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 long_description   = ( read("README.txt") + '\n\n' +  read("NEWS") )
-
