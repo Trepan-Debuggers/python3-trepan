@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from import_relative import import_relative
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'pydbgr')
+Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
 
 class ShowAutolist(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """Show debugger *list* command automatically on entry."""

@@ -17,9 +17,9 @@ import os, sys
 from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd  = import_relative('base_cmd', top_name='pydbgr')
-Mstack     = import_relative('stack', '...lib', 'pydbgr')
-Mcmdfns    = import_relative('cmdfns', '..',     'pydbgr')
+Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
+Mstack     = import_relative('stack', '...lib', 'trepan')
+Mcmdfns    = import_relative('cmdfns', '..',     'trepan')
 
 class FinishCommand(Mbase_cmd.DebuggerCommand):
     """**finish** [*level*]

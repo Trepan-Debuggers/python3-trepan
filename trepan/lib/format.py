@@ -159,7 +159,7 @@ class RSTTerminalFormatter(Formatter):
 
     def reflow_text(self, text, color):
         # print '%r' % text
-        # from pydbgr.api import debug
+        # from trepan.api import debug
         # if u' or ' == text: debug()
         last_last_nl = self.last_was_nl
         if text[-1] == '\n':

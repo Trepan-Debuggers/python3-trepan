@@ -502,7 +502,7 @@ if __name__=='__main__':
     from import_relative import import_relative
 
     ## FIXME when finished...
-    # Mdebugger = import_relative('debugger', '..', 'pydbgr')
+    # Mdebugger = import_relative('debugger', '..', 'trepan')
     # dbgr = Mdebugger.Debugger()
     # h = SignalManager(dbgr)
     # h.info_signal(["TRAP"])

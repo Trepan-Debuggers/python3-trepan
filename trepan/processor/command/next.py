@@ -18,10 +18,10 @@ import os
 from import_relative import import_relative
 
 # Our local modules
-import_relative('processor', '...', 'pydbgr')
+import_relative('processor', '...', 'trepan')
 base_cmd   = import_relative('base_cmd')
-Mcmdfns    = import_relative('cmdfns', '..', 'pydbgr')
-Mstack     = import_relative('stack',  '...lib', 'pydbgr')
+Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
+Mstack     = import_relative('stack',  '...lib', 'trepan')
 
 class NextCommand(base_cmd.DebuggerCommand):
 

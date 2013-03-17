@@ -17,9 +17,9 @@ import inspect, os
 
 from import_relative import *
 # Our local modules
-base_subcmd  = import_relative('base_subcmd', '..', 'pydbgr')
-Mclifns      = import_relative('clifns', '....', 'pydbgr')
-Mmisc        = import_relative('misc', '....', 'pydbgr')
+base_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+Mclifns      = import_relative('clifns', '....', 'trepan')
+Mmisc        = import_relative('misc', '....', 'trepan')
 
 class InfoLine(base_subcmd.DebuggerSubcommand):
     '''Show information about the current line'''

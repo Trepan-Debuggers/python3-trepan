@@ -25,7 +25,7 @@ NotImplementedMessage = "This method must be overriden in a subclass"
 import columnize
 from pygments.console import colorize
 from import_relative import import_relative
-Mformat = import_relative('format',  '...lib', 'pydbgr')
+Mformat = import_relative('format',  '...lib', 'trepan')
 
 __all__ = ['DebuggerCommand']
 

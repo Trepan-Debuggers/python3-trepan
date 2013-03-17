@@ -20,7 +20,7 @@
 
 from import_relative import *
 from tracer import EVENT2SHORT
-Mprocessor = import_relative('vprocessor', '..', 'pydbgr')
+Mprocessor = import_relative('vprocessor', '..', 'trepan')
 
 class PrintProcessor(Mprocessor.Processor):
     """ A processor that just prints out events as we see them. This

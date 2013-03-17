@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'Unit test for pydbgr.processor.command.cmdfns'
+'Unit test for trepan.processor.command.cmdfns'
 import unittest
 from import_relative import import_relative
 

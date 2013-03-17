@@ -35,8 +35,8 @@ if necessary, first.
 import sys
 from import_relative import import_relative
 
-Mdebugger    = import_relative('debugger', top_name='pydbgr')
-Mpost_mortem = import_relative('post_mortem', top_name='pydbgr')
+Mdebugger    = import_relative('debugger', top_name='trepan')
+Mpost_mortem = import_relative('post_mortem', top_name='trepan')
 
 def debugger_on_post_mortem():
     '''Call debugger on an exeception that terminates a program'''
@@ -115,59 +115,59 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True,
 Enter the debugger. Use like this:
 
     ... # Possibly some Python code
-    import pydbgr.api # Needed only once
+    import trepan.api # Needed only once
     ... # Possibly some more Python code
-    pydbgr.api.debug() # You can wrap inside conditional logic too
+    trepan.api.debug() # You can wrap inside conditional logic too
     pass  # Stop will be here.
     # Below is code you want to use the debugger to do things.
     ....  # more Python code
     # If you get to a place in the program where you aren't going 
     # want to debug any more, but want to remove debugger trace overhead:
-    pydbgr.api.stop() 
+    trepan.api.stop() 
 
 In situations where you want an immediate stop in the "debug" call
 rather than the statement following it ("pass" above), add parameter
 step_ignore=0 to debug() like this:
 
-    import pydbgr.api  # Needed only once
+    import trepan.api  # Needed only once
     # ... as before
-    pydbgr.api.debug(step_ignore=0)
+    trepan.api.debug(step_ignore=0)
     # ... as before
 
 
-Module variable debugger_obj from module pydbgr.debugger is used as
+Module variable debugger_obj from module trepan.debugger is used as
 the debugger instance variable; it can be subsequenly used to change
 settings or alter behavior. It should be of type Debugger (found in
-module pydbgr). If not, it will get changed to that type.
+module trepan). If not, it will get changed to that type.
 
    Example:
    $ python
-   >>> from pydbgr.debugger import debugger_obj
+   >>> from trepan.debugger import debugger_obj
    >>> type(debugger_obj)
    <type 'NoneType'>
-   >>>  import pydbgr.api 
-   >>>  pydbgr.api.debug()
+   >>>  import trepan.api 
+   >>>  trepan.api.debug()
    ...
-   (Pydbgr) c
-   >>> from pydbgr.debugger import debugger_obj
+   (Trepan) c
+   >>> from trepan.debugger import debugger_obj
    >>> debugger_obj
-   <pydbgr.debugger.Debugger instance at 0x7fbcacd514d0>
+   <trepan.debugger.Debugger instance at 0x7fbcacd514d0>
    >>>
 
 If however you want your own separate debugger instance, you can
 create it from the debugger class Debugger() from module
-pydbgr.debugger.
+trepan.debugger.
 
 Example:
   $ python
-  >>> from pydbgr.debugger import Debugger
+  >>> from trepan.debugger import Debugger
   >>> dbgr = Debugger()  # Add options as desired
   >>> dbgr
-  <pydbgr.debugger.Debugger instance at 0x2e25320>
+  <trepan.debugger.Debugger instance at 0x2e25320>
 
 `dbg_opts' is an optional "options" dictionary that gets fed
-pydbgr.Debugger(); `start_opts' are the optional "options"
-dictionary that gets fed to pydbgr.Debugger.core.start().
+trepan.Debugger(); `start_opts' are the optional "options"
+dictionary that gets fed to trepan.Debugger.core.start().
 
 Parameter "step_ignore" specifies how many line events to ignore after the
 debug() call. 0 means don't even wait for the debug() call to finish.
@@ -211,7 +211,7 @@ if __name__=='__main__':
             print(i)
             pass
         return y
-    Mdefault = import_relative('default', 'lib', 'pydbgr')
+    Mdefault = import_relative('default', 'lib', 'trepan')
     settings = dict(Mdefault.DEBUGGER_SETTINGS)
     settings.update({'trace': True, 'printset': tracer.ALL_EVENTS})
     debug_opts={'step_ignore': -1, 'settings': settings}
