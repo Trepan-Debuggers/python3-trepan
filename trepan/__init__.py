@@ -13,6 +13,4 @@ __docformat__ = 'restructuredtext'
 __import__('pkg_resources').declare_namespace(__name__)
 from import_relative import import_relative
 Mmisc = import_relative('misc', '.', 'trepan')
-print(Mmisc.pyfiles())
-print(__name__)
 __all__ = [ Mmisc.pyfiles() ]
