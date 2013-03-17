@@ -28,3 +28,14 @@ Change with **set autopython**
     short_help = "Show automatic Python shell entry"
     min_abbrev = len('autopy')
     pass
+
+if __name__ == '__main__':
+    mock = import_relative('mock', '..')
+    Mshow = import_relative('show', '..')
+    Mdebugger = import_relative('debugger', '....')
+    d, cp = mock.dbg_setup()
+    i = Mshow.ShowCommand(cp)
+    sub = ShowAutoPython(i)
+    sub.name = 'autopython'
+    sub.run([])
+    pass

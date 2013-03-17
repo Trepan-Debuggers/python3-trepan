@@ -21,7 +21,7 @@ and storing it as a list of known debugger commands.
 """
 
 NotImplementedMessage = "This method must be overriden in a subclass"
-import columnize
+import columnize, re
 from pygments.console import colorize
 
 # Note: don't end classname with Command (capital C) since cmdproc
@@ -143,7 +143,8 @@ class DebuggerShowIntSubcommand(DebuggerSubcommand):
 
 class DebuggerShowBoolSubcommand(DebuggerSubcommand):
     def run(self, args):
-        doc = self.__doc__[5:].capitalize().split('\n')[0].rstrip('.')
+        doc = re.sub('[*]', '', self.__doc__)
+        doc = doc[5:].capitalize().split('\n')[0].rstrip('.')
         Mcmdfns.run_show_bool(self, doc)
         return
 

@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2009, 2010, 2013 Rocky Bernstein
 #
@@ -171,7 +172,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
             # We were given cmd without a subcommand; cmd is something
             # like "show", "info" or "set". Generally this means list
             # all of the subcommands.
-            self.msg("List of %s commands (with minimum abbreviation in "
+            self.section("List of %s commands (with minimum abbreviation in "
                      "parenthesis):" % self.name)
             for subcmd_name in self.cmds.list():
                 # Some commands have lots of output.
