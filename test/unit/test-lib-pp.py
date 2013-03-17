@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for trepan.lib.pp'
 import inspect, os, sys, unittest
 from import_relative import import_relative
@@ -38,7 +38,7 @@ class TestLibPrint(unittest.TestCase):
              ' 48, 49]'],
             self.msgs)
         return
-
+    
     pass
 
 if __name__ == '__main__':

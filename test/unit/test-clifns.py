@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for trepan.clifns'
 import inspect, os, sys, unittest
 from import_relative import *
@@ -16,5 +16,25 @@ class TestCLIFns(unittest.TestCase):
         self.assertTrue(Mclifns.path_expanduser_abs("~/foo"))
         return
         
+    def test_is_ok_line_for_breakpoint(self):
+        filename =  __file__
+        if len(filename) > 4 and filename[-4:] == '.pyc':
+            filename = filename[:-1]
+            pass
+
+        # Pick up a Python code line for testing.
+        # Note that this comment line relative to the line
+        # we pick up is also used.
+        frame = inspect.currentframe()
+        co = frame.f_code
+        lineno = frame.f_lineno
+        self.assertTrue(Mclifns.is_ok_line_for_breakpoint(filename,
+                                                          lineno, sys.stdout.write))
+
+        self.assertFalse(Mclifns.is_ok_line_for_breakpoint(filename,
+                                                           lineno-5, sys.stdout.write))
+
+        return
+
 if __name__ == '__main__':
     unittest.main()
