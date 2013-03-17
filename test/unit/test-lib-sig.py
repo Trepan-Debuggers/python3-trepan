@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for trepan.lib.sighandler'
 import inspect, os, signal, sys, unittest
 

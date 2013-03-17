@@ -28,8 +28,7 @@ class TestLibPrint(unittest.TestCase):
             return
         import sys
         def msg(self, m): print(m)
-        data = [i for i in range(50)]
-        Mpp.pprint_simple_array(data, 50, self.msg_nocr, self.msg)
+        Mpp.pprint_simple_array(list(range(50)), 50, self.msg_nocr, self.msg)
         self.assertEqual(
             ['[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11', '',
              ' 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23',
