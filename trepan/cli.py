@@ -62,19 +62,19 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                              version="%%prog version %s" % pkg_version)
 
     optparser.add_option("-X", "--trace", dest="linetrace",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Show lines before executing them. " +
                          "This option also sets --batch")
     optparser.add_option("-F", "--fntrace", dest="fntrace",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Show functions before executing them. " +
                          "This option also sets --batch")
     optparser.add_option("--basename", dest="basename",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Filenames strip off basename, (e.g. for regression tests)"
                          )
 #     optparser.add_option("--batch", dest="noninteractive",
-#                          action="store_true", default=False, 
+#                          action="store_true", default=False,
 #                          help="Don't run interactive commands shell on "+
 #                          "stops.")
     optparser.add_option("-x", "--command", dest="command",
@@ -87,10 +87,10 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          action="store_true", default=True,
                          help="Confirm potentially dangerous operations")
     optparser.add_option("--dbg_trepan", dest="dbg_trepan",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Debug the debugger")
     optparser.add_option("--different", dest="different",
-                         action="store_true", default=True, 
+                         action="store_true", default=True,
                          help="Consecutive stops should have different positions")
 #     optparser.add_option("--error", dest="errors", metavar='FILE',
 #                          action="store", type='string',
@@ -100,10 +100,18 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="list of debugger commands to " +
                          "execute. Separate the commands with ;;")
 
-    optparser.add_option("--highlight", dest="highlight", 
+    optparser.add_option("--highlight", dest="highlight",
                          action="store", type='string', metavar='{light|dark|plain}',
-                         default='light', 
+                         default='light',
                          help="Use syntax and terminal highlight output. 'plain' is no highlight")
+    optparser.add_option("--main", dest="main",
+                         action="store_true", default=True,
+                         help="First stop should be in __main__"
+                         )
+    optparser.add_option("--no-main", dest="main",
+                         action="store_false", default=True,
+                         help="First stop should be in __main__"
+                         )
     optparser.add_option("--private", dest="private",
                          action='store_true', default=False,
                          help="Don't register this as a global debugger")
@@ -117,7 +125,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="Don't enter debugger on an uncaught (fatal) exception")
 
     optparser.add_option("-n", "--nx", dest="noexecute",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Don't execute commands found in any " +
                          "initialization files")
     optparser.add_option("-o", "--output", dest="output", metavar='FILE',
@@ -132,7 +140,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     #                      action='store_true',
     #                      help="Out-of-process server connection mode")
     optparser.add_option("--sigcheck", dest="sigcheck",
-                         action="store_true", default=False, 
+                         action="store_true", default=False,
                          help="Set to watch for signal handler changes")
     optparser.add_option("-t", "--target", dest="target",
                          help="Specify a target to connect to. Arguments" \
@@ -198,7 +206,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         pass
 
     if opts.output:
-        try: 
+        try:
             dbg_opts['output'] = Moutput.DebuggerUserOutput(opts.output)
         except IOError as xxx_todo_changeme:
             (errno, strerror) = xxx_todo_changeme.args
@@ -221,7 +229,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     #         print('Starting TCP server listening on port %s.' % intf.inout.PORT)
     #         pass
     #     pass
-        
+
     return opts, dbg_opts, sys.argv
 
 def _postprocess_options(dbg, opts):
@@ -230,11 +238,11 @@ def _postprocess_options(dbg, opts):
     print_events = []
     if opts.fntrace:   print_events = ['c_call', 'c_return', 'call', 'return']
     if opts.linetrace: print_events += ['line']
-    if len(print_events): 
+    if len(print_events):
         dbg.settings['printset'] = frozenset(print_events)
         pass
 
-    for setting in ('annotate', 'basename', 'different',): 
+    for setting in ('annotate', 'basename', 'different',):
         dbg.settings[setting] = getattr(opts, setting)
         pass
 
@@ -242,7 +250,12 @@ def _postprocess_options(dbg, opts):
         dbg.settings['highlight'] = opts.highlight
     else:
         dbg.settings['highlight'] = 'plain'
-        
+        pass
+
+    if opts.main:
+        dbg.core.until_condition = "__name__ == '__main__'"
+        pass
+
     # Normally we want to set Mdebugger.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
     # than one debugger running. More than one debugger may confuse
@@ -253,7 +266,7 @@ def _postprocess_options(dbg, opts):
         pass
 
 #     if opts.errors:
-#         try: 
+#         try:
 #             dbg.stderr = open(opts.errors, 'w')
 #         except IOError, (errno, strerror):
 #             print "I/O in opening debugger output file %s" % opts.errors
@@ -272,8 +285,9 @@ def _postprocess_options(dbg, opts):
     if opts.post_mortem:
         Mapi.debugger_on_post_mortem()
         pass
-    
-    return 
+
+
+    return
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
@@ -281,9 +295,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv  = process_options(__title__, __version__, 
+    opts, dbg_opts, sys_argv  = process_options(__title__, __version__,
                                                 sys_argv)
-    dbg_opts['orig_sys_argv'] = sys_argv
+    dbg_opts['orig_sys_argv'] = orig_sys_argv
 
     if dbg is None:
         dbg = Mdebugger.Trepan(dbg_opts)
@@ -361,7 +375,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             dbg.core.execution_status = 'Restart requested'
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
-                part1 = ('Restarting %s with arguments:' % 
+                part1 = ('Restarting %s with arguments:' %
                          dbg.core.filename(mainpyfile))
                 args  = ' '.join(dbg.program_sys_argv[1:])
                 dbg.intf[-1].msg(Mmisc.wrapped_lines(part1, args,

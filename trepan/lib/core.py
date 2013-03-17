@@ -49,7 +49,7 @@ class TrepanCore:
         # entering event processor? Zero (0) means stop at the next one.
         # A negative number indicates no eventual stopping.
         'step_ignore' : 0,
-        'ignore_filter': None # But see debugger.py
+        'ignore_filter': None, # But see debugger.py
         }
 
     def __init__(self, debugger, opts=None):
@@ -127,6 +127,8 @@ class TrepanCore:
         # When trace_hook_suspend is set True, we'll suspend
         # debugging.
         self.trace_hook_suspend = False
+
+        self.until_condition = get_option('until_condition')
 
         return
 
@@ -306,6 +308,19 @@ class TrepanCore:
             pass
         return False
 
+    def matches_condition(self, frame):
+        # Conditional bp.
+        # Ignore count applies only to those bpt hits where the
+        # condition evaluates to true.
+        try:
+            val = eval(self.until_condition, frame.f_globals, frame.f_locals)
+        except:
+            # if eval fails, most conservative thing is to
+            # stop on breakpoint regardless of ignore count.
+            # Don't delete temporary, as another hint to user.
+            return False
+        return val
+
     def is_stop_here(self, frame, event, arg):
         """ Does the magic to determine if we stop here and run a
         command processor or not. If so, return True and set
@@ -407,6 +422,10 @@ class TrepanCore:
                     pass
                 pass
 
+            if self.until_condition:
+                if not self.matches_condition(frame): return True
+                pass
+
             trace_event_set = self.debugger.settings['events']
             if trace_event_set is None or self.event not in trace_event_set:
                 return True
@@ -435,7 +454,7 @@ if __name__=='__main__':
     class MockProcessor:
         pass
     opts = {'processor': MockProcessor()}
-    dc = DebuggerCore(None, opts=opts)
+    dc = TrepanCore(None, opts=opts)
     dc.step_ignore = 1
     print('dc._is_step_next_stop():', dc._is_step_next_stop('line'))
     print('dc._is_step_next_stop():', dc._is_step_next_stop('line'))

@@ -37,8 +37,8 @@ classifiers =  ['Development Status :: 4 - Beta',
 author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
-install_requires   = ['columnize >= 0.3.2', 
-                      'import_relative >= 0.1.0',
+install_requires   = ['columnize >= 0.3.4', 
+                      'import_relative >= 0.2.1',
                       'pyficache >= 0.2.01',
                       'pygments',
                       'tracer >= 0.2.2']

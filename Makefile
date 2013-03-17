@@ -7,8 +7,8 @@
 GIT2CL ?= git2cl
 PYTHON ?= python3
 
-# EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
-PHONY=check clean dist distclean test test-unit test-functional
+#EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
+PHONY=check clean dist distclean test test-unit test-functional rmChangeLog
 
 #: Default target - same as "check"
 all: check
@@ -79,7 +79,8 @@ DISTCLEAN_FILES = build dist *.pyc
 distclean: clean
 	-rm -fr $(DISTCLEAN_FILES) || true
 	-find . -name \*.pyc -exec rm -v {} \;
-	-find . -name \*.egg-info -exec rm -v {} \;
+	-find . -name __pycache__ -exec rm -vr {} \;
+	-find . -name \*.egg-info -exec rm -vr {} \;
 
 #: Install package locally
 verbose-install: 

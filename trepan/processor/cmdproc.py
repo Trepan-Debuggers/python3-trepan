@@ -843,13 +843,18 @@ class CommandProcessor(Mprocessor.Processor):
             if mod_name in ('info_sub', 'set_sub', 'show_sub',):
                 pass
             import_name = "command." + mod_name
-            #            try:
-            command_mod = getattr(__import__(import_name), mod_name)
-            # except:
-            #     print('Error importing module %s name %s: %s' % (mod_name,
-            #                                                      import_name,
-            #                                                      sys.exc_info()[0]))
-            #     continue
+            if False:
+                # Sometimes we want this
+                command_mod = getattr(__import__(import_name), mod_name)
+            else:
+                # FIXME give more info like the above when desired
+                try:
+                    command_mod = getattr(__import__(import_name), mod_name)
+                except:
+                    print('Error importing %s: %s' %
+                          (mod_name, sys.exc_info()[0]))
+                    continue
+                pass
 
             classnames = [ tup[0] for tup in
                            inspect.getmembers(command_mod, inspect.isclass)
@@ -857,12 +862,17 @@ class CommandProcessor(Mprocessor.Processor):
                                tup[0].endswith('Command')) ]
             for classname in classnames:
                 eval_cmd = eval_cmd_template % classname
-                try:
+                if False:
                     instance = eval(eval_cmd)
                     cmd_instances.append(instance)
-                except:
-                    print('Error loading %s from %s: %s' %
-                          (classname, mod_name, sys.exc_info()[0]))
+                else:
+                    try:
+                        instance = eval(eval_cmd)
+                        cmd_instances.append(instance)
+                    except:
+                        print('Error loading %s from %s: %s' %
+                              (classname, mod_name, sys.exc_info()[0]))
+                        pass
                     pass
                 pass
             pass

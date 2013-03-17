@@ -23,11 +23,11 @@ setup(
        author_email       = author_email,
        classifiers        = classifiers,
        description        = short_desc,
-#       entry_points = {
-#        'console_scripts': [
-#            'trepan  = trepan.cli:main',
-#            'trepan-client = trepan.client:main',
- #       ]},
+      entry_points = {
+       'console_scripts': [
+           'trepan3k  = trepan.cli:main',
+#          'trepan-client = trepan.client:main',
+       ]},
        install_requires   = install_requires,
        license            = license,
        py_modules         = py_modules,

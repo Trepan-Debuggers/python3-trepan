@@ -133,7 +133,7 @@ def show_onoff(b):
     else."""
     if not isinstance(b, bool):
         return "??"
-    if bool:
+    if b:
         return "on"
     return "off"
 

@@ -71,7 +71,7 @@ if __name__ == '__main__':
     mock = import_relative('mock', '..')
     Mshow = import_relative('show', '..')
     Mdebugger = import_relative('debugger', '....')
-    d = Mdebugger.Debugger()
+    d = Mdebugger.Trepan()
     d, cp = mock.dbg_setup(d)
     i = Mshow.ShowCommand(cp)
     sub = ShowAliases(i)
