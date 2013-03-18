@@ -17,12 +17,12 @@
 from import_relative import import_relative
 Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
 
-class ShowAutolist(Mbase_subcmd.DebuggerShowBoolSubcommand):
+class ShowAutoList(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """Show debugger *list* command automatically on entry."""
     min_abbrev = len('autol')
     pass
 
 if __name__ == '__main__':
     Mhelper = import_relative('__demo_helper__', '.', 'trepan')
-    mgr = Mhelper.demo_run(ShowAutolist)
+    Mhelper.demo_run(ShowAutoList)
     pass
