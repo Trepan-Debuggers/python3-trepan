@@ -68,13 +68,8 @@ of aliases is printed, not what commands they are attached to.
         return
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Mshow = import_relative('show', '..')
-    Mdebugger = import_relative('debugger', '....')
-    d, cp = mock.dbg_setup()
-    i = Mshow.ShowCommand(cp)
-    sub = ShowAliases(i)
-    sub.run([])
+    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    sub = Mhelper.demo_run(ShowAliases)
     sub.run(['*'])
     sub.run(['s+', "n+"])
     pass

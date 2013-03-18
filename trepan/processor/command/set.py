@@ -14,22 +14,30 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from import_relative import import_relative
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+base_submgr  = import_relative('base_submgr', top_name='trepan')
 
-class ShowBasename(Mbase_subcmd.DebuggerShowBoolSubcommand):
-    '''**show basename**
+class SetCommand(base_submgr.SubcommandMgr):
+    """Modifies parts of the debugger environment.
 
-Show whether filenames are reported with just the basename or the
-fully qualified filename.
+You can give unique prefix of the name of a subcommand to get
+information about just that subcommand.
 
-Change with **set basename**
-'''
-    short_help = "Show the basename portion only of filenames"
-    min_abbrev = len('ba')
-    pass
+Type `set` for a list of *set* subcommands and what they do.
+Type `help set *` for just the list of *set* subcommands.
+"""
+
+    category      = 'data'
+    min_args      = 0
+    max_args      = None
+    name          = os.path.basename(__file__).split('.')[0]
+    need_stack    = False
+    short_help    = 'Modify parts of the debugger environment'
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
-    Mhelper.demo_run(ShowBasename)
+    mock = import_relative('mock')
+    d, cp = mock.dbg_setup()
+    command = SetCommand(cp, 'set')
+    command.run(['set'])
     pass

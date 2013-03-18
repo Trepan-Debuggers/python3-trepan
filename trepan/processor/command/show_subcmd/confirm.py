@@ -26,3 +26,8 @@ class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """Show confirmation of potentially dangerous operations"""
     min_abbrev = 3    # Need at least "show con"
     pass
+
+if __name__ == '__main__':
+    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    Mhelper.demo_run(ShowConfirm)
+    pass

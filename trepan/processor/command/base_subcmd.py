@@ -25,7 +25,7 @@ import columnize, re
 from pygments.console import colorize
 
 # Note: don't end classname with Command (capital C) since cmdproc
-# will think this a command name like QuitCommand 
+# will think this a command name like QuitCommand
 #                                         ^
 class DebuggerSubcommand:
     """Base Class for Debugger subcommands. We pull in some helper
@@ -48,20 +48,20 @@ class DebuggerSubcommand:
         # will change over the course of the program execution like
         # errmsg(), msg(), and msg_nocr() might. (See the note below
         # on these latter 3 methods.)
-        # 
+        #
         self.proc     = cmd.proc
         self.core     = cmd.core
         self.debugger = cmd.debugger
         self.settings = cmd.debugger.settings
 
-        if not hasattr(self, 'short_help'): 
+        if not hasattr(self, 'short_help'):
             self.short_help = self.__doc__.split("\n")[0]
             pass
 
         # By default the name of the subcommand will be the name of the
         # last part of module (e.g. "args" in "infos.args" or "basename"
         # in "shows.basename"). However it *is* possible for one to change
-        # that -- perhaps one may want to put several subcommands into 
+        # that -- perhaps one may want to put several subcommands into
         # a single file. So in those cases, one will have to set self.name
         # accordingly by other means.
         self.name  = self.__module__.split('.')[-1]
@@ -72,7 +72,7 @@ class DebuggerSubcommand:
         """List commands arranged in an aligned columns"""
         commands.sort()
         width = self.debugger.settings['width']
-        return columnize.columnize(commands, displaywidth=width, 
+        return columnize.columnize(commands, displaywidth=width,
                                    lineprefix='    ')
 
     def confirm(self, msg, default=False):
@@ -81,25 +81,25 @@ class DebuggerSubcommand:
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
     # an assignment of method names like self.msg = self.debugger.intf.msg,
-    # because we want to allow the interface (intf) to change 
+    # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].errmsg """
         return(self.debugger.intf[-1].errmsg(msg))
-               
+
     def msg(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].msg """
         return(self.debugger.intf[-1].msg(msg))
-               
+
     def msg_nocr(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
         return(self.debugger.intf[-1].msg_nocr(msg))
 
     aliases = ('alias1', 'alias2..',)
     name    = 'YourCommandName'
-        
+
     def rst_msg(self, text):
         """Convenience short-hand for self.proc.rst_msg(text)"""
         return(self.proc.rst_msg(text))
@@ -122,7 +122,15 @@ Mcmdfns = import_relative('cmdfns', '..', 'trepan')
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
     def run(self, args):
-        doc = self.__doc__.capitalize().split('\n')[0].rstrip('.')
+        # Strip off ReStructuredText tags
+        doc = re.sub('[*]', '', self.__doc__).lstrip()
+        # Take only the first two tokens
+        i = doc.find(' ')
+        if i > 0:
+            j = doc.find(' ', i+1)
+            if j > 0: doc = doc[0:j]
+            pass
+        doc = doc.capitalize().split('\n')[0].rstrip('.')
         Mcmdfns.run_set_bool(self, args)
         Mcmdfns.run_show_bool(self, doc)
         return
@@ -143,6 +151,7 @@ class DebuggerShowIntSubcommand(DebuggerSubcommand):
 
 class DebuggerShowBoolSubcommand(DebuggerSubcommand):
     def run(self, args):
+        # Strip off ReStructuredText tags
         doc = re.sub('[*]', '', self.__doc__)
         doc = doc[5:].capitalize().split('\n')[0].rstrip('.')
         Mcmdfns.run_show_bool(self, doc)

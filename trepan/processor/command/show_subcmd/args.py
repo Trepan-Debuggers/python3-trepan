@@ -30,3 +30,8 @@ class ShowArgs(Mbase_subcmd.DebuggerSubcommand):
         self.msg('\t%s.' % ' '.join(self.debugger.program_sys_argv[1:]))
         return False
     pass
+
+if __name__ == '__main__':
+    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    Mhelper.demo_run(ShowArgs)
+    pass
