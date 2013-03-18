@@ -25,11 +25,14 @@ class MockIO:
     def readline(self, prompt='', add_to_history=False):
         print(prompt)
         return 'quit'
+    def output(self):
+        print(prompt)
     pass
 
 class MockUserInterface:
     def __init__(self):
         self.io = MockIO()
+        self.output = MockIO()
         return
 
     def confirm(self, msg, default):
@@ -123,4 +126,3 @@ def dbg_setup(d = None):
     cmdproc = import_relative('cmdproc', os.path.pardir)
     cp = cmdproc.CommandProcessor(d.core)
     return d, cp
-    
