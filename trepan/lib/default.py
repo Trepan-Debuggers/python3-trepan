@@ -59,7 +59,7 @@ DEBUGGER_SETTINGS = {
     # precidence over autopython.
     'autoipython'   : False,
 
-    # Enter python every time we enter the debugger?
+    # Enter Python every time we enter the debugger?
     'autopython'    : False,
 
     # Show basename only on filename output? 

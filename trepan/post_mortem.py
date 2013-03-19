@@ -159,8 +159,7 @@ def post_mortem(exc=None, frameno=1, dbg=None):
     return
 
 def uncaught_exception(dbg):
-    exc = sys.exc_info()
-    exc_type, exc_value, exc_tb = exc
+    exc_type, exc_value, exc_tb = sys.exc_info()
     if exc_type == Mexcept.DebuggerQuit: return
     if exc_type == Mexcept.DebuggerRestart:
         print("restart not done yet - entering post mortem debugging")
