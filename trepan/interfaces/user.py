@@ -20,9 +20,9 @@ import atexit
 # Our local modules
 from import_relative import *
 import_relative('interfaces',  '..')
-Minterface = import_relative('interface',  '..')
-Minput     = import_relative('input', '..io')
-Moutput    = import_relative('output', '..io')
+Minterface = import_relative('interface',  '..', 'trepan')
+Minput     = import_relative('input', '..io', 'trepan')
+Moutput    = import_relative('output', '..io', 'trepan')
 
 class UserInterface(Minterface.TrepanInterface):
     """Interface when communicating with the user in the same

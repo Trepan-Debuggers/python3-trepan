@@ -154,7 +154,10 @@ class SignalManager:
                            'SIGIO',      'SIGCLD',
                            'SIGVTALRM'   'SIGPROF',  'SIGWINCH',  'SIGPOLL',
                            'SIGWAITING', 'SIGLWP',   'SIGCANCEL', 'SIGTRAP',
-                           'SIGTERM',    'SIGQUIT',  'SIGILL']
+                           'SIGTERM',    'SIGQUIT',  'SIGILL', 
+			   # Wierd stuff from 3.3
+			   'SIG_SETMASK', 'ITIMER_PROF'
+			   ]
         self.ignore_list = ignore_list
         self._orig_set_signal  = signal.signal
         signal.signal = self.set_signal_replacement
