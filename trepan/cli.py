@@ -18,7 +18,7 @@
 '''
 import os, os.path, sys
 
-package='trepan3k'
+package='trepan'
 if not package in sys.modules:
     __import__('pkg_resources').declare_namespace(package)
     pass
@@ -177,7 +177,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     dbg_initfiles = []
     if not opts.noexecute:
         # Read debugger startup file(s), e.g. $HOME/.trepan3krc and ./.trepan3krc
-        startup_file = ".%src" % debugger_name
+        startup_file = ".%s3krc" % debugger_name
         # expanded_startup_file = Mclifns.path_expanduser_abs(startup_file)
         if 'HOME' in os.environ:
             startup_home_file = os.path.join(os.environ['HOME'], startup_file)

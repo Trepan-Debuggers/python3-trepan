@@ -28,7 +28,6 @@ class RestartCommand(Mbase_cmd.DebuggerCommand):
 Restart debugger and program via an *exec()* call. All state is lost,
 and new copy of the debugger is used."""
 
-    aliases       = ('R',)
     category      = 'support'
     min_args      = 0
     max_args      = 0
