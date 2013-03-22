@@ -23,8 +23,6 @@ class StringArrayInput(Mbase.TrepanInputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
 
-    attr_reader :input
-
     def __init__(self, inp=[], opts=None):
         self.input  = inp
         self.closed = False
@@ -60,8 +58,6 @@ class StringArrayInput(Mbase.TrepanInputBase):
 class StringArrayOutput(Mbase.TrepanOutputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
-
-    attr_reader :output
 
     def __init__(self, out=[], opts=None):
         self.flush_after_write = False # For compatibility
