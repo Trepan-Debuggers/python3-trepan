@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ class StringArrayInput(Mbase.TrepanInputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
 
+    attr_reader :input
+
     def __init__(self, inp=[], opts=None):
         self.input  = inp
         self.closed = False
@@ -43,21 +45,23 @@ class StringArrayInput(Mbase.TrepanInputBase):
         return
 
     def readline(self, use_raw=None, prompt=''):
-        """Read a line of input. EOFError will be raised on EOF.  
+        """Read a line of input. EOFError will be raised on EOF.
 
         Note that we don't support prompting"""
         if self.closed: raise ValueError
-        if 0 == len(self.input): 
+        if 0 == len(self.input):
             self.closed = True
             raise EOFError
         line = self.input[0]
         del self.input[0]
-        return line 
-    pass 
+        return line
+    pass
 
 class StringArrayOutput(Mbase.TrepanOutputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
+
+    attr_reader :output
 
     def __init__(self, out=[], opts=None):
         self.flush_after_write = False # For compatibility
@@ -75,7 +79,7 @@ class StringArrayOutput(Mbase.TrepanOutputBase):
         return
 
     def open(self, output):
-        """Use this to set where to write to. output can be a 
+        """Use this to set where to write to. output can be a
         file object or a string. This code raises IOError on error.
 
         If another file was previously open upon calling this open,
@@ -85,7 +89,7 @@ class StringArrayOutput(Mbase.TrepanOutputBase):
         if isinstance(output, types.Listype):
             self.output = output
         else:
-            raise IOError("Invalid output type (%s) for %s" % (type(output), 
+            raise IOError("Invalid output type (%s) for %s" % (type(output),
                                                                  output))
         return
 
@@ -109,8 +113,8 @@ class StringArrayOutput(Mbase.TrepanOutputBase):
         self.write(msg)
         self.output.append('')
         return
-    
-    pass 
+
+    pass
 
 # Demo
 if __name__=='__main__':
@@ -138,7 +142,7 @@ if __name__=='__main__':
     out.write("Last hello")
     out.close()
     print(out.output)
-    try: 
+    try:
          out.writeline("You won't see me")
     except:
          pass
@@ -146,4 +150,3 @@ if __name__=='__main__':
     out.close()
     inp.close()
     pass
-

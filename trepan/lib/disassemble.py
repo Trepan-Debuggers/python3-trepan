@@ -1,17 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   Modification of Python's Lib/dis.py
 '''Disassembly Routines'''
 
 import inspect, pygments, sys, types
@@ -22,6 +10,21 @@ from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, hasjrel, \
 from import_relative import import_relative
 Mformat   = import_relative('format', top_name='trepan')
 format_token = Mformat.format_token
+
+_have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
+
+def _try_compile(source, name):
+    """Attempts to compile the given source, first as an expression and
+       then as a statement if the first approach fails.
+
+       Utility function to accept strings in functions that otherwise
+       expect code objects
+    """
+    try:
+        c = compile(source, name, 'eval')
+    except SyntaxError:
+        c = compile(source, name, 'exec')
+    return c
 
 # Modified from dis. Changed output to use msg, msg_nocr, section, and pygments.
 # Added first_line and last_line parameters
@@ -38,41 +41,45 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
         return
     if type(x) is object:
         x = x.__class__
-    if hasattr(x, 'im_func'):
-        section("Disassembly of %s: " % x)
-        x = x.__func__
-    if hasattr(x, 'func_code'):
-        section("Disassembly of %s: " % x)
-        x = x.__code__
-    elif hasattr(x, 'f_code'):
-        section("Disassembly of %s: " % x)
+    if hasattr(x, 'f_code'):
         if hasattr(x, 'f_lasti'):
             lasti = x.f_lasti
             pass
         x = x.f_code
+        section("Disassembly of %s: " % x)
+        disassemble(msg, msg_nocr, section, x, lasti=lasti,
+                    start_line=start_line, end_line=end_line,
+                    relative_pos = relative_pos)
+        return
+    elif hasattr(x, '__func__'):  # Method
+        x = x.__func__
+    if hasattr(x, '__code__'):  # Function
+        x = x.__code__
         pass
-    elif inspect.iscode(x):
-        pass
-    if hasattr(x, '__dict__'):
-        items = list(x.__dict__.items())
-        items.sort()
+    if hasattr(x, '__dict__'):  # Class or module
+        items = sorted(x.__dict__.items())
         for name, x1 in items:
-            if type(x1) in (types.MethodType,
-                            types.FunctionType,
-                            types.CodeType,
-                            type):
+            if isinstance(x1, _have_code):
+                section("Disassembly of %s: " % x)
                 try:
-                    dis(msg, msg_nocr, errmsg, section, x1,
+                    dis(msg, msg_nocr, section, errmsg, x1,
                         start_line=start_line, end_line=end_line,
                         relative_pos = relative_pos)
                     msg("")
                 except TypeError as msg:
                     errmsg("Sorry:", msg)
-    elif hasattr(x, 'co_code'):
+                    pass
+                pass
+            pass
+        pass
+    elif hasattr(x, 'co_code'): # Code object
+        section("Disassembly of %s: " % x)
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
                     relative_pos = relative_pos)
-    elif isinstance(x, str):
+    elif isinstance(x, (bytes, bytearray)): # Raw bytecode
+        _disassemble_bytes(x)
+    elif isinstance(x, str):    # Source code
         disassemble_string(msg, msg_nocr, x,)
     else:
        errmsg("Don't know how to disassemble %s objects." %
@@ -82,17 +89,22 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
 def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1, end_line=None,
                 relative_pos=False, color='light'):
     """Disassemble a code object."""
-    disassemble_string(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
-                       start_line, end_line, relative_pos,
-                       co.co_varnames, co.co_names, co.co_consts,
-                       co.co_cellvars, co.co_freevars,
-                       dict(findlinestarts(co)), color)
+    disassemble_bytes(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
+                      start_line, end_line, relative_pos,
+                      co.co_varnames, co.co_names, co.co_consts,
+                      co.co_cellvars, co.co_freevars,
+                      dict(findlinestarts(co)), color)
     return
 
-def disassemble_string(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
-                       start_line=-1, end_line=None, relative_pos=False,
-                       varnames=(), names=(), consts=(), cellvars=(),
-                       freevars=(), linestarts={}, color='light'):
+def _disassemble_str(source):
+    """Compile the source string, then disassemble the code object."""
+    disassemble(_try_compile(source, '<dis>'))
+    return
+
+def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
+                      start_line=-1, end_line=None, relative_pos=False,
+                      varnames=(), names=(), consts=(), cellvars=(),
+                      freevars=(), linestarts={}, color='light'):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""
     statement_count = 10000

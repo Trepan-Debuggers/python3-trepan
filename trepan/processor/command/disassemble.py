@@ -91,6 +91,7 @@ disassemble that.
                 else:
                     try:
                         obj=self.proc.eval(args[1])
+                        start_line = -1
                     except:
                         self.errmsg(("Object '%s' is not something we can"
                                      + " disassemble.") % args[1])
