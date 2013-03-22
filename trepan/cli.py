@@ -33,7 +33,7 @@ Mclifns    = import_relative('clifns', top_name=package)
 Mdebugger  = import_relative('debugger', top_name=package)
 Mexcept    = import_relative('exception', top_name=package)
 Moutput    = import_relative('output', '.io', package)
-## Mserver    = import_relative('server', '.interfaces', package)
+Mserver    = import_relative('server', '.interfaces', package)
 Mfile      = import_relative('file',   '.lib', package)
 Mmisc      = import_relative('misc', '.', package)
 
@@ -74,7 +74,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="Filenames strip off basename, (e.g. for regression tests)"
                          )
 #     optparser.add_option("--batch", dest="noninteractive",
-#                          action="store_true", default=False,
+#                          action="store_true", default=False, 
 #                          help="Don't run interactive commands shell on "+
 #                          "stops.")
     optparser.add_option("-x", "--command", dest="command",
@@ -136,9 +136,9 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 #                          action="store", type='int',
 #                          help="Write debugger's output (stdout) "
 #                          + "to FILE")
-    # optparser.add_option("--server", dest="server",
-    #                      action='store_true',
-    #                      help="Out-of-process server connection mode")
+    optparser.add_option("--server", dest="server",
+                         action='store_true',
+                         help="Out-of-process server connection mode")
     optparser.add_option("--sigcheck", dest="sigcheck",
                          action="store_true", default=False,
                          help="Set to watch for signal handler changes")
@@ -220,16 +220,16 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
             pass
         pass
 
-    # if opts.server:
-    #     intf = Mserver.ServerInterface()
-    #     dbg_opts['interface'] = intf
-    #     if 'FIFO' == intf.server_type:
-    #         print('Starting FIFO server for process %s.' % os.getpid())
-    #     elif 'TCP' == intf.server_type:
-    #         print('Starting TCP server listening on port %s.' % intf.inout.PORT)
-    #         pass
-    #     pass
-
+    if opts.server:
+        intf = Mserver.ServerInterface()
+        dbg_opts['interface'] = intf
+        if 'FIFO' == intf.server_type:
+            print('Starting FIFO server for process %s.' % os.getpid())
+        elif 'TCP' == intf.server_type:
+            print('Starting TCP server listening on port %s.' % intf.inout.PORT)
+            pass
+        pass
+        
     return opts, dbg_opts, sys.argv
 
 def _postprocess_options(dbg, opts):
