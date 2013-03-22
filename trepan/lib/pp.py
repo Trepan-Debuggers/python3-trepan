@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2009, 2013 Rocky Bernstein
 #
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-#    02110-1301 USA.
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pprint, types
 from columnize import columnize
@@ -28,7 +26,7 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
         else:
             msg(prefix)
         pass
-    if not pprint_simple_array(val, display_width, msg_nocr, msg, 
+    if not pprint_simple_array(val, display_width, msg_nocr, msg,
                                '  '):
         msg('  ' + pprint.pformat(val))
         pass
@@ -42,7 +40,7 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
     
     if type(val) != list:
         return False
-    
+
     numeric = True
     for i in range(len(val)):
         if not (type(val[i]) in [bool, float, int]):
@@ -61,7 +59,7 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
     if 0 == len(lines):
         msg(lineprefix + '[]')
         return
-    
+
     msg_nocr(lineprefix + "[")
     msg_nocr(lines[0][1:])
     if 1 == len(lines):
@@ -94,4 +92,3 @@ if __name__ == '__main__':
         pp(eval(k), 80, msg_nocr, msg, prefix='%s =' % k)
         pass
     pass
-

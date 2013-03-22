@@ -71,10 +71,8 @@ See also `unalias` and `show alias`."""
 
 if __name__ == '__main__':
     # Demo it.
-    cmdproc      = import_relative('cmdproc', '..')
-    debugger     = import_relative('debugger', '...')
-    d            = debugger.Trepan()
-    cp           = d.core.processor
+    mock = import_relative('mock')
+    d, cp = mock.dbg_setup()
     command      = AliasCommand(cp)
     command.run(['alias', 'yy', 'foo'])
     command.run(['alias', 'yy',' foo'])

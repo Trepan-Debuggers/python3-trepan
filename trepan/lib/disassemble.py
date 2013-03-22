@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -62,20 +62,20 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
                             types.CodeType,
                             type):
                 try:
-                    dis(msg, msg_nocr, errmsg, section, x1, 
-                        start_line=start_line, end_line=end_line, 
+                    dis(msg, msg_nocr, errmsg, section, x1,
+                        start_line=start_line, end_line=end_line,
                         relative_pos = relative_pos)
                     msg("")
                 except TypeError as msg:
                     errmsg("Sorry:", msg)
     elif hasattr(x, 'co_code'):
-        disassemble(msg, msg_nocr, section, x, lasti=lasti, 
+        disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
                     relative_pos = relative_pos)
     elif isinstance(x, str):
         disassemble_string(msg, msg_nocr, x,)
     else:
-       errmsg("Don't know how to disassemble %s objects." % 
+       errmsg("Don't know how to disassemble %s objects." %
               type(x).__name__)
     return
 
@@ -227,4 +227,3 @@ if __name__ == '__main__':
     # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
     # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
     pass
-
