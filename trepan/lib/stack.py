@@ -25,7 +25,7 @@ format_token = Mformat.format_token
 def count_frames(frame, count_start=0):
     "Return a count of the number of frames"
     count = -count_start
-    while frame: 
+    while frame:
         count += 1
         frame = frame.f_back
     return count
@@ -45,17 +45,19 @@ def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
 
     s = ''
     if frame.f_code.co_name:
-        s = format_token(Mformat.Function, frame.f_code.co_name,
-                         highlight=color)
+        funcname = frame.f_code.co_name
     else:
-        s = "<lambda>"
+        funcname = "<lambda>"
         pass
+    s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if '<module>' == s and ([], None, None,) == (args, varargs, varkw,):
+    if '<module>' == funcname and ([], None, None,) == (args, varargs, varkw,):
         is_module = True
-        if is_exec_stmt(frame): 
-            s += ' exec()'
+        if is_exec_stmt(frame):
+            fn_name = format_token(Mformat.Function, 'exec', highlight=color)
+            s += ' %s()' % format_token(Mformat.Function, fn_name,
+                                        highlight=color)
         else:
             fn_name = get_call_function_name(frame, color=color)
             if fn_name: s += ' %s()' % format_token(Mformat.Function, fn_name,
@@ -119,12 +121,11 @@ def frame2file(core_obj, frame):
 
 def is_exec_stmt(frame):
     """Return True if we are looking at an exec statement"""
-    return hasattr(frame, 'f_back') and frame.f_back is not None and \
-        Mbytecode.op_at_frame(frame.f_back)=='EXEC_STMT'
+    return hasattr(frame, 'f_back') and get_call_function_name(frame) == 'exec'
 
 import dis
 def get_call_function_name(frame, color='plain'):
-    """If f_back is looking at a call function, return 
+    """If f_back is looking at a call function, return
     the name for it. Otherwise return None"""
     f_back = frame.f_back
     if not f_back: return None
@@ -194,7 +195,7 @@ def eval_print_obj(arg, frame, format=None, short=False):
     try:
         if not frame:
             # ?? Should we have set up a dummy globals
-            # to have persistence? 
+            # to have persistence?
             val = eval(arg, None, None)
         else:
             val = eval(arg, frame.f_globals, frame.f_locals)
@@ -240,7 +241,7 @@ if __name__=='__main__':
                 }
             pass
         pass
-        
+
     frame = inspect.currentframe()
     m = MockDebugger()
     print(format_stack_entry(m, (frame, 10,)))
@@ -251,7 +252,7 @@ if __name__=='__main__':
     print("def statement: x=5?: %s" % repr(Mbytecode.is_def_stmt('x=5', frame)))
     # Not a "def" statement because frame is wrong spot
     print(Mbytecode.is_def_stmt('def foo():', frame))
-    def sqr(x): x * x 
+    def sqr(x): x * x
     def fn(x):
         frame = inspect.currentframe()
         print(get_call_function_name(frame))
