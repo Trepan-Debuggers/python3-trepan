@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.subcmd'
-import inspect, os, sys, unittest
-from import_relative import *
+import unittest
+from import_relative import import_relative
 
 Msubcmd   = import_relative('processor.subcmd', '...trepan')
 Mbase_cmd = import_relative('processor.command.base_cmd', '...trepan')

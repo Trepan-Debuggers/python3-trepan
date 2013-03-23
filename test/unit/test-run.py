@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.run'
-import inspect, os, sys, unittest
+import unittest
 
-from import_relative import *
+from import_relative import import_relative
 
 # FIXME: until import_relative is fixed
 import_relative('trepan', '...', 'trepan')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.cmdproc'
-import os, sys, types, unittest
-from import_relative import *
+import unittest
+from import_relative import import_relative
 
 Mcmdproc = import_relative('processor.cmdproc', '...trepan')
 

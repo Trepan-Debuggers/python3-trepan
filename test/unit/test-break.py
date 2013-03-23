@@ -2,7 +2,7 @@
 'Unit test for trepan.processor.command.break'
 import os, unittest
 
-from import_relative import *
+from import_relative import import_relative
 
 Mcmdbreak = import_relative('processor.cmdbreak', '...trepan')
 Mbreak    = import_relative('processor.command.break', '...trepan')
@@ -24,7 +24,6 @@ class TestBreakCommand(unittest.TestCase):
     
     def test_parse_break_cmd(self):
         import inspect, types
-        cmdproc         = import_relative('processor.cmdproc', '...trepan')
         debugger        = import_relative('debugger', '...trepan')
         d               = debugger.Trepan()
         cp              = d.core.processor

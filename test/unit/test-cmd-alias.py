@@ -2,7 +2,7 @@
 'Unit test for trepan.processor.command.alias and unalias'
 import inspect, unittest
 
-from import_relative import *
+from import_relative import import_relative
 
 Malias    = import_relative('processor.command.alias', '...trepan')
 
@@ -20,8 +20,7 @@ class TestAliasCommand(unittest.TestCase):
     def setUp(self):
         self.errors = []
         self.msgs = []
-        Mcmdproc         = import_relative('processor.cmdproc', '...trepan', 
-                                           'trepan')
+        import_relative('processor.cmdproc', '...trepan', 'trepan')
         Mdebugger        = import_relative('debugger', '...trepan', 'trepan')
         d                     = Mdebugger.Trepan()
         self.cmdproc          = d.core.processor

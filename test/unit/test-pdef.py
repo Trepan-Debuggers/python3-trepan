@@ -24,8 +24,7 @@ class TestPDef(unittest.TestCase):
 
     def test_pdef(self):
         import inspect
-        cmdproc     = import_relative('processor.cmdproc', '...trepan', 
-                                      'trepan')
+        import_relative('processor.cmdproc', '...trepan', 'trepan')
         debugger    = import_relative('debugger', '...trepan', 'trepan')
         d           = debugger.Trepan()
         cp          = d.core.processor

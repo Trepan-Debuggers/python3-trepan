@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for the debugger lib breakpoint'
 import re, unittest
-from import_relative import *
+from import_relative import import_relative
 
 Mbreakpoint = import_relative('lib.breakpoint', '...trepan')
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.lib.sighandler'
-import inspect, os, signal, sys, unittest
+import signal, unittest
 
 from import_relative import import_relative
 Msig = import_relative('lib.sighandler', '...trepan')

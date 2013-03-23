@@ -2,7 +2,7 @@
 'Unit test for trepan.processor.command.step'
 import inspect, os, sys, unittest
 
-from import_relative import *
+from import_relative import import_relative
 Mfinish = import_relative('processor.command.finish', '...trepan')
 
 from cmdhelper import dbg_setup

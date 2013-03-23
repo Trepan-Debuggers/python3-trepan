@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.misc'
-import inspect, os, sys, unittest
-from import_relative import *
+import unittest
+from import_relative import import_relative
 
 Mmisc = import_relative('misc', '...trepan', 'trepan')
 

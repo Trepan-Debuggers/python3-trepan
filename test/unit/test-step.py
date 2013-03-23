@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 'Unit test for trepan.processor.command.step'
-import inspect, os, sys, unittest
+import unittest
 
-from import_relative import *
+from import_relative import import_relative
 Mstep = import_relative('processor.command.step', '...trepan')
 
 from cmdhelper import dbg_setup

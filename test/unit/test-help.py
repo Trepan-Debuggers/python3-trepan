@@ -2,7 +2,7 @@
 'Unit test for trepan.processor.command.help'
 import inspect, os, sys, unittest, types
 
-from import_relative import *
+from import_relative import import_relative
 
 # FIXME: until import_relative is fixed
 import_relative('trepan', '...', 'trepan')

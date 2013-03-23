@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.clifns'
 import inspect, os, sys, unittest
-from import_relative import *
+from import_relative import import_relative
 
 Mclifns = import_relative('clifns', '...trepan')
 

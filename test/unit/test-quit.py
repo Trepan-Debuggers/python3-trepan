@@ -2,7 +2,7 @@
 'Unit test for trepan.processor.command.quit'
 import unittest
 
-from import_relative import *
+from import_relative import import_relative
 
 Mquit = import_relative('processor.command.quit', '...trepan')
 

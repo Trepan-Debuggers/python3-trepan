@@ -2,7 +2,7 @@
 'Unit test for trepan.interfaces.user'
 import unittest
 
-from import_relative import *
+from import_relative import import_relative
 Muser = import_relative('interfaces.user', '...trepan')
 
 from cmdhelper import dbg_setup
