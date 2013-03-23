@@ -42,15 +42,12 @@ test-functional-short:
 
 #: Run integration (black-box) tests
 test-integration: 
-	@echo === Integration tests skipped for now
-#	 (cd test/integration && $(PYTHON) ./setup.py nosetests) | \
-#	$(PYTHON) ./make-check-filter.py
+	 (cd test/integration && $(PYTHON) ./setup.py nosetests)
 
 #: Run integration (black-box) tests
 test-integration-short: 
-	@echo === Integration tests skipped for now
-#	(cd test/integration && $(PYTHON) ./setup.py nosetests) | \
-#	$(PYTHON) ./make-check-filter.py
+	(cd test/integration && $(PYTHON) ./setup.py nosetests) | \
+	$(PYTHON) ./make-check-filter.py
 
 #: Clean up temporary files
 clean: 

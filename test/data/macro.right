@@ -1,8 +1,8 @@
 (gcd.py:10): <module>
 -> 10 """
-Set basename (short filenames) in debugger output is on.
-Set event tracing is on.
-Set stopping before def or class' (function or class) statements is off.
+Set basename is off.
+Set event is on.
+Set stopping is off.
 No macros defined.
 Macro "foo" defined.
   5    	not have a 'return' statement.
@@ -18,7 +18,7 @@ Macro "foo" defined.
 foo
 
 Macro "bar" defined.
-  1    	#!/usr/bin/python
+  1    	#!/usr/bin/env python3
   2    	"""Greatest Common Divisor
   3    	
   4    	Some characterstics of this program used for testing check_args() does
