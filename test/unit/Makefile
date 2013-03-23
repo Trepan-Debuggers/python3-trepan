@@ -1,15 +1,10 @@
-PYTHON ?= python
+PYTHON ?= python3
 
 PHONY=all check check-short test-unit test-unit-short
 
-#: Run unit tests
-all, check, test-unit: 
-	$(PYTHON) ./setup.py nosetests
-
 #: Run unit tests reduced verbosity
-check-short, test-unit-short: 
-	$(PYTHON) ./setup.py nosetests) | \
-	$(PYTHON) ../../make-check-filter.py
+test-unit-short: 
+	$(MAKE) -C ../.. $@
 
 #: Remove derived files
 clean: 

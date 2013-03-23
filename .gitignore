@@ -5,5 +5,5 @@
 /build
 /dist
 /how-to-make-a-release.txt
-/trepan.egg-info
+*.egg-info
 __pycache__

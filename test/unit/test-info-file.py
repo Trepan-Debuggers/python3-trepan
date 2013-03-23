@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'Unit test for trepan.clifns'
+'Unit test for debugger info file'
 import inspect, unittest
 from import_relative import import_relative
 

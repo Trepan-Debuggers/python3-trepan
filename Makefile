@@ -33,14 +33,12 @@ test-unit-short:
 
 #: Run functional tests
 test-functional: 
-	@echo === Functional tests skipped for now
-#	(cd test/functional && $(PYTHON) ./setup.py nosetests)
+	(cd test/functional && $(PYTHON) ./setup.py nosetests)
 
 #: Run functional tests
 test-functional-short: 
-	@echo === Functional tests skipped for now
-#	(cd test/functional && $(PYTHON) ./setup.py nosetests) | \
-#	$(PYTHON) ./make-check-filter.py
+	(cd test/functional && $(PYTHON) ./setup.py nosetests) | \
+	$(PYTHON) ./make-check-filter.py
 
 #: Run integration (black-box) tests
 test-integration: 
