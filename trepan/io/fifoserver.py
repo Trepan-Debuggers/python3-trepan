@@ -20,7 +20,7 @@ import os
 if hasattr(os, 'mkfifo'):
     import atexit, tempfile
 
-    from import_relative import *
+    from import_relative import import_relative
     Mbase    = import_relative('base', top_name='trepan')
     Mdefault = import_relative('default', '..lib', top_name='trepan')
     Mmisc    = import_relative('misc', '..', 'trepan')
@@ -68,9 +68,6 @@ if hasattr(os, 'mkfifo'):
             return self.output.flush()
 
         def open(self, opts=None):
-            get_option = lambda key: Mmisc.option_set(opts, key, 
-                                                      Mdefault.SERVER_SOCKET_OPTS)
-
             d              = tempfile.gettempdir()
             pid            = os.getpid()
             self.out_name  = os.path.join(d, ('trepan-%s.out' % pid))

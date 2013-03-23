@@ -15,9 +15,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger input possibly attached to a user or interactive. """
 
-import operator, os, sys, types, io
+import io, sys, types
 
-from import_relative import *
+from import_relative import import_relative
 Mbase  = import_relative('base', top_name='trepan')
 Mmisc  = import_relative('misc', '..', 'trepan')
 

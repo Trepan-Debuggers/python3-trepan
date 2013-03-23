@@ -21,10 +21,10 @@ import re
 def extract_expression(text):
     if re.search('^\s*(?:if|elif)\s+', text):
         text = re.sub('^\s*(?:if|elsif)\s+','', text)
-        text = re.sub(':(?:\s+$|$)', '', text)
+        text = re.sub(':(?:\s+.*$|$)', '', text)
     elif re.search('^\s*(?:while)\s+', text):
         text = re.sub('^\s*(?:while)\s+','', text) 
-        text = re.sub(':(?:\s+$|$)', '', text)
+        text = re.sub(':(?:\s+.*$|$)', '', text)
     elif re.search('^\s*return\s+', text):
         # EXPRESION in: return EXPRESSION
         text = re.sub('^\s*return\s+','', text)

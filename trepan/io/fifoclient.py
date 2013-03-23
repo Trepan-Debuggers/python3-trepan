@@ -17,7 +17,7 @@
 
 import tempfile, os
 
-from import_relative import *
+from import_relative import import_relative
 Mbase    = import_relative('base', top_name='trepan')
 Mdefault = import_relative('default', '..lib', 'trepan')
 Mfile    = import_relative('file', '..lib', 'trepan')
@@ -58,9 +58,6 @@ class FIFOClient(Mbase.TrepanInOutBase):
         return self.output.flush()
     
     def open(self, pid, opts=None):
-
-       get_option = lambda key: Mmisc.option_set(opts, key, 
-                                                 Mdefault.CLIENT_SOCKET_OPTS)
 
        # Not in/out are reversed from server side
        d              = tempfile.gettempdir()

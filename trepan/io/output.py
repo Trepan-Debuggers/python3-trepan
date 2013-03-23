@@ -15,9 +15,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger output. """
 
-import types, io
+import io, sys, types
 
-from import_relative import *
+from import_relative import import_relative
 Mbase  = import_relative('base', top_name='trepan')
 
 class TrepanUserOutput(Mbase.TrepanOutputBase):
