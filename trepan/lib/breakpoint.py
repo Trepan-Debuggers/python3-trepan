@@ -4,7 +4,7 @@
 This code is a rewrite of the stock python bdb.Breakpoint"""
 
 __all__ = ["BreakpointManager", "Breakpoint"]
-import types, os.path
+import os.path
 
 class BreakpointManager:
     """Manages the list of Breakpoints.

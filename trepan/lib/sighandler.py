@@ -20,7 +20,7 @@
 #         ignore=True, print=False, pass=True
 #
 #
-import signal, types
+import signal
 
 def YN(b):
     """Return 'Yes' for True and 'No' for False, and ?? for anything

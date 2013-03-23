@@ -2,7 +2,7 @@
 #   Modification of Python's Lib/dis.py
 '''Disassembly Routines'''
 
-import inspect, pygments, sys, types
+import inspect, sys, types
 from dis import distb, findlabels, findlinestarts
 from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, hasjrel, \
     haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
@@ -96,7 +96,7 @@ def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1, end_line=No
                       dict(findlinestarts(co)), color)
     return
 
-def _disassemble_str(source):
+def disassemble_string(source):
     """Compile the source string, then disassemble the code object."""
     disassemble(_try_compile(source, '<dis>'))
     return
@@ -203,7 +203,6 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
         msg("")
     return
 
-import marshal, struct, time
 # Inspired by show_file from:
 # http://nedbatchelder.com/blog/200804/the_structure_of_pyc_files.html
 # def pyc2code(fname):

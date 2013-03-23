@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''Things related to file/module status'''
-import os, stat, string, sys
+import os, stat, sys
 
 def file_pyc2py(filename):
     """Given a file name, if the suffix is pyo or pyc (an optimized bytecode

@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''Pygments-related terminal formatting'''
 
-import re, types
+import re
 from pygments                     import highlight, lex
 from pygments.console             import ansiformat
 from pygments.filter              import Filter
