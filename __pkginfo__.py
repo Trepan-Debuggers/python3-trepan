@@ -55,7 +55,7 @@ namespace_packages = [
     'trepan.processor.command',
 #    'trepan.processor.command.ipython_magic',
     'trepan.processor.command.info_subcmd',
-#    'trepan.processor.command.set_subcmd',
+    'trepan.processor.command.set_subcmd',
     'trepan.processor.command.show_subcmd'
 ]
 packages           = namespace_packages
