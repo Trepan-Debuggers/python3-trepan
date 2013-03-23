@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.cmdproc'
-import inspect, os, sys, unittest
+import os, unittest
 from import_relative import *
 
 Mcore = import_relative('lib.core', '...trepan')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.disassemble'
-import inspect, os, sys, unittest
+import inspect, unittest
 from import_relative import import_relative
 
 import_relative('trepan', '...', 'trepan')

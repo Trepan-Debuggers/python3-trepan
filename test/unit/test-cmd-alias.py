@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.alias and unalias'
-import inspect, os, sys, unittest
+import inspect, unittest
 
 from import_relative import *
 
 Malias    = import_relative('processor.command.alias', '...trepan')
-
-from cmdhelper import dbg_setup
 
 class TestAliasCommand(unittest.TestCase):
     '''Test 'alias' and 'unalias' commands'''
@@ -50,8 +48,6 @@ class TestAliasCommand(unittest.TestCase):
         else:
             shoulda = ['no ', '']
             pass
-        msgs    = self.cmdproc.msgs
-        errmsgs = self.cmdproc.errmsgs
         self.assertEqual(should_not_have, len(self.msgs) == 0,
                          "Expecting %s%s for %s.\n Got %s" %
                          (shoulda[0], cmd_name, arg_str, self.msgs))

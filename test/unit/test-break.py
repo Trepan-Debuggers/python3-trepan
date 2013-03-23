@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.break'
-import inspect, os, sys, unittest
+import os, unittest
 
 from import_relative import *
 
 Mcmdbreak = import_relative('processor.cmdbreak', '...trepan')
 Mbreak    = import_relative('processor.command.break', '...trepan')
-
-from cmdhelper import dbg_setup
-import signal
 
 class TestBreakCommand(unittest.TestCase):
 

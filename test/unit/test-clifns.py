@@ -26,7 +26,6 @@ class TestCLIFns(unittest.TestCase):
         # Note that this comment line relative to the line
         # we pick up is also used.
         frame = inspect.currentframe()
-        co = frame.f_code
         lineno = frame.f_lineno
         self.assertTrue(Mclifns.is_ok_line_for_breakpoint(filename,
                                                           lineno, sys.stdout.write))
