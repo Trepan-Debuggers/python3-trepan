@@ -12,7 +12,7 @@ def strarray_setup(debugger_cmds):
     stringout               = Mstringarray.StringArrayOutput()
     d_opts                  = {'input' : stringin, 
                                'output': stringout}
-    d                       = Mdebugger.Debugger(d_opts)
+    d                       = Mdebugger.Trepan(d_opts)
     d.settings['basename']  = True
     d.settings['different'] = False
     d.settings['autoeval']  = False
