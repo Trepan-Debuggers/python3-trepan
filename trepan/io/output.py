@@ -34,9 +34,9 @@ class TrepanUserOutput(Mbase.TrepanOutputBase):
 
     def flush(self):
         return self.output.flush()
-    
+
     def open(self, output, opts=None):
-        """Use this to set where to write to. output can be a 
+        """Use this to set where to write to. output can be a
         file object or a string. This code raises IOError on error."""
         if isinstance(output, io.TextIOWrapper) or \
            isinstance(output, io.StringIO) or \
@@ -47,7 +47,7 @@ class TrepanUserOutput(Mbase.TrepanOutputBase):
         else:
             raise IOError("Invalid output type (%s) for %s" %
                           (inp.__class__.__name__, output))
-            #raise IOError("Invalid output type (%s) for %s" % (type(output), 
+            #raise IOError("Invalid output type (%s) for %s" % (type(output),
             #                                                     output))
         self.output = output
         return
@@ -72,11 +72,10 @@ if __name__=='__main__':
     out.flush_after_write = True
     out.write("Last hello")
     out.close()
-    try: 
+    try:
         out.writeline("You won't see me")
     except ValueError:
         pass
     # Closing after already closed is okay.
     out.close()
     pass
-

@@ -57,4 +57,3 @@ if __name__ == '__main__':
     Mhelper = import_relative('__demo_helper__', '.', 'trepan')
     Mhelper.demo_run(SetAutoList)
     pass
-

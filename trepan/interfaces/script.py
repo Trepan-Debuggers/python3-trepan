@@ -18,11 +18,10 @@ import atexit
 
 # Our local modules
 from import_relative import *
-import_relative('interfaces', '..')
-Minterface = import_relative('interface', '..')
-Mscriptin  = import_relative('scriptin',  '..io')
-Moutput    = import_relative('output',    '..io')
-Mmisc      = import_relative('misc',      '..')
+Minterface = import_relative('interface', '..',   'trepan')
+Mscriptin  = import_relative('scriptin',  '..io', 'trepan')
+Moutput    = import_relative('output',    '..io', 'trepan')
+Mmisc      = import_relative('misc',      '..',   'trepan')
 
 class ScriptInterface(Minterface.TrepanInterface):
     """Interface when reading debugger scripts"""

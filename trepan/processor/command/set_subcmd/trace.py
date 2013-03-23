@@ -14,10 +14,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import tracer
-from import_relative import *
+from import_relative import import_relative
 Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-
 
 class SetTrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
 

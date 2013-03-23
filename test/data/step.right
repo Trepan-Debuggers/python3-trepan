@@ -1,0 +1,22 @@
+(gcd.py:10): <module>
+-> 10 """
+Set basename (short filenames) in debugger output is on.
+Set event tracing is on.
+Set stopping before def or class' (function or class) statements is off.
+line - gcd.py:10
+line - gcd.py:11
+(gcd.py:11): <module>
+-- 11 import sys
+ 11  ->	import sys
+Set stopping before def or class' (function or class) statements is on.
+line - gcd.py:13
+line - gcd.py:26
+line - gcd.py:40
+(gcd.py:40): <module>
+-- 40 if __name__=='__main__':
+ 40  ->	if __name__=='__main__':
+Set stopping before def or class' (function or class) statements is off.
+line - gcd.py:41
+(gcd.py:41): <module>
+-- 41     check_args()
+ 41  ->	    check_args()

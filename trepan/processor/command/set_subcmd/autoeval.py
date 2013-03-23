@@ -60,4 +60,7 @@ or `ipython` commands.
     min_abbrev = len('autoe')
     pass
 
-
+if __name__ == '__main__':
+    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    Mhelper.demo_run(SetAutoEval)
+    pass

@@ -1,0 +1,36 @@
+(gcd.py:10): <module>
+-> 10 """
+Set basename (short filenames) in debugger output is on.
+Set event tracing is on.
+Set stopping before def or class' (function or class) statements is off.
+No macros defined.
+Macro "foo" defined.
+  5    	not have a 'return' statement.
+  6    	
+  7    	check_args() raises an uncaught exception when given the wrong number
+  8    	of parameters.
+  9    	
+ 10  ->	"""
+ 11    	import sys
+ 12    	
+ 13    	def check_args():
+ 14    	    if len(sys.argv) != 3:
+foo
+
+Macro "bar" defined.
+  1    	#!/usr/bin/python
+  2    	"""Greatest Common Divisor
+  3    	
+  4    	Some characterstics of this program used for testing check_args() does
+  5    	not have a 'return' statement.
+  6    	
+  7    	check_args() raises an uncaught exception when given the wrong number
+  8    	of parameters.
+  9    	
+ 10  ->	"""
+    bar  foo
+
+foo:
+  lambda: 'list'
+bar:
+  lambda count: 'list %s' % count

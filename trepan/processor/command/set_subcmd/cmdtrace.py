@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,24 +14,25 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import *
+from import_relative import import_relative
 # Our local modules
 
 Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
 Mcmdfns      = import_relative('cmdfns', '...', 'trepan')
 
-class SetMaxString(Mbase_subcmd.DebuggerSubcommand):
-    "Set maximum length to show string output"
-    
+class SetCmdtrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
+    """Set echoing lines read from debugger command files"""
     in_list    = True
-    min_abbrev = len('str') # Need at least "set max str"
+    min_abbrev = len('cmdt')    # Need at least "set cmdt"
+    pass
 
     def run(self, args):
-        Mcmdfns.run_set_int(self, ' '.join(args),
-                            "The '%s' command requires a character count" % self.name,
-                            0, None)
-        self.proc._repr.maxstring =  self.settings[self.name]
-        return None
+        Mcmdfns.run_set_bool(self, args)
+        dbg = self.debugger
+        if hasattr(dbg.intf[-1], 'verbose'):
+            dbg.intf[-1].verbose = dbg.settings[self.name]
+            pass
+        return
     pass
 
 
