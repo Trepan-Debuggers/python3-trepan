@@ -252,6 +252,9 @@ class SignalManager:
             except ValueError:
                 # Probably not in main thread
                 return False
+            except KeyError:
+                # May be weird keys from 3.3
+                return False
             pass
         return True
 
