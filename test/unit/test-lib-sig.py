@@ -3,7 +3,7 @@
 import signal, unittest
 
 from import_relative import import_relative
-Msig = import_relative('lib.sighandler', '...trepan')
+Msig = import_relative('lib.sighandler', '...trepan', 'trepan')
 
 class TestLibSigHandle(unittest.TestCase):
 
@@ -29,14 +29,14 @@ class TestLibSigHandle(unittest.TestCase):
     def test_lookup_signame(self):
         for expect, num in (('SIGTERM', 15), ('SIGTERM', -15), 
                           (None, 300)):
-            self.assertEqual(expect, Msig.lookup_signame(num))
+            self.assertEqual(expect, Msig.lookup_signame(num), "looking up %d" % num)
             pass
         return
     
     def test_lookup_signum(self):
         for expect, name in ((15, 'SIGTERM'), (15, 'TERM'), 
                              (15, 'term'), (None, 'nothere')):
-            self.assertEqual(expect, Msig.lookup_signum(name))
+            self.assertEqual(expect, Msig.lookup_signum(name), "looking up %s" % name)
             pass
         return
 

@@ -30,7 +30,7 @@ Macro "bar" defined.
  10  ->	"""
     bar  foo
 
-foo:
-  lambda: 'list'
 bar:
   lambda count: 'list %s' % count
+foo:
+  lambda: 'list'

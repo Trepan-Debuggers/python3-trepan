@@ -18,7 +18,6 @@ import os, sys
 # Our local modules
 from import_relative import import_relative
 
-import_relative('lib', '...', 'trepan')
 Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
 Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
 Mfile      = import_relative('file', '...lib', 'trepan')

@@ -849,6 +849,8 @@ class CommandProcessor(Mprocessor.Processor):
                 command_mod = getattr(__import__(import_name), mod_name)
             else:
                 # FIXME give more info like the above when desired
+                # For debugging:
+                # command_mod = getattr(__import__(import_name), mod_name)
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
                 except:

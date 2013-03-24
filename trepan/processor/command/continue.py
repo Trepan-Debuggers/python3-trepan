@@ -16,7 +16,6 @@
 import os
 from import_relative import import_relative
 
-import_relative('lib', '...', 'trepan')
 Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
 Mfile      = import_relative('file', '...lib', 'trepan')
 Mcmdbreak  = import_relative('cmdbreak', '..', 'trepan')

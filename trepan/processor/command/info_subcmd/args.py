@@ -19,8 +19,6 @@ import inspect
 from import_relative import *
 # Our local modules
 
-# FIXME: Until import_relative is fixed up...
-import_relative('processor', '....', 'trepan')
 Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
 
 class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
