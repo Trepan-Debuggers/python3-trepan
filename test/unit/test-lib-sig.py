@@ -36,15 +36,18 @@ class TestLibSigHandle(unittest.TestCase):
     def test_lookup_signum(self):
         for expect, name in ((15, 'SIGTERM'), (15, 'TERM'), 
                              (15, 'term'), (None, 'nothere')):
-            self.assertEqual(expect, Msig.lookup_signum(name), "looking up %s" % name)
+            self.assertEqual(expect, Msig.lookup_signum(name),
+                             "looking up name %s" % name)
             pass
         return
 
     def test_lookup_signame_signum(self):
+        ignore = ['ITIMER_VIRTUAL', 'ITIMER_REAL']
         for signum in range(signal.NSIG):
             signame = Msig.lookup_signame(signum)
-            if signame is not None:
-                self.assertEqual(signum, Msig.lookup_signum(signame))
+            if signame is not None and signame not in ignore:
+                self.assertEqual(signum, Msig.lookup_signum(signame),
+                                 "looking up name %s" % signame)
                 # Try without the SIG prefix
                 self.assertEqual(signum, Msig.lookup_signum(signame[3:]))
                 pass

@@ -156,7 +156,8 @@ class SignalManager:
                            'SIGWAITING', 'SIGLWP',   'SIGCANCEL', 'SIGTRAP',
                            'SIGTERM',    'SIGQUIT',  'SIGILL', 
 			   # Wierd stuff from 3.3
-			   'SIG_SETMASK', 'ITIMER_PROF'
+			   'SIG_SETMASK', 'ITIMER_PROF', 'ITIMER_VIRTUAL',
+                           'ITMIMER_PROF', 'SIG_BLOCK', 'SIG_UNBLOCK'
 			   ]
         self.ignore_list = ignore_list
         self._orig_set_signal  = signal.signal
