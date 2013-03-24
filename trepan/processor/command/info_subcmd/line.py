@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008, 2009 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,13 +13,35 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, os
+import inspect, os, re
 
-from import_relative import *
+from import_relative import import_relative
 # Our local modules
 base_subcmd  = import_relative('base_subcmd', '..', 'trepan')
 Mclifns      = import_relative('clifns', '....', 'trepan')
 Mmisc        = import_relative('misc', '....', 'trepan')
+Mfile        = import_relative('lib.file', '....', 'trepan')
+
+def find_function(funcname, filename):
+    cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
+    try:
+        fp = open(filename)
+    except IOError:
+        return None
+    # consumer of this info expects the first line to be 1
+    lineno = 1
+    answer = None
+    while True:
+        line = fp.readline()
+        if line == '':
+            break
+        if cre.match(line):
+            answer = funcname, filename, lineno
+            break
+        lineno = lineno + 1
+        pass
+    fp.close()
+    return answer
 
 class InfoLine(base_subcmd.DebuggerSubcommand):
     '''Show information about the current line'''
@@ -53,8 +75,9 @@ class InfoLine(base_subcmd.DebuggerSubcommand):
         else:
             # More than one part.
             # First is module, second is method/class
-            m, f = lookupmodule('.'.join(parts[1:]), self.debugger.mainpyfile,
-                                self.core.canonic)
+            m, f = file.lookupmodule('.'.join(parts[1:]),
+                                     self.debugger.mainpyfile,
+                                     self.core.canonic)
             if f:
                 fname = f
             item = parts[-1]
@@ -87,7 +110,7 @@ class InfoLine(base_subcmd.DebuggerSubcommand):
 
         filename = self.core.canonic_filename(self.proc.curframe)
         msg1 = 'Line %d of \"%s\"'  % (inspect.getlineno(self.proc.curframe),
-                                       self.core.filename(filename))      
+                                       self.core.filename(filename))
         msg2 = ('at instruction %d' % self.proc.curframe.f_lasti)
         if self.proc.event:
             msg2 += ', %s event' % self.proc.event

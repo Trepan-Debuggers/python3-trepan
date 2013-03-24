@@ -3,8 +3,8 @@ from import_relative import import_relative
 
 # from trepan.api import debug
 # debug()
-Mstringarray = import_relative('trepan.io.stringarray', '...')
 Mdebugger    = import_relative('debugger', '...trepan')
+Mstringarray = import_relative('trepan.io.stringarray', '...')
 
 def strarray_setup(debugger_cmds):
     ''' Common setup to create a debugger with stringio attached '''

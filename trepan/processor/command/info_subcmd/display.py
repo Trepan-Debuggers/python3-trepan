@@ -40,7 +40,7 @@ if __name__ == '__main__':
     mock = import_relative('mock', '..')
     Minfo = import_relative('info', '..')
     Mdebugger = import_relative('debugger', '....')
-    d, cp = mock.dbg_setup(d)
+    d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoDisplay(i)
     import inspect

@@ -16,7 +16,7 @@
 
 import inspect
 
-from import_relative import *
+from import_relative import import_relative
 # Our local modules
 
 Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
