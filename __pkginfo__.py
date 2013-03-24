@@ -39,9 +39,9 @@ author_email       = "rocky@gnu.org"
 ftp_url            = None
 install_requires   = ['columnize >= 0.3.4', 
                       'import_relative >= 0.2.1',
-                      'pyficache >= 0.2.01',
+                      'pyficache >= 0.2.2',
                       'pygments',
-                      'tracer >= 0.2.2']
+                      'tracer >= 0.3.1']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
@@ -60,7 +60,7 @@ namespace_packages = [
 ]
 packages           = namespace_packages
 py_modules         = None
-short_desc         = 'GDB-like Python Debugger in the Trepan family'
+short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
 import os
 import os.path, sys
