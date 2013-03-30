@@ -17,7 +17,7 @@
 from pyficache import highlight_string
 from import_relative import import_relative
 # Our local modules
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+Mbase_subcmd  = import_relative('base_subcmd', '...command')
 
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
   """**macro**
@@ -32,20 +32,20 @@ in column format.
 In the second form, all macro names and their definitions are shown.
 
 In the last form the only definitions of the given macro names is shown."""
-  
+
   min_abbrev = 1
   need_stack = True
   short_help = "List of defined macros"
-  
+
   def run(self, args):
-    if len(args) > 0: 
+    if len(args) > 0:
       if len(args) == 1 and '*' == args[0]:
         macro_names = list(self.proc.macros.keys())
       else:
         macro_names = args
         pass
       pass
-      
+
       for macro_name in sorted(macro_names):
         if macro_name in self.proc.macros:
           self.section("%s:" % macro_name)
@@ -66,7 +66,7 @@ In the last form the only definitions of the given macro names is shown."""
       pass
     return
   pass
-        
+
 if __name__ == '__main__':
     # Demo it.
     mock = import_relative('mock', '..')

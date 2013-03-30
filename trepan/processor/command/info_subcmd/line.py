@@ -17,10 +17,10 @@ import inspect, os, re
 
 from import_relative import import_relative
 # Our local modules
-base_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-Mclifns      = import_relative('clifns', '....', 'trepan')
-Mmisc        = import_relative('misc', '....', 'trepan')
-Mfile        = import_relative('lib.file', '....', 'trepan')
+base_subcmd  = import_relative('base_subcmd', '...command')
+Mclifns      = import_relative('clifns', '....')
+Mmisc        = import_relative('misc', '....')
+Mfile        = import_relative('lib.file', '....')
 
 def find_function(funcname, filename):
     cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
