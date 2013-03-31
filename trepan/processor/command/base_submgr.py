@@ -17,6 +17,7 @@ import inspect, os, re, string, sys
 from import_relative import get_srcdir, import_relative
 Mbase_cmd  = import_relative('base_cmd')
 Msubcmd    = import_relative('subcmd', os.path.pardir)
+Mcomplete  = import_relative('complete', '...lib', 'trepan')
 
 def capitalize(s):
     # "abcd" -> "Abcd"
@@ -164,6 +165,16 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
                 pass
             pass
         return
+
+    # Return an Array of subcommands that can start with +arg+. If none
+    # found we just return +arg+.
+    # FIXME: Not used any more?
+    def complete(self, prefix):
+        return Mcomplete.complete_token(self.subcmds.subcmds.keys(), prefix)
+
+    def complete_token_with_next(self, prefix):
+        result = Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
+        return Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
 
     def run(self, args):
         """Ooops -- the debugger author didn't redefine this run docstring."""
