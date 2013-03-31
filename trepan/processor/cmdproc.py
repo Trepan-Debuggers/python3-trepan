@@ -28,6 +28,7 @@ Mmisc      = import_relative('misc', '..', 'trepan')
 Mfile      = import_relative('file', '..lib', 'trepan')
 Mstack     = import_relative('stack', '..lib', 'trepan')
 Mthread    = import_relative('thread', '..lib', 'trepan')
+Mcomplete  = import_relative('processor.complete', '...trepan')
 
 # arg_split culled from ipython's routine
 def arg_split(s,posix=False):
@@ -246,6 +247,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.cmd_name         = ''     # command name before alias or
                                        # macro resolution
         self.cmd_queue        = []     # Queued debugger commands
+        self.completer        = lambda text, state: Mcomplete.completer(self, text, state)
         self.current_command  = ''     # Current command getting run
         self.debug_nest       = 1
         self.display_mgr      = Mdisplay.DisplayMgr()
@@ -814,11 +816,12 @@ class CommandProcessor(Mprocessor.Processor):
     def write_history_file(self):
         """Write the command history file -- possibly."""
         settings = self.debugger.settings
+        histfile = self.debugger.intf[-1].histfile
         if settings['hist_save']:
             try:
                 import readline
                 try:
-                    readline.write_history_file(settings['histfile'])
+                    readline.write_history_file(histfile)
                 except IOError:
                     pass
             except ImportError:

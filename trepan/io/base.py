@@ -41,12 +41,15 @@ class TrepanInputBase(metaclass=ABCMeta):
             pass
         return
 
+    def use_history(self):
+        return False
+
     def open(self, inp, opts=None):
         """Use this to set where to read from. """
         raise NotImplementedError(NotImplementedMessage)
 
     def readline(self, use_raw=None):
-        """Read a line of input. EOFError will be raised on EOF.  
+        """Read a line of input. EOFError will be raised on EOF.
 
         Note that we don't support prompting first. Instead, arrange
         to call DebuggerOutput.write() first with the prompt. If
@@ -58,7 +61,7 @@ class TrepanInputBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     pass
-    
+
 class TrepanOutputBase(metaclass=ABCMeta):
     """ This is an abstract class that specifies debugger output. """
 
@@ -76,7 +79,7 @@ class TrepanOutputBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     def write(self, output):
-        """Use this to set where to write to. output can be a 
+        """Use this to set where to write to. output can be a
         file object or a string. This code raises IOError on error.
         """
         raise NotImplementedError(NotImplementedMessage)
@@ -113,7 +116,7 @@ class TrepanInOutBase(metaclass=ABCMeta):
 
 
     def readline(self, use_raw=None):
-        """Read a line of input. EOFError will be raised on EOF.  
+        """Read a line of input. EOFError will be raised on EOF.
 
         Note that we don't support prompting first. Instead, arrange
         to call DebuggerOutput.write() first with the prompt. If
@@ -125,7 +128,7 @@ class TrepanInOutBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     def write(self, output):
-        """Use this to set where to write to. output can be a 
+        """Use this to set where to write to. output can be a
         file object or a string. This code raises IOError on error.
         """
         raise NotImplementedError(NotImplementedMessage)
@@ -161,5 +164,3 @@ if __name__=='__main__':
     except NotImplementedError:
         print('Ooops. Forgot to implement write()')
         pass
-
-    

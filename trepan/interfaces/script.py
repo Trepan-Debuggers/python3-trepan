@@ -38,6 +38,7 @@ class ScriptInterface(Minterface.TrepanInterface):
 
         atexit.register(self.finalize)
         self.script_name     = script_name
+        self.histfile        = None
         self.input_lineno    = 0
         self.input           = Mscriptin.ScriptInput(script_name)
         self.interactive     = False

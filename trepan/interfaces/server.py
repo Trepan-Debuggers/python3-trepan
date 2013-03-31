@@ -32,12 +32,12 @@ class ServerInterface(Minterface.TrepanInterface):
     DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'TCP'}
     def __init__(self, inout=None, out=None, connection_opts=None):
         get_option = lambda key: \
-            Mmisc.option_set(connection_opts, key, 
+            Mmisc.option_set(connection_opts, key,
                              self.DEFAULT_INIT_CONNECTION_OPTS)
         atexit.register(self.finalize)
         self.inout = None # initialize in case assignment below fails
         if inout:
-            self.inout = inout 
+            self.inout = inout
         else:
             self.server_type = get_option('IO')
             if 'FIFO' == self.server_type:
@@ -46,18 +46,19 @@ class ServerInterface(Minterface.TrepanInterface):
                 self.inout = Mtcpserver.TCPServer()
                 pass
             pass
-        # For Compatability 
+        # For Compatability
         self.output = inout
         self.input  = inout
         self.interactive = True # Or at least so we think initially
+        self.histfile = None
         return
- 
+
     def close(self):
         """ Closes both input and output """
         if self.inout:
             self.inout.close()
         return
- 
+
     def confirm(self, prompt, default):
         """ Called when a dangerous action is about to be done to make sure
         it's okay. `prompt' is printed; user response is returned."""
@@ -138,7 +139,7 @@ class ServerInterface(Minterface.TrepanInterface):
         return self.inout.writeline(code + prompt)
 
     pass
-    
+
 # Demo
 if __name__=='__main__':
     intf = ServerInterface()

@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Interface when communicating with the user in the same process as
     the debugged program."""
-import atexit
+import atexit, os
 
 # Our local modules
 from import_relative import *
@@ -23,18 +23,47 @@ import_relative('interfaces',  '..')
 Minterface = import_relative('interface',  '..', 'trepan')
 Minput     = import_relative('input', '..io', 'trepan')
 Moutput    = import_relative('output', '..io', 'trepan')
+Mmisc      = import_relative('misc', '...trepan')
+
+histfile = os.path.expanduser('~/.trepan3k_hist')
+
+DEFAULT_USER_SETTINGS = {
+    'histfile'     : histfile, # Where do we save the history?
+}
+
+try:
+    from readline import read_history_file, set_completer, set_history_length
+    from readline import write_history_file, parse_and_bind
+except ImportError:
+    pass
 
 class UserInterface(Minterface.TrepanInterface):
     """Interface when communicating with the user in the same
     process as the debugged program."""
 
-    FILE_HISTORY='.trepan3_hist'
+    def __init__(self, inp=None, out=None, opts={}):
+        get_option = lambda key: Mmisc.option_set(opts, key,
+                                                  DEFAULT_USER_SETTINGS)
 
-    def __init__(self, inp=None, out=None, opts=None):
         atexit.register(self.finalize)
         self.interactive = True # Or at least so we think initially
         self.input       = inp or Minput.TrepanUserInput()
         self.output      = out or Moutput.TrepanUserOutput()
+        if self.input.use_history():
+            complete = get_option('complete')
+            if complete:
+                parse_and_bind("tab: complete")
+                set_completer(complete)
+                pass
+            self.histfile = get_option('histfile')
+            if self.histfile:
+                try:
+                    read_history_file(histfile)
+                except IOError:
+                    pass
+                set_history_length(50)
+                atexit.register(write_history_file, self.histfile)
+                pass
         return
 
     def close(self):
@@ -86,8 +115,8 @@ class UserInterface(Minterface.TrepanInterface):
         return line
 
     def readline(self, prompt=''):
-        if (hasattr(self.input, 'use_raw') 
-            and not self.input.use_raw 
+        if (hasattr(self.input, 'use_raw')
+            and not self.input.use_raw
             and prompt and len(prompt) > 0):
             self.output.write(prompt)
             self.output.flush()
@@ -100,7 +129,7 @@ if __name__=='__main__':
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
     import sys
-    if len(sys.argv) > 1: 
+    if len(sys.argv) > 1:
         try:
             line = intf.readline("Type something: ")
         except EOFError:

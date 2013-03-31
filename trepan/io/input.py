@@ -19,7 +19,7 @@ import io, sys, types
 
 from import_relative import import_relative
 Mbase  = import_relative('base', top_name='trepan')
-Mmisc  = import_relative('misc', '..', 'trepan')
+Mmisc  = import_relative('misc', '...trepan')
 
 def readline_importable():
     try:
@@ -28,7 +28,7 @@ def readline_importable():
     except ImportError:
         return False
     return # Not reached
-    
+
 class TrepanUserInput(Mbase.TrepanInputBase):
     """Trepan input connected to what we think of as a end-user input
     as opposed to a relay mechanism to another process. Input could be
@@ -49,8 +49,11 @@ class TrepanUserInput(Mbase.TrepanInputBase):
         'try_readline' : True,
         }
 
+    def use_history(self):
+        return self.use_raw and readline_importable()
+
     def open(self, inp, opts=None):
-        """Use this to set where to read from. 
+        """Use this to set where to read from.
 
         Set opts['try_lineedit'] if you want this input to interact
         with GNU-like readline library. By default, we will assume to
@@ -63,7 +66,7 @@ class TrepanUserInput(Mbase.TrepanInputBase):
         will assume no raw output. Note that an individual readline
         may override the setting.
         """
-        get_option = lambda key: Mmisc.option_set(opts, key, 
+        get_option = lambda key: Mmisc.option_set(opts, key,
                                                   self.DEFAULT_OPEN_READ_OPTS)
         if isinstance(inp, io.TextIOWrapper) or \
            isinstance(inp, io.StringIO):
@@ -78,14 +81,14 @@ class TrepanUserInput(Mbase.TrepanInputBase):
         else:
             raise IOError("Invalid input type (%s) for %s" %
                           (inp.__class__.__name__, inp))
-            # raise IOError("Invalid input type (%s) for %s" % (type(inp), 
+            # raise IOError("Invalid input type (%s) for %s" % (type(inp),
             #                                                   inp))
         self.input     = inp
         self.line_edit = get_option('try_readline') and readline_importable()
         return
 
     def readline(self, use_raw=None, prompt=''):
-        """Read a line of input. EOFError will be raised on EOF.  
+        """Read a line of input. EOFError will be raised on EOF.
 
         Note: some user interfaces may decide to arrange to call
         TrepanOutput.write() first with the prompt rather than pass
@@ -104,7 +107,7 @@ class TrepanUserInput(Mbase.TrepanInputBase):
             except ValueError:
                 raise EOFError
             pass
-                
+
         else:
             line = self.input.readline()
             if not line: raise EOFError
@@ -147,4 +150,3 @@ if __name__=='__main__':
             print("Got EOF")
         pass
     pass
-
