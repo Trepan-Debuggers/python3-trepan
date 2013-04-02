@@ -38,7 +38,7 @@ author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
 install_requires   = ['columnize >= 0.3.4', 
-                      'import_relative >= 0.2.1',
+                      'import-relative >= 0.2.1',
                       'pyficache >= 0.2.2',
                       'pygments',
                       'tracer >= 0.3.1']

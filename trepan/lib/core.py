@@ -34,9 +34,7 @@ default    = import_relative('default')
 Mmisc      = import_relative('misc', '..', 'trepan')
 Mtrace     = import_relative('trace', '..processor', 'trepan')
 Mcmdproc   = import_relative('cmdproc', '..processor', 'trepan')
-## FIXME:
-## import_relative('bwprocessor', '..', 'trepan')
-## Mbwproc    = import_relative('main', '..bwprocessor', 'trepan')
+Mbwproc    = import_relative('main', '..bwprocessor', 'trepan')
 Mstack     = import_relative('stack')
 Mclifns    = import_relative('clifns', '..', 'trepan')
 
@@ -89,9 +87,9 @@ class TrepanCore:
         proc_opts      = get_option('proc_opts')
         if not self.processor:
             self.processor   = Mcmdproc.CommandProcessor(self, opts=proc_opts)
-        # elif self.processor == 'bullwinkle':
-        #     self.processor   = Mbwproc.BWProcessor(self, opts=proc_opts)
-        #     pass
+        elif self.processor == 'bullwinkle':
+            self.processor   = Mbwproc.BWProcessor(self, opts=proc_opts)
+            pass
         # What events are considered in stepping. Note: 'None' means *all*.
         self.step_events     = None
         # How many line events to skip before entering event processor?
