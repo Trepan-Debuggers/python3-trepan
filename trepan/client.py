@@ -49,6 +49,7 @@ def start_client(connection_opts):
                         msg='N'
                         pass
                   intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
+                  pass
             elif Mcomcodes.PROMPT == control:
                   msg = intf.read_command('(Trepan*) ').strip()
                   intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
