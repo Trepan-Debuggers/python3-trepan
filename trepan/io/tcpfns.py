@@ -19,7 +19,7 @@ TCP_MAX_PACKET = 8192 # Largest size for a recv
 LOG_MAX_MSG    = 4    # int(log(TCP_MAX_PACKET)
 def pack_msg(msg):
     fmt = '%%0%dd' % LOG_MAX_MSG # A funny way of writing: '%04d'
-    return ( fmt % len(msg)) + msg
+    return bytes(( fmt % len(msg)) + msg, 'UTF-8')
 
 def unpack_msg(buf):
     length  = int(buf[0:LOG_MAX_MSG])
@@ -32,4 +32,3 @@ if __name__=='__main__':
     msg = "Hi there!"
     assert unpack_msg(pack_msg(msg))[1] == msg
     pass
-

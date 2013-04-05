@@ -20,7 +20,6 @@
 import sys, time
 # Our local modules
 from import_relative import import_relative
-import trepan.interface
 Mmisc = import_relative('misc', '.', 'trepan')
 Mclient   = import_relative('client', '.interfaces', 'trepan')
 Mcomcodes = import_relative('comcodes', '.interfaces', 'trepan')

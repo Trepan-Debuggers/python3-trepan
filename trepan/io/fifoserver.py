@@ -21,9 +21,9 @@ if hasattr(os, 'mkfifo'):
     import atexit, tempfile
 
     from import_relative import import_relative
-    Mbase    = import_relative('base', '..io', top_name='trepan')
-    Mdefault = import_relative('lib.default', '..', top_name='trepan')
-    Mmisc    = import_relative('misc', '..', 'trepan')
+    Mbase    = import_relative('base', '..io')
+    Mdefault = import_relative('lib.default', '...trepan')
+    Mmisc    = import_relative('misc', '...trepan')
 
     ## FIXME: Consider using Python's socketserver/SocketServer?
     class FIFOServer(Mbase.TrepanInOutBase):

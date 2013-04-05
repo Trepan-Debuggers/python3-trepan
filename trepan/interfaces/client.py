@@ -32,16 +32,16 @@ class ClientInterface(Muser.UserInterface):
     a remote computer."""
 
     DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'FIFO'}
-    def __init__(self, inp=None, out=None, inout=None, user_opts=None, 
+    def __init__(self, inp=None, out=None, inout=None, user_opts=None,
                  connection_opts=None):
         get_connection_option = lambda key: \
-            Mmisc.option_set(connection_opts, key, 
+            Mmisc.option_set(connection_opts, key,
                              self.DEFAULT_INIT_CONNECTION_OPTS)
         Muser.UserInterface.__init__(self, inp, out, user_opts)
-        
+
         self.inout = None # initialize in case assignment below fails
         if inout:
-            self.inout = inout 
+            self.inout = inout
         else:
             self.server_type = get_connection_option('IO')
             if 'FIFO' == self.server_type:
@@ -58,7 +58,7 @@ class ClientInterface(Muser.UserInterface):
     def read_remote(self):
         '''Send a message back to the server (in contrast to
         the local user output channel).'''
-        coded_line = self.inout.read_msg()
+        coded_line = self.inout.read_msg().decode("utf-8")
         control = coded_line[0]
         remote_line = coded_line[1:]
         return (control, remote_line)
@@ -69,7 +69,7 @@ class ClientInterface(Muser.UserInterface):
         # FIXME change into write_xxx
         return self.inout.writeline(code + msg)
     pass
-    
+
 # Demo
 if __name__=='__main__':
     intf = ClientInterface()
