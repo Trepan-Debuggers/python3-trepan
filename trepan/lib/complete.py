@@ -15,6 +15,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Command completion routines."""
 
+import re
+
 def complete_token(complete_ary, prefix):
     return sorted([cmd for cmd in
                    complete_ary if cmd.startswith(prefix)])
@@ -51,3 +53,37 @@ def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
     #         pass
     #     pass
     return sorted(results)
+
+def next_token(str, start_pos):
+    """Find the next token in str string from start_pos, we return
+    the token and the next blank position after the token or
+    str.size if this is the last token. Tokens are delimited by
+    white space."""
+    look_at = str[start_pos:]
+    match = re.search('\S', look_at)
+    if match:
+        pos = match.start()
+    else:
+        pos = 0
+        pass
+    next_nonblank_pos = start_pos + pos
+    next_match = re.search('\s', str[next_nonblank_pos:])
+    if next_match:
+        next_blank_pos = next_nonblank_pos + next_match.start()
+    else:
+        next_blank_pos = len(str)
+        pass
+    return [next_blank_pos, str[next_nonblank_pos:next_blank_pos+1].rstrip()]
+
+if __name__=='__main__':
+    print(next_token('ab cd ef', 0))
+    print(next_token('ab cd ef', 2))
+
+    ##   0         1
+    ##   0123456789012345678
+    x = '  now is  the  time'
+    for pos in [0, 2, 5, 8, 9, 13, 19]:
+        print(next_token(x, pos))
+        pass
+    pass
+

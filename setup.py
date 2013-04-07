@@ -5,7 +5,7 @@ distutils setup (setup.py).
 
 This is just boilerplate code, since we do like to try to keep data separate
 from code as much as possible. The customizable information really comes
-from file __pkginfo__.py. 
+from file __pkginfo__.py.
 """
 
 # Get the package information used in setup().
@@ -26,7 +26,7 @@ setup(
       entry_points = {
        'console_scripts': [
            'trepan3k  = trepan.cli:main',
-#          'trepan-client = trepan.client:main',
+           'trepan3k-client = trepan.client:main',
        ]},
        install_requires   = install_requires,
        license            = license,

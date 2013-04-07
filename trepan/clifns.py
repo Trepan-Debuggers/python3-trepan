@@ -19,7 +19,7 @@ import os, linecache
 from import_relative import import_relative
 Mfile     = import_relative('file', '.lib')
 
-# FIXME: do a better job of this. Live parsing? 
+# FIXME: do a better job of this. Live parsing?
 def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
     """Check whether specified line seems to be executable.
 
@@ -63,7 +63,7 @@ def search_file(filename, directories, cdir):
         if os.path.isfile(tryfile):
             return tryfile
     return None
-    
+
 def whence_file(py_script):
     """Do a shell-like path lookup for py_script and return the results.
     If we can't find anything return py_script"""
@@ -90,4 +90,3 @@ if __name__=='__main__':
     print("\nCan stop at line 2? ", ok)
     print(path_expanduser_abs("./.trepan3krc"))
     print(path_expanduser_abs("~/.trepan3krc"))
-

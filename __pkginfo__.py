@@ -37,7 +37,7 @@ classifiers =  ['Development Status :: 4 - Beta',
 author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
-install_requires   = ['columnize >= 0.3.4', 
+install_requires   = ['columnize >= 0.3.4',
                       'import-relative >= 0.2.1',
                       'pyficache >= 0.2.2',
                       'pygments',
@@ -46,8 +46,8 @@ license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
 namespace_packages = [
-    'trepan', 
-#    'trepan.bwprocessor',
+    'trepan',
+    'trepan.bwprocessor',
     'trepan.interfaces',
     'trepan.io',
     'trepan.lib',
@@ -73,7 +73,7 @@ version            = VERSION
 web                = 'http://code.google.com/p/trepan/'
 
 # tracebacks in zip files are funky and not debuggable
-zip_safe = False 
+zip_safe = False
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
