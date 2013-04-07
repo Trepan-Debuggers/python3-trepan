@@ -38,7 +38,7 @@ Mfile      = import_relative('file',   '.lib', package)
 Mmisc      = import_relative('misc', '.', package)
 
 # The name of the debugger we are currently going by.
-__title__ = package + '2'
+__title__ = package
 
 # VERSION.py sets variable VERSION.
 VERSION='??'
