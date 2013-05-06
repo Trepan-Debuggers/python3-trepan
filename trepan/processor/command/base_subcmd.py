@@ -118,9 +118,15 @@ class DebuggerSubcommand:
     pass
 
 from import_relative import import_relative
-Mcmdfns = import_relative('cmdfns', '..', 'trepan')
+Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
+Mcomplete  = import_relative('complete', '...lib', 'trepan')
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
+
+    def complete(self, prefix):
+        result = Mcomplete.complete_token(('on', 'off'), prefix)
+        return result
+
     def run(self, args):
         # Strip off ReStructuredText tags
         doc = re.sub('[*]', '', self.__doc__).lstrip()

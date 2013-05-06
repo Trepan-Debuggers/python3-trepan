@@ -100,14 +100,7 @@ def next_complete(str, next_blank_pos, cmd, last_token):
         matches = cmd.complete(token)
         if 0 == len(matches):
             return [None]
-        if len(str.rstrip()) == 0 and (len(token) == 0 or token == last_token):
-            return matches
-        else:
-            # FIXME: figure out what to do here.
-            # Matched multiple items in the middle of the string
-            # We can't handle this so do nothing.
-            return [None]
-        pass
+        return matches
     return [None]
 
 if __name__=='__main__':

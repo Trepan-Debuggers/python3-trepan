@@ -37,22 +37,21 @@ def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
     with *prefix*, but filter out any matches already in
     *expanded*."""
 
-    return []
     complete_ary = list(aliases.keys())
     expanded_ary = list(expanded.keys())
-    results = [cmd for cmd in
-                complete_ary if cmd.startswith(prefix) and not (
-                    cmd in aliases and
-                    0 == len(set(expanded_ary) - set([aliases[cmd]])))]
-    # results = []
-    # for cmd in complete_ary:
-    #     if cmd.startswith(prefix):
-    #         if cmd in aliases and (
-    #                 0 == len(set(expanded_ary) - set([aliases[cmd]]))):
-    #             results.append(cmd)
-    #         pass
-    #     pass
-    return sorted(results)
+    # result = [cmd for cmd in
+    #             complete_ary if cmd.startswith(prefix) and not (
+    #                 cmd in aliases and
+    #                 0 == len(set(expanded_ary) - set([aliases[cmd]])))]
+    result = []
+    for cmd in complete_ary:
+        if cmd.startswith(prefix):
+            if cmd in aliases and (
+                    0 == len(set(expanded_ary) - set([aliases[cmd]]))):
+                result.append([cmd, aliases[cmd]])
+            pass
+        pass
+    return sorted(result, key=lambda pair: pair[0])
 
 def next_token(str, start_pos):
     """Find the next token in str string from start_pos, we return
@@ -86,4 +85,3 @@ if __name__=='__main__':
         print(next_token(x, pos))
         pass
     pass
-

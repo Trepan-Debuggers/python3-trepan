@@ -174,7 +174,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
 
     def complete_token_with_next(self, prefix):
         result = Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
-        return Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
+        return result
 
     def run(self, args):
         """Ooops -- the debugger author didn't redefine this run docstring."""
