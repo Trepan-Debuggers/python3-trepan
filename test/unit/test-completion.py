@@ -30,12 +30,10 @@ class TestCompletion(unittest.TestCase):
         self.dbgr = Mdebugger.Trepan()
 
         for line, expect_completion in [
-                # FIXME:
                 ['set basename ', ['off', 'on']],
-                ['where', ['where']],  # Single alias completion
+                ['where', ['where ']],  # Single alias completion
                 ['sho', ['show']],  # Simple single completion
                 ['un', ['unalias', 'undisplay']],  # Simple multiple completion
-                ['show', ['show']], # Completion when word is complete
                 ['python ', []],        # Don't add anything - no more
                 ['set basename o', ['off', 'on']],
                 ['set basename of', ['off']],
@@ -43,6 +41,14 @@ class TestCompletion(unittest.TestCase):
                 # Multiple completion on two words
                 ['set auto', ['autoeval', 'autolist', 'autopython']],
 
+                # Completion when word is complete, without space.
+                ['show', ['show ']],
+
+                # Completion when word is complete with space.
+                ['info ',
+                 ['args', 'break', 'display', 'file', 'globals', 'line',
+                  'macro', 'program', 'return', 'signals', 'source',
+                  'threads']],
                 # ['set auto eval ', '', ['off', 'on']], # Many 3-word completions
                 # ['set auto ', ['eval', 'irb', 'list']], # Many two-word completions
                 # ['set auto e', ['eval']],
