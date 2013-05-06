@@ -173,6 +173,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         return Mcomplete.complete_token(self.subcmds.subcmds.keys(), prefix)
 
     def complete_token_with_next(self, prefix):
+        # from trepan.api import debug; debug()
         result = Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
         return result
 

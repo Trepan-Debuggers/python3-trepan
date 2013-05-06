@@ -75,17 +75,16 @@ def completer(self, str, state, last_token=''):
 
 def next_complete(str, next_blank_pos, cmd, last_token):
     next_blank_pos, token = Mcomplete.next_token(str, next_blank_pos)
-    if len(token) == 0 and 0 != len(last_token):
-        return [None]
 
     if hasattr(cmd, 'complete_token_with_next'):
         match_pairs = cmd.complete_token_with_next(token)
         if len(match_pairs) == 0:
             return [None]
-        if next_blank_pos >= len(str.rstrip()):
+        if next_blank_pos >= len(str):
             return [pair[0] for pair in match_pairs]
         else:
             if len(match_pairs) == 1:
+                last_token = token
                 return next_complete(str, next_blank_pos,  match_pairs[0][1],
                                      last_token)
             else:

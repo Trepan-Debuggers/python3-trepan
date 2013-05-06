@@ -161,8 +161,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []
     if not opts.noexecute:
-        # Read debugger startup file(s), e.g. $HOME/.trepanrc and ./.trepanrc
-        startup_file = ".%src" % debugger_name
+        # Read debugger startup file(s), e.g. $HOME/.trepan3krc and ./.trepan3krc
+        startup_file = ".%s3krc" % debugger_name
         # expanded_startup_file = Mclifns.path_expanduser_abs(startup_file)
         if 'HOME' in os.environ:
             startup_home_file = os.path.join(os.environ['HOME'], startup_file)

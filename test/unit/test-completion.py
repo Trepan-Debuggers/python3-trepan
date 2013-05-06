@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 'Unit test for debugger command completion'
 
 import unittest
@@ -31,7 +31,7 @@ class TestCompletion(unittest.TestCase):
 
         for line, expect_completion in [
                 # FIXME:
-                # ['set basename ', 'set basename ', ['off', 'on']],
+                ['set basename ', ['off', 'on']],
                 ['where', ['where']],  # Single alias completion
                 ['sho', ['show']],  # Simple single completion
                 ['un', ['unalias', 'undisplay']],  # Simple multiple completion
