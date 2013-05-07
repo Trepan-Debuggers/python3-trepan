@@ -17,7 +17,8 @@
 import os
 from import_relative import import_relative
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
+Mbase_cmd = import_relative('base_cmd', top_name='trepan')
+Mcomplete = import_relative('complete', '...lib')
 
 class UndisplayCommand(Mbase_cmd.DebuggerCommand):
     """**undisplay** *display-number*...
@@ -30,7 +31,7 @@ the same as `delete display`.
 
 Use `info display` to see current list of code numbers.
 """
-    
+
     aliases       = ('und',)
     category      = 'data'
     min_args      = 1
@@ -38,6 +39,12 @@ Use `info display` to see current list of code numbers.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Cancel some expressions to be displayed when program stops'
+
+    def complete(self, prefix):
+        completions = [str(disp.number) for disp in
+                       self.proc.display_mgr.list]
+        return Mcomplete.complete_token(completions, prefix)
+
 
     def run(self, args):
 

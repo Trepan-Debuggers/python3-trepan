@@ -35,7 +35,7 @@ case or not.
 With no argument, evaluate and display all currently requested
 auto-display expressions.  Use `undisplay` to cancel display
 requests previously made."""
-    
+
     category      = 'data'
     min_args      = 0
     max_args      = None

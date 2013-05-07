@@ -67,14 +67,11 @@ Num Enb Expression""")
         return
 
     def delete_index(self, display_number):
-        """Delete display expression i"""
-        for i in range(len(self.list)):
-            display = self.list[i]
-            if display_number == display.number:
-                del display
-                return True
-            pass
-        return False
+        """Delete display expression *display_number*"""
+        old_size = len(self.list)
+        self.list = [disp for disp in self.list
+                     if display_number != disp.number]
+        return old_size != len(self.list)
 
     def display(self, frame):
         '''display any items that are active'''
@@ -115,7 +112,7 @@ class Display:
         except:
             return 'No symbol "' + self.arg + '" in current context.'
         s = "%3d: %s" % (self.number,
-                        Mstack.print_obj(self.arg, val, self.fmt, 
+                        Mstack.print_obj(self.arg, val, self.fmt,
                                          True))
         return s
 
@@ -142,7 +139,10 @@ if __name__=='__main__':
     x = 1
     frame = inspect.currentframe()
     mgr.add(frame, 'x > 1')
+    mgr.add(frame, 'x')
+    print("Deleted recent insert:", mgr.delete_index(2))
     for line in mgr.all(): print(line)
+    import sys
     mgr.enable_disable(1, False)
     for line in mgr.all(): print(line)
     print(mgr.display(frame))
