@@ -297,38 +297,6 @@ class CommandProcessor(Mprocessor.Processor):
         self.preloop_hooks.insert(position, hook)
         return True
 
-    def adjust_frame(self, pos, absolute_pos):
-        """Adjust stack frame by pos positions. If absolute_pos then
-        pos is an absolute number. Otherwise it is a relative number.
-
-        A negative number indexes from the other end."""
-        if not self.curframe:
-            self.errmsg("No stack.")
-            return
-
-        # Below we remove any negativity. At the end, pos will be
-        # the new value of self.curindex.
-        if absolute_pos:
-            if pos >= 0:
-                pos = len(self.stack)-pos-1
-            else:
-                pos = -pos-1
-        else:
-            pos += self.curindex
-
-        if pos < 0:
-            self.errmsg("Adjusting would put us beyond the oldest frame.")
-            return
-        elif pos >= len(self.stack):
-            self.errmsg("Adjusting would put us beyond the newest frame.")
-            return
-
-        self.curindex = pos
-        self.curframe = self.stack[self.curindex][0]
-        self.location()
-        self.list_lineno = None
-        return
-
     # To be overridden in derived debuggers
     def defaultFile(self):
         """Produce a reasonable default."""

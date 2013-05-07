@@ -17,16 +17,13 @@ import os
 from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd = import_relative('base_cmd', '.', 'trepan')
-Mcmdfns   = import_relative('cmdfns', '..', 'trepan')
+Mupcmd   = import_relative('up', '.', 'trepan')
+Mframe    = import_relative('frame',   '..', 'trepan')
 
-class DownCommand(Mbase_cmd.DebuggerCommand):
+class DownCommand(Mupcmd.UpCommand):
 
-    category      = 'stack'
-    min_args      = 0
-    max_args      = 1
+    signum        = -1
     name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
     short_help    = 'Move stack frame to a more recent selected frame'
 
     def run(self, args):
@@ -35,24 +32,9 @@ class DownCommand(Mbase_cmd.DebuggerCommand):
 Move the current frame down in the stack trace (to a newer frame). 0
 is the most recent frame. If no count is given, move down 1.
 
-See also 'up' and 'frame'."""
+See also `up` and `frame`."""
 
-        if not self.proc.stack:
-            self.errmsg("Program has no stack frame set.")
-            return False
-        if len(args) == 1:
-            count = 1
-        else:
-            i_stack = len(self.proc.stack)
-            count_str = args[1]
-            count = Mcmdfns.get_an_int( self.errmsg, count_str,
-                                        ("The 'down' command argument must eval to an" +
-                                         " integer. Got: %s") % count_str,
-                                        -i_stack, i_stack-1 )
-            if count is None: return
-            pass
-
-        self.proc.adjust_frame(pos=-count, absolute_pos=False)
+        Mframe.adjust_relative(self.proc, self.name, args, self.signum)
         return False
 
 if __name__ == '__main__':

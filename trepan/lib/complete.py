@@ -77,6 +77,7 @@ def next_token(str, start_pos):
 if __name__=='__main__':
     print(next_token('ab cd ef', 0))
     print(next_token('ab cd ef', 2))
+    print(complete_token(('-1', '0'), ''))
 
     ##   0         1
     ##   0123456789012345678

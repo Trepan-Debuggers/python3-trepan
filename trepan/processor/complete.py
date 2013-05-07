@@ -87,13 +87,17 @@ def next_complete(str, next_blank_pos, cmd, last_token):
         match_pairs = cmd.complete_token_with_next(token)
         if len(match_pairs) == 0:
             return [None]
+        if (next_blank_pos == len(str) and 1 == len(match_pairs) and
+            match_pairs[0][0] == token):
+            # Add space to advance completion on next tab-complete
+            match_pairs[0][0] += " "
+            pass
         if next_blank_pos >= len(str):
             return sorted([pair[0] for pair in match_pairs])
         else:
             if len(match_pairs) == 1:
-                last_token = token
                 return next_complete(str, next_blank_pos,  match_pairs[0][1],
-                                     last_token)
+                                     token)
             else:
                 return sorted([pair[0] for pair in match_pairs])
                 pass

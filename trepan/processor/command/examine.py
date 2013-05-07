@@ -32,7 +32,7 @@ blanks which would cause shlex to see them as different tokens.
     examine x+1   # ok
     examine x + 1 # not ok
 
-See also `print`, `pp`, and `whatis`.
+See also `pr`, `pp`, and `whatis`.
 """
         
     aliases       = ('x',)
