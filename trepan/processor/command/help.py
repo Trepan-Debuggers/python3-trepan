@@ -20,17 +20,18 @@ import os, re
 # Our local modules
 from import_relative import import_relative
 
-import_relative('processor', '...') 
+import_relative('processor', '...')
 
 Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
 Mcmdproc   = import_relative('cmdproc', '..', 'trepan')
+Mcomplete  = import_relative('complete', '...lib')
 Mmisc      = import_relative('misc',    '...', 'trepan')
 
 categories = {
     'breakpoints' : 'Making the program stop at certain points',
     'data'        : 'Examining data',
     'files'       : 'Specifying and examining files',
-    'running'     : 'Running the program', 
+    'running'     : 'Running the program',
     'status'      : 'Status inquiries',
     'support'     : 'Support facilities',
     'stack'       : 'Examining the call stack'
@@ -38,7 +39,7 @@ categories = {
 
 class HelpCommand(Mbase_cmd.DebuggerCommand):
     """**help** [*command* [*subcommand*]|*expression*]
-        
+
 Without argument, print the list of available debugger commands.
 
 When an argument is given, it is first checked to see if it is command
@@ -67,12 +68,23 @@ See also `examine` and `whatis`.
     need_stack    = False
     short_help    = 'Print commands or give help for command(s)'
 
+    def complete(self, prefix):
+        proc_obj = self.proc
+        matches = Mcomplete.complete_token(list(categories.keys())
+                                           + ['*', 'all'] +
+                                           list(proc_obj.commands.keys()),
+                                           prefix)
+        # aliases = Mcomplete.complete_token_filtered(proc_obj.aliases, prefix,
+        #                                            matches)
+        # return sorted(matches + aliases)
+        return sorted(matches)
+
     def run(self, args):
         # It does not make much sense to repeat the last help
         # command. Also, given that 'help' uses PAGER, the you may
         # enter an extra CR which would rerun the (long) help command.
-        self.proc.last_command='' 
-        
+        self.proc.last_command=''
+
         if len(args) > 1:
             cmd_name = args[1]
             if cmd_name == '*':
@@ -92,11 +104,11 @@ See also `examine` and `whatis`.
                     doc = instance.__doc__ or instance.run.__doc__
                     doc = doc.rstrip('\n')
                     self.rst_msg(doc.rstrip("\n"))
-                    aliases = [key for key in self.proc.aliases 
+                    aliases = [key for key in self.proc.aliases
                                if command_name == self.proc.aliases[key]]
                     if len(aliases) > 0:
                         self.msg('')
-                        msg = Mmisc.wrapped_lines('Aliases:', 
+                        msg = Mmisc.wrapped_lines('Aliases:',
                                                   ', '.join(aliases) + '.',
                                                   self.settings['width'])
                         self.msg(msg)
@@ -106,7 +118,7 @@ See also `examine` and `whatis`.
                 cmds = [cmd for cmd in list(self.proc.commands.keys())
                         if re.match('^' + cmd_name, cmd) ]
                 if cmds is None:
-                    self.errmsg("No commands found matching /^%s/. Try \"help\"." 
+                    self.errmsg("No commands found matching /^%s/. Try \"help\"."
                                 % cmd_name)
                 else:
                     self.section("Command names matching /^%s/:" % cmd_name)
@@ -149,7 +161,7 @@ Type `help` followed by command name for full documentation.
             cmds.sort()
             self.msg_nocr(self.columnize_commands(cmds))
             return
-        
+
         self.msg("%s.\n" % categories[category])
         self.section("List of commands:")
         names.sort()
@@ -158,7 +170,7 @@ Type `help` followed by command name for full documentation.
             self.msg("%-13s -- %s" % (name, n2cmd[name].short_help,))
             pass
         return
-        
+
     pass
 
 if __name__ == '__main__':

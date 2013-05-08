@@ -53,6 +53,14 @@ def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
         pass
     return sorted(result, key=lambda pair: pair[0])
 
+    # Find all starting matches in Hash +aliases+ that start with +prefix+,
+    # but filter out any matches already in +expanded+.
+    def complete_token_filtered(aliases, prefix, expanded):
+        complete_ary = aliases.keys()
+        return [cmd.anme for cmd in complete_ary
+                if cmd.name.startswith(prefix)]
+    end
+
 def next_token(str, start_pos):
     """Find the next token in str string from start_pos, we return
     the token and the next blank position after the token or
