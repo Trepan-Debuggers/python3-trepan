@@ -74,10 +74,9 @@ See also `examine` and `whatis`.
                                            + ['*', 'all'] +
                                            list(proc_obj.commands.keys()),
                                            prefix)
-        # aliases = Mcomplete.complete_token_filtered(proc_obj.aliases, prefix,
-        #                                            matches)
-        # return sorted(matches + aliases)
-        return sorted(matches)
+        aliases = Mcomplete.complete_token_filtered(proc_obj.aliases, prefix,
+                                                    matches)
+        return sorted(matches + aliases)
 
     def run(self, args):
         # It does not make much sense to repeat the last help

@@ -49,6 +49,9 @@ class TestCompletion(unittest.TestCase):
                  ['args', 'break', 'display', 'file', 'globals', 'line',
                   'locals', 'macro', 'program', 'return', 'signals', 'source',
                   'threads']],
+
+                ['help sta', ['stack', 'status']],
+
                 # ['set auto eval ', '', ['off', 'on']], # Many 3-word completions
                 # ['set auto ', ['eval', 'irb', 'list']], # Many two-word completions
                 # ['set auto e', ['eval']],
