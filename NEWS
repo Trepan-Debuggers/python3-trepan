@@ -1,5 +1,13 @@
+trepan 0.2.8 2013-05-12
+
+- Fill out command completion more
+- Fix bug in removing a display.
+- Command history reading and saving works.
+- Use .trepan3krc not trepan2rc
+- Remote execution works, --server and --client options too.
+- Start Bullwinkle processor
+- Works on Python 3.3
+
 0.2.5 2013-03-23
 
 Initial release. Roughly matches pydbgr version 0.2.5
-
-
