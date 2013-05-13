@@ -18,28 +18,37 @@ import columnize, inspect, pyficache, sys
 from import_relative import import_relative
 # Our local modules
 Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+Mcomplete     = import_relative('complete', '....lib', 'trepan')
 Mmisc         = import_relative('misc', '....', 'trepan')
 
-class InfoFile(Mbase_subcmd.DebuggerSubcommand):
+class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
     '''**info file** [*filename* [**all** | **lines** | **sha1** | **size**]]
 
 Show information about the current file. If no filename is given and
 the program is running then the current file associated with the
 current stack entry is used. Sub options which can be shown about a file are:
-  
+
  * **brkpts** Line numbers where there are statement boundaries. These
  lines can be used in breakpoint commands.
 
  * **sha1**	A SHA1 hash of the source text. This may be useful in comparing source code.
 
  * **size**	The number of lines in the file.
- 
+
  * **all** All of the above information.
  '''
 
     min_abbrev = 2
     need_stack = False
     short_help = 'Show information about an imported or loaded Python file'
+
+    def file_list(self):
+       return list(set(pyficache.cached_files() +
+                               list(pyficache.file2file_remap.keys())))
+
+    def complete(self, prefix):
+        completions = sorted(['.'] + self.file_list())
+        return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
         """Get file information"""
@@ -65,7 +74,18 @@ current stack entry is used. Sub options which can be shown about a file are:
                 pass
             self.msg(m)
         else:
-            self.msg(m + ' not cached in debugger.')
+            matches = [file for file in self.file_list() if file.endswith(filename)]
+            if (len(matches) > 1):
+                self.msg("Multiple files found ending filename string:")
+                for match_file in matches:
+                    self.msg("\t%s" % match_file)
+                    pass
+            elif len(matches) == 1:
+                canonic_name = pyficache.unmap_file(matches[0])
+                m += " matched debugger cache file:\n  "  + canonic_name
+                self.msg(m)
+            else:
+                self.msg(m + ' not cached in debugger.')
             pass
         canonic_name = self.core.canonic(filename)
         self.msg(Mmisc.wrapped_lines('Canonic name:', canonic_name,
@@ -93,11 +113,13 @@ current stack entry is used. Sub options which can be shown about a file are:
                 pass
             if arg in ['all', 'brkpts']:
                 lines = pyficache.trace_line_numbers(canonic_name)
-                self.section("Possible breakpoint line numbers:")
-                fmt_lines = columnize.columnize(lines, ljust = False,
-                                                arrange_vertical = False,
-                                                lineprefix='  ')
-                self.msg(fmt_lines)
+                if lines:
+                    self.section("Possible breakpoint line numbers:")
+                    fmt_lines = columnize.columnize(lines, ljust = False,
+                                                    arrange_vertical = False,
+                                                    lineprefix='  ')
+                    self.msg(fmt_lines)
+                    pass
                 processed_arg = True
                 pass
             if not processed_arg:
@@ -113,7 +135,7 @@ if __name__ == '__main__':
     Mdebugger = import_relative('debugger', '....')
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
-    sub = InfoFile(i)
+    sub = InfoFiles(i)
     sub.run([])
     cp.curframe = inspect.currentframe()
     sub.run(['file.py', 'foo'])
@@ -123,5 +145,6 @@ if __name__ == '__main__':
         print(sub.run([]))
         pass
     sub.run(['file.py', 'all'])
+    print(sub.complete(''))
     # sub.run(['file.py', 'lines', 'sha1'])
     pass

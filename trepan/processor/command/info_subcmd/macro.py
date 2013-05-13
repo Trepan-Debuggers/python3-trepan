@@ -18,6 +18,7 @@ from pyficache import highlight_string
 from import_relative import import_relative
 # Our local modules
 Mbase_subcmd  = import_relative('base_subcmd', '...command')
+Mcomplete     = import_relative('complete', '....lib', 'trepan')
 
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
   """**macro**
@@ -36,6 +37,10 @@ In the last form the only definitions of the given macro names is shown."""
   min_abbrev = 1
   need_stack = True
   short_help = "List of defined macros"
+
+  def complete(self, prefix):
+      return Mcomplete.complete_token(sorted(list(self.proc.macros.keys()) + ['*']),
+                                      prefix)
 
   def run(self, args):
     if len(args) > 0:
@@ -76,4 +81,5 @@ if __name__ == '__main__':
     i = Minfo.InfoCommand(cp)
     sub = InfoMacro(i)
     sub.run(["u"])
+    print(sub.complete(''))
     pass

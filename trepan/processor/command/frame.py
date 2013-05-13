@@ -112,7 +112,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
                                                frame_num, position_str))
             return False
         else:
-            self.proc.adjust_frame(pos=frame_num, absolute_pos=True)
+            Mframe.adjust_frame(self.proc, 'frame', pos=frame_num, absolute_pos=True)
             return True
         return # Not reached
 
