@@ -51,6 +51,7 @@ class TestCompletion(unittest.TestCase):
                   'threads']],
 
                 ['help sta', ['stack', 'status']],
+                [' unalias c',  ['c', 'chdir', 'cond']],
 
                 # ['set auto eval ', '', ['off', 'on']], # Many 3-word completions
                 # ['set auto ', ['eval', 'irb', 'list']], # Many two-word completions
@@ -72,6 +73,9 @@ class TestCompletion(unittest.TestCase):
         got = self.run_complete('info files ')
         self.assertTrue(len(got) > 0,
                         'info files completion should return a file')
+        got = self.run_complete('unalias ')
+        self.assertTrue(len(got) > 0,
+                        'unalias should return lots of aliases')
         return
     pass
 

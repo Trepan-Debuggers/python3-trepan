@@ -18,6 +18,7 @@ from import_relative import import_relative
 
 # Our local modules
 Mbase_cmd = import_relative('base_cmd', top_name='trepan')
+Mcomplete = import_relative('complete', '...lib', 'trepan')
 Mdebugger = import_relative('debugger', '...', 'trepan')
 Mfile     = import_relative('file', '...lib', 'trepan')
 Mscript   = import_relative('script', '...interfaces', 'trepan')
@@ -43,6 +44,11 @@ unless option `-c` is given."""
     need_stack    = False
     short_help    = "Read and run debugger commands from a file"
 
+
+    def complete(self, prefix):
+        # files = Readline::FILENAME_COMPLETION_PROC.call(prefix) || []
+        opts = ['-v', '-Y', '-N', '-c'] # + files
+        return Mcomplete.complete_token(opts, prefix)
 
     def run(self, args):
         parms = args[1:-1]
