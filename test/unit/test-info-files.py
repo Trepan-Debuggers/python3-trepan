@@ -5,7 +5,7 @@ from import_relative import import_relative
 
 debugger  = import_relative('debugger', '...trepan', 'trepan')
 Minfo     = import_relative('trepan.processor.command.info', '...')
-MinfoFile = import_relative('trepan.processor.command.info_subcmd.file', 
+MinfoFile = import_relative('trepan.processor.command.info_subcmd.files',
                             '...')
 Mdebugger = import_relative('debugger', '...trepan')
 
@@ -48,7 +48,7 @@ class TestInfoFile(unittest.TestCase):
         d, cp = dbg_setup(d)
         command = Minfo.InfoCommand(cp, 'info')
 
-        sub = MinfoFile.InfoFile(command)
+        sub = MinfoFile.InfoFiles(command)
         self.setup_io(sub)
         sub.run([])
         self.assertEqual([], self.msgs)
@@ -59,6 +59,6 @@ class TestInfoFile(unittest.TestCase):
             sub.run([])
             pass
         pass
-        
+
 if __name__ == '__main__':
     unittest.main()
