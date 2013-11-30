@@ -35,7 +35,7 @@ To issue a debugger command use function *dbgr()*. For example:
   dbgr('info program')
 """
 
-    aliases      = ('py',)
+    aliases      = ('py','shell')
     category      = 'support'
     min_args      = 0
     max_args      = 1
@@ -45,7 +45,7 @@ To issue a debugger command use function *dbgr()*. For example:
 
     def dbgr(self, string):
         '''Invoke a debugger command from inside a python shell called inside
-        the debugger. 
+        the debugger.
         '''
         self.proc.cmd_queue.append(string)
         self.proc.process_command()
@@ -69,7 +69,7 @@ Use dbgr(*string*) to issue debugger command: *string*'''
 
         debug = len(args) > 1 and args[1] == '-d'
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a pydbgr" + 
+            banner_tmpl += ("\nVariable 'debugger' contains a pydbgr" +
                             "debugger object.")
             pass
 
@@ -140,15 +140,15 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
 # FIXME: get changes into Python.
 def runcode(obj, code_obj):
     """Execute a code object.
-    
+
     When an exception occurs, self.showtraceback() is called to
     display a traceback.  All exceptions are caught except
     SystemExit, which is reraised.
-    
+
     A note about KeyboardInterrupt: this exception may occur
     elsewhere in this code, and may not always be caught.  The
     caller should be prepared to deal with it.
-    
+
     """
     try:
         exec(code_obj, obj.locals, obj.globals)
