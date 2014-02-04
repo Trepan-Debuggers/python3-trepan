@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -55,7 +55,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                                                          sys_argv)
 
     if opts.server:
-        intf = Mserver.ServerInterface()
+        connection_opts={'IO': 'TCP', 'PORT': opts.port}
+        intf = Mserver.ServerInterface(connection_opts=connection_opts)
         dbg_opts['interface'] = intf
         if 'FIFO' == intf.server_type:
             print('Starting FIFO server for process %s.' % os.getpid())
@@ -63,7 +64,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             print('Starting TCP server listening on port %s.' % intf.inout.PORT)
             pass
     elif opts.client:
-        Mclient.main()
+        Mclient.main(opts, sys_argv)
         return
 
     dbg_opts['orig_sys_argv'] = orig_sys_argv

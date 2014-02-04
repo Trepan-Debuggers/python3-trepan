@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -85,6 +85,10 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="list of debugger commands to " +
                          "execute. Separate the commands with ;;")
 
+    optparser.add_option("-H", "--host", dest="host", default='127.0.0.1',
+                         action="store", type='string', metavar='IP-OR-HOST',
+                         help="connect IP or host name. Only valid if --client option given.")
+
     optparser.add_option("--highlight", dest="highlight",
                          action="store", type='string', metavar='{light|dark|plain}',
                          default='light',
@@ -117,10 +121,9 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          action="store", type='string',
                          help="Write debugger's output (stdout) "
                          + "to FILE")
-    #     optparser.add_option("-P", "--port", dest="port",
-    #                          action="store", type='int',
-    #                          help="Write debugger's output (stdout) "
-    #                          + "to FILE")
+    optparser.add_option("-P", "--port", dest="port",
+                         action="store", type='int',
+                         help="Use TCP port number NUMBER for out-of-process connections.")
     optparser.add_option("--server", dest="server",
                          action='store_true',
                          help="Out-of-process server connection mode")

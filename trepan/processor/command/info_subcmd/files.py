@@ -22,7 +22,7 @@ Mcomplete     = import_relative('complete', '....lib', 'trepan')
 Mmisc         = import_relative('misc', '....', 'trepan')
 
 class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
-    '''**info file** [*filename* [**all** | **lines** | **sha1** | **size**]]
+    '''**info files** [*filename* [**all** | **lines** | **sha1** | **size**]]
 
 Show information about the current file. If no filename is given and
 the program is running then the current file associated with the

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,18 +17,61 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
 
-import sys, time
+import os, sys, time
 # Our local modules
 from import_relative import import_relative
 Mmisc = import_relative('misc', '.', 'trepan')
 Mclient   = import_relative('client', '.interfaces', 'trepan')
 Mcomcodes = import_relative('comcodes', '.interfaces', 'trepan')
 
+from optparse import OptionParser
+
+# Our local modules
+from import_relative import import_relative, get_srcdir
+
+# VERSION.py sets variable VERSION.
+exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(), os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
+__version__ = VERSION
+
+def process_options(pkg_version, sys_argv, option_list=None):
+    """Handle debugger options. Set `option_list' if you are writing
+    another main program and want to extend the existing set of debugger
+    options.
+
+    The options dicionary from opt_parser is return. sys_argv is
+    also updated."""
+    usage_str="""%prog [debugger-options] [python-script [script-options...]]
+
+    Runs the extended python debugger"""
+
+    ## serverChoices = ('TCP','FIFO', None)
+
+
+    optparser = OptionParser(usage=usage_str, option_list=option_list,
+                             version="%%prog version %s" % pkg_version)
+
+    optparser.add_option("-H", "--host", dest="host", default='127.0.0.1',
+                         action="store", type='string', metavar='IP-OR-HOST',
+                         help="connect IP or host name.")
+    optparser.add_option("-P", "--port", dest="port", default=1027,
+                         action="store", type='int', metavar='NUMBER',
+                         help="Use TCP port number NUMBER for out-of-process connections.")
+
+    optparser.disable_interspersed_args()
+
+    sys.argv = list(sys_argv)
+    (opts, sys.argv) = optparser.parse_args()
+
+    return opts, sys.argv
+
+
 #
 # Connects to a debugger in server mode
 #
 
-DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP'}
+DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP',
+                                  'HOST': '127.0.0.1', 'PORT': 1027}
+
 def start_client(connection_opts):
       intf = Mclient.ClientInterface(connection_opts=connection_opts)
       # debugger.interface.append(intf)
@@ -77,15 +120,17 @@ def start_client(connection_opts):
       intf.close()
       pass
 
-def main():
-      if len(sys.argv) > 1:
+def main(opts, sys_argv):
+      if len(sys_argv) > 1:
             remote_opts = {'open': int(sys.argv[1]), 'IO': 'FIFO'}
       else:
-            remote_opts = {'open': True, 'IO': 'TCP'}
+            remote_opts = {'open': True, 'IO': 'TCP', 'PORT': opts.port,
+                           'HOST': opts.host}
             pass
       start_client(remote_opts)
       return
 
 if __name__ == '__main__':
-      main()
+      opts, sys_argv  = process_options(__version__, sys.argv)
+      main(opts, sys_argv)
       pass

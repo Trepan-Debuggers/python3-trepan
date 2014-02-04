@@ -4,13 +4,13 @@ from import_relative import import_relative
 # from trepan.api import debug
 # debug()
 Mdebugger    = import_relative('debugger', '...trepan')
-Mstringarray = import_relative('trepan.io.stringarray', '...')
+Mstringarray = import_relative('io.stringarray', '...trepan')
 
 def strarray_setup(debugger_cmds):
     ''' Common setup to create a debugger with stringio attached '''
     stringin                = Mstringarray.StringArrayInput(debugger_cmds)
     stringout               = Mstringarray.StringArrayOutput()
-    d_opts                  = {'input' : stringin, 
+    d_opts                  = {'input' : stringin,
                                'output': stringout}
     d                       = Mdebugger.Trepan(d_opts)
     d.settings['basename']  = True
@@ -32,8 +32,8 @@ def filter_line_cmd(a):
     a1 = [re.sub(r'^(..) \d+\s+', r'\1 ', s) for s in a
          if re.match(r'^.. \d+\s+', s)]
     # Remove debugger prompts
-    # For example: 
-    #  (trepan3k) 
+    # For example:
+    #  (trepan3k)
     a2 = [re.sub(r'\n\(trepan3k\) .*', '', s) for s in a1]
 
     # Remove locations (test-next.py:41): test_next_between_fn
