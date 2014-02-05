@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class ServerInterface(Minterface.TrepanInterface):
             if 'FIFO' == self.server_type:
                 self.inout = Mfifoserver.FIFOServer()
             else:
-                self.inout = Mtcpserver.TCPServer()
+                self.inout = Mtcpserver.TCPServer(opts=connection_opts)
                 pass
             pass
         # For Compatability
@@ -142,5 +142,6 @@ class ServerInterface(Minterface.TrepanInterface):
 
 # Demo
 if __name__=='__main__':
-    intf = ServerInterface()
+    connection_opts={'IO': 'TCP', 'PORT': 1955}
+    intf = ServerInterface(connection_opts=connection_opts)
     pass
