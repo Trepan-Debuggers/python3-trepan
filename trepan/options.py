@@ -121,7 +121,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          action="store", type='string',
                          help="Write debugger's output (stdout) "
                          + "to FILE")
-    optparser.add_option("-P", "--port", dest="port",
+    optparser.add_option("-P", "--port", dest="port", default=1027,
                          action="store", type='int',
                          help="Use TCP port number NUMBER for out-of-process connections.")
     optparser.add_option("--server", dest="server",
