@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2014 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -93,14 +93,10 @@ See `set listize` or `show listsize` to see or set the value.
         filename, start, last
         or sets these to None if there was some problem."""
 
-        dbg_obj = self.core.debugger
-        curframe = self.proc.curframe
-
-        if curframe:
-            filename = curframe.f_code.co_filename
-        else:
-            filename = None
-            pass
+        dbg_obj  = self.core.debugger
+        proc     = self.proc
+        curframe = proc.curframe
+        filename = proc.list_filename
 
         last = None
         listsize = dbg_obj.settings['listsize']
@@ -110,11 +106,12 @@ See `set listize` or `show listsize` to see or set the value.
 
         if len(args) > 0:
             if args[0] == '-':
-                first = max(1, self.proc.list_lineno - 2*listsize - 1)
+                first = max(1, proc.list_lineno - 2*listsize - 1)
             elif args[0] == '.':
+                filename = curframe.f_code.co_filename
                 first = max(1, inspect.getlineno(curframe) - int(listsize/2))
             else:
-                (modfunc, filename, first) = self.proc.parse_position(args[0])
+                (modfunc, filename, first) = proc.parse_position(args[0])
                 if first == None and modfunc == None:
                     # error should have been shown previously
                     return (None, None, None)
@@ -123,7 +120,7 @@ See `set listize` or `show listsize` to see or set the value.
                     first = max(1, first - int(listsize/2))
                 elif len(args) == 2 or (len(args) == 3 and modfunc):
                     msg = 'Starting line expected, got %s.' % args[-1]
-                    num = self.proc.get_an_int(args[1], msg)
+                    num = proc.get_an_int(args[1], msg)
                     if num is None: return (None, None, None)
                     if modfunc:
                         if first is None:
@@ -131,7 +128,7 @@ See `set listize` or `show listsize` to see or set the value.
                             if len(args) == 3 and modfunc:
                                 msg = ('last or count parameter expected, ' +
                                        'got: %s.' % args[2])
-                                last = self.proc.get_an_int(args[2], msg)
+                                last = proc.get_an_int(args[2], msg)
                                 pass
                             pass
                         else:
@@ -156,15 +153,16 @@ See `set listize` or `show listsize` to see or set the value.
                                 len(args))
                     return (None, None, None)
                 pass
-        elif self.proc.list_lineno is None and self.core.is_running():
+        elif proc.list_lineno is None and self.core.is_running():
             first = max(1, inspect.getlineno(curframe) - int(listsize/2))
         else:
-            first = self.proc.list_lineno + 1
+            first = proc.list_lineno + 1
             pass
         if last is None:
             last = first + listsize - 1
             pass
 
+        proc.list_filename = filename
         return (filename, first, last)
 
     def run(self, args):

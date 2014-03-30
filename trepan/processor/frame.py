@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -69,7 +69,9 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
     proc_obj.curindex = pos
     proc_obj.curframe = proc_obj.stack[proc_obj.curindex][0]
     proc_obj.location()
-    proc_obj.list_lineno = None
+    proc_obj.list_lineno   = None
+    proc_obj.list_filename = proc_obj.curframe.f_code.co_filename
+
     return
 
 def adjust_relative(proc_obj, name, args, signum):

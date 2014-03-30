@@ -63,11 +63,13 @@ class TestListCommand(unittest.TestCase):
         d               = debugger.Trepan()
         cp              = d.core.processor
         cp.curframe     = inspect.currentframe()
+        cp.list_filename = cp.curframe.f_code.co_filename
         self.cmd        = Mlist.ListCommand(cp)
         self.cmd.msg    = self.msg
         self.cmd.errmsg = self.errmsg
         d.settings['listsize']  = self.listsize
         d.settings['highlight'] = 'plain'
+        # from trepan.api import debug; debug()
         # Simple list command.
         self.clear_run_check(['list'], list(range(1, self.listsize+1)))
         # Check 2nd set of consecutive lines
