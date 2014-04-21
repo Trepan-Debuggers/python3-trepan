@@ -14,7 +14,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-''' Thecommand-line interface to the debugger.
+''' The command-line interface to the debugger.
 '''
 import os, os.path, sys
 
@@ -54,6 +54,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     opts, dbg_opts, sys_argv  = Moptions.process_options(__title__, __version__,
                                                          sys_argv)
 
+    print(opts)
     if opts.server:
         connection_opts={'IO': 'TCP', 'PORT': opts.port}
         intf = Mserver.ServerInterface(connection_opts=connection_opts)
