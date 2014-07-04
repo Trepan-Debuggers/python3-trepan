@@ -1,19 +1,61 @@
 #!/usr/bin/env python3
 
-"""
-distutils setup (setup.py).
+copyright   = '''Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>.'''
+classifiers =  ['Development Status :: 4 - Beta',
+                'Environment :: Console',
+                'Intended Audience :: Developers',
+                'License :: OSI Approved :: GNU General Public License (GPL)',
+                'Operating System :: OS Independent',
+                'Programming Language :: Python',
+                'Topic :: Software Development :: Debuggers',
+                'Topic :: Software Development :: Libraries :: Python Modules',
+                ]
 
-This is just boilerplate code, since we do like to try to keep data separate
-from code as much as possible. The customizable information really comes
-from file __pkginfo__.py.
-"""
+# The rest in alphabetic order
+author             = "Rocky Bernstein"
+author_email       = "rocky@gnu.org"
+ftp_url            = None
+install_requires   = ['columnize >= 0.3.4',
+                      'import-relative >= 0.2.1',
+                      'pyficache >= 0.2.2',
+                      'pygments',
+                      'tracer >= 0.3.1']
+license            = 'GPL'
+mailing_list       = 'python-debugger@googlegroups.com'
+modname            = 'trepan'
+namespace_packages = [
+    'trepan',
+    'trepan.bwprocessor',
+    'trepan.interfaces',
+    'trepan.io',
+    'trepan.lib',
+    'trepan.processor',
+    'trepan.processor.command',
+#    'trepan.processor.command.ipython_magic',
+    'trepan.processor.command.info_subcmd',
+    'trepan.processor.command.set_subcmd',
+    'trepan.processor.command.show_subcmd'
+]
+packages           = namespace_packages
+py_modules         = None
+short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
-# Get the package information used in setup().
-from __pkginfo__ import \
-    author,           author_email,       classifiers,      ftp_url,      \
-    install_requires, license,            long_description, mailing_list, \
-    modname,          namespace_packages, packages,         py_modules,   \
-    short_desc,       version,            web,              zip_safe
+import os
+import os.path, sys
+from import_relative import get_srcdir
+
+# VERSION.py sets variable VERSION.
+me = os.path.join(os.path.dirname(__file__), 'trepan', 'VERSION.py')
+exec(compile(open(me).read(), me, 'exec'))
+version            = VERSION
+web                = 'http://code.google.com/p/trepan/'
+
+# tracebacks in zip files are funky and not debuggable
+zip_safe = False
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+long_description   = ( read("README.txt") + '\n\n' +  read("NEWS") )
 
 __import__('pkg_resources')
 from setuptools import setup

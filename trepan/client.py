@@ -40,12 +40,11 @@ def process_options(pkg_version, sys_argv, option_list=None):
 
     The options dicionary from opt_parser is return. sys_argv is
     also updated."""
-    usage_str="""%prog [debugger-options] [python-script [script-options...]]
+    usage_str="""%prog [debugger-options]]
 
-    Runs the extended python debugger"""
+    Client connection to an out-of-process trepan3k debugger session"""
 
-    ## serverChoices = ('TCP','FIFO', None)
-
+    ## serverChoices = ('TCP','FIFO', None) # we use PID for now.
 
     optparser = OptionParser(usage=usage_str, option_list=option_list,
                              version="%%prog version %s" % pkg_version)
@@ -56,6 +55,9 @@ def process_options(pkg_version, sys_argv, option_list=None):
     optparser.add_option("-P", "--port", dest="port", default=1027,
                          action="store", type='int', metavar='NUMBER',
                          help="Use TCP port number NUMBER for out-of-process connections.")
+    optparser.add_option("--pid", dest="pid", default=0,
+                         action="store", type='int', metavar='NUMBER',
+                         help="Use PID to get FIFO names for out-of-process connections.")
 
     optparser.disable_interspersed_args()
 
@@ -69,8 +71,9 @@ def process_options(pkg_version, sys_argv, option_list=None):
 # Connects to a debugger in server mode
 #
 
-DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP',
-                                  'HOST': '127.0.0.1', 'PORT': 1027}
+#DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP',
+#                                  'HOST': '127.0.0.1', 'PORT': 1027}
+DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'FIFO'}
 
 def start_client(connection_opts):
       intf = Mclient.ClientInterface(connection_opts=connection_opts)
@@ -121,14 +124,15 @@ def start_client(connection_opts):
       pass
 
 def main(opts, sys_argv):
-      if len(sys_argv) > 1:
-            remote_opts = {'open': int(sys.argv[1]), 'IO': 'FIFO'}
-      else:
-            remote_opts = {'open': True, 'IO': 'TCP', 'PORT': opts.port,
-                           'HOST': opts.host}
-            pass
-      start_client(remote_opts)
-      return
+    print(opts)
+    if opts.pid > 0:
+        remote_opts = {'open': opts.pid, 'IO': 'FIFO'}
+    else:
+        remote_opts = {'open': True, 'IO': 'TCP', 'PORT': opts.port,
+                       'HOST': opts.host}
+        pass
+    start_client(remote_opts)
+    return
 
 if __name__ == '__main__':
       opts, sys_argv  = process_options(__version__, sys.argv)

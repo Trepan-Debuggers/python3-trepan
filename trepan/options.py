@@ -61,7 +61,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     optparser.add_option("--client", dest="client",
                          action='store_true',
                          help="Connect to an existing debugger process " +
-                         "started with the --server option")
+                         "started with the --server option. " +
+                         "See options for client.")
     optparser.add_option("-x", "--command", dest="command",
                          action="store", type='string', metavar='FILE',
                          help="Execute commands from FILE.")
@@ -125,7 +126,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          action="store", type='int',
                          help="Use TCP port number NUMBER for out-of-process connections.")
     optparser.add_option("--server", dest="server",
-                         action='store_true',
+                         default=None, action='store',
                          help="Out-of-process server connection mode")
     optparser.add_option("--sigcheck", dest="sigcheck",
                          action="store_true", default=False,
@@ -268,7 +269,21 @@ def _postprocess_options(dbg, opts):
 
 # Demo it
 if __name__=='__main__':
-    sys_argv = ['--help']
-    opts, dbg_opts, sys_argv  = process_options('testing', '1.0', sys_argv)
-    print(opts)
-    pass
+	import pprint
+
+	def doit(prog, version, arg_str):
+		print("options '%s'" % arg_str)
+		args = arg_str.split()
+		opts, dbg_opts, sys_argv = process_options('testing', '1.0', args)
+		pp.pprint(vars(opts))
+		print('')
+		return
+
+	pp = pprint.PrettyPrinter(indent=4)
+	doit('testing', '1.1', '')
+	doit('testing', '1.2', 'foo bar')
+	doit('testing', '1.3', '--server')
+	doit('testing', '1.3', '--command %s bar baz' % __file__)
+	doit('testing', '1.4', '--server --client')
+	doit('testing', '1.5', '--help')
+	pass

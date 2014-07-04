@@ -45,6 +45,7 @@ class ClientInterface(Muser.UserInterface):
         else:
             self.server_type = get_connection_option('IO')
             if 'FIFO' == self.server_type:
+                ## print(connection_opts)
                 self.inout = Mfifoclient.FIFOClient(opts=connection_opts)
             elif 'TCP' == self.server_type:
                 self.inout = Mtcpclient.TCPClient(opts=connection_opts)

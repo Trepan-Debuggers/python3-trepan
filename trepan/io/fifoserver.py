@@ -81,7 +81,7 @@ if hasattr(os, 'mkfifo'):
                 pass
             return
 
-        def readline(self):
+        def read_msg(self):
             """Read a line of input. EOFError will be raised on EOF.
 
             Note that we don't support prompting"""
