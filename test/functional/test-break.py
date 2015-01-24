@@ -16,25 +16,26 @@ class TestBreak(unittest.TestCase):
         d = strarray_setup(cmds)
         d.core.start()
         ##############################
+
         def foo():
             print('foo here')
             return
         foo()
-        y = 6
+        y = 6  # NOQA
         ##############################
         d.core.stop()
 
-        out = ['xx def foo():\n(test-break.py:18): foo', 
+        out = ['xx def foo():\n(test-break.py:18): foo',
                "-- print 'foo here'\n"]
         compare_output(self, out, d, cmds)
 
-        
+
         # Try a break with a module name
         import os
         cmds = ['break os.path.join', 'continue']
         d = strarray_setup(cmds)
         d.core.start()
-        p = os.path.join("a", "b")
+        p = os.path.join("a", "b")  # NOQA
         ##############################
         d.core.stop()
         out = ['-- p = os.path.join("a", "b")',
@@ -47,14 +48,14 @@ class TestBreak(unittest.TestCase):
         return
         import inspect
         curframe = inspect.currentframe()
-        cmds = ['break %d' % (curframe.f_lineno+7), 
+        cmds = ['break %d' % (curframe.f_lineno+7),
                 'continue', 'c']              # 1
         d = strarray_setup(cmds)              # 2
         d.core.start()                        # 3
         ##############################        # 4...
-        x = 5
-        y = 6
-        z = 7
+        x = 5  # NOQA
+        y = 6  # NOQA
+        z = 7  # NOQA
         ##############################
         d.core.stop()
         out = ["-- x = 5\nBreakpoint 1 set at line 53 of file test-break.py",

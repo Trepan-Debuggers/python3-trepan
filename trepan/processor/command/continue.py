@@ -51,15 +51,15 @@ position before continuing.
 
     def run(self, args):
         if len(args) > 1:
-            # FIXME: DRY this code. Better is to hook into tbreak. 
-            func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,
-                                                                          args[1:])
-            if not Mcmdbreak.set_break(self, func, filename, lineno, condition, 
+            # FIXME: DRY this code. Better is to hook into tbreak.
+            func, filename, lineno, condition = \
+              Mcmdbreak.parse_break_cmd(self, args[1:])
+            if not Mcmdbreak.set_break(self, func, filename, lineno, condition,
                                        True, args):
                 return False
-        self.core.step_events = None # All events
+        self.core.step_events = None  # All events
         self.core.step_ignore = -1
-        self.proc.continue_running = True # Break out of command read loop
+        self.proc.continue_running = True  # Break out of command read loop
         return True
     pass
 

@@ -60,10 +60,11 @@ See also `tbreak`.
     short_help    = 'Set breakpoint at specified line or function'
 
     def run(self, args):
-        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self, 
+        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,
                                                                    args[1:])
-        Mcmdbreak.set_break(self, func, filename, lineno, condition, False, args)
-        return 
+        Mcmdbreak.set_break(self, func, filename, lineno, condition,
+                            False, args)
+        return
 
 if __name__ == '__main__':
     import sys

@@ -127,7 +127,7 @@ def start_client(connection_opts):
 
 def main(opts, sys_argv):
     print(opts)
-    if opts.pid > 0:
+    if hasattr(opts, 'pid') and opts.pid > 0:
         remote_opts = {'open': opts.pid, 'IO': 'FIFO'}
     else:
         remote_opts = {'open': True, 'IO': 'TCP', 'PORT': opts.port,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
         try:
             # eval() is used so we will allow arithmetic expressions,
             # variables etc.
-            ret_value = int(eval(arg)) 
+            ret_value = int(eval(arg))
         except (SyntaxError, NameError, ValueError):
             if errmsg:
                 errmsg(msg_on_error)
@@ -48,13 +48,14 @@ def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
         return None
     return ret_value
 
+
 def get_int(errmsg, arg, default=1, cmdname=None):
     """If arg is an int, use that otherwise take default."""
     if arg:
         try:
             # eval() is used so we will allow arithmetic expressions,
             # variables etc.
-            default = int(eval(arg)) 
+            default = int(eval(arg))
         except (SyntaxError, NameError, ValueError):
             if cmdname:
                 errmsg("Command '%s' expects an integer; got: %s." %
@@ -111,7 +112,7 @@ def run_set_bool(obj, args):
 def run_set_int(obj, arg, msg_on_error, min_value=None, max_value=None):
     """set an Integer-valued debugger setting. 'obj' is a generally a
     subcommand that has 'name' and 'debugger.settings' attributes"""
-    if '' == arg.strip(): 
+    if '' == arg.strip():
         obj.errmsg("You need to supply a number.")
         return
     obj.debugger.settings[obj.name] = \
@@ -163,13 +164,14 @@ if __name__ == '__main__':
     def errmsg(msg):
         print("** %s" % msg)
         return
+
     def msg(m):
         print(m)
-    print(get_int(errmsg, '1+2')) # 3
-    print(get_int(errmsg, None)) # 1
-    print(get_an_int(errmsg, '6*1', '6*1 is okay')) # 6
-    print(get_an_int(errmsg, '0', '0 is too small', 1)) # errmsg
-    print(get_an_int(errmsg, '5+a', '5+a is no good'))  # errmsg
+    print(get_int(errmsg, '1+2'))  # 3
+    print(get_int(errmsg, None))  # 1
+    print(get_an_int(errmsg, '6*1', '6*1 is okay'))  # 6
+    print(get_an_int(errmsg, '0', '0 is too small', 1))  # errmsg
+    print(get_an_int(errmsg, '5+a', '5+a is no good'))   # errmsg
     try:
         get_int(errmsg, 'pi')
     except ValueError:
@@ -178,7 +180,7 @@ if __name__ == '__main__':
 
     import inspect
     curframe = inspect.currentframe()
-    
+
     print(want_different_line("s+ %s", False))
     print(want_different_line("s-", True))
     print(want_different_line("s", False))

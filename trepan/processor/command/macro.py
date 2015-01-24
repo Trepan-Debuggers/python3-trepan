@@ -65,7 +65,7 @@ Invoking with:
 
 would expand to: `['finish 3', 'step']`
 
-If you were to add another parameter for `step`, the note that the 
+If you were to add another parameter for `step`, the note that the
 invocation might be:
 
      fin+ 3 2
@@ -75,46 +75,46 @@ rather than `fin+(3,2)` or `fin+ 3, 2`.
 See also `alias` and `info macro`.
   """
 
-  category   = 'support'
-  min_args   = 2  # Need at least this many: macro_name
-  max_args   = None
-  name       = os.path.basename(__file__).split('.')[0]
-  need_stack  = False
-  short_help  = 'Define a macro'
-  
-  def run(self, args):
-    
-    cmd_name = args[1]
-    cmd_argstr = self.proc.cmd_argstr[len(cmd_name):].lstrip()
-    proc_obj = None
-    try:
-      proc_obj = eval(cmd_argstr)
-    except (SyntaxError, NameError, ValueError):
-      self.errmsg("Expecting a Python lambda expression; got %s" % cmd_argstr)
-      pass
-    if proc_obj:
-      if type(proc_obj) == types.FunctionType:
-        self.proc.macros[cmd_name] = [proc_obj, cmd_argstr]
-        self.msg("Macro \"%s\" defined." % cmd_name)
-      else:
-        self.errmsg("Expecting a Python lambda expression; got: %s" %
-                    cmd_argstr)
-        pass
-      pass
-    return
-  pass
-        
+    category   = 'support'
+    min_args   = 2  # Need at least this many: macro_name
+    max_args   = None
+    name       = os.path.basename(__file__).split('.')[0]
+    need_stack  = False
+    short_help  = 'Define a macro'
+
+    def run(self, args):
+
+        cmd_name = args[1]
+        cmd_argstr = self.proc.cmd_argstr[len(cmd_name):].lstrip()
+        proc_obj = None
+        try:
+            proc_obj = eval(cmd_argstr)
+        except (SyntaxError, NameError, ValueError):
+            self.errmsg("Expecting a Python lambda expression; got %s" % cmd_argstr)
+            pass
+        if proc_obj:
+            if type(proc_obj) == types.FunctionType:
+                self.proc.macros[cmd_name] = [proc_obj, cmd_argstr]
+                self.msg("Macro \"%s\" defined." % cmd_name)
+            else:
+                self.errmsg("Expecting a Python lambda expression; got: %s" %
+                            cmd_argstr)
+                pass
+            pass
+        return
+    pass
+
 # Demo it
 if __name__ == '__main__':
-  Mmock = import_relative('mock')
-  dbgr, cmd = Mmock.dbg_setup()
-  command = MacroCommand(cmd)
-  for cmdline in ["macro foo lambda a,y: x+y",
-                  "macro bad2 1+2"]:
-    args = cmdline.split()
-    cmd_argstr = cmdline[len(args[0]):].lstrip()
-    cmd.cmd_argstr = cmd_argstr
-    command.run(args)
+    Mmock = import_relative('mock')
+    dbgr, cmd = Mmock.dbg_setup()
+    command = MacroCommand(cmd)
+    for cmdline in ["macro foo lambda a,y: x+y",
+                    "macro bad2 1+2"]:
+        args = cmdline.split()
+        cmd_argstr = cmdline[len(args[0]):].lstrip()
+        cmd.cmd_argstr = cmd_argstr
+        command.run(args)
+        pass
+    print(cmd.macros)
     pass
-  print(cmd.macros)
-  pass

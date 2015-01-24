@@ -10,8 +10,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Copyright (C) 2008, 2009 Rocky Bernstein <rocky@gnu.org> """
-from import_relative import import_relative
+""" Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org> """
 __import__('pkg_resources').declare_namespace(__name__)
+
+from import_relative import import_relative
 Mmisc = import_relative('misc', '..', 'trepan')
-__all__ = [ Mmisc.pyfiles() ]
+__all__ = [ Mmisc.pyfiles() ] + ['command']

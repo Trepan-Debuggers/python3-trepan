@@ -25,6 +25,12 @@ if not package in sys.modules:
 
 # Our local modules
 from import_relative import import_relative, get_srcdir
+try:
+    import trepan.interfaces
+    import trepan.inout
+    import trepan.processor.command  # NOQA
+except:
+    pass
 Minterface = import_relative('interface', '.', package)
 Mapi       = import_relative('api', top_name=package)
 Mclient    = import_relative('client', top_name=package)
@@ -156,8 +162,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 part1 = ('Restarting %s with arguments:' %
                          dbg.core.filename(mainpyfile))
                 args  = ' '.join(dbg.program_sys_argv[1:])
-                dbg.intf[-1].msg(Mmisc.wrapped_lines(part1, args,
-                                                     dbg.settings['width']))
+                dbg.intf[-1].msg(
+                    Mmisc.wrapped_lines(part1, args,
+                                        dbg.settings['width']))
             else: break
         except SystemExit:
             # In most cases SystemExit does not warrant a post-mortem session.

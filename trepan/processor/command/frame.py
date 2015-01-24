@@ -20,11 +20,12 @@ from import_relative import import_relative
 # Our local modules
 Mbase_cmd = import_relative('base_cmd', '.', 'trepan')
 Mcmdproc  = import_relative('cmdproc', '..', 'trepan')
-Mthread   = import_relative('thread', '...lib', 'trepan')
+Mcomplete = import_relative('complete',  '...lib', 'trepan')
+Mthread   = import_relative('thred', '...lib', 'trepan')
 
 class FrameCommand(Mbase_cmd.DebuggerCommand):
     """**frame** [*thread-Name*|*thread-number*] [*frame-number*]
-    
+
 Change the current frame to frame *frame-number* if specified, or the
 current frame, 0, if no frame number specified.
 
@@ -32,7 +33,7 @@ If a thread name or thread number is given, change the current frame
 to a frame in that thread. Dot (.) can be used to indicate the name of
 the current frame the debugger is stopped in.
 
-A negative number indicates the position from the other or 
+A negative number indicates the position from the other or
 least-recently-entered end.  So `frame -1` moves to the oldest frame,
 and `frame 0` moves to the newest frame. Any variable or expression
 that evaluates to a number can be used as a position, however due to
@@ -74,7 +75,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
             thread_name == Mthread.current_thread_name()):
             # The frame we came in on ('current_thread_name') is
             # the same as the one we want to switch to. In this case
-            # we need to some debugger frames are in this stack so 
+            # we need to some debugger frames are in this stack so
             # we need to remove them.
             newframe = Mthread.find_debugged_frame(frame)
             if newframe is not None:  frame = newframe
@@ -82,21 +83,21 @@ See also `up`, `down`, `backtrace`, and `info thread`.
         ## FIXME: else: we might be blocked on other threads which are
         # about to go into the debugger it not for the fact this one got there
         # first. Possibly in the future we want
-        # to hide the blocks into threading of that locking code as well. 
+        # to hide the blocks into threading of that locking code as well.
 
         # Set stack to new frame
         self.stack, self.curindex = Mcmdproc.get_stack(frame, None,
                                                        self.proc)
         self.proc.stack, self.proc.curindex = self.stack, self.curindex
         self.proc.frame_thread_name = thread_name
-        return 
+        return
 
     def one_arg_run(self, position_str):
         '''The simple case: thread frame switching has been done or is
         not needed and we have an explicit position number as a string'''
-        frame_num = self.proc.get_an_int(position_str, 
+        frame_num = self.proc.get_an_int(position_str,
                                          ("The 'frame' command requires a" +
-                                          " frame number. Got: %s") % 
+                                          " frame number. Got: %s") %
                                          position_str)
         if frame_num is None: return False
 
@@ -107,7 +108,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
 
         if frame_num < -i_stack or frame_num > i_stack-1:
             self.errmsg(('Frame number has to be in the range %d to %d.' +
-                         ' Got: %d (%s).') % (-i_stack, i_stack-1, 
+                         ' Got: %d (%s).') % (-i_stack, i_stack-1,
                                                frame_num, position_str))
             return False
         else:
@@ -130,7 +131,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
                 pass
             thread_id = name2id.get(name_or_id)
             if thread_id is None:
-                self.errmsg("I don't know about thread name %s." % 
+                self.errmsg("I don't know about thread name %s." %
                             name_or_id)
                 return None, None
             pass
@@ -157,7 +158,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
             name_or_id = args[1]
             frame, thread_id = self.get_from_thread_name_or_id(name_or_id,
                                                                False)
-            if frame is None: 
+            if frame is None:
                 # Form should be: frame position
                 position_str = name_or_id
             else:
@@ -171,7 +172,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
             name_or_id = args[1]
             position_str = args[2]
             frame, thread_id = self.get_from_thread_name_or_id(name_or_id)
-            if frame is None: 
+            if frame is None:
                 # Error message was given in routine
                 return
             self.find_and_set_debugged_frame(frame, thread_id)
@@ -211,7 +212,7 @@ if __name__ == '__main__':
             self.fn = fn
             self.cmd = cmd
             return
-        
+
         def run(self):
             self.fn(self.cmd)
             return
@@ -222,4 +223,3 @@ if __name__ == '__main__':
     background.start()
     background.join()    # Wait for the background task to finish
     pass
-

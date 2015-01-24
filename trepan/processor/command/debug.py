@@ -40,10 +40,12 @@ environment."""
             self.msg("No frame selected.")
             return
 
-        for attr in ('prompt_str', 'frame', 'event', 'event_arg', 
-                     'curindex'): 
+        for attr in ('prompt_str', 'frame', 'event', 'event_arg',
+                     'curindex'):
             cmd = 'old_%s = self.proc.%s' % (attr, attr)
             exec(cmd)
+            if hasattr(self.proc, 'print_location'):
+                self.proc.print_location()
             pass
 
         old_lock                  = self.core.debugger_lock
@@ -74,7 +76,7 @@ environment."""
         self.proc.debug_nest      -= 1
 
         for attr in ('prompt_str', 'frame', 'event', 'event_arg',
-                     'curindex'): 
+                     'curindex'):
             cmd = 'self.proc.%s = old_%s' % (attr, attr)
             exec(cmd)
             pass

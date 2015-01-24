@@ -22,16 +22,17 @@ from tracer import EVENT2SHORT
 
 Mprocessor = import_relative('vprocessor', '..', 'trepan')
 Mbytecode  = import_relative('bytecode', '..lib', 'trepan')
-Mexcept    = import_relative('exception', '..', 'trepan')
+Mexcept    = import_relative('exception', '...trepan', 'trepan')
 Mdisplay   = import_relative('display', '..lib', 'trepan')
 Mmisc      = import_relative('misc', '..', 'trepan')
 Mfile      = import_relative('file', '..lib', 'trepan')
 Mstack     = import_relative('stack', '..lib', 'trepan')
 Mthread    = import_relative('thred', '..lib', 'trepan')
 Mcomplete  = import_relative('processor.complete', '...trepan')
+import trepan
 
 # arg_split culled from ipython's routine
-def arg_split(s,posix=False):
+def arg_split(s, posix=False):
     """Split a command line's arguments in a shell-like manner returned
     as a list of lists. Use ';;' with white space to indicate separate
     commands.

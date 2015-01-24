@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2010, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         # Initialization
         cmd_instances     = []
         module_dir        = name + '_subcmd'
-        class_prefix      = capitalize(name) # e.g. Info, Set, or Show
+        class_prefix      = capitalize(name)  # e.g. Info, Set, or Show
         mod               = import_relative(module_dir)
         eval_cmd_template = 'command_mod.%s(self)'
         srcdir            = get_srcdir()

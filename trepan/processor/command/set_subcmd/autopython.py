@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,16 +24,16 @@ class SetAutoPython(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set** **autopython** [**on**|**off**]
 
 Go into Python on debugger entry."""
-    
+
     in_list    = True
-    min_abbrev = len('autopy') # Need at least "set autopy"
+    min_abbrev = len('autopy')  # Need at least "set autopy"
 
     python_cmd = None
-    
+
     def run(self, args):
         Mcmdfns.run_set_bool(self, args)
         if self.settings['autopython']:
-            if self.python_cmd == None:
+            if self.python_cmd is None:
                 self.python_cmd = self.proc.commands['python'].run
                 pass
             self.proc.add_preloop_hook(self.run_python, -1)

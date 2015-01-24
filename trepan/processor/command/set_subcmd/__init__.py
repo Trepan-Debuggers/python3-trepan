@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,14 +13,14 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org> """
+""" Copyright (C) 2008-2009, 2015 Rocky Bernstein <rocky@gnu.org> """
 __import__('pkg_resources').declare_namespace(__name__)
 
 import glob, os
 
-# FIXME: Is it really helpful to "privatize" variable names below? 
+# FIXME: Is it really helpful to "privatize" variable names below?
 # The below names are not part of the standard pre-defined names like
-# __name__ or __file__ are. 
+# __name__ or __file__ are.
 
 # Get the name of our directory.
 __command_dir__ = os.path.dirname(__file__)
@@ -31,6 +31,6 @@ __py_files__    = glob.glob(os.path.join(__command_dir__, '[a-z]*.py'))
 # Take the basename of the filename and drop off '.py'. That becomes
 # the list of modules that commands.py will use to import
 exclude_files = []
-__modules__ = [ os.path.basename(filename[0:-3]) for 
+__modules__ = [ os.path.basename(filename[0:-3]) for
                 filename in __py_files__
                 if os.path.basename(filename) not in exclude_files]

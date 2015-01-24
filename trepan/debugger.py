@@ -55,8 +55,8 @@ except ImportError:
 
 class Trepan:
 
-    # The following functions have to be defined before DEFAULT_INIT_OPTS which
-    # includes references to these.
+    # The following functions have to be defined before
+    # DEFAULT_INIT_OPTS which includes references to these.
 
     # FIXME DRY run, run_exec, run_eval.
 
@@ -131,6 +131,7 @@ class Trepan:
         finally:
             self.core.stop()
         return
+
     def run_call(self, func, start_opts=None, *args, **kwds):
         """ Run debugger on function call: `func(*args, **kwds)'
 
@@ -200,7 +201,7 @@ class Trepan:
         # that it's being run as __main__ to avoid scripts being able to access
         # the pydb.py namespace.
         if globals_ is None:
-            import __main__
+            import __main__  # NOQA
             globals_ = {"__name__" : "__main__",
                        "__file__" : self.mainpyfile,
                        "__builtins__" : __builtins__
@@ -211,20 +212,21 @@ class Trepan:
         retval = False
         self.core.execution_status = 'Running'
         try:
-            exec(compile(open(self.mainpyfile).read(), self.mainpyfile, 'exec'), globals_, locals_)
+            exec(compile(open(self.mainpyfile).read(), self.mainpyfile,
+                         'exec'), globals_, locals_)
             retval = True
-        except  SyntaxError:
+        except SyntaxError:
             print(sys.exc_info()[1])
             retval = False
             pass
         except IOError:
             print(sys.exc_info()[1])
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             retval = False
             pass
         except Mexcept.DebuggerRestart:
             self.core.execution_status = 'Restart requested'
-            raise Mexcept.DebuggerRestart
+            raise DebuggerRestart
         finally:
             self.core.stop(options={'remove': True})
         return retval

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2006-2010, 2013-2014 Rocky Bernstein
+#   Copyright (C) 2006-2010, 2013-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ List of %s subcommands:
 
     def undefined_subcmd(self, cmd, subcmd):
         """Error message when a subcommand doesn't exist"""
-        self.cmd_obj.errmsg('Undefined "%s" command: "%s". Try "help".' % 
+        self.cmd_obj.errmsg('Undefined "%s" command: "%s". Try "help".' %
                          (cmd, subcmd,))
         return
     pass
@@ -155,8 +155,8 @@ if __name__ == '__main__':
     testcmdMgr = Subcmd('test', testcmd)
     testsub = TestTestingSubcommand()
     testcmdMgr.add(testsub)
-    
-    for prefix in ['tes', 'test', 'testing', 'testing1']: 
+
+    for prefix in ['tes', 'test', 'testing', 'testing1']:
         x = testcmdMgr.lookup(prefix)
         if x: print(x.name)
         else: print('None')

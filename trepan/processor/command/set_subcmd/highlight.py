@@ -47,7 +47,7 @@ and recolor all source code output."""
         pass
 
     def run(self, args):
-        if len(args) >= 1 and 'reset' == args[0]:
+        if len(args) > 1 and 'reset' == args[0]:
             highlight_type = self.get_highlight_type(args[1])
             if not highlight_type: return
             clear_file_format_cache()
