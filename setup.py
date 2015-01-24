@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-copyright   = '''Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>.'''
+copyright   = '''Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>.'''
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
@@ -15,7 +15,7 @@ classifiers =  ['Development Status :: 4 - Beta',
 author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
-install_requires   = ['columnize >= 0.3.4',
+install_requires   = ['columnize >= 0.3.8',
                       'import-relative >= 0.2.1',
                       'pyficache >= 0.2.2',
                       'pygments',
@@ -27,7 +27,7 @@ namespace_packages = [
     'trepan',
     'trepan.bwprocessor',
     'trepan.interfaces',
-    'trepan.io',
+    'trepan.inout',
     'trepan.lib',
     'trepan.processor',
     'trepan.processor.command',
@@ -55,7 +55,7 @@ zip_safe = False
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-long_description   = ( read("README.txt") + '\n\n' +  read("NEWS") )
+long_description   = ( read("README.rst") + '\n' )
 
 __import__('pkg_resources')
 from setuptools import setup
