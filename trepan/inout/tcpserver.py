@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,21 +17,24 @@
 
 import socket
 
+import trepan.lib
 from import_relative import import_relative
-Mbase    = import_relative('base', top_name='trepan')
+from trepan.inout.base import DebuggerInOutBase
 Mdefault = import_relative('default', '..lib', top_name='trepan')
 Mmisc    = import_relative('misc', '..', 'trepan')
 Mtcpfns  = import_relative('tcpfns', '.', 'trepan')
 
-## FIXME: Consider using Python's socketserver/SocketServer?
-class TCPServer(Mbase.TrepanInOutBase):
+
+# FIXME: Consider using Python's socketserver/SocketServer?
+class TCPServer(DebuggerInOutBase):
     """Debugger Server Input/Output Socket."""
 
     DEFAULT_INIT_OPTS = {'open': True}
+
     def __init__(self, inout=None, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key, 
+        get_option = lambda key: Mmisc.option_set(opts, key,
                                                   self.DEFAULT_INIT_OPTS)
-        
+
         self.inout  = None
         self.conn   = None
         self.addr   = None
@@ -59,14 +62,15 @@ class TCPServer(Mbase.TrepanInOutBase):
         return
 
     def open(self, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key, 
+        get_option = lambda key: Mmisc.option_set(opts, key,
                                                   Mdefault.SERVER_SOCKET_OPTS)
-        
+
         self.HOST = get_option('HOST')
         self.PORT = get_option('PORT')
         self.inout = None
         for res in socket.getaddrinfo(self.HOST, self.PORT, socket.AF_UNSPEC,
-                                      socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
+                                      socket.SOCK_STREAM, 0,
+                                      socket.AI_PASSIVE):
             af, socktype, proto, canonname, sa = res
             try:
                 self.inout = socket.socket(af, socktype, proto)
@@ -77,9 +81,9 @@ class TCPServer(Mbase.TrepanInOutBase):
                 if get_option('reuse'):
                     # The following socket option allows the OS to reclaim
                     # The address faster on termination.
-                    self.inout.setsockopt(socket.SOL_SOCKET, 
+                    self.inout.setsockopt(socket.SOL_SOCKET,
                                           socket.SO_REUSEADDR, 1)
-                    
+
                     pass
                 self.inout.bind(sa)
                 self.inout.listen(1)
@@ -93,7 +97,7 @@ class TCPServer(Mbase.TrepanInOutBase):
             raise IOError('could not open server socket on port %s' %
                             self.PORT)
         return
-    
+
     def read(self):
         if len(self.buf) == 0:
             self.read_msg()
@@ -125,7 +129,7 @@ class TCPServer(Mbase.TrepanInOutBase):
         self.conn, self.addr = self.inout.accept()
         self.state = 'connected'
         return
-    
+
     def write(self, msg):
         """ This method the debugger uses to write. In contrast to
         writeline, no newline is added to the end to `str'. Also
@@ -134,7 +138,7 @@ class TCPServer(Mbase.TrepanInOutBase):
         if self.state != 'connected':
             self.wait_for_connect()
             pass
-        # FIXME: do we have to check the size of msg and split output? 
+        # FIXME: do we have to check the size of msg and split output?
         return self.conn.send(Mtcpfns.pack_msg(msg))
 
 # Demo
@@ -145,7 +149,7 @@ if __name__=='__main__':
         print('Listening for connection...')
         inout.open()
         while True:
-            try: 
+            try:
                 line = inout.read_msg().rstrip('\n')
                 print(line)
                 inout.writeline('ack: ' + line)
@@ -155,5 +159,3 @@ if __name__=='__main__':
         pass
     inout.close()
     pass
-
-

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, tempfile, traceback, types
+import inspect, linecache, sys, traceback, types
 import pyficache
 from reprlib import Repr
 
@@ -31,7 +31,7 @@ Mfile      = import_relative('file', '..lib', 'trepan')
 Mlocation  = import_relative('location', '.', 'trepan')
 Mmsg       = import_relative('msg',      '.', 'trepan')
 Mstack     = import_relative('stack', '..lib', 'trepan')
-Mthread    = import_relative('thread', '..lib', 'trepan')
+Mthread    = import_relative('thred', '..lib', 'trepan')
 
 def get_stack(f, t, botframe, proc_obj=None):
     """Return a stack of frames which the debugger will use for in
@@ -41,7 +41,6 @@ def get_stack(f, t, botframe, proc_obj=None):
     exists."""
     exclude_frame = lambda f: False
     if proc_obj:
-        dbg = proc_obj.debugger
         settings = proc_obj.debugger.settings
         if not settings['dbg_trepan']:
             exclude_frame = lambda f: \
@@ -66,12 +65,14 @@ def get_stack(f, t, botframe, proc_obj=None):
         pass
     return stack, i
 
+
 def run_hooks(obj, hooks, *args):
     """Run each function in `hooks' with args"""
     for hook in hooks:
         if hook(obj, *args): return True
         pass
     return False
+
 
 def resolve_name(obj, command_name):
     if command_name not in obj.commands:
@@ -86,24 +87,23 @@ DEFAULT_PROC_OPTS = {
     'initfile_list' : []
 }
 
+
 class BWProcessor(Mprocessor.Processor):
 
     def __init__(self, core_obj, opts=None):
-        get_option = lambda key: \
-            Mmisc.option_set(opts, key, DEFAULT_PROC_OPTS)
         Mprocessor.Processor.__init__(self, core_obj)
 
         self.response = {'errs': [], 'msg': []}
-        self.continue_running = False  # True if we should leave command loop
+        self.continue_running = False   # True if we should leave command loop
 
         self.cmd_instances    = self._populate_commands()
-        self.cmd_name         = ''     # command name before alias or
-                                       # macro resolution
-        self.current_command  = ''     # Current command getting run
+        self.cmd_name         = ''      # command name before alias or
+                                        # macro resolution
+        self.current_command  = ''      # Current command getting run
         self.debug_nest       = 1
         self.display_mgr      = Mdisplay.DisplayMgr()
         self.intf             = core_obj.debugger.intf
-        self.last_command     = None   # Initially a no-op
+        self.last_command     = None    # Initially a no-op
         self.precmd_hooks     = []
 
         # If not:
@@ -149,7 +149,7 @@ class BWProcessor(Mprocessor.Processor):
 
         A negative number indexes from the other end."""
         if not self.curframe:
-            Mmsgs.errmsg(self, "No stack.")
+            Mmsg.errmsg(self, "No stack.")
             return
 
         # Below we remove any negativity. At the end, pos will be
@@ -163,10 +163,12 @@ class BWProcessor(Mprocessor.Processor):
             pos += self.curindex
 
         if pos < 0:
-            Mmsgs.errmsg(self, "Adjusting would put us beyond the oldest frame.")
+            Mmsg.errmsg(self,
+                        "Adjusting would put us beyond the oldest frame.")
             return
         elif pos >= len(self.stack):
-            Mmsgs.errmsg(self, "Adjusting would put us beyond the newest frame.")
+            Mmsg.errmsg(self,
+                        "Adjusting would put us beyond the newest frame.")
             return
 
         self.curindex = pos
@@ -232,9 +234,9 @@ class BWProcessor(Mprocessor.Processor):
                 exc_type_name = t
                 pass
             else: exc_type_name = t.__name__
-            Mmsgs.errmsg(self, str("%s: %s" % (exc_type_name, arg)))
+            Mmsg.errmsg(self, str("%s: %s" % (exc_type_name, arg)))
             raise
-        return None # Not reached
+        return None  # Not reached
 
     def exec_line(self, line):
         if self.curframe:
@@ -252,10 +254,10 @@ class BWProcessor(Mprocessor.Processor):
             exec(code, global_vars, local_vars)
         except:
             t, v = sys.exc_info()[:2]
-            if type(t) == bytes:
+            if isinstance(t, bytes):
                 exc_type_name = t
             else: exc_type_name = t.__name__
-            Mmsgs.errmsg(self, '%s: %s' % (str(exc_type_name), str(v)))
+            Mmsg.errmsg(self, '%s: %s' % (str(exc_type_name), str(v)))
             pass
         return
 
@@ -266,10 +268,13 @@ class BWProcessor(Mprocessor.Processor):
         '''
         if hasattr(cmd_obj, 'execution_set'):
             if not (self.core.execution_status in cmd_obj.execution_set):
-                part1 = ("Command '%s' is not available for execution status:"
-                         % name)
-                Mmsgs.errmsg(self, Mmisc.wrapped_lines(part1, self.core.execution_status,
-                                                self.debugger.settings['width']))
+                part1 = ("Command '%s' is not available for execution "
+                         "status:" % name)
+                Mmsg.errmsg(self,
+                            Mmisc.
+                            wrapped_lines(part1,
+                                            self.core.execution_status,
+                                            self.debugger.settings['width']))
                 return False
             pass
         if self.frame is None and cmd_obj.need_stack:
@@ -317,11 +322,11 @@ class BWProcessor(Mprocessor.Processor):
 
     def process_command(self):
         # process command
-        self.response = {'errs':[], 'msg':[]}
+        self.response = {'errs': [], 'msg':[]}
         cmd_hash = self.intf[-1].read_command()
 
         ## FIXME: put this into a routine
-        if type(cmd_hash) is not dict:
+        if not isinstance(cmd_hash, dict):
             Mmsg.errmsg(self, "invalid input, expecting a hash: %s" % cmd_hash,
                         {'set_name': True})
             self.intf[-1].msg(self.response)
@@ -354,7 +359,7 @@ class BWProcessor(Mprocessor.Processor):
                     pass
                 pass
             else:
-                self.undefined_cmd(args)
+                self.undefined_cmd(cmd_name)
                 pass
             pass
         return False
@@ -381,7 +386,7 @@ class BWProcessor(Mprocessor.Processor):
         if self.event in ['exception', 'c_exception']:
             exc_type, exc_value, exc_traceback = self.event_arg
         else:
-            exc_type, exc_value, exc_traceback = (None, None, None,)
+            exc_type, _, exc_traceback = (None, None, None,)
             pass
         if self.frame or exc_traceback:
             self.stack, self.curindex = \
@@ -461,14 +466,18 @@ class BWProcessor(Mprocessor.Processor):
 # Demo it
 if __name__=='__main__':
     Mbullwinkle  = import_relative('bullwinkle', '..interfaces', 'trepan')
+
     class Debugger:
         def __init__(self):
             self.intf = [Mbullwinkle.BWInterface()]
             self.settings = {'dbg_trepan': True, 'reload': False}
         pass
+
     class MockCore:
         def filename(self, fn): return fn
+
         def canonic_filename(self, frame): return frame.f_code.co_filename
+
         def __init__(self):
             self.debugger = Debugger()
             return

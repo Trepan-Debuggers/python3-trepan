@@ -1,7 +1,7 @@
-# Whatever it is you want to do, it should be forwarded to the 
+# Whatever it is you want to do, it should be forwarded to the
 # to top-level irectories
-PHONY=check all
++PHONY=check lint all
 all: check
 
-check: 
+%:
 	$(MAKE) -C ../.. $@

@@ -17,12 +17,13 @@
 # Call-frame-oriented helper function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from import_relative import *
+from import_relative import import_relative
 Mcmdfns = import_relative('cmdfns',   '.')
 Mcomplete = import_relative('complete', '..lib')
 
+
 def frame_low_high(proc_obj, direction):
-    stack_size = len(proc_obj.stack) # - hide_level
+    stack_size = len(proc_obj.stack)  # - hide_level
     if direction is None:
         return [-stack_size, stack_size-1]
     else:
@@ -33,10 +34,12 @@ def frame_low_high(proc_obj, direction):
         return (low, high)
     return
 
+
 def frame_complete(proc_obj, prefix, direction):
     low, high = frame_low_high(proc_obj, direction)
     ary = [str(low+i) for i in range(high-low+1)]
     return Mcomplete.complete_token(ary, prefix)
+
 
 def adjust_frame(proc_obj, name, pos, absolute_pos):
     """Adjust stack frame by pos positions. If absolute_pos then
@@ -74,6 +77,7 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
 
     return
 
+
 def adjust_relative(proc_obj, name, args, signum):
     if not proc_obj.stack:
         proc_obj.errmsg("Program has no stack frame set.")
@@ -81,13 +85,12 @@ def adjust_relative(proc_obj, name, args, signum):
     if len(args) == 1:
         count = 1
     else:
-        i_stack = len(proc_obj.stack)
         count_str = args[1]
         low, high = frame_low_high(proc_obj, signum)
         count = Mcmdfns.get_an_int( proc_obj.errmsg, count_str,
-                                    ("The '%s' command argument must eval to an" +
-                                     " integer. Got: %s") % (name, count_str),
-                                    low, high )
+                                    ("The '%s' command argument must eval to" +
+                                     " an integer. Got: %s") %
+                                     (name, count_str), low, high )
         if count is None: return
         pass
 

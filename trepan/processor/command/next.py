@@ -61,7 +61,7 @@ the debugger setting 'different-line' determines this behavior.
             Mcmdfns.want_different_line(args[0], 
                                         self.debugger.settings['different'])
         self.core.set_next(self.proc.frame, step_ignore)
-        self.proc.continue_running = True # Break out of command read loop
+        self.proc.continue_running = True   # Break out of command read loop
         return True
     pass
 

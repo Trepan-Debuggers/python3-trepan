@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@ import atexit, os
 from import_relative import *
 import_relative('interfaces',  '..')
 Minterface = import_relative('interface',  '..', 'trepan')
-Minput     = import_relative('input', '..io', 'trepan')
-Moutput    = import_relative('output', '..io', 'trepan')
+Minput     = import_relative('input', '..inout', 'trepan')
+Moutput    = import_relative('output', '..inout', 'trepan')
 Mmisc      = import_relative('misc', '...trepan')
 
 histfile = os.path.expanduser('~/.trepan3k_hist')
 
 DEFAULT_USER_SETTINGS = {
-    'histfile'     : histfile, # Where do we save the history?
+    'histfile'     : histfile,  # Where do we save the history?
 }
 
 try:
@@ -47,8 +47,8 @@ class UserInterface(Minterface.TrepanInterface):
 
         atexit.register(self.finalize)
         self.interactive = True # Or at least so we think initially
-        self.input       = inp or Minput.TrepanUserInput()
-        self.output      = out or Moutput.TrepanUserOutput()
+        self.input       = inp or Minput.DebuggerUserInput()
+        self.output      = out or Moutput.DebuggerUserOutput()
         if self.input.use_history():
             complete = get_option('complete')
             if complete:

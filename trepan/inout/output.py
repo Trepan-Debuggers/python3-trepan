@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009,2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009,2013,2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import io, sys, types
 from import_relative import import_relative
 Mbase  = import_relative('base', top_name='trepan')
 
-class TrepanUserOutput(Mbase.TrepanOutputBase):
+class DebuggerUserOutput(Mbase.DebuggerInOutBase):
     """Debugger output shown directly to what we think of as end-user
     ouptut as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
@@ -63,7 +63,7 @@ class TrepanUserOutput(Mbase.TrepanOutputBase):
 
 # Demo
 if __name__=='__main__':
-    out = TrepanUserOutput()
+    out = DebuggerUserOutput()
     out.writeline("Hello, world!")
     out.write("Hello");
     out.writeline(", again.");

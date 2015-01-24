@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,25 +21,25 @@ if hasattr(os, 'mkfifo'):
     import atexit, tempfile
 
     from import_relative import import_relative
-    Mbase    = import_relative('base', '..io')
-    Mdefault = import_relative('lib.default', '...trepan')
-    Mmisc    = import_relative('misc', '...trepan')
+    from trepan.inout.base import DebuggerInOutBase
+    Mmisc    = import_relative('misc', '..')
 
-    ## FIXME: Consider using Python's socketserver/SocketServer?
-    class FIFOServer(Mbase.TrepanInOutBase):
+    # FIXME: Consider using Python's socketserver/SocketServer?
+    class FIFOServer(DebuggerInOutBase):
         """Debugger Server Input/Output Socket."""
 
         DEFAULT_INIT_OPTS = {'open': True}
+
         def __init__(self, opts=None):
             get_option = lambda key: Mmisc.option_set(opts, key,
                                                       self.DEFAULT_INIT_OPTS)
             atexit.register(self.close)
             self.flush_after_write = True
-            self.line_edit = False # Our name for GNU readline capability
-            self.in_name   = None  # String: input file name
-            self.input     = None  # File Descriptor
-            self.out_name  = None  # String: output file name
-            self.output    = None  # String: output file name
+            self.line_edit = False  # Our name for GNU readline capability
+            self.in_name   = None   # String: input file name
+            self.input     = None   # File Descriptor
+            self.out_name  = None   # String: output file name
+            self.output    = None   # String: output file name
             self.state     = 'disconnected'
             if get_option('open'):
                 self.open(opts)
@@ -98,7 +98,7 @@ if hasattr(os, 'mkfifo'):
                 return line.rstrip("\n")
             else:
                 raise EOFError
-            return # Not reached
+            return  # Not reached
 
         def write(self, msg):
             """ This method the debugger uses to write. In contrast to

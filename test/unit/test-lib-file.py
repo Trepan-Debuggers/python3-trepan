@@ -6,6 +6,7 @@ from import_relative import import_relative
 import_relative('lib', '...trepan')
 Mfile = import_relative('lib.file', '...trepan')
 
+
 class TestLibFile(unittest.TestCase):
 
     def test_lookupmodule(self):

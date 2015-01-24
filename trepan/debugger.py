@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,19 +28,15 @@ user or client-side code for connecting to server'd debugged program.
 """
 
 # Our local modules
-from import_relative import import_relative
 
-import_relative('processor', '.')
-
-Mcore   = import_relative('core', '.lib')
-Mexcept = import_relative('exception', '.')
+from trepan.exception import DebuggerQuit, DebuggerRestart
 
 # Default settings used here
-Mdefault  = import_relative('lib.default', '.')
-
-Muser     = import_relative('interfaces.user', '.')
-Mmisc     = import_relative('misc', '.')
-Msig      = import_relative('sighandler', '.lib')
+import trepan.lib.default as Mdefault
+import trepan.interfaces.user as Muser
+from trepan.misc import option_set
+import trepan.lib.sighandler as Msig
+import trepan.processor.cmdproc as Mcmdproc
 
 # Common Python packages
 import sys, types
@@ -94,12 +90,12 @@ class Trepan:
         except SyntaxError:
             try:
                 exec(cmd, globals_, locals_)
-            except Mexcept.DebuggerQuit:
+            except DebuggerQuit:
                 pass
-            except Mexcept.DebuggerQuit:
+            except DebuggerQuit:
                 pass
             pass
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             pass
         finally:
             self.core.stop()
@@ -146,7 +142,7 @@ class Trepan:
         self.core.start(opts=start_opts)
         try:
             res = func(*args, **kwds)
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             pass
         finally:
             self.core.stop()
@@ -175,7 +171,7 @@ class Trepan:
         self.core.start(start_opts)
         try:
             retval = eval(expr, globals_, locals_)
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             pass
         finally:
             self.core.stop()
@@ -270,8 +266,7 @@ class Trepan:
         'settings'    : Mdefault.DEBUGGER_SETTINGS,
 
         'start_opts'  : Mdefault.START_OPTS,
-        'step_ignore' : 0,
-        }
+        'step_ignore' : 0, }
 
     def __init__(self, opts=None):
         """Create a debugger object. But depending on the value of
@@ -281,11 +276,13 @@ class Trepan:
         See also Debugger.start and Debugger.stop.
         """
 
+        import trepan.lib.core as Mcore
+
         self.mainpyfile  = None
         self.thread      = None
         self.eval_string = None
-        get_option = lambda key: Mmisc.option_set(opts, key,
-                                                  self.DEFAULT_INIT_OPTS)
+        get_option = lambda key: option_set(opts, key,
+                                            self.DEFAULT_INIT_OPTS)
         completer  = lambda text, state: self.complete(text, state)
 
         # set the instance variables that come directly from options.
@@ -387,13 +384,14 @@ if __name__=='__main__':
                     print("%d" % (i+1)*10)
                     pass
                 d.core.stop()
+
                 def square(x): return x*x
                 print('calling: run_call(square,2)')
                 d.run_call(square, 2)
-            except Mexcept.DebuggerQuit:
+            except DebuggerQuit:
                 print("That's all Folks!...")
                 break
-            except Mexcept.DebuggerRestart:
+            except DebuggerRestart:
                 print('Restarting...')
                 pass
             pass

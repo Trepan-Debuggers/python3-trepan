@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ import atexit
 # Our local modules
 from import_relative import *
 Minterface = import_relative('interface', '..',   'trepan')
-Mscriptin  = import_relative('scriptin',  '..io', 'trepan')
-Moutput    = import_relative('output',    '..io', 'trepan')
+Mscriptin  = import_relative('scriptin',  '..inout', 'trepan')
+Moutput    = import_relative('output',    '..inout', 'trepan')
 Mmisc      = import_relative('misc',      '..',   'trepan')
 
 class ScriptInterface(Minterface.TrepanInterface):
@@ -33,7 +33,7 @@ class ScriptInterface(Minterface.TrepanInterface):
         }
 
     def __init__(self, script_name, out=None, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key, 
+        get_option = lambda key: Mmisc.option_set(opts, key,
                                                   self.DEFAULT_INIT_OPTS)
 
         atexit.register(self.finalize)
@@ -42,7 +42,7 @@ class ScriptInterface(Minterface.TrepanInterface):
         self.input_lineno    = 0
         self.input           = Mscriptin.ScriptInput(script_name)
         self.interactive     = False
-        self.output          = out or Moutput.TrepanUserOutput()
+        self.output          = out or Moutput.DebuggerUserOutput()
 
         self.abort_on_error  = get_option('abort_on_error')
         self.default_confirm = get_option('confirm_val')
@@ -69,7 +69,7 @@ class ScriptInterface(Minterface.TrepanInterface):
         #  here. Perhaps there should be a 'terse' mode to never show
         #  position info.
         if not self.verbose:
-            location = ("%s:%s: Error in source command file" 
+            location = ("%s:%s: Error in source command file"
                         % (self.script_name, self.input_lineno))
             msg = "%s%s:\n%s%s" %(prefix, location, prefix, msg)
         else:
@@ -87,7 +87,7 @@ class ScriptInterface(Minterface.TrepanInterface):
         return
 
     def read_command(self, prompt=''):
-        '''Script interface to read a command. `prompt' is a parameter for 
+        '''Script interface to read a command. `prompt' is a parameter for
         compatibilty and is ignored.'''
         self.input_lineno += 1
         line = self.readline()
@@ -100,7 +100,7 @@ class ScriptInterface(Minterface.TrepanInterface):
 
     # Could decide make this look for interactive input?
     def readline(self, prompt=''):
-        '''Script interface to read a line. `prompt' is a parameter for 
+        '''Script interface to read a line. `prompt' is a parameter for
         compatibilty and is ignored.'''
         return self.input.readline()
 

@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mclifns = import_relative('clifns', '...trepan')
 
+
 class TestCLIFns(unittest.TestCase):
 
     def test_clifns(self):
@@ -27,12 +28,14 @@ class TestCLIFns(unittest.TestCase):
         # we pick up is also used.
         frame = inspect.currentframe()
         lineno = frame.f_lineno
-        self.assertTrue(Mclifns.is_ok_line_for_breakpoint(filename,
-                                                          lineno, sys.stdout.write))
+        self.assertTrue(Mclifns
+                        .is_ok_line_for_breakpoint(filename,
+                                                   lineno, sys.stdout.write))
 
-        self.assertFalse(Mclifns.is_ok_line_for_breakpoint(filename,
-                                                           lineno-5, sys.stdout.write))
-
+        self.assertFalse(Mclifns
+                         .is_ok_line_for_breakpoint(filename,
+                                                    lineno-5,
+                                                    sys.stdout.write))
         return
 
 if __name__ == '__main__':

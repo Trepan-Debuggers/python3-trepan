@@ -5,6 +5,7 @@ import unittest
 from import_relative import import_relative
 Mcomplete = import_relative('lib.complete', '...trepan')
 
+
 class TestLibComplete(unittest.TestCase):
 
     def test_complete(self):
@@ -24,7 +25,8 @@ class TestLibComplete(unittest.TestCase):
             [['aa', 'aac'], 'aa'],
             [['ab'], 'ab'], [[], 'abc']]:
             result = [[key, hash[key]] for key in result_keys]
-            self.assertEqual(result, Mcomplete.complete_token_with_next(hash, prefix),
+            self.assertEqual(result,
+                             Mcomplete.complete_token_with_next(hash, prefix),
                              "Trouble matching %s on %s" %
                              (repr(hash), prefix))
             pass
@@ -39,8 +41,7 @@ class TestLibComplete(unittest.TestCase):
                 [8, [13, 'the']],
                 [9, [13, 'the']],
                 [13, [19, 'time']],
-                [19, [19, '']],
-                ]:
+                [19, [19, '']], ]:
             self.assertEqual(expect, Mcomplete.next_token(x, pos),
                              "Trouble with next_token(%s, %d)" % (x, pos))
             pass

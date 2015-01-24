@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2012-2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2012-2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ from import_relative import import_relative
 Mformat = import_relative('format',  '...lib', 'trepan')
 
 __all__ = ['DebuggerCommand']
+
 
 class DebuggerCommand:
     """Base Class for Debugger commands. We pull in some helper
@@ -116,6 +117,8 @@ class DebuggerCommand:
     def section(self, message, opts={}):
         if 'plain' != self.settings['highlight']:
             message = colorize('bold', message)
+        else:
+            message += "\n" + '-' * len(message)
             pass
         self.msg(message)
 

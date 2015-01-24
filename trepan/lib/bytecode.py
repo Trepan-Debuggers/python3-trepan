@@ -18,6 +18,7 @@
 import dis, re
 from opcode import opname, HAVE_ARGUMENT
 
+
 def op_at_code_loc(code, loc):
     try:
         op = code[loc]
@@ -25,10 +26,12 @@ def op_at_code_loc(code, loc):
         return 'got IndexError'
     return opname[op]
 
+
 def op_at_frame(frame, loc=None):
     code = frame.f_code.co_code
     if loc is None: loc = frame.f_lasti
     return op_at_code_loc(code, loc)
+
 
 def next_opcode(code, offset):
     '''Return the next opcode and offset as a tuple. Tuple (-100,
@@ -51,7 +54,7 @@ def next_linestart(co, offset, count=1):
     # n = len(code)
     # contains_cond_jump = False
     for op, offset in next_opcode(code, offset):
-        if offset in linestarts: 
+        if offset in linestarts:
             count -= 1
             if 0 == count:
                 return linestarts[offset]
@@ -59,21 +62,22 @@ def next_linestart(co, offset, count=1):
         pass
     return -1000
 
+
 def stmt_contains_opcode(co, lineno, query_opcode):
     linestarts = dict(dis.findlinestarts(co))
     code = co.co_code
     found_start = False
     for offset, start_line in list(linestarts.items()):
-        if start_line == lineno: 
+        if start_line == lineno:
             found_start = True
             break
         pass
-    if not found_start: 
+    if not found_start:
         return False
     for op, offset in next_opcode(code, offset):
         if -1000 == offset or linestarts.get(offset): return False
         opcode = opname[op]
-        ##debug: print opcode
+        # debug: print opcode
         if query_opcode == opcode:
             return True
         pass
@@ -81,6 +85,8 @@ def stmt_contains_opcode(co, lineno, query_opcode):
 
 _re_def_str = r'^\s*def\s'
 _re_def = re.compile(_re_def_str)
+
+
 def is_def_stmt(line, frame):
     """Return True if we are looking at a def statement"""
     # Should really also check that operand of 'LOAD_CONST' is a code object
@@ -89,21 +95,24 @@ def is_def_stmt(line, frame):
                                           'MAKE_FUNCTION'))
 
 _re_class = re.compile(r'^\s*class\s')
+
+
 def is_class_def(line, frame):
     """Return True if we are looking at a class definition statement"""
-    return (line and _re_class.match(line) 
+    return (line and _re_class.match(line)
             and stmt_contains_opcode(frame.f_code, frame.f_lineno,
                                      'BUILD_CLASS'))
 
 # Demo stuff above
 if __name__=='__main__':
     import inspect
+
     def sqr(x):
         return x * x
     frame = inspect.currentframe()
     co = frame.f_code
     lineno = frame.f_lineno
-    print('contains MAKE_FUNCTION %s' % stmt_contains_opcode(co, lineno-4, 
+    print('contains MAKE_FUNCTION %s' % stmt_contains_opcode(co, lineno-4,
                                                              'MAKE_FUNCTION'))
     print('contains MAKE_FUNCTION %s' % stmt_contains_opcode(co, lineno,
                                                              'MAKE_FUNCTION'))

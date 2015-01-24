@@ -15,6 +15,7 @@ import signal
 
 Mmock = import_relative('processor.command.mock', '...trepan')
 
+
 class TestHelp(unittest.TestCase):
     """Tests HelpCommand class"""
 

@@ -47,7 +47,7 @@ var an assignment might have multiple variables on the left-hand side.
 
 See also `set autoeval`, `pr`, `pp` and `examine`.
 """
-    aliases       = ('eval?','?')
+    aliases       = ('eval?', '?')
     category      = 'data'
     min_args      = 0
     max_args      = None

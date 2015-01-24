@@ -16,10 +16,10 @@ class TestJump(unittest.TestCase):
         x = 5
         x = 6
         x = 7
-        z = 8
+        z = 8  # NOQA
         ##############################
         d.core.stop(options={'remove': True})
-        out = ['-- x = 5', # x = 10 is shown in prompt, but not run.
+        out = ['-- x = 5',  # x = 10 is shown in prompt, but not run.
                '-- x = 6',
                '-- z = 8']
         compare_output(self, out, d, cmds)
@@ -29,9 +29,3 @@ class TestJump(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-

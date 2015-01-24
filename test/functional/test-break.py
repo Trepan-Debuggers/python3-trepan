@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import unittest
-from fn_helper import *
+from fn_helper import compare_output, strarray_setup
+
 
 class TestBreak(unittest.TestCase):
     def test_break_on_function(self):

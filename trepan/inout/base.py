@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Classes to support communication to and from the debugger.  This
+"""classes to support communication to and from the debugger.  This
 communcation might be to/from another process or another computer.
 And reading may be from a debugger command script.
 
-For example, we'd like to support sockets, and serial lines and file
+For example, we'd like to support Sockets, and serial lines and file
 reading, as well a readline-type input. Encryption and Authentication
 methods might decorate some of the communication channels.
 
@@ -28,7 +28,7 @@ Code project.
 from abc import ABCMeta
 NotImplementedMessage = "This method must be overriden in a subclass"
 
-class TrepanInputBase(metaclass=ABCMeta):
+class DebuggerInputBase(metaclass=ABCMeta):
     """This is an abstract class that specifies debugger input."""
 
     def __init__(self, inp=None, opts=None):
@@ -62,7 +62,7 @@ class TrepanInputBase(metaclass=ABCMeta):
 
     pass
 
-class TrepanOutputBase(metaclass=ABCMeta):
+class DebuggerInOutBase(metaclass=ABCMeta):
     """ This is an abstract class that specifies debugger output. """
 
     def __init__(self, out=None, opts=None):
@@ -114,7 +114,6 @@ class TrepanInOutBase(metaclass=ABCMeta):
         """Use this to set where to read from. """
         raise NotImplementedError(NotImplementedMessage)
 
-
     def readline(self, use_raw=None):
         """Read a line of input. EOFError will be raised on EOF.
 
@@ -144,12 +143,12 @@ class TrepanInOutBase(metaclass=ABCMeta):
 
 # Demo
 if __name__=='__main__':
-    class MyInput(TrepanInputBase):
+    class MyInput(DebuggerInputBase):
         def open(self, inp, opts=None):
-            print(("open(%s) called" % inp))
+            print("open(%s) called" % inp)
             pass
         pass
-    class MyOutput(TrepanOutputBase):
+    class MyOutput(DebuggerInOutBase):
         def writeline(self, s):
             print("writeline:", s)
             pass

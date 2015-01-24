@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,18 +16,20 @@
 """Debugger Script input interface. """
 
 import io
+import types
 
 from import_relative import import_relative, get_srcdir
 Mbase = import_relative('base', top_name='trepan')
 
-# Do we need this? 
-class ScriptInput(Mbase.TrepanInputBase):
-    """Trepan Script input - largely the same as TrepanInput."""
+
+# Do we need this?
+class ScriptInput(Mbase.DebuggerInputBase):
+    """Debugger Script input - largely the same as DebuggerInput."""
 
     def __init__(self, inp, opts=None):
 
         self.input     = None
-        self.line_edit = False # Our name for GNU readline capability
+        self.line_edit = False  # Our name for GNU readline capability
         self.name      = None
         self.open(inp, opts)
         return
@@ -71,7 +73,7 @@ if __name__=='__main__':
     my_file = os.path.join(get_srcdir(), 'scriptin.py')
     inp.open(my_file, opts={'use_raw': False})
     while True:
-        try: 
+        try:
             inp.readline()
         except EOFError:
             break
@@ -81,4 +83,3 @@ if __name__=='__main__':
     except EOFError:
         print('EOF handled correctly')
     pass
-

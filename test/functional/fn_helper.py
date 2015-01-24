@@ -21,6 +21,8 @@ def strarray_setup(debugger_cmds):
 import re
 trepan_prompt = re.compile(r'^.. \d+.*\n\(trepan3k(:.+)?\) ')
 trepan_loc    = re.compile(r'^\(.+:\d+\): ')
+
+
 def filter_line_cmd(a):
     '''Return output with source lines prompt and command removed'''
     # Remove extra leading spaces.
@@ -39,10 +41,12 @@ def filter_line_cmd(a):
     a3 = [re.sub(r'\n\(.*:\d+\):.*', '', s) for s in a2]
     return a3
 
+
 def get_lineno():
     """Return the caller's line number"""
     caller = sys._getframe(1)
     return caller.f_lineno
+
 
 def compare_output(obj, right, d, debugger_cmds):
     got = filter_line_cmd(d.intf[-1].output.output)

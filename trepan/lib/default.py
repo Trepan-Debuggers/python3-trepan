@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,15 +19,9 @@ from os import environ as ENV
 
 # External Egg packages
 import os, tracer
-from tracer import *
+from columnize import computed_displaywidth
 
-width = 80
-if 'COLUMNS' in ENV:
-    try:
-        width = int(ENV['COLUMNS'])
-    except:
-        pass
-    pass
+width = computed_displaywidth()
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to
@@ -140,14 +134,13 @@ DEBUGGER_SETTINGS = {
 
 CLIENT_SOCKET_OPTS = {
     'HOST': '127.0.0.1',
-    'PORT': 1027          # Arbitrary non-privileged port
-    }
+    'PORT': 1027  }      # Arbitrary non-privileged port
 
 
 SERVER_SOCKET_OPTS = {
     'HOST':  None,   # Symbolic name meaning all available interfaces
     'PORT':  1027,   # Arbitrary non-privileged port
-    'reuse': 'posix' == os.name # Allow port to be resued on close?
+    'reuse': 'posix' == os.name  # Allow port to be resued on close?
     }
 
 # Default settings on the Debugger#start() method call

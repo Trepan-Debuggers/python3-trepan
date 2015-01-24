@@ -26,6 +26,7 @@ from import_relative import import_relative
 
 __all__ = ['DebuggerCommand']
 
+
 class DebuggerCommand:
     """Base Class for Debugger commands. We pull in some helper
     functions for command from module cmdfns."""
@@ -93,7 +94,6 @@ class DebuggerCommand:
     pass
 
 if __name__ == '__main__':
-    from import_relative import import_relative
     mock = import_relative('mock')
     d, cp = mock.dbg_setup()
     dd = DebuggerCommand(cp)

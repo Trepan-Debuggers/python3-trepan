@@ -19,6 +19,7 @@ on/off setting value.
 '''
 import sys, types
 
+
 def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
     """Another get_int() routine, this one simpler and less stylized
     than get_int(). We eval arg return it as an integer value or
@@ -64,6 +65,7 @@ def get_int(errmsg, arg, default=1, cmdname=None):
             raise ValueError
     return default
 
+
 def get_onoff(errmsg, arg, default=None, print_error=True):
     """Return True if arg is 'on' or 1 and False arg is 'off' or 0.
     Any other value is raises ValueError."""
@@ -81,6 +83,7 @@ def get_onoff(errmsg, arg, default=None, print_error=True):
         errmsg("Expecting 'on', 1, 'off', or 0. Got: %s." % str(arg))
     raise ValueError
 
+
 def get_val(curframe, errmsg, arg):
     try:
         return eval(arg, curframe.f_globals,
@@ -92,7 +95,8 @@ def get_val(curframe, errmsg, arg):
         else: exc_type_name = t.__name__
         errmsg(str("%s: %s" % (exc_type_name, arg)))
         raise
-    return # Not reached
+    return  # Not reached
+
 
 def run_set_bool(obj, args):
     """set a Boolean-valued debugger setting. 'obj' is a generally a
@@ -122,11 +126,13 @@ def run_show_bool(obj, what=None):
     if not what: what = obj.name
     return obj.msg("%s is %s." % (what, val))
 
+
 def run_show_int(obj, what=None):
     """Generic subcommand integer value display"""
     val = obj.debugger.settings[obj.name]
     if not what: what = obj.name
     return obj.msg("%s is %d." % (what, val))
+
 
 def show_onoff(b):
     """Return 'on' for True and 'off' for False, and ?? for anything
@@ -137,11 +143,13 @@ def show_onoff(b):
         return "on"
     return "off"
 
+
 def run_show_val(obj, name):
     """Generic subcommand value display"""
     val = obj.debugger.settings[obj.name]
     obj.msg("%s is %s." % (obj.name, obj.cmd.proc._saferepr(val),))
     return False
+
 
 def want_different_line(cmd, default):
     if cmd[-1] == '-':

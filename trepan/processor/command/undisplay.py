@@ -38,13 +38,13 @@ Use `info display` to see current list of code numbers.
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
-    short_help    = 'Cancel some expressions to be displayed when program stops'
+    short_help    = ('Cancel some expressions to be displayed '
+                     'when program stops')
 
     def complete(self, prefix):
         completions = [str(disp.number) for disp in
                        self.proc.display_mgr.list]
         return Mcomplete.complete_token(completions, prefix)
-
 
     def run(self, args):
 

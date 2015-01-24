@@ -42,8 +42,10 @@ __title__ = package
 
 # VERSION.py sets variable VERSION.
 VERSION='??'
-exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(), os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
+exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(),
+             os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
 __version__ = VERSION
+
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
@@ -51,7 +53,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv  = Moptions.process_options(__title__, __version__,
+    opts, dbg_opts, sys_argv  = Moptions.process_options(__title__,
+                                                         __version__,
                                                          sys_argv)
 
     if opts.server is not None:
@@ -64,7 +67,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         if 'FIFO' == intf.server_type:
             print('Starting FIFO server for process %s.' % os.getpid())
         elif 'TCP' == intf.server_type:
-            print('Starting TCP server listening on port %s.' % intf.inout.PORT)
+            print('Starting TCP server listening on port %s.' %
+                  intf.inout.PORT)
             pass
     elif opts.client:
         Mclient.main(opts, sys_argv)
@@ -87,17 +91,17 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # anyway
         mainpyfile = None
     else:
-        mainpyfile = sys_argv[0] # Get script filename.
+        mainpyfile = sys_argv[0]  # Get script filename.
         if not os.path.isfile(mainpyfile):
             mainpyfile=Mclifns.whence_file(mainpyfile)
             is_readable = Mfile.readable(mainpyfile)
             if is_readable is None:
-                print("%s: Python script file '%s' does not exist" \
+                print("%s: Python script file '%s' does not exist"
                       % (__title__, mainpyfile,))
                 sys.exit(1)
             elif not is_readable:
-                print("%s: Can't read Python script file '%s'" \
-                    % (__title__, mainpyfile,))
+                print("%s: Can't read Python script file '%s'"
+                      % (__title__, mainpyfile, ))
                 sys.exit(1)
                 return
 
@@ -106,7 +110,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         mainpyfile_noopt = Mfile.file_pyc2py(mainpyfile)
         if mainpyfile != mainpyfile_noopt \
                and Mfile.readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that." % __title__)
+            print("%s: Compiled Python script given and we can't use that."
+                  % __title__)
             print("%s: Substituting non-compiled name: %s" % (
                 __title__, mainpyfile_noopt,))
             mainpyfile = mainpyfile_noopt

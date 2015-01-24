@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.cmdfns'
 import unittest
+import trepan
 from import_relative import import_relative
 
 Mcmdfns = import_relative('processor.cmdfns', '...trepan')
+
 
 class TestCommandHelper(unittest.TestCase):
 
@@ -20,10 +22,10 @@ class TestCommandHelper(unittest.TestCase):
         self.assertEqual(0, len(self.errors))
         self.assertEqual(6, Mcmdfns.get_an_int(self.errmsg, '6*1', 'foo', 5))
         self.assertEqual(0, len(self.errors))
-        self.assertEqual(None, Mcmdfns.get_an_int(self.errmsg, '0', 
+        self.assertEqual(None, Mcmdfns.get_an_int(self.errmsg, '0',
                                                   '0 is too small', 5))
         self.assertEqual(1, len(self.errors))
-        self.assertEqual(None, Mcmdfns.get_an_int(self.errmsg, '4+a', 
+        self.assertEqual(None, Mcmdfns.get_an_int(self.errmsg, '4+a',
                                                   '4+a is invalid', 5))
         self.assertEqual('4+a is invalid', self.errors[-1])
         return
@@ -33,7 +35,7 @@ class TestCommandHelper(unittest.TestCase):
         self.assertEqual(3, Mcmdfns.get_int(self.errmsg, '1+2', 5))
         self.assertEqual(5, Mcmdfns.get_int(self.errmsg, None, 5))
         self.assertEqual(1, Mcmdfns.get_int(self.errmsg, None))
-        self.assertRaises(ValueError, Mcmdfns.get_int, 
+        self.assertRaises(ValueError, Mcmdfns.get_int,
                           *(self.errmsg, 'Foo', 5,))
         return
 
@@ -45,18 +47,20 @@ class TestCommandHelper(unittest.TestCase):
             self.assertEqual(False, Mcmdfns.get_onoff(self.errmsg, arg))
             pass
         for result in (True, False,):
-            self.assertEqual(result, Mcmdfns.get_onoff(self.errmsg, None, result))
+            self.assertEqual(result, Mcmdfns.get_onoff(self.errmsg, None,
+                                                       result))
             pass
-        self.assertRaises(ValueError, Mcmdfns.get_onoff, *(self.errmsg, 'Foo',))
+        self.assertRaises(ValueError, Mcmdfns.get_onoff, *(self.errmsg,
+                                                           'Foo',))
         return
 
     def test_want_different_line(self):
         for cmd, default, expected in [
-            ('s+', False, True,),
-            ('s-', True,  False,),
-            ('s',  False, False,),
-            ('n',  True,  True,),]:
-            self.assertEqual(expected, 
+        ('s+', False, True,),
+        ('s-', True,  False,),
+        ('s',  False, False,),
+        ('n',  True,  True,), ]:
+            self.assertEqual(expected,
                              Mcmdfns.want_different_line(cmd, default),
                              cmd)
             pass

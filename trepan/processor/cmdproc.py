@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ Mdisplay   = import_relative('display', '..lib', 'trepan')
 Mmisc      = import_relative('misc', '..', 'trepan')
 Mfile      = import_relative('file', '..lib', 'trepan')
 Mstack     = import_relative('stack', '..lib', 'trepan')
-Mthread    = import_relative('thread', '..lib', 'trepan')
+Mthread    = import_relative('thred', '..lib', 'trepan')
 Mcomplete  = import_relative('processor.complete', '...trepan')
 
 # arg_split culled from ipython's routine
@@ -63,7 +63,6 @@ def get_stack(f, t, botframe, proc_obj=None):
     exists."""
     exclude_frame = lambda f: False
     if proc_obj:
-        dbg = proc_obj.debugger
         settings = proc_obj.debugger.settings
         if not settings['dbg_trepan']:
             exclude_frame = lambda f: \
@@ -247,7 +246,8 @@ class CommandProcessor(Mprocessor.Processor):
         self.cmd_name         = ''     # command name before alias or
                                        # macro resolution
         self.cmd_queue        = []     # Queued debugger commands
-        self.completer        = lambda text, state: Mcomplete.completer(self, text, state)
+        self.completer        = lambda text, state: \
+          Mcomplete.completer(self, text, state)
         self.current_command  = ''     # Current command getting run
         self.debug_nest       = 1
         self.display_mgr      = Mdisplay.DisplayMgr()
@@ -363,7 +363,7 @@ class CommandProcessor(Mprocessor.Processor):
             else: exc_type_name = t.__name__
             self.errmsg(str("%s: %s" % (exc_type_name, arg)))
             raise
-        return None # Not reached
+        return None  # Not reached
 
     def exec_line(self, line):
         if self.curframe:
@@ -440,8 +440,9 @@ class CommandProcessor(Mprocessor.Processor):
             except:
                 modfunc = arg
                 pass
-            msg = ('Object %s is not known yet as a function, module, or is not found'
-                   + ' along sys.path, and not a line number.') % str(repr(arg))
+            msg = ('Object %s is not known yet as a function, module, '
+                   'or is not found along sys.path, '
+                   'and not a line number.') % str(repr(arg))
             try:
                 # See if argument is a module or function
                 if inspect.isfunction(modfunc):
@@ -740,7 +741,7 @@ class CommandProcessor(Mprocessor.Processor):
         if self.event in ['exception', 'c_exception']:
             exc_type, exc_value, exc_traceback = self.event_arg
         else:
-            exc_type, exc_value, exc_traceback = (None, None, None,)
+            _, _, exc_traceback = (None, None, None,)
             pass
         if self.frame or exc_traceback:
             self.stack, self.curindex = \
@@ -754,8 +755,8 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         if self.curframe:
             self.list_lineno = \
-                max(1, inspect.getlineno(self.curframe) \
-                        - int(self.settings('listsize') / 2)) - 1
+                max(1, inspect.getlineno(self.curframe)
+                    - int(self.settings('listsize') / 2)) - 1
             self.list_filename = self.curframe.f_code.co_filename
         else:
             self.list_lineno = None
@@ -808,11 +809,60 @@ class CommandProcessor(Mprocessor.Processor):
         name, we will create an instance of that class. The set of
         DebuggerCommand class instances form set of possible debugger
         commands."""
+        import trepan.processor.command as Mcommand
+        if hasattr(Mcommand, '__modules__'):
+            return self.populate_commands_easy_install(Mcommand)
+        else:
+            return self.populate_commands_pip(Mcommand)
+
+    def populate_commands_pip(self, Mcommand):
         cmd_instances = []
-        Mcommand = import_relative('command')
+        eval_cmd_template = 'command_mod.%s(self)'
+        for mod_name in Mcommand.__dict__.keys():
+            if mod_name.startswith('__'): continue
+            import_name = "trepan.processor.command." + mod_name
+            imp = __import__(import_name)
+            if imp.__name__ == 'trepan':
+                command_mod = imp.processor.command
+            else:
+                if mod_name in ('info_sub', 'set_sub', 'show_sub',):
+                    pass
+                try:
+                    command_mod = getattr(__import__(import_name), mod_name)
+                except:
+                    print('Error importing %s: %s' %
+                          (mod_name, sys.exc_info()[0]))
+                    continue
+                pass
+
+            classnames = [ tup[0] for tup in
+                           inspect.getmembers(command_mod, inspect.isclass)
+                           if ('DebuggerCommand' != tup[0] and
+                               tup[0].endswith('Command')) ]
+            for classname in classnames:
+                eval_cmd = eval_cmd_template % classname
+                if False:
+                    instance = eval(eval_cmd)
+                    cmd_instances.append(instance)
+                else:
+                    try:
+                        instance = eval(eval_cmd)
+                        cmd_instances.append(instance)
+                    except:
+                        print('Error loading %s from %s: %s' %
+                              (classname, mod_name, sys.exc_info()[0]))
+                        pass
+                    pass
+                pass
+            pass
+        return cmd_instances
+
+    def populate_commands_easy_install(self, Mcommand):
+        cmd_instances = []
         eval_cmd_template = 'command_mod.%s(self)'
         srcdir = get_srcdir()
         sys.path.insert(0, srcdir)
+
         for mod_name in Mcommand.__modules__:
             if mod_name in ('info_sub', 'set_sub', 'show_sub',):
                 pass
@@ -935,7 +985,8 @@ if __name__=='__main__':
     print(cmdproc.commands)
     fn = cmdproc.commands['quit']
 
-    print('Removing non-existing quit hook: %s' % cmdproc.remove_preloop_hook(fn))
+    print('Removing non-existing quit hook: %s' %
+          cmdproc.remove_preloop_hook(fn))
     cmdproc.add_preloop_hook(fn)
     print(cmdproc.preloop_hooks)
     print('Removed existing quit hook: %s' % cmdproc.remove_preloop_hook(fn))

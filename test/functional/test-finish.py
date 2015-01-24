@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import unittest
-from fn_helper import *
+from fn_helper import compare_output, strarray_setup
+
 
 class TestFinish(unittest.TestCase):
     def test_finish_same_level(self):
@@ -10,19 +11,21 @@ class TestFinish(unittest.TestCase):
         cmds = ['step 5', 'finish', 'continue']
         d = strarray_setup(cmds)
         d.core.start()
+
         def bar():
-            x = 3
+            x = 3  # NOQA
             return 1
+
         def foo():
             bar()
-            x = 2
+            x = 2  # NOQA
             return 5
         foo()
         d.core.stop()
         out = ['-- def foo():',
                '-- x = 3',
                '<- return 1',
-               '<- return 5', # FIXME this isn't right
+               '<- return 5',  # FIXME this isn't right
                ]
         compare_output(self, out, d, cmds)
 
@@ -51,9 +54,3 @@ class TestFinish(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-

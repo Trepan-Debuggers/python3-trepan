@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
 Mdebugger  = import_relative('debugger', '...', 'trepan')
 
 class MacroCommand(Mbase_cmd.DebuggerCommand):
-  """**macro** *macro-name* *lambda-object*
+    """**macro** *macro-name* *lambda-object*
 
 Define *macro-name* as a debugger macro. Debugger macros get a list of
 arguments which you supply without parenthesis or commas. See below

@@ -22,13 +22,15 @@ import os, sys
 from import_relative import import_relative
 import_relative('lib', '...', 'trepan')
 breakpoint = import_relative('breakpoint', '...lib', 'trepan')
-default    = import_relative('default', '...lib', 'trepan') # Default settings
+default    = import_relative('default', '...lib', 'trepan')  # Default settings
+
 
 class MockIO:
     def readline(self, prompt='', add_to_history=False):
         print(prompt)
         return 'quit'
     pass
+
 
 class MockUserInterface:
     def __init__(self):
@@ -68,6 +70,7 @@ class MockProcessor:
         self.last_command = None
         self.stack        = []
         return
+
     def get_int(self, arg, min_value=0, default=1, cmdname=None,
                     at_most=None):
         return None
@@ -94,20 +97,28 @@ class MockDebuggerCore:
         self.last_filename  = None
         self.different_line = None
         return
+
     def set_next(self, frame, step_events=None):
         pass
+
     def stop(self): pass
+
     def canonic(self, filename):
         return filename
+
     def canonic_filename(self, frame):
         return frame.f_code.co_filename
+
     def filename(self, name):
         return name
+
     def is_running(self):
         return 'Running' == self.execution_status
+
     def get_file_breaks(self, filename):
         return []
     pass
+
 
 class MockDebugger:
     def __init__(self):
@@ -117,9 +128,12 @@ class MockDebugger:
         self.orig_sys_argv    = None
         self.program_sys_argv = []
         return
+
     def stop(self): pass
+
     def restart_argv(self): return []
     pass
+
 
 def dbg_setup(d = None):
     if d is None: d = MockDebugger()

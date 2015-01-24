@@ -22,6 +22,7 @@ Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
 Mfile      = import_relative('file', '...lib', 'trepan')
 Mmisc      = import_relative('misc', '...', 'trepan')
 
+
 class ConditionCommand(Mbase_cmd.DebuggerCommand):
     """**condition** *bp_number* *condition*
 

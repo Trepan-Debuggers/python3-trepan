@@ -44,10 +44,9 @@ unless option `-c` is given."""
     need_stack    = False
     short_help    = "Read and run debugger commands from a file"
 
-
     def complete(self, prefix):
         # files = Readline::FILENAME_COMPLETION_PROC.call(prefix) || []
-        opts = ['-v', '-Y', '-N', '-c'] # + files
+        opts = ['-v', '-Y', '-N', '-c']  # + files
         return Mcomplete.complete_token(opts, prefix)
 
     def run(self, args):
@@ -68,8 +67,9 @@ unless option `-c` is given."""
             return False
 
         # Push a new interface.
-        script_intf = Mscript.ScriptInterface(expanded_file, opts=opts,
-                                              out=self.debugger.intf[-1].output)
+        script_intf = \
+          Mscript.ScriptInterface(expanded_file, opts=opts,
+                                  out=self.debugger.intf[-1].output)
         self.debugger.intf.append(script_intf)
         return False
 

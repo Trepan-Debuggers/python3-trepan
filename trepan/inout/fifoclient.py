@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,15 +18,17 @@
 import tempfile, os
 
 from import_relative import import_relative
-Mbase    = import_relative('base', top_name='trepan')
+from trepan.inout.base import DebuggerInOutBase
 Mdefault = import_relative('default', '..lib', 'trepan')
 Mfile    = import_relative('file', '..lib', 'trepan')
 Mmisc    = import_relative('misc', '..', 'trepan')
 
-class FIFOClient(Mbase.TrepanInOutBase):
+
+class FIFOClient(DebuggerInOutBase):
     """Debugger Client Input/Output Socket."""
 
     DEFAULT_INIT_OPTS = {'open': True}
+
     def __init__(self, inp=None, opts=None):
         get_option = lambda key: Mmisc.option_set(opts, key,
                                                   Mdefault.CLIENT_SOCKET_OPTS)
@@ -34,7 +36,7 @@ class FIFOClient(Mbase.TrepanInOutBase):
         self.flush_after_write = True
         self.input  = None
         self.output = None
-        self.line_edit = False # Our name for GNU readline capability
+        self.line_edit = False  # Our name for GNU readline capability
         self.state    = 'disconnected'
         open_pid = get_option('open')
         if open_pid:
@@ -59,28 +61,30 @@ class FIFOClient(Mbase.TrepanInOutBase):
 
     def open(self, pid, opts=None):
 
-       # Not in/out are reversed from server side
-       d              = tempfile.gettempdir()
-       self.out_name  = os.path.join(d, ('trepan-%s.in' % pid))
-       self.in_name   = os.path.join(d, ('trepan-%s.out' % pid))
-       is_readable = Mfile.readable(self.out_name)
-       if not is_readable:
-           if is_readable is None:
-               raise IOError("output FIFO %s doesn't exist" %
-                               self.out_name)
-           else:
-               raise IOError("output FIFO %s is not readable" %
-                               self.out_name)
-       is_readable = Mfile.readable(self.in_name)
-       if not is_readable:
-           if is_readable is None:
-               raise IOError("input FIFO %s doesn't exist" %
-                               self.in_name)
-           else:
-               raise IOError("output FIFO %s is not readable" %
-                               self.out_name)
-       self.state     = 'active'
-       return
+        # Not in/out are reversed from server side
+        d              = tempfile.gettempdir()
+        self.out_name  = os.path.join(d, ('trepan-%s.in' % pid))
+        self.in_name   = os.path.join(d, ('trepan-%s.out' % pid))
+        is_readable = Mfile.readable(self.out_name)
+        if not is_readable:
+            if is_readable is None:
+                raise IOError("output FIFO %s doesn't exist" %
+                              self.out_name)
+            else:
+                raise IOError("output FIFO %s is not readable" %
+                              self.out_name)
+            pass
+        is_readable = Mfile.readable(self.in_name)
+        if not is_readable:
+            if is_readable is None:
+                raise IOError("input FIFO %s doesn't exist" %
+                              self.in_name)
+            else:
+                raise IOError("output FIFO %s is not readable" %
+                              self.out_name)
+            self.state     = 'active'
+            pass
+        return
 
     def read_msg(self):
         """Read a line of input. EOFError will be raised on EOF.
@@ -99,7 +103,7 @@ class FIFOClient(Mbase.TrepanInOutBase):
             return line.encode("utf-8")
         else:
             raise IOError("readline called in state: %s." % self.state)
-        return # Not reached
+        return  # Not reached
 
     def write(self, msg):
         """ This method the debugger uses to write. In contrast to
@@ -121,7 +125,7 @@ if __name__=='__main__':
     fifo = FIFOClient(opts={'open': False})
     import sys
     if len(sys.argv) > 1:
-        print('Connecting...', end=' ')
+        print('Connecting...',)
         fifo.open(sys.argv[1])
         print('connected.')
         while True:

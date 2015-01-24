@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2014 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -40,7 +40,8 @@ suffix may be omitted in the file name.
 
    break              # Break where we are current stopped at
    break if i < j     # Break at current line if i < j
-   break 10           # Break on line 10 of the file we are currently stopped at
+   break 10           # Break on line 10 of the file we are
+                      # currently stopped at
    break os.path.join # Break in function os.path.join
    break os.path:45   # Break on line 45 of os.path
    break myfile:5 if i < j # Same as above but only if i < j
@@ -75,6 +76,7 @@ if __name__ == '__main__':
     print(Mcmdbreak.parse_break_cmd(command, []))
     print(Mcmdbreak.parse_break_cmd(command, ['10']))
     print(Mcmdbreak.parse_break_cmd(command, [__file__ + ':10']))
+
     def foo():
         return 'bar'
     print(Mcmdbreak.parse_break_cmd(command, ['foo']))

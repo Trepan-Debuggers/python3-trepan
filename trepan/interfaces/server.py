@@ -19,8 +19,8 @@ import atexit, os
 # Our local modules
 from import_relative import *
 Minterface  = import_relative('interface',  '..',   'trepan')
-Mtcpserver  = import_relative('tcpserver', '..io', 'trepan')
-Mfifoserver = import_relative('fifoserver', '..io', 'trepan')
+Mtcpserver  = import_relative('tcpserver', '..inout', 'trepan')
+Mfifoserver = import_relative('fifoserver', '..inout', 'trepan')
 Mmisc       = import_relative('misc', '..', 'trepan')
 Mcomcodes   = import_relative('comcodes', '.', 'trepan')
 
@@ -49,7 +49,7 @@ class ServerInterface(Minterface.TrepanInterface):
         # For Compatability
         self.output = inout
         self.input  = inout
-        self.interactive = True # Or at least so we think initially
+        self.interactive = True  # Or at least so we think initially
         self.histfile = None
         return
 

@@ -5,6 +5,7 @@ import signal, unittest
 from import_relative import import_relative
 Msig = import_relative('lib.sighandler', '...trepan', 'trepan')
 
+
 class TestLibSigHandle(unittest.TestCase):
 
     def test_YN(self):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2012-2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ and storing it as a list of known debugger commands.
 NotImplementedMessage = "This method must be overriden in a subclass"
 import columnize, re
 from pygments.console import colorize
+
 
 # Note: don't end classname with Command (capital C) since cmdproc
 # will think this a command name like QuitCommand
@@ -113,6 +114,8 @@ class DebuggerSubcommand:
     def section(self, message, opts={}):
         if 'plain' != self.settings['highlight']:
             message = colorize('bold', message)
+        else:
+            message += "\n" + '-' * len(message)
             pass
         self.msg(message)
     pass
@@ -120,6 +123,7 @@ class DebuggerSubcommand:
 from import_relative import import_relative
 Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
 Mcomplete  = import_relative('complete', '...lib', 'trepan')
+
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
 
@@ -145,6 +149,7 @@ class DebuggerSetBoolSubcommand(DebuggerSubcommand):
         return self.msg_nocr("%-12s: " % self.short_help)
     pass
 
+
 class DebuggerShowIntSubcommand(DebuggerSubcommand):
     def run(self, args):
         if hasattr(self, 'short_help'):
@@ -154,6 +159,7 @@ class DebuggerShowIntSubcommand(DebuggerSubcommand):
             pass
         Mcmdfns.run_show_int(self, short_help)
         return
+
 
 class DebuggerShowBoolSubcommand(DebuggerSubcommand):
     def run(self, args):

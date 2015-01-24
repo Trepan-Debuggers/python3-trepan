@@ -3,6 +3,7 @@ import unittest
 import tracer
 from fn_helper import strarray_setup, compare_output
 
+
 class TestStep(unittest.TestCase):
     print("test ", __file__, "skipped")
 
@@ -14,8 +15,8 @@ class TestStep(unittest.TestCase):
         d = strarray_setup(cmds)
         d.core.start()
         ##############################
-        x = 5
-        y = 6
+        x = 5  # NOQA
+        y = 6  # NOQA
         ##############################
         d.core.stop()
         out = ['-- x = 5',
@@ -45,9 +46,10 @@ class TestStep(unittest.TestCase):
         d.core.start()
         ##############################
         x = 5
+
         def foo():
             return
-        y = 6
+        y = 6  # NOQA
         foo()
         ##############################
         d.core.stop(options={'remove': True})
@@ -78,16 +80,16 @@ class TestStep(unittest.TestCase):
         d = strarray_setup(cmds)
         d.core.start()
         ##############################
-        x = 5
+        x = 5  # NOQA
         try:
             def foo1():
-                y = 2
+                y = 2  # NOQA
                 raise Exception
                 return
             foo1()
         except:
             pass
-        z = 1
+        z = 1  # NOQA
         # ##############################
         # d.core.stop(options={'remove': True})
         # out = ['-- x = 5',
@@ -138,14 +140,13 @@ class TestStep(unittest.TestCase):
                '-- return x * x',
                '<- return x * x',
                '-- y = 5'],
-             tracer.ALL_EVENTS),
-            ):
+             tracer.ALL_EVENTS), ):
             d = strarray_setup(cmds)
             d.settings['events'] = eventset
             d.core.start()
             ##############################
-            x = sqr(4)
-            y = 5
+            x = sqr(4)   # NOQA
+            y = 5  # NOQA
             ##############################
             d.core.stop(options={'remove': True})
             compare_output(self, out, d, cmds)

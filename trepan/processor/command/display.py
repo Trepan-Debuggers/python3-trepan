@@ -60,12 +60,13 @@ requests previously made."""
                 format = args[1]
                 expr   = ' '.join(args[2:])
             else:
-               format = None
-               expr = ' '.join(args[1:])
-               pass
+                format = None
+                expr = ' '.join(args[1:])
+                pass
             dp = self.proc.display_mgr.add(self.proc.curframe, expr, format)
             if dp is None:
-                self.errmsg('Error evaluating "%s" in the current frame' % expr)
+                self.errmsg('Error evaluating "%s" in the current frame'
+                            % expr)
                 return
             self.msg(dp.format(show_enabled=False))
             self.proc.add_preloop_hook(self.run_eval_display)

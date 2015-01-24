@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mmisc = import_relative('misc', '...trepan', 'trepan')
 
+
 class TestMisc(unittest.TestCase):
 
     def test_option_set(self):

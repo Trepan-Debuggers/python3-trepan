@@ -17,22 +17,25 @@
 
 import re
 
+
 def complete_token(complete_ary, prefix):
     return sorted([cmd for cmd in
                    complete_ary if cmd.startswith(prefix)])
+
 
 def complete_token_with_next(complete_hash, prefix, cmd_prefix=''):
     result = []
     for cmd_name in list(complete_hash.keys()):
         if cmd_name.startswith(cmd_prefix + prefix):
-            result.append([cmd_name[len(cmd_prefix):], complete_hash[cmd_name]])
+            result.append([cmd_name[len(cmd_prefix):],
+                           complete_hash[cmd_name]])
             pass
         pass
     pass
     return sorted(result, key=lambda pair: pair[0])
 
-def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
 
+def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
     """Find all starting matches in dictionary *aliases* that start
     with *prefix*, but filter out any matches already in
     *expanded*."""
@@ -54,11 +57,14 @@ def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
     pass
     return sorted(result, key=lambda pair: pair[0])
 
-# Find all starting matches in Hash +aliases+ that start with +prefix+,
-# but filter out any matches already in +expanded+.
+
 def complete_token_filtered(aliases, prefix, expanded):
+    """Find all starting matches in dictionary *aliases* that start
+     with *prefix*, but filter out any matches already in *expanded*"""
+
     complete_ary = aliases.keys()
     return [cmd for cmd in complete_ary if cmd.startswith(prefix)]
+
 
 def next_token(str, start_pos):
     """Find the next token in str string from start_pos, we return
@@ -86,8 +92,8 @@ if __name__=='__main__':
     print(next_token('ab cd ef', 2))
     print(complete_token(('-1', '0'), ''))
 
-    ##   0         1
-    ##   0123456789012345678
+    #   0         1
+    #   0123456789012345678
     x = '  now is  the  time'
     for pos in [0, 2, 5, 8, 9, 13, 19]:
         print(next_token(x, pos))

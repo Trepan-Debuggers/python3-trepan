@@ -112,7 +112,7 @@ See `set listize` or `show listsize` to see or set the value.
                 first = max(1, inspect.getlineno(curframe) - int(listsize/2))
             else:
                 (modfunc, filename, first) = proc.parse_position(args[0])
-                if first == None and modfunc == None:
+                if first is None and modfunc is None:
                     # error should have been shown previously
                     return (None, None, None)
                 if len(args) == 1:
@@ -143,9 +143,9 @@ See `set listize` or `show listsize` to see or set the value.
                         pass
                     pass
                 elif not modfunc:
-                    self.errmsg(('At most 2 parameters allowed when no module' +
-                                 ' name is found/given. Saw: %d parameters')
-                                % len(args))
+                    self.errmsg(('At most 2 parameters allowed when no '
+                                 'module name is found/given. Saw: %d '
+                                 'parameters') % len(args))
                     return (None, None, None)
                 else:
                     self.errmsg(('At most 3 parameters allowed when a module' +
@@ -267,6 +267,7 @@ if __name__ == '__main__':
     print('--' * 10)
 
     command.run(['list', '1000'])
+
     def foo():
         return 'bar'
     command.run(['list', 'foo'])

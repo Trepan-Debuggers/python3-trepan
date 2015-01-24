@@ -17,6 +17,7 @@ from import_relative import import_relative
 # Our local modules
 Mbase_cmd = import_relative('base_cmd', top_name='trepan')
 
+
 class AliasCommand(Mbase_cmd.DebuggerCommand):
     """**alias** *alias-name* *debugger-command*
 
@@ -55,7 +56,7 @@ See also `unalias` and `show alias`."""
                     old_command = self.proc.aliases[al]
                     self.msg(("Alias '%s#' for command '%s'replaced old " + 
                               "alias for '%s'.") %
-                             (al, command, od_command, old_command))
+                             (al, command, old_command))
                 else:
                     self.msg("New alias '%s' for command '%s' created." % 
                              (al, command))
@@ -75,8 +76,8 @@ if __name__ == '__main__':
     d, cp = mock.dbg_setup()
     command      = AliasCommand(cp)
     command.run(['alias', 'yy', 'foo'])
-    command.run(['alias', 'yy',' foo'])
-    command.run(['alias', 'yy' 'step'])
+    command.run(['alias', 'yy', ' foo'])
+    command.run(['alias', 'yy'  'step'])
     command.run(['alias'])
-    command.run(['alias', 'yy' 'next'])
+    command.run(['alias', 'yy'  'next'])
     pass

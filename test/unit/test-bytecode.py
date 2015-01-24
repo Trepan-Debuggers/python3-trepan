@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mcode = import_relative('lib.bytecode', '...trepan')
 
+
 class TestByteCode(unittest.TestCase):
 
     def test_contains_make_function(self):

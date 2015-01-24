@@ -1,4 +1,4 @@
-#  Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#  Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -11,11 +11,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Copyright (C) 2008, 2009, 2013 Rocky Bernstein <rocky@gnu.org> """
+""" Copyright (C) 2008, 2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org> """
 __import__('pkg_resources').declare_namespace(__name__)
 
 __docformat__ = 'restructuredtext'
 
-from import_relative import import_relative
-Mmisc = import_relative('misc', '..', 'trepan')
-__all__ = [ Mmisc.pyfiles() ]
+from trepan.misc import pyfiles
+__all__ = [ pyfiles() ]
+__package__ = 'trepan.lib'

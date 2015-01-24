@@ -16,6 +16,7 @@
 '''Things related to file/module status'''
 import os, stat, sys
 
+
 def file_pyc2py(filename):
     """Given a file name, if the suffix is pyo or pyc (an optimized bytecode
     file), change that to the py equivalent"""
@@ -23,7 +24,8 @@ def file_pyc2py(filename):
         return filename[:-1]
     return filename
 
-READABLE_MASK = (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH) 
+
+READABLE_MASK = (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 def readable(path):
     """Test whether a path exists and is readable.  Returns None for
     broken symbolic links or a failing stat() and False if
@@ -36,6 +38,7 @@ def readable(path):
         return None
     return True
 
+
 def lookupmodule(name):
     """lookupmodule()->(module, file) translates a possibly incomplete
     file or module name into an absolute file name. None can be
@@ -47,7 +50,7 @@ def lookupmodule(name):
     if os.path.isabs(name) and readable(name):
         return (None, name)
     f = os.path.join(sys.path[0], name)
-    if  readable(f):
+    if readable(f):
         return (None, f)
     root, ext = os.path.splitext(name)
     if ext == '':
@@ -65,13 +68,14 @@ def lookupmodule(name):
         pass
     return (None, None)
 
+
 def parse_position(errmsg, arg):
     """parse_position(errmsg, arg)->(fn, name, lineno)
-    
+
     Parse arg as [filename|module:]lineno
     Make sure it works for C:\foo\bar.py:12
     """
-    colon = arg.rfind(':') 
+    colon = arg.rfind(':')
     if colon >= 0:
         filename = arg[:colon].rstrip()
         m, f = lookupmodule(filename)
@@ -94,7 +98,7 @@ def parse_position(errmsg, arg):
 if __name__=='__main__':
     import tempfile
     print('readable("fdafsa"): %s' % readable('fdafdsa'))
-    for mode, can_read in [(stat.S_IRUSR, True), (stat.S_IWUSR, False)]: 
+    for mode, can_read in [(stat.S_IRUSR, True), (stat.S_IWUSR, False)]:
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
         print("readable('%s'): %s" % (f.name, readable(f.name)))

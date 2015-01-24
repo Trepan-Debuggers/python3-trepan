@@ -31,6 +31,8 @@ Macro "bar" defined.
     bar  foo
 
 bar:
+----
   lambda count: 'list %s' % count
 foo:
+----
   lambda: 'list'

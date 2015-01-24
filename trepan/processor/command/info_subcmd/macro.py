@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ Mbase_subcmd  = import_relative('base_subcmd', '...command')
 Mcomplete     = import_relative('complete', '....lib', 'trepan')
 
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
-  """**macro**
+    """**macro**
 
 **macro** *
 
@@ -34,43 +34,42 @@ In the second form, all macro names and their definitions are shown.
 
 In the last form the only definitions of the given macro names is shown."""
 
-  min_abbrev = 1
-  need_stack = True
-  short_help = "List of defined macros"
+    min_abbrev = 1
+    need_stack = True
+    short_help = "List of defined macros"
 
-  def complete(self, prefix):
-      return Mcomplete.complete_token(sorted(list(self.proc.macros.keys()) + ['*']),
-                                      prefix)
+    def complete(self, prefix):
+        return Mcomplete.complete_token(sorted(list(self.proc.macros.keys()) + ['*']),
+                                        prefix)
 
-  def run(self, args):
-    if len(args) > 0:
-      if len(args) == 1 and '*' == args[0]:
-        macro_names = list(self.proc.macros.keys())
-      else:
-        macro_names = args
-        pass
-      pass
+    def run(self, args):
+        if len(args) > 0:
+            if len(args) == 1 and '*' == args[0]:
+                macro_names = list(self.proc.macros.keys())
+            else:
+                macro_names = args
+                pass
 
-      for macro_name in sorted(macro_names):
-        if macro_name in self.proc.macros:
-          self.section("%s:" % macro_name)
-          string = self.proc.macros[macro_name][1]
-          highlight = self.settings['highlight']
-          if  highlight in ['light', 'dark']:
-            string = highlight_string(string, highlight)
-            pass
-          self.msg("  %s" % string)
+            for macro_name in sorted(macro_names):
+                if macro_name in self.proc.macros:
+                    self.section("%s:" % macro_name)
+                    string = self.proc.macros[macro_name][1]
+                    highlight = self.settings['highlight']
+                    if  highlight in ['light', 'dark']:
+                        string = highlight_string(string, highlight)
+                        pass
+                    self.msg("  %s" % string)
+                else:
+                    self.errmsg('%s is not a defined macro' % macro_name)
+                    pass
+                pass
+        elif 0 == len(list(self.proc.macros.keys())):
+            self.msg('No macros defined.')
         else:
-          self.errmsg('%s is not a defined macro' % macro_name)
-          pass
-        pass
-    elif 0 == len(list(self.proc.macros.keys())):
-      self.msg('No macros defined.')
-    else:
-      self.msg(self.columnize_commands(list(self.proc.macros.keys())))
-      pass
-    return
-  pass
+            self.msg(self.columnize_commands(list(self.proc.macros.keys())))
+            pass
+        return
+    pass
 
 if __name__ == '__main__':
     # Demo it.

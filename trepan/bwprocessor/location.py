@@ -5,6 +5,7 @@ import pyficache, linecache, tempfile
 from import_relative import import_relative, get_srcdir
 Mstack = import_relative('stack', '..lib', 'pydbgr')
 
+
 def format_location(proc_obj):
     """Show where we are. GUI's and front-end interfaces often
     use this to update displays. So it is helpful to make sure
@@ -21,7 +22,6 @@ def format_location(proc_obj):
     # info. In these cases, we will use the position before that in
     # the stack.  Hence the looping below which in practices loops
     # once and sometimes twice.
-    remapped_file = None
     while i_stack >= 0:
         frame_lineno = proc_obj.stack[i_stack]
         i_stack -= 1
@@ -34,7 +34,6 @@ def format_location(proc_obj):
         location['lineno']   = lineno
 
         if '<string>' == filename and dbgr_obj.eval_string:
-            remapped_file = filename
             filename = pyficache.unmap_file(filename)
             if '<string>' == filename:
                 fd = tempfile.NamedTemporaryFile(suffix='.py',
@@ -95,12 +94,14 @@ if __name__=='__main__':
             self.debugger = MockDebugger()
             self.opts = {'highlight': 'plain', 'reload': False}
             pass
+
         def settings(self, key):
             return self.opts[key]
         pass
 
     class MockCore:
         def filename(self, fn): return fn
+
         def canonic_filename(self, frame): return frame.f_code.co_filename
         pass
 

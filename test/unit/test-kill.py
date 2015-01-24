@@ -9,6 +9,7 @@ Mkill = import_relative('processor.command.kill', '...trepan')
 from cmdhelper import dbg_setup
 import signal
 
+
 class TestKill(unittest.TestCase):
     """Tests KillCommand class"""
 

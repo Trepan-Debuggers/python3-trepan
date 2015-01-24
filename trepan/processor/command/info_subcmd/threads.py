@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@ import sys, threading
 from import_relative import import_relative
 # Our local modules
 Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-Mstack        = import_relative('stack', '....lib', 'trepan')
-Mthread       = import_relative('thread', '....lib', 'trepan')
+Mstack        = import_relative('stack', '....lib',  'trepan')
+Mthread       = import_relative('thred', '....lib',  'trepan')
 
 # FIXME turn into yet another subcommand thingy.
 class InfoThread(Mbase_subcmd.DebuggerSubcommand):
@@ -104,8 +104,8 @@ To get the full stack trace for a specific thread pass in the thread name.
             thread = threading._active[thread_id]
             name = thread.getName() 
             if name not in list(self.name2id.keys()):
-               self.name2id[name] = thread_id
-               pass
+                self.name2id[name] = thread_id
+                pass
             pass
 
         all_verbose = False

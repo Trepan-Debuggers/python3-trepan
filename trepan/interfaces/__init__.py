@@ -10,6 +10,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Copyright (C) 2008, 2013 Rocky Bernstein <rocky@gnu.org> """
+""" Copyright (C) 2008, 2013, 2014 Rocky Bernstein <rocky@gnu.org> """
+__package__ = 'trepan.interfaces'
 __import__('pkg_resources').declare_namespace(__name__)
 __all__ = ['comcodes', 'script', 'server', 'client', 'user']

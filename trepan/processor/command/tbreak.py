@@ -72,6 +72,7 @@ if __name__ == '__main__':
     print(Mcmdbreak.parse_break_cmd(command, []))
     print(Mcmdbreak.parse_break_cmd(command, ['10']))
     print(Mcmdbreak.parse_break_cmd(command, [__file__ + ':10']))
+
     def foo():
         return 'bar'
     print(Mcmdbreak.parse_break_cmd(command, ['foo']))

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Module for client (i.e. user to communication-device) interaction.
 The debugged program is at the other end of the communcation."""
-import atexit
 
 # Our local modules
-from import_relative import *
+from import_relative import import_relative
 Muser       = import_relative('user', top_name='trepan')
-Mtcpclient  = import_relative('tcpclient', '..io', 'trepan')
-Mfifoclient = import_relative('fifoclient', '..io', 'trepan')
+Mtcpclient  = import_relative('tcpclient', '..inout', 'trepan')
+Mfifoclient = import_relative('fifoclient', '..inout', 'trepan')
 Mcomcodes   = import_relative('comcodes', '.', 'trepan')
 Mmisc       = import_relative('misc', '..', 'trepan')
+
 
 class ClientInterface(Muser.UserInterface):
     """Interface for a user which is attached to a debugged process
@@ -32,6 +32,7 @@ class ClientInterface(Muser.UserInterface):
     a remote computer."""
 
     DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'FIFO'}
+
     def __init__(self, inp=None, out=None, inout=None, user_opts=None,
                  connection_opts=None):
         get_connection_option = lambda key: \
@@ -39,13 +40,13 @@ class ClientInterface(Muser.UserInterface):
                              self.DEFAULT_INIT_CONNECTION_OPTS)
         Muser.UserInterface.__init__(self, inp, out, user_opts)
 
-        self.inout = None # initialize in case assignment below fails
+        self.inout = None  # initialize in case assignment below fails
         if inout:
             self.inout = inout
         else:
             self.server_type = get_connection_option('IO')
             if 'FIFO' == self.server_type:
-                ## print(connection_opts)
+                # print(connection_opts)
                 self.inout = Mfifoclient.FIFOClient(opts=connection_opts)
             elif 'TCP' == self.server_type:
                 self.inout = Mtcpclient.TCPClient(opts=connection_opts)

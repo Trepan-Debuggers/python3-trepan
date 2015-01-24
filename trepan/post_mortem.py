@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,11 +16,13 @@
 # Post-Mortem interface
 
 import inspect, os, sys, re, traceback
+import trepan.inout
 
 # Our local modules
 from import_relative import import_relative
 Mdebugger = import_relative('debugger', '.', 'trepan')
-Mexcept   = import_relative('exception', '.', 'trepan')
+from trepan.exception import DebuggerQuit, DebuggerRestart
+
 
 def get_last_or_frame_exception():
     """Intended to be used going into post mortem routines.  If
@@ -38,6 +40,7 @@ def get_last_or_frame_exception():
         pass
     return sys.exc_info()
 
+
 def pm(frameno=1, dbg=None):
     """Set up post-mortem debugging using the last traceback.  But if
     there is no traceback, we'll assume that sys.exc_info() contains
@@ -49,9 +52,10 @@ def pm(frameno=1, dbg=None):
     post_mortem(get_last_or_frame_exception(), frameno, dbg=dbg)
     return
 
+
 def post_mortem_excepthook(exc_type, exc_value, exc_tb):
-    if exc_type == Mexcept.DebuggerQuit: return
-    if exc_type == Mexcept.DebuggerRestart:
+    if str(exc_type) == str(DebuggerQuit): return
+    if str(exc_type) == str(DebuggerRestart):
         if ( exc_value and exc_value.sys_argv and
              len(exc_value.sys_argv) > 0 ):
             print("No restart handler - trying restart via execv(%s)" %
@@ -67,6 +71,7 @@ def post_mortem_excepthook(exc_type, exc_value, exc_tb):
     post_mortem((exc_type, exc_value, exc_tb))
     print("Post-mortem debugger finished.")
     return
+
 
 def post_mortem(exc=None, frameno=1, dbg=None):
     """Enter debugger read loop after your program has crashed.
@@ -97,7 +102,7 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         # in get_last_or_frame_exception
         exc = get_last_or_frame_exception()
         if exc[0] is None:
-            print("Can't find traceback for post_mortem " + \
+            print("Can't find traceback for post_mortem "
                   "in sys.last_traceback or sys.exec_info()")
             return
         pass
@@ -111,7 +116,8 @@ def post_mortem(exc=None, frameno=1, dbg=None):
     if exc_tb is not None:
         while exc_tb.tb_next is not None:
             filename = exc_tb.tb_frame.f_code.co_filename
-            if (dbg.mainpyfile and 0 == len(dbg.mainpyfile) and not re_bogus_file.match(filename)):
+            if (dbg.mainpyfile and 0 == len(dbg.mainpyfile)
+                and not re_bogus_file.match(filename)):
                 dbg.mainpyfile = filename
                 pass
             exc_tb = exc_tb.tb_next

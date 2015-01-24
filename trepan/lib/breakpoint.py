@@ -4,7 +4,9 @@
 This code is a rewrite of the stock python bdb.Breakpoint"""
 
 __all__ = ["BreakpointManager", "Breakpoint"]
+
 import os.path
+
 
 class BreakpointManager:
     """Manages the list of Breakpoints.
@@ -24,13 +26,13 @@ class BreakpointManager:
             try:
                 i = int(i)
             except ValueError:
-                return  (False, 'Breakpoint value %r is not a number.' % i,
-                         None)
+                return(False, 'Breakpoint value %r is not a number.' % i,
+                       None)
             pass
         if 1 == len(self.bpbynumber):
             return (False, 'No breakpoints set.', None)
         elif i >= len(self.bpbynumber) or i <= 0:
-            return (False, 'Breakpoint number %d out of range 1..%d.' % 
+            return (False, 'Breakpoint number %d out of range 1..%d.' %
                     (i, len(self.bpbynumber)-1), None)
         bp = self.bpbynumber[i]
         if bp is None:
@@ -42,7 +44,7 @@ class BreakpointManager:
 
         bpnum = len(self.bpbynumber)
         if filename: filename  = os.path.realpath(filename)
-        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, 
+        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition,
                            func)
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
@@ -84,7 +86,7 @@ class BreakpointManager:
     def delete_breakpoint_by_number(self, bpnum):
         "Remove a breakpoint given its breakpoint number."
         success, msg, bp = self.get_breakpoint(bpnum)
-        if not success: 
+        if not success:
             return False, msg
         self.delete_breakpoint(bp)
         return (True, '')
@@ -92,15 +94,15 @@ class BreakpointManager:
     def en_disable_breakpoint_by_number(self, bpnum, do_enable=True):
         "Enable or disable a breakpoint given its breakpoint number."
         success, msg, bp = self.get_breakpoint(bpnum)
-        if not success: 
+        if not success:
             return success, msg
         if do_enable:
-            endis = 'en' 
-        else: 
+            endis = 'en'
+        else:
             endis = 'dis'
             pass
         if bp.enabled == do_enable:
-            return (False, ('Breakpoint (%r) previously %sabled' % 
+            return (False, ('Breakpoint (%r) previously %sabled' %
                             (str(bpnum), endis,)))
         bp.enabled = do_enable
         return (True, '')
@@ -113,7 +115,7 @@ class BreakpointManager:
         that indicates if it is ok to delete a temporary breakpoint.
 
         """
-        possibles = self.bplist[filename,line]
+        possibles = self.bplist[filename, line]
         for i in range(0, len(possibles)):
             b = possibles[i]
             if not b.enabled:
@@ -131,7 +133,7 @@ class BreakpointManager:
                 else:
                     # breakpoint and marker that's ok to delete if
                     # temporary
-                    return (b,True)
+                    return (b, True)
             else:
                 # Conditional bp.
                 # Ignore count applies only to those bpt hits where the
@@ -139,7 +141,7 @@ class BreakpointManager:
                 try:
                     val = eval(b.condition, frame.f_globals, frame.f_locals)
                     if val:
-                        if b.ignore > 0: 
+                        if b.ignore > 0:
                             b.ignore = b.ignore -1
                             # continue
                         else:
@@ -154,7 +156,7 @@ class BreakpointManager:
                 pass
             pass
         return (None, None)
-    
+
     def last(self):
         return len(self.bpbynumber)-1
 
@@ -162,7 +164,7 @@ class BreakpointManager:
         """ A list of breakpoints by breakpoint number.  Each entry is
         None or an instance of Breakpoint.  Index 0 is unused, except
         for marking an effective break .... see effective(). """
-        self.bpbynumber = [None] 
+        self.bpbynumber = [None]
 
         # A list of breakpoints indexed by (file, lineno) tuple
         self.bplist = {}
@@ -170,7 +172,8 @@ class BreakpointManager:
 
         return
 
-    pass # BreakpointManager
+    pass  # BreakpointManager
+
 
 class Breakpoint:
 
@@ -179,7 +182,7 @@ class Breakpoint:
     conditionals.
     """
 
-    def __init__(self, number, filename, line, temporary=False, 
+    def __init__(self, number, filename, line, temporary=False,
                  condition=None, funcname=None):
 
         self.condition = condition
@@ -240,10 +243,10 @@ class Breakpoint:
         'B': enabled breakpoint
         'b': disabled breakpoint
         """
-        if self.temporary : return 't' 
-        elif self.enabled:  return 'B' 
-        else: return 'b' 
-        return 
+        if self.temporary : return 't'
+        elif self.enabled:  return 'B'
+        else: return 'b'
+        return
 
     pass # end of Breakpoint class
 
@@ -268,7 +271,7 @@ def checkfuncname(b, frame):
         # The function is entered for the 1st time.
         b.func_first_executable_line = frame.f_lineno
 
-    if  b.func_first_executable_line != frame.f_lineno:
+    if b.func_first_executable_line != frame.f_lineno:
         # But we are not at the first line number: don't break.
         return False
     return True
@@ -289,20 +292,19 @@ if __name__=='__main__':
         status, msg = bpmgr.delete_breakpoint_by_number(i)
         print("Delete breakpoint %s: %s %s" % (i, status, msg,))
     import inspect
-    frame = inspect.currentframe()  
+    frame = inspect.currentframe()
     print("Stop at bp: %s" % checkfuncname(bp, frame))
 
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
-        # frame.f_lineno is constantly updated. So adjust for the 
+        # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint('foo', frame.f_lineno+1) 
+        bp3 = bpmgr.add_breakpoint('foo', frame.f_lineno+1)
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
-    
+
     bp2 = bpmgr.add_breakpoint(None, None, False, None, 'foo')
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint('foo', 5, temporary=True)
     print(bp3.icon_char())
-

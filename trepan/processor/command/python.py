@@ -35,7 +35,7 @@ To issue a debugger command use function *dbgr()*. For example:
   dbgr('info program')
 """
 
-    aliases      = ('py','shell')
+    aliases      = ('py', 'shell')
     category      = 'support'
     min_args      = 0
     max_args      = 1

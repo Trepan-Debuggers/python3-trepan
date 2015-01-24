@@ -72,12 +72,13 @@ setup(
        ]},
        install_requires   = install_requires,
        license            = license,
+       long_description   = long_description,
        py_modules         = py_modules,
        name               = modname,
        namespace_packages = namespace_packages,
        packages           = packages,
        test_suite         = 'nose.collector',
        url                = web,
-       version            = version,
-       zip_safe           = zip_safe
-       )
+       setup_requires     = ['nose>=1.0'],
+       version            = VERSION,
+       zip_safe           = zip_safe)

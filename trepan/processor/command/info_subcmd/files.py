@@ -43,8 +43,8 @@ current stack entry is used. Sub options which can be shown about a file are:
     short_help = 'Show information about an imported or loaded Python file'
 
     def file_list(self):
-       return list(set(pyficache.cached_files() +
-                               list(pyficache.file2file_remap.keys())))
+        return list(set(pyficache.cached_files() +
+                        list(pyficache.file2file_remap.keys())))
 
     def complete(self, prefix):
         completions = sorted(['.'] + self.file_list())
@@ -74,7 +74,8 @@ current stack entry is used. Sub options which can be shown about a file are:
                 pass
             self.msg(m)
         else:
-            matches = [file for file in self.file_list() if file.endswith(filename)]
+            matches = [file for file in self.file_list() if
+                       file.endswith(filename)]
             if (len(matches) > 1):
                 self.msg("Multiple files found ending filename string:")
                 for match_file in matches:
@@ -92,7 +93,7 @@ current stack entry is used. Sub options which can be shown about a file are:
                                      self.settings['width']))
         for name in (canonic_name, filename):
             if name in sys.modules:
-                for key in [k for k,v in list(sys.modules.items())
+                for key in [k for k, v in list(sys.modules.items())
                             if name == v]:
                     self.msg("module: %s", key)
                     pass

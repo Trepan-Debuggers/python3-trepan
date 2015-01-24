@@ -4,18 +4,19 @@ import sys, _thread, threading, unittest
 from import_relative import import_relative
 
 import_relative('lib', '...trepan', 'trepan')
-Mthread = import_relative('lib.thread', '...trepan', 'trepan')
+Mthread = import_relative('lib.thred', '...trepan', 'trepan')
 
 class BgThread(threading.Thread):
     def __init__(self, id_name_checker):
         threading.Thread.__init__(self)
         self.id_name_checker = id_name_checker
         return
-    
+
     def run(self):
         self.id_name_checker()
         return
     pass
+
 
 class TestLibThread(unittest.TestCase):
 
@@ -23,7 +24,7 @@ class TestLibThread(unittest.TestCase):
         '''Helper for testing map_thread_names and id2thread'''
         name2id = Mthread.map_thread_names()
         for thread_id, f in list(sys._current_frames().items()):
-            self.assertEqual(thread_id, 
+            self.assertEqual(thread_id,
                              name2id[Mthread.id2thread_name(thread_id)])
             # FIXME: use a better test
             self.assertNotEqual(f, Mthread.find_debugged_frame(f))

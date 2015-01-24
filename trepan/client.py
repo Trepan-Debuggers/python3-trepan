@@ -44,7 +44,7 @@ def process_options(pkg_version, sys_argv, option_list=None):
 
     Client connection to an out-of-process trepan3k debugger session"""
 
-    ## serverChoices = ('TCP','FIFO', None) # we use PID for now.
+    # serverChoices = ('TCP','FIFO', None) # we use PID for now.
 
     optparser = OptionParser(usage=usage_str, option_list=option_list,
                              version="%%prog version %s" % pkg_version)
@@ -54,10 +54,12 @@ def process_options(pkg_version, sys_argv, option_list=None):
                          help="connect IP or host name.")
     optparser.add_option("-P", "--port", dest="port", default=1027,
                          action="store", type='int', metavar='NUMBER',
-                         help="Use TCP port number NUMBER for out-of-process connections.")
+                         help="Use TCP port number NUMBER for "
+                         "out-of-process connections.")
     optparser.add_option("--pid", dest="pid", default=0,
                          action="store", type='int', metavar='NUMBER',
-                         help="Use PID to get FIFO names for out-of-process connections.")
+                         help="Use PID to get FIFO names for "
+                         "out-of-process connections.")
 
     optparser.disable_interspersed_args()
 
@@ -135,6 +137,6 @@ def main(opts, sys_argv):
     return
 
 if __name__ == '__main__':
-      opts, sys_argv  = process_options(__version__, sys.argv)
-      main(opts, sys_argv)
-      pass
+    opts, sys_argv  = process_options(__version__, sys.argv)
+    main(opts, sys_argv)
+    pass

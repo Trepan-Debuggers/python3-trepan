@@ -114,7 +114,7 @@ Related and similar is the `next` command.  See also the commands:
         self.core.stop_level       = None
         self.core.last_frame       = None
         self.core.stop_on_finish   = False
-        self.proc.continue_running = True # Break out of command read loop
+        self.proc.continue_running = True  # Break out of command read loop
         return True
     pass
 

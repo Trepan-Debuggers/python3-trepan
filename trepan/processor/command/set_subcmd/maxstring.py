@@ -24,7 +24,7 @@ class SetMaxString(Mbase_subcmd.DebuggerSubcommand):
     "Set maximum length to show string output"
     
     in_list    = True
-    min_abbrev = len('str') # Need at least "set max str"
+    min_abbrev = len('str')  # Need at least "set max str"
 
     def run(self, args):
         Mcmdfns.run_set_int(self, ' '.join(args),

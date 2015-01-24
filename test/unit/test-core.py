@@ -5,8 +5,10 @@ from import_relative import import_relative
 
 Mcore = import_relative('lib.core', '...trepan')
 
+
 class MockProcessor:
     pass
+
 
 class TestCore(unittest.TestCase):
 

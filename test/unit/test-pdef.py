@@ -6,6 +6,7 @@ from import_relative import import_relative
 
 Mp = import_relative('processor.command.pdef', '...trepan')
 
+
 class TestPDef(unittest.TestCase):
     """Tests PCommand class"""
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ stopping trace event handling and breakpoint checking. See also
 debugger for top-level Debugger class and module routine which
 ultimately will call this. An event processor is responsible of
 handling what to do when an event is triggered."""
+
 
 # Common Python packages
 import os, sys, threading
@@ -47,7 +48,7 @@ class TrepanCore:
         # entering event processor? Zero (0) means stop at the next one.
         # A negative number indicates no eventual stopping.
         'step_ignore' : 0,
-        'ignore_filter': None, # But see debugger.py
+        'ignore_filter': None,  # But see debugger.py
         }
 
     def __init__(self, debugger, opts=None):
@@ -57,6 +58,10 @@ class TrepanCore:
 
         See also `start' and `stop'.
         """
+
+        import trepan.processor
+        import trepan.bwprocessor as Mbwproc
+
         get_option       = lambda key: Mmisc.option_set(opts, key,
                                                         self.DEFAULT_INIT_OPTS)
 
@@ -120,7 +125,7 @@ class TrepanCore:
         # What routines (keyed by f_code) will we not trace into?
         self.ignore_filter = get_option('ignore_filter')
 
-        self.search_path     = sys.path # Source filename search path
+        self.search_path     = sys.path  # Source filename search path
 
         # When trace_hook_suspend is set True, we'll suspend
         # debugging.
@@ -380,7 +385,7 @@ class TrepanCore:
 
     def set_next(self, frame, step_ignore=0, step_events=None):
         "Sets to stop on the next event that happens in frame 'frame'."
-        self.step_events      = None # Consider all events
+        self.step_events      = None  # Consider all events
         self.stop_level       = Mstack.count_frames(frame)
         self.last_frame       = frame
         self.stop_on_finish   = False
@@ -416,7 +421,8 @@ class TrepanCore:
             if self.debugger.settings['trace']:
                 print_event_set = self.debugger.settings['printset']
                 if self.event in print_event_set:
-                    self.trace_processor.event_processor(frame, self.event, arg)
+                    self.trace_processor.event_processor(frame,
+                                                         self.event, arg)
                     pass
                 pass
 
@@ -428,10 +434,11 @@ class TrepanCore:
             if trace_event_set is None or self.event not in trace_event_set:
                 return True
 
-            # I think we *have* to run is_stop_here() before is_break_here()
-            # because is_stop_here() sets various stepping counts. But it might
-            # be more desirable from the user's standpoint to test for breaks
-            # before steps. In this case we will need to factor out the counting
+            # I think we *have* to run is_stop_here() before
+            # is_break_here() because is_stop_here() sets various
+            # stepping counts. But it might be more desirable from the
+            # user's standpoint to test for breaks before steps. In
+            # this case we will need to factor out the counting
             # updates.
             if ( self.is_stop_here(frame, event, arg) or
                  self.is_break_here(frame, arg) ):

@@ -2,9 +2,14 @@
 'Unit test for trepan.processor.command.alias and unalias'
 import inspect, unittest
 
+import trepan.processor.command
+import trepan.inout
+import trepan.interfaces
+
 from import_relative import import_relative
 
 Malias    = import_relative('processor.command.alias', '...trepan')
+
 
 class TestAliasCommand(unittest.TestCase):
     '''Test 'alias' and 'unalias' commands'''

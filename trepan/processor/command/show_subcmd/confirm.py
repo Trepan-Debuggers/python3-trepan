@@ -22,6 +22,7 @@ import_relative('processor', '....')
 
 Mbase_subcmd  = import_relative('base_subcmd', os.path.pardir)
 
+
 class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """Show confirmation of potentially dangerous operations"""
     min_abbrev = 3    # Need at least "show con"

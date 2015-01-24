@@ -23,9 +23,9 @@ class TestNext(unittest.TestCase):
         cmds = ['next 5-3', 'continue']
         d = strarray_setup(cmds)
         d.core.start()
-        x = 5
-        y = 6
-        z = 7
+        x = 5  # NOQA
+        y = 6  # NOQA
+        z = 7  # NOQA
         d.core.stop(options={'remove': True})
         out = ['-- x = 5',
                '-- z = 7']
@@ -42,8 +42,8 @@ class TestNext(unittest.TestCase):
         cmds = ['next', 'continue']
         d = strarray_setup(cmds)
         d.core.start()
-        x = fact(4)
-        y = 5
+        x = fact(4)  # NOQA
+        y = 5  # NOQA
         d.core.stop(options={'remove': True})
         out = ['-- x = fact(4)',
                '-- y = 5']
@@ -80,9 +80,3 @@ class TestNext(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-

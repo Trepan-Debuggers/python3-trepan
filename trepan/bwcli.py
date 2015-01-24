@@ -19,7 +19,7 @@
 import os, os.path, sys
 
 package='trepan'
-if not package in sys.modules:
+if package not in sys.modules:
     __import__('pkg_resources').declare_namespace(package)
     pass
 
@@ -42,8 +42,10 @@ Mmisc       = import_relative('misc', '.', package)
 __title__ = package
 
 # VERSION.py sets variable VERSION.
-exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(), os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
-__version__ = VERSION
+exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(),
+             os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
+__version__ = VERSION  # NOQA
+
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -56,8 +58,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
        Runs the extended python debugger"""
 
-    ## serverChoices = ('TCP','FIFO', None)
-
+    # serverChoices = ('TCP','FIFO', None)
 
     optparser = OptionParser(usage=usage_str, option_list=option_list,
                              version="%%prog version %s" % pkg_version)
@@ -68,11 +69,12 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          "This option also sets --batch")
     optparser.add_option("--basename", dest="basename",
                          action="store_true", default=False,
-                         help="Filenames strip off basename, (e.g. for regression tests)"
-                         )
+                         help="Filenames strip off basename, "
+                         "(e.g. for regression tests)")
     optparser.add_option("--different", dest="different",
                          action="store_true", default=True,
-                         help="Consecutive stops should have different positions")
+                         help="Consecutive stops should have different "
+                         "positions")
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
@@ -80,6 +82,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     dbg_opts = {}
 
     return opts, dbg_opts, sys.argv
+
 
 def _postprocess_options(dbg, opts):
     ''' Handle options (`opts') that feed into the debugger (`dbg')'''
@@ -99,6 +102,7 @@ def _postprocess_options(dbg, opts):
 
     Mdebugger.debugger_obj = dbg
     return
+
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
@@ -126,17 +130,17 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # anyway
         mainpyfile = None
     else:
-        mainpyfile = sys_argv[0] # Get script filename.
+        mainpyfile = sys_argv[0]  # Get script filename.
         if not os.path.isfile(mainpyfile):
             mainpyfile=Mclifns.whence_file(mainpyfile)
             is_readable = Mfile.readable(mainpyfile)
             if is_readable is None:
-                print("%s: Python script file '%s' does not exist" \
+                print("%s: Python script file '%s' does not exist"
                       % (__title__, mainpyfile,))
                 sys.exit(1)
             elif not is_readable:
-                print("%s: Can't read Python script file '%s'" \
-                    % (__title__, mainpyfile,))
+                print("%s: Can't read Python script file '%s'"
+                      % (__title__, mainpyfile,))
                 sys.exit(1)
                 return
 
@@ -145,7 +149,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         mainpyfile_noopt = Mfile.file_pyc2py(mainpyfile)
         if mainpyfile != mainpyfile_noopt \
                and Mfile.readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that." % __title__)
+            print("%s: Compiled Python script given and we can't use that."
+                  % __title__)
             print("%s: Substituting non-compiled name: %s" % (
                 __title__, mainpyfile_noopt,))
             mainpyfile = mainpyfile_noopt

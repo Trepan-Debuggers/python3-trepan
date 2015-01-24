@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@ def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
         pass
     return
 
+
 def run_call(func, debug_opts=None, start_opts=None, *args, **kwds):
 
     """Call the function (a function or method object, not a string)
@@ -108,6 +109,7 @@ def run_exec(statement, debug_opts=None, start_opts=None, globals_=None,
         Mpost_mortem.uncaught_exception(dbg)
         pass
     return
+
 
 def debug(dbg_opts=None, start_opts=None, post_mortem=True,
           step_ignore=1):
@@ -204,7 +206,8 @@ def stop(opts=None):
 
 # Demo it
 if __name__=='__main__':
-    import sys, tracer
+    import tracer
+
     def foo(n):
         y = n
         for i in range(n):

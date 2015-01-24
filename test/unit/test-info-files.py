@@ -11,6 +11,7 @@ Mdebugger = import_relative('debugger', '...trepan')
 
 from cmdhelper import dbg_setup
 
+
 class TestInfoFile(unittest.TestCase):
 
     # FIXME: put in a more common place
@@ -35,6 +36,7 @@ class TestInfoFile(unittest.TestCase):
             self.msgs += msg
             pass
         return
+
     def msg(self, msg):
         self.msgs += [msg]
         return

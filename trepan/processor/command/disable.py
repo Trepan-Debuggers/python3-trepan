@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2014 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ numbers. See also `info break` to get a list.
 #             self.display_enable(args[2:], 0)
 #             return
         for i in args[1:]:
-            success, msg = self.core.bpmgr.en_disable_breakpoint_by_number(int(i), False)
+            success, msg = self.core \
+              .bpmgr.en_disable_breakpoint_by_number(int(i), False)
             if not success:
                 self.errmsg(msg)
             else:

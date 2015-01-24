@@ -3,8 +3,8 @@
 import unittest
 
 from import_relative import import_relative
-Mserver   = import_relative('trepan.io.tcpserver', '...', 'trepan')
-Mclient   = import_relative('trepan.io.tcpclient', '...', 'trepan')
+Mserver   = import_relative('trepan.inout.tcpserver', '...', 'trepan')
+Mclient   = import_relative('trepan.inout.tcpclient', '...', 'trepan')
 import_relative('interfaces', '...trepan', 'trepan')
 Mcomcodes = import_relative('interfaces.comcodes', '...trepan', 'trepan')
 

@@ -19,6 +19,7 @@ import os, linecache
 from import_relative import import_relative
 Mfile     = import_relative('file', '.lib')
 
+
 # FIXME: do a better job of this. Live parsing?
 def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
     """Check whether specified line seems to be executable.
@@ -38,15 +39,17 @@ def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
         return False
     return True
 
+
 def file2module(filename):
     """Given a file name, extract the most likely module name. """
     basename = os.path.basename(filename)
     if '.' in basename:
-         pos = basename.rfind('.')
-         return basename[:pos]
+        pos = basename.rfind('.')
+        return basename[:pos]
     else:
-         return basename
+        return basename
     return None
+
 
 def search_file(filename, directories, cdir):
     """Return a full pathname for filename if we can find one. path
@@ -64,6 +67,7 @@ def search_file(filename, directories, cdir):
             return tryfile
     return None
 
+
 def whence_file(py_script):
     """Do a shell-like path lookup for py_script and return the results.
     If we can't find anything return py_script"""
@@ -76,6 +80,7 @@ def whence_file(py_script):
             return py_script_try
     # Failure
     return py_script
+
 
 def path_expanduser_abs(filename):
     return os.path.abspath(os.path.expanduser(filename))

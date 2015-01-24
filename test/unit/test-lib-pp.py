@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mpp = import_relative('lib.pp', '...trepan')
 
+
 class TestLibPrint(unittest.TestCase):
 
     def setUp(self):
@@ -18,6 +19,7 @@ class TestLibPrint(unittest.TestCase):
             self.msgs += msg
             pass
         return
+
     def msg(self, msg):
         self.msgs += [msg]
         return
@@ -26,6 +28,7 @@ class TestLibPrint(unittest.TestCase):
         def msg_nocr(self, m):
             sys.stdout.write(m)
             return
+
         def msg(self, m): print(m)
         Mpp.pprint_simple_array(list(range(50)), 50, self.msg_nocr, self.msg)
         self.assertEqual(

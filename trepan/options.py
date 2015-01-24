@@ -22,7 +22,8 @@ Mdebugger  = import_relative('debugger', '.')
 Mapi       = import_relative('api',      '.')
 Mclifns    = import_relative('clifns',   '.')
 Mfile      = import_relative('file',     '.lib')
-Moutput    = import_relative('output',   '.io')
+Moutput    = import_relative('output',   '.inout')
+
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -35,8 +36,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     Runs the extended python debugger"""
 
-    ## serverChoices = ('TCP','FIFO', None)
-
+    # serverChoices = ('TCP','FIFO', None)
 
     optparser = OptionParser(usage=usage_str, option_list=option_list,
                              version="%%prog version %s" % pkg_version)
@@ -77,7 +77,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="Debug the debugger")
     optparser.add_option("--different", dest="different",
                          action="store_true", default=True,
-                         help="Consecutive stops should have different positions")
+                         help="Consecutive stops should have "
+                         "different positions")
     #     optparser.add_option("--error", dest="errors", metavar='FILE',
     #                          action="store", type='string',
     #                          help="Write debugger's error output "
@@ -88,12 +89,15 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     optparser.add_option("-H", "--host", dest="host", default='127.0.0.1',
                          action="store", type='string', metavar='IP-OR-HOST',
-                         help="connect IP or host name. Only valid if --client option given.")
+                         help="connect IP or host name. "
+                         "Only valid if --client option given.")
 
     optparser.add_option("--highlight", dest="highlight",
-                         action="store", type='string', metavar='{light|dark|plain}',
+                         action="store", type='string',
+                         metavar='{light|dark|plain}',
                          default='light',
-                         help="Use syntax and terminal highlight output. 'plain' is no highlight")
+                         help="Use syntax and terminal highlight output. "
+                         "'plain' is no highlight")
     optparser.add_option("--private", dest="private",
                          action='store_true', default=False,
                          help="Don't register this as a global debugger")
@@ -108,7 +112,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          )
     optparser.add_option("--post-mortem", dest="post_mortem",
                          action='store_true', default=True,
-                         help="Enter debugger on an uncaught (fatal) exception")
+                         help="Enter debugger on an uncaught (fatal) "
+                         "exception")
 
     optparser.add_option("--no-post-mortem", dest="post_mortem",
                          action='store_false', default=True,
@@ -124,7 +129,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          + "to FILE")
     optparser.add_option("-P", "--port", dest="port", default=1027,
                          action="store", type='int',
-                         help="Use TCP port number NUMBER for out-of-process connections.")
+                         help="Use TCP port number NUMBER for "
+                         "out-of-process connections.")
     optparser.add_option("--server", dest="server",
                          default=None, action='store',
                          help="Out-of-process server connection mode")
@@ -132,13 +138,13 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          action="store_true", default=False,
                          help="Set to watch for signal handler changes")
     optparser.add_option("-t", "--target", dest="target",
-                         help="Specify a target to connect to. Arguments" \
+                         help="Specify a target to connect to. Arguments"
                          + " should be of form, 'protocol address'."),
 
-    # annotate option produces annotations, used in trepan.el for a better emacs
-    # integration. Annotations are similar in purpose to those of GDB (see
-    # that manual for a description), although the syntax is different.
-    # they have the following format:
+    # annotate option produces annotations, used in trepan.el for a
+    # better emacs integration. Annotations are similar in purpose to
+    # those of GDB (see that manual for a description), although the
+    # syntax is different.  they have the following format:
     #
     # ^Z^Zannotation-name
     # <arbitrary text>
@@ -171,7 +177,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         if 'HOME' in os.environ:
             startup_home_file = os.path.join(os.environ['HOME'], startup_file)
             expanded_startup_home = \
-                                  Mclifns.path_expanduser_abs(startup_home_file)
+              Mclifns.path_expanduser_abs(startup_home_file)
             if Mfile.readable(expanded_startup_home):
                 dbg_initfiles.append(startup_home_file)
                 pass
@@ -203,7 +209,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
             print("I/O in opening debugger output file %s" % opts.output)
             print("error(%s): %s" % (errno, strerror))
         except:
-            print("Unexpected error in opening debugger output file %s" % \
+            print("Unexpected error in opening debugger output file %s" %
                   opts.output)
             print(sys.exc_info()[0])
             sys.exit(2)
@@ -212,6 +218,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     return opts, dbg_opts, sys.argv
 
+
 def _postprocess_options(dbg, opts):
     ''' Handle options (`opts') that feed into the debugger (`dbg')'''
     # Set dbg.settings['printset']
@@ -219,12 +226,12 @@ def _postprocess_options(dbg, opts):
     if opts.fntrace:   print_events = ['c_call', 'c_return', 'call', 'return']
     if opts.linetrace: print_events += ['line']
     if len(print_events):
-       dbg.settings['printset'] = frozenset(print_events)
-       pass
+        dbg.settings['printset'] = frozenset(print_events)
+        pass
 
     for setting in ('annotate', 'basename', 'different',):
-       dbg.settings[setting] = getattr(opts, setting)
-       pass
+        dbg.settings[setting] = getattr(opts, setting)
+        pass
 
     if getattr(opts, 'highlight'):
         dbg.settings['highlight'] = opts.highlight
@@ -254,8 +261,8 @@ def _postprocess_options(dbg, opts):
     #         except ValueError:
     #             print "Could not convert data to an integer."
     #         except:
-    #             print "Unexpected error in opening debugger output file %s" % \
-    #                   opts.errors
+    #             print "Unexpected error in opening debugger output "
+    #                   "file %s" % opts.errors
     #             print sys.exc_info()[0]
     #             sys.exit(2)
 
@@ -269,21 +276,21 @@ def _postprocess_options(dbg, opts):
 
 # Demo it
 if __name__=='__main__':
-	import pprint
+    import pprint
 
-	def doit(prog, version, arg_str):
-		print("options '%s'" % arg_str)
-		args = arg_str.split()
-		opts, dbg_opts, sys_argv = process_options('testing', '1.0', args)
-		pp.pprint(vars(opts))
-		print('')
-		return
+    def doit(prog, version, arg_str):
+        print("options '%s'" % arg_str)
+        args = arg_str.split()
+        opts, dbg_opts, sys_argv = process_options('testing', '1.0', args)
+        pp.pprint(vars(opts))
+        print('')
+        return
 
-	pp = pprint.PrettyPrinter(indent=4)
-	doit('testing', '1.1', '')
-	doit('testing', '1.2', 'foo bar')
-	doit('testing', '1.3', '--server')
-	doit('testing', '1.3', '--command %s bar baz' % __file__)
-	doit('testing', '1.4', '--server --client')
-	doit('testing', '1.5', '--help')
-	pass
+    pp = pprint.PrettyPrinter(indent=4)
+    doit('testing', '1.1', '')
+    doit('testing', '1.2', 'foo bar')
+    doit('testing', '1.3', '--server')
+    doit('testing', '1.3', '--command %s bar baz' % __file__)
+    doit('testing', '1.4', '--server --client')
+    doit('testing', '1.5', '--help')
+    pass

@@ -2,16 +2,18 @@
 #   Modification of Python's Lib/dis.py
 '''Disassembly Routines'''
 
-import inspect, sys, types
+import inspect, sys, struct, time, types, marshal
 from dis import distb, findlabels, findlinestarts
 from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, hasjrel, \
     haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
 
+import trepan.lib.format
 from import_relative import import_relative
 Mformat   = import_relative('format', top_name='trepan')
 format_token = Mformat.format_token
 
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
+
 
 def _try_compile(source, name):
     """Attempts to compile the given source, first as an expression and
@@ -26,8 +28,10 @@ def _try_compile(source, name):
         c = compile(source, name, 'exec')
     return c
 
-# Modified from dis. Changed output to use msg, msg_nocr, section, and pygments.
-# Added first_line and last_line parameters
+# Modified from dis. Changed output to use msg, msg_nocr, section, and
+# pygments.  Added first_line and last_line parameters
+
+
 def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
         relative_pos = False, color=True):
     """Disassemble classes, methods, functions, or code.
@@ -72,7 +76,7 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
                 pass
             pass
         pass
-    elif hasattr(x, 'co_code'): # Code object
+    elif hasattr(x, 'co_code'):  # Code object
         section("Disassembly of %s: " % x)
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
@@ -82,12 +86,13 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     elif isinstance(x, str):    # Source code
         disassemble_string(msg, msg_nocr, x,)
     else:
-       errmsg("Don't know how to disassemble %s objects." %
-              type(x).__name__)
+        errmsg("Don't know how to disassemble %s objects." %
+               type(x).__name__)
     return
 
-def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1, end_line=None,
-                relative_pos=False, color='light'):
+
+def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1,
+                end_line=None, relative_pos=False, color='light'):
     """Disassemble a code object."""
     disassemble_bytes(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
                       start_line, end_line, relative_pos,
@@ -96,10 +101,12 @@ def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1, end_line=No
                       dict(findlinestarts(co)), color)
     return
 
+
 def disassemble_string(source):
     """Compile the source string, then disassemble the code object."""
     disassemble(_try_compile(source, '<dis>'))
     return
+
 
 def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                       start_line=-1, end_line=None, relative_pos=False,
@@ -220,12 +227,15 @@ if __name__ == '__main__':
     def msg(msg_str):
         print(msg_str)
         return
+
     def msg_nocr(msg_str):
         sys.stdout.write(msg_str)
         return
+
     def errmsg(msg_str):
         msg('*** ' + msg_str)
         return
+
     def section(msg_str):
         msg('=== ' + msg_str + ' ===')
         return

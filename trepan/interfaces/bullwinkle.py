@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,11 +18,13 @@
 import atexit, pprint
 
 # Our local modules
-from import_relative import *
+from import_relative import import_relative
+import_relative('inout',                  '..',   'trepan')
 import_relative('interfaces',             '..',   'trepan')
 Minterface = import_relative('interface', '..',   'trepan')
-Minput     = import_relative('input',     '..io', 'trepan')
-Moutput    = import_relative('output',    '..io', 'trepan')
+Minput     = import_relative('input',     '..inout', 'trepan')
+Moutput    = import_relative('output',    '..inout', 'trepan')
+
 
 class BWInterface(Minterface.TrepanInterface):
     """Interface when communicating with the user in the same
@@ -30,8 +32,8 @@ class BWInterface(Minterface.TrepanInterface):
 
     def __init__(self, inp=None, out=None, opts=None):
         atexit.register(self.finalize)
-        self.input       = inp or Minput.TrepanUserInput()
-        self.output      = out or Moutput.TrepanUserOutput()
+        self.input       = inp or Minput.DebuggerUserInput()
+        self.output      = out or Moutput.DebuggerUserOutput()
         self.pp          = pprint.PrettyPrinter()
         return
 
@@ -54,14 +56,14 @@ class BWInterface(Minterface.TrepanInterface):
 
     def msg(self, msg):
         self.output.write(self.pp.pformat(msg) + "\n")
-        return 
+        return
 
     def read_command(self):
         line = self.readline('Bullwinkle read: ')
         try:
             command = eval(line)
         except:
-            return "eval error";
+            return "eval error"
         pass
         return command
 
@@ -74,7 +76,7 @@ if __name__=='__main__':
     intf = BWInterface()
     intf.msg("Testing1, 2, 3")
     import sys
-    if len(sys.argv) > 1: 
+    if len(sys.argv) > 1:
         try:
             entry = intf.read_command()
         except EOFError:

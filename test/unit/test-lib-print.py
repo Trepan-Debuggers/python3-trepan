@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mprint = import_relative('lib.print', '...trepan')
 
+
 class TestLibPrint(unittest.TestCase):
 
     def test_lib_printf(self):

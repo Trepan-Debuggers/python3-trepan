@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ disassemble that.
    disassemble myprog.pyc         # Disassemble file myprog.pyc
 """
 
-    aliases       = ('disasm',) # Note: we will have disable
+    aliases       = ('disasm',)  # Note: we will have disable
     category      = 'data'
     min_args      = 0
     max_args      = 2
@@ -122,8 +122,8 @@ disassemble that.
                     except:
                         return
                     pass
-                Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg, obj,
-                         start_line=start_line, end_line=end_line,
+                Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg,
+                         obj, start_line=start_line, end_line=end_line,
                          relative_pos=relative_pos)
                 return False
             else:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import unittest
-from fn_helper import *
+from fn_helper import strarray_setup, compare_output
+
 
 class TestSkip(unittest.TestCase):
     def test_skip(self):

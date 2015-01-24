@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
 
 import types
 from import_relative import import_relative
-Mbase = import_relative('base', top_name='trepan')
+Mbase  = import_relative('inout.base', '...trepan')
 
-class StringArrayInput(Mbase.TrepanInputBase):
+
+class StringArrayInput(Mbase.DebuggerInputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
 
@@ -55,12 +56,13 @@ class StringArrayInput(Mbase.TrepanInputBase):
         return line
     pass
 
-class StringArrayOutput(Mbase.TrepanOutputBase):
+
+class StringArrayOutput(Mbase.DebuggerInOutBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
     even simplier. """
 
     def __init__(self, out=[], opts=None):
-        self.flush_after_write = False # For compatibility
+        self.flush_after_write = False  # For compatibility
         self.closed = False
         self.output = out
         return
@@ -139,9 +141,9 @@ if __name__=='__main__':
     out.close()
     print(out.output)
     try:
-         out.writeline("You won't see me")
+        out.writeline("You won't see me")
     except:
-         pass
+        pass
     # Closing after already closed is okay
     out.close()
     inp.close()

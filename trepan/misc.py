@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,27 +14,32 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 def option_set(options, value, default_options):
     if not options or value not in options:
         return default_options.get(value)
     else:
         return options.get(value)
-    return None # Not reached
+    return None  # Not reached
+
 
 def bool2YN(b):
     if b: return 'Y'
     else: return 'N'
+
 
 def wrapped_lines(msg_part1, msg_part2, width):
     if len(msg_part1) + len(msg_part2) + 1 > width:
         return msg_part1 + "\n\t" + msg_part2
     else:
         return msg_part1 + " " + msg_part2
-    return # Not reached
+    return  # Not reached
 
 import os
 from glob import glob
 from import_relative import get_srcdir
+
+
 def pyfiles(level=2):
     "All python files caller's dir without the path and trailing .py"
     d = get_srcdir(level)

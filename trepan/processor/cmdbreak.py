@@ -19,6 +19,7 @@ import inspect, os, pyficache
 from import_relative import import_relative
 Mmisc = import_relative('misc', '..')
 
+
 def set_break(cmd_obj, func, filename, lineno, condition, temporary, args):
     if lineno is None:
         part1 = ("I don't understand '%s' as a line number, function name,"
@@ -58,6 +59,7 @@ def set_break(cmd_obj, func, filename, lineno, condition, temporary, args):
     cmd_obj.msg(msg)
     return True
 
+
 def parse_break_cmd(cmd_obj, args):
     curframe = cmd_obj.proc.curframe
     if 0 == len(args) or args[0] == 'if':
@@ -89,4 +91,3 @@ def parse_break_cmd(cmd_obj, args):
     else:
         func = None
     return (func, filename, lineno, condition)
-

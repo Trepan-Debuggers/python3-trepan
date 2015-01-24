@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2010, 2012-2013 Rocky Bernstein
+#  Copyright (C) 2010, 2012-2014 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ environment."""
 
         self.section("ENTERING NESTED DEBUGGER")
 
-        self.core.step_ignore = 2 # call_tracing will stop in itself.
+        self.core.step_ignore = 2  # call_tracing will stop in itself.
         try:
             ret = sys.call_tracing(eval, (arg, global_vars, local_vars))
             self.msg("R=> %s" % self.proc._saferepr(ret))
@@ -92,6 +92,7 @@ if __name__ == '__main__':
     cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None,
                                                cp)
     command = DebugCommand(cp)
+
     def test_fn():
         return 5
     command.run(['debug', 'test_fn()'])

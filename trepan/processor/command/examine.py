@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2014 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ See also `pr`, `pp`, and `whatis`.
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
-    short_help    = "Examine value, type and object attributes of an expression"
+    short_help    = ("Examine value, type, and object attributes "
+                     "of an expression")
 
     def run(self, args):
         for arg in args[1:]:

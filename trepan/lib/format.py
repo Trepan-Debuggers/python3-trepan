@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''Pygments-related terminal formatting'''
 
-import re
+import re, sys
 from pygments                     import highlight, lex
 from pygments.console             import ansiformat
 from pygments.filter              import Filter
@@ -23,8 +23,10 @@ from pygments.formatter           import Formatter
 from pygments.formatters          import TerminalFormatter
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.lexers              import RstLexer
-from pygments.token               import *
+from pygments.token               import Comment, Generic, Keyword, Name, \
+     Number, Operator, String, Token
 from pygments.util                import get_choice_opt
+
 
 def format_token(ttype, token, colorscheme=TERMINAL_COLORS,
                  highlight='light' ):
@@ -59,6 +61,7 @@ color_scheme[Generic.Emph]   = TERMINAL_COLORS[Comment.Preproc]
 # Should come last since "Name" is used above
 Name = Comment.Preproc
 
+
 class RstFilter(Filter):
 
     def __init__(self, **options):
@@ -73,7 +76,7 @@ class RstFilter(Filter):
             if ttype is Token.Generic.Emph:
                 type
                 value = value[1:-1]
-                pass            
+                pass
             elif ttype is Token.Generic.Strong:
                 value = value[2:-2]
                 pass
@@ -81,6 +84,7 @@ class RstFilter(Filter):
             pass
         return
     pass
+
 
 class RSTTerminalFormatter(Formatter):
     r"""
@@ -155,7 +159,6 @@ class RSTTerminalFormatter(Formatter):
         self.outfile.write('\n')
         self.column = 0
         return self.column
-        
 
     def reflow_text(self, text, color):
         # print '%r' % text
@@ -198,7 +201,7 @@ class RSTTerminalFormatter(Formatter):
         if self.verbatim:
             self.write_verbatim(text)
         elif self.in_list:
-            # FIXME: 
+            # FIXME:
             self.write(text, color,)
         else:
             words = re.compile('[ \t]+').split(text)
@@ -220,7 +223,6 @@ class RSTTerminalFormatter(Formatter):
                 pass
             pass
         return
-        
 
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
@@ -234,7 +236,8 @@ class RSTTerminalFormatter(Formatter):
             pass
         return
     pass
-    
+
+
 class MonoRSTTerminalFormatter(RSTTerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
@@ -244,16 +247,17 @@ class MonoRSTTerminalFormatter(RSTTerminalFormatter):
             elif ttype is Token.Generic.Emph:
                 type
                 text = "*%s*" % text
-                pass            
+                pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
                 pass
             pass
-            
+
             self.reflow_text(text, None)
             pass
         return
     pass
+
 
 class MonoTerminalFormatter(TerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
@@ -264,12 +268,12 @@ class MonoTerminalFormatter(TerminalFormatter):
             elif ttype is Token.Generic.Emph:
                 type
                 text = "*%s*" % text
-                pass            
+                pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
                 pass
             pass
-            
+
             outfile.write(text)
             pass
         return
@@ -280,6 +284,7 @@ rst_filt = RstFilter()
 rst_lex.add_filter(rst_filt)
 color_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 mono_tf  = MonoRSTTerminalFormatter()
+
 
 def rst_text(text, mono, width=80):
     if mono:
@@ -301,24 +306,24 @@ if __name__ == '__main__':
         print('-' * 30)
         print(highlight(string, rst_lex, tf))
         return
-        
+
 #    string = '`A` very *emphasis* **strong** `code`'
 #    show_it(string, color_tf)
 #    show_it(string, mono_tf)
 #
 #    test_string ='''
-#This is an example to show off *reformatting.*
-#We have several lines
-#here which should be reflowed.
+# This is an example to show off *reformatting.*
+# We have several lines
+# here which should be reflowed.
 #
-#But paragraphs should be respected.
+# But paragraphs should be respected.
 #
 #    And verbatim
 #    text should not be
 #    touched
 #
-#End of test.
-#'''
+# End of test.
+# '''
 #
 #    rst_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 #    show_it(test_string, rst_tf)
@@ -342,7 +347,8 @@ suffix may be omitted in the file name.
 
    break              # Break where we are current stopped at
    break if i < j     # Break at current line if i < j
-   break 10           # Break on line 10 of the file we are currently stopped at
+   break 10           # Break on line 10 of the file we are
+                      #  currently stopped at
    break os.path.join # Break in function os.path.join
    break os.path:45   # Break on line 45 of os.path
    break myfile:5 if i < j # Same as above but only if i < j

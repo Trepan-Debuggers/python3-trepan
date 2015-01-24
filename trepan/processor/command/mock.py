@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013-2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,17 +16,23 @@
 ''' Not a command. A stub class used by a command in its 'main' for
 demonstrating how the command works.'''
 
+import trepan.lib
+import trepan.inout
+import trepan.interfaces
+import trepan.processor.command
+
 import os, sys
 from import_relative import import_relative
 breakpoint = import_relative('breakpoint', '...lib', 'trepan')
-default    = import_relative('default', '...lib', 'trepan') # Default settings
+default    = import_relative('default', '...lib', 'trepan')  # Default settings
 
 class MockIO:
     def readline(self, prompt='', add_to_history=False):
         print(prompt)
         return 'quit'
+
     def output(self):
-        print(prompt)
+        print
     pass
 
 class MockUserInterface:
@@ -68,6 +74,7 @@ class MockProcessor:
         self.last_command = None
         self.stack        = []
         return
+
     def get_int(self, arg, min_value=0, default=1, cmdname=None,
                     at_most=None):
         return None
@@ -94,17 +101,24 @@ class MockDebuggerCore:
         self.last_filename  = None
         self.different_line = None
         return
+
     def set_next(self, frame, step_events=None):
         pass
+
     def stop(self): pass
+
     def canonic(self, filename):
         return filename
+
     def canonic_filename(self, frame):
         return frame.f_code.co_filename
+
     def filename(self, name):
         return name
+
     def is_running(self):
         return 'Running' == self.execution_status
+
     def get_file_breaks(self, filename):
         return []
     pass
@@ -117,7 +131,9 @@ class MockDebugger:
         self.orig_sys_argv    = None
         self.program_sys_argv = []
         return
+
     def stop(self): pass
+
     def restart_argv(self): return []
     pass
 

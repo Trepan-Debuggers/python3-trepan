@@ -2,6 +2,7 @@
 import os, signal, unittest
 from fn_helper import strarray_setup, compare_output, get_lineno
 
+
 class TestSigHandler(unittest.TestCase):
 
     def test_handle(self):
@@ -75,9 +76,9 @@ class TestSigHandler(unittest.TestCase):
 
         d.core.start()
         ##############################
-        x = 9
+        x = 9  # NOQA
         os.kill(os.getpid(), signal.SIGUSR2)
-        y = 10
+        y = 10  # NOQA
         ##############################
         d.core.stop()
         out = ['-- x = 9']
@@ -90,8 +91,3 @@ class TestSigHandler(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
     pass
-
-
-
-
-

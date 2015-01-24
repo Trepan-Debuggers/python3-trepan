@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -117,8 +117,8 @@ See also `examine` and `whatis`.
                 cmds = [cmd for cmd in list(self.proc.commands.keys())
                         if re.match('^' + cmd_name, cmd) ]
                 if cmds is None:
-                    self.errmsg("No commands found matching /^%s/. Try \"help\"."
-                                % cmd_name)
+                    self.errmsg("No commands found matching /^%s/. "
+                                "Try \"help\"." % cmd_name)
                 else:
                     self.section("Command names matching /^%s/:" % cmd_name)
                     self.msg_nocr(self.columnize_commands(cmds))
@@ -164,7 +164,7 @@ Type `help` followed by command name for full documentation.
         self.msg("%s.\n" % categories[category])
         self.section("List of commands:")
         names.sort()
-        for name in names: # Foo! iteritems() doesn't do sorting
+        for name in names:  # Foo! iteritems() doesn't do sorting
             if category != n2cmd[name].category: continue
             self.msg("%-13s -- %s" % (name, n2cmd[name].short_help,))
             pass

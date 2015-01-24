@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mexcept = import_relative('exception', '...trepan')
 
+
 class TestDeguggerExcept(unittest.TestCase):
 
     def test_debugger_restart(self):

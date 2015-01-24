@@ -6,6 +6,7 @@ from import_relative import import_relative
 
 Mp = import_relative('processor.command.pr', '...trepan')
 
+
 class TestP(unittest.TestCase):
     """Tests PCommand class"""
 
@@ -31,7 +32,7 @@ class TestP(unittest.TestCase):
         cmd         = Mp.PrCommand(cp)
         cmd.msg     = self.msg
         cmd.errmsg  = self.errmsg
-        me = 10
+        me = 10  # NOQA
         cmd.run([cmd.name, 'me'])
         self.assertEqual('10', self.msgs[-1])
         cmd.run([cmd.name, '/x', 'me'])

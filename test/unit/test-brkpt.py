@@ -5,6 +5,7 @@ from import_relative import import_relative
 
 Mbreakpoint = import_relative('lib.breakpoint', '...trepan')
 
+
 class TestBreakpoint(unittest.TestCase):
     
     def test_breakpoint(self):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2014 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ With no argument, edits file containing most recent line listed.
         curframe = self.proc.curframe
         if len(args) == 1:
             if curframe is None:
-                self.errmsg('edit: no stack to pick up position from. Use edit FILE:LINE form.')
+                self.errmsg('edit: no stack to pick up position from. '
+                            'Use edit FILE:LINE form.')
                 return
             filename = curframe.f_code.co_filename
             lineno   = curframe.f_lineno

@@ -4,9 +4,14 @@ import inspect, unittest
 from import_relative import import_relative
 
 import_relative('trepan', '...', 'trepan')
+import trepan.inout
+import trepan.interfaces
+import trepan.lib
+import trepan.processor.command
 Mdis = import_relative('processor.command.disassemble', '...trepan')
 
 from cmdhelper import dbg_setup
+
 
 class TestDisassemble(unittest.TestCase):
 
@@ -51,7 +56,7 @@ class TestDisassemble(unittest.TestCase):
         command.run(['disassemble'])
         self.assertTrue(len(self.errmsgs) > 0)
         self.assertEqual(len(self.msgs), 0)
-        me = self.test_disassemble
+        me = self.test_disassemble  # NOQA
         cp.curframe = inspect.currentframe()
         # All of these should work
         for args in (['disassemble'],
@@ -66,7 +71,8 @@ class TestDisassemble(unittest.TestCase):
                      ['disassemble', 'me']):
             self.clear_output()
             command.run(args)
-            self.assertTrue(len(self.msgs) > 0, "msgs for: %s" % ' '.join(args))
+            self.assertTrue(len(self.msgs) > 0,
+                            "msgs for: %s" % ' '.join(args))
             self.assertEqual(len(self.errmsgs), 0,
                              "errmsgs for: %s %s" % (' '.join(args),
                                                      "\n".join(self.errmsgs)))

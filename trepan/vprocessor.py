@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2012-2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2012-2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Mformat = import_relative('format',  '.lib', 'trepan')
 
 __all__ = ['Processor']
 
+
 class Processor:
     """A processor is the thing that handles the events that come to
     the debugger.  It has it's own I/O mechanism and a way to handle
@@ -34,7 +35,7 @@ class Processor:
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
     # an assignment of method names like self.msg = self.intf.msg,
-    # because we want to allow the interface (intf) to change 
+    # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
@@ -44,11 +45,11 @@ class Processor:
             message = colorize('standout', message)
             pass
         return(self.intf[-1].errmsg(message))
-               
+
     def msg(self, msg, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].msg """
         return(self.intf[-1].msg(msg))
-               
+
     def msg_nocr(self, msg, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
         return(self.intf[-1].msg_nocr(msg))
@@ -58,11 +59,12 @@ class Processor:
 
     def rst_msg(self, text, opts={}):
         """Convert ReStructuredText and run through msg()"""
-        text = Mformat.rst_text(text,
-                                'plain' == self.debugger.settings['highlight'],
-                                self.debugger.settings['width'])
+        from trepan.lib.format import rst_text
+        text = rst_text(text,
+                        'plain' == self.debugger.settings['highlight'],
+                        self.debugger.settings['width'])
         return self.msg(text)
-               
+
     def section(self, message, opts={}):
         if 'plain' != self.settings('highlight'):
             message = colorize('bold', message)
