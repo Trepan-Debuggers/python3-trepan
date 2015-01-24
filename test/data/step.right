@@ -20,3 +20,4 @@ line - gcd.py:41
 (gcd.py:41): <module>
 -- 41     check_args()
  41  ->	    check_args()
+trepan3k: That's all, folks...
