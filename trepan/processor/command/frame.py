@@ -21,6 +21,7 @@ from import_relative import import_relative
 Mbase_cmd = import_relative('base_cmd', '.', 'trepan')
 Mcmdproc  = import_relative('cmdproc', '..', 'trepan')
 Mcomplete = import_relative('complete',  '...lib', 'trepan')
+Mframe    = import_relative('frame', '..', 'trepan')
 Mthread   = import_relative('thred', '...lib', 'trepan')
 
 class FrameCommand(Mbase_cmd.DebuggerCommand):

@@ -36,7 +36,7 @@ import trepan.lib.default as Mdefault
 import trepan.interfaces.user as Muser
 from trepan.misc import option_set
 import trepan.lib.sighandler as Msig
-import trepan.processor.cmdproc as Mcmdproc
+from trepan.processor import cmdproc as Mcmdproc
 
 # Common Python packages
 import sys, types

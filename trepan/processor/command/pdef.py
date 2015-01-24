@@ -52,8 +52,6 @@ See also `pydocX`."""
         if inspect.isclass(obj):
             self.msg('Class constructor information:')
             obj = obj.__init__
-        elif isinstance(type(obj), object):
-            obj = obj.__call__
             pass
 
         output = Mprint.print_argspec(obj, obj_name)

@@ -25,7 +25,6 @@ class TestAliasCommand(unittest.TestCase):
     def setUp(self):
         self.errors = []
         self.msgs = []
-        import_relative('processor.cmdproc', '...trepan', 'trepan')
         Mdebugger        = import_relative('debugger', '...trepan', 'trepan')
         d                     = Mdebugger.Trepan()
         self.cmdproc          = d.core.processor
@@ -59,14 +58,14 @@ class TestAliasCommand(unittest.TestCase):
                          "Expecting %serror for #{arg_str}.\n Got #{errmsgs}" %
                          shoulda[1])
         return
-      
+
     def is_alias_defined(self, alias_name):
         return alias_name in list(self.cmdproc.aliases.keys())
-      
+
     def test_alias_unalias_command(self):
         self.assertEqual(False, len(self.cmdproc.aliases) == 0,
                          'There should be some aliases defined')
-        
+
         self.assertEqual(False, self.is_alias_defined('ki'))
         # from trepan.api import debug
         # debug()
@@ -75,7 +74,7 @@ class TestAliasCommand(unittest.TestCase):
         self.check_alias(False, 'unalias', 'ki')
         self.assertEqual(False, self.is_alias_defined('ki'))
         return
-    
+
     pass
 
 if __name__ == '__main__':
