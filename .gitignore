@@ -1,0 +1,10 @@
+*.egg-info
+*.py?
+*~
+.python-version
+/*.egg
+/.eggs
+/ChangeLog
+/build
+/dist
+*.egg

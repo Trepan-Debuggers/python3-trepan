@@ -126,7 +126,7 @@ class Trepan:
         self.core.start(start_opts)
         try:
             exec(cmd, globals_, locals_)
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             pass
         finally:
             self.core.stop()
@@ -224,7 +224,7 @@ class Trepan:
         except DebuggerQuit:
             retval = False
             pass
-        except Mexcept.DebuggerRestart:
+        except DebuggerRestart:
             self.core.execution_status = 'Restart requested'
             raise DebuggerRestart
         finally:

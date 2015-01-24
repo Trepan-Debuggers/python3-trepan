@@ -202,7 +202,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     if opts.output:
         try:
-            dbg_opts['output'] = Moutput.TrepanUserOutput(opts.output)
+            dbg_opts['output'] = Moutput.DebuggerUserOutput(opts.output)
         except IOError:
             _, xxx_todo_changeme, _ = sys.exc_info()
             (errno, strerror) = xxx_todo_changeme.args

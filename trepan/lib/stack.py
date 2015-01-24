@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,9 +17,11 @@
 import re, types
 
 from import_relative import import_relative
-Mbytecode = import_relative('bytecode', top_name='trepan')
-Mprint    = import_relative('print', top_name='trepan')
-Mformat   = import_relative('format', top_name='trepan')
+import trepan.lib
+
+Mbytecode = import_relative('bytecode', '..lib', 'trepan')
+Mprint    = import_relative('print', '..lib', 'trepan')
+Mformat   = import_relative('format', '..lib', 'trepan')
 format_token = Mformat.format_token
 
 def count_frames(frame, count_start=0):
@@ -117,14 +119,18 @@ def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
             )
     return s
 
+
 def frame2file(core_obj, frame):
     return core_obj.filename(core_obj.canonic_filename(frame))
+
 
 def is_exec_stmt(frame):
     """Return True if we are looking at an exec statement"""
     return hasattr(frame, 'f_back') and get_call_function_name(frame) == 'exec'
 
 import dis
+
+
 def get_call_function_name(frame, color='plain'):
     """If f_back is looking at a call function, return
     the name for it. Otherwise return None"""
@@ -179,7 +185,7 @@ def print_stack_trace(proc_obj, count=None, color='plain'):
 def print_dict(s, obj, title):
     if hasattr(obj, "__dict__"):
         d=obj.__dict__
-        if type(d) == dict:
+        if isinstance(d, dict):
             keys = list(d.keys())
             if len(keys) == 0:
                 s += "\n  No %s" % title

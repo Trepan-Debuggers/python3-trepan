@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import unittest
-from fn_helper import *
+from fn_helper import compare_output, strarray_setup
+
 
 class TestNext(unittest.TestCase):
     print("test ", __file__, "skipped")
-    
+
     def no__test_next_same_level(self):
         return
 
@@ -52,18 +53,20 @@ class TestNext(unittest.TestCase):
 
     def no__test_next_in_exception(self):
         return
+
         def boom(x):
-            y = 0/x
+            y = 0/x  # NOQA
             return
+
         def buggy_fact(x):
             if x <= 1: return boom(0)
             return buggy_fact(x-1)
         cmds = ['next', 'continue']
         d = strarray_setup(cmds)
-        try: 
+        try:
             d.core.start()
-            x = buggy_fact(4)
-            y = 5
+            x = buggy_fact(4)  # NOQA
+            y = 5  # NOQA
             self.assertTrue(False, 'should have raised an exception')
         except ZeroDivisionError:
             self.assertTrue(True, 'Got the exception')

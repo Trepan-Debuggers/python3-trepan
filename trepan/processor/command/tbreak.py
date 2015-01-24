@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -59,8 +59,9 @@ See also `break`.
     def run(self, args):
         func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,
                                                                    args[1:])
-        Mcmdbreak.set_break(self, func, filename, lineno, condition, True, args)
-        return 
+        Mcmdbreak.set_break(self, func, filename, lineno, condition,
+                            True, args)
+        return
 
 if __name__ == '__main__':
     Mdebugger = import_relative('debugger', '...')

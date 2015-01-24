@@ -69,7 +69,7 @@ we are in interactive mode, we'll prompt to make sure.
                 pass
             pass
 
-        if confirmed: 
+        if confirmed:
             import os
             # FIXME: check validity of signo.
             os.kill(os.getpid(), signo)
@@ -89,6 +89,4 @@ if __name__ == '__main__':
     print(command.complete(''))
     command.run(['kill', 'wrong', 'number', 'of', 'args'])
     command.run(['kill', '28'])
-    command.run(['kill'])
-
-
+    command.run(['kill!'])

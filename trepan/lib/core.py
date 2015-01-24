@@ -34,10 +34,10 @@ breakpoint = import_relative('breakpoint')
 default    = import_relative('default')
 Mmisc      = import_relative('misc', '..', 'trepan')
 Mtrace     = import_relative('trace', '..processor', 'trepan')
-Mcmdproc   = import_relative('cmdproc', '..processor', 'trepan')
-Mbwproc    = import_relative('main', '..bwprocessor', 'trepan')
 Mstack     = import_relative('stack')
 Mclifns    = import_relative('clifns', '..', 'trepan')
+import trepan.processor.cmdproc as Mcmdproc
+
 
 class TrepanCore:
 
