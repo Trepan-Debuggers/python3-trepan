@@ -119,6 +119,11 @@ See also `examine` and `whatis`.
                 if cmds is None:
                     self.errmsg("No commands found matching /^%s/. "
                                 "Try \"help\"." % cmd_name)
+                elif len(cmds) == 1:
+                    self.msg("Pattern '%s' matches command %s..." %
+                             (cmd_name, cmds[0],))
+                    args[1] = cmds[0]
+                    self.run(args)
                 else:
                     self.section("Command names matching /^%s/:" % cmd_name)
                     self.msg_nocr(self.columnize_commands(cmds))
