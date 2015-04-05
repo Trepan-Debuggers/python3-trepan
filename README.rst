@@ -98,11 +98,6 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Egg and PIP Installable
------------------------
-
-Can be installed via the usual *pip* or *easy_install*. `How To Install <https://code.google.com/p/pydbgr/wiki/HowToInstall>`_ has full instructions and installing from git.
-
 Modularity
 ----------
 
