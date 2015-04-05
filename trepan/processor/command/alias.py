@@ -1,4 +1,4 @@
-#  Copyright (C) 2013 Rocky Bernstein
+#  Copyright (C) 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,26 +24,31 @@ class AliasCommand(Mbase_cmd.DebuggerCommand):
 Add alias *alias-name* for a debugger command *debugger-comand*.
 
 Add an alias when you want to use a command abbreviation for a command
-that would otherwise be ambigous. For example, by default we make `s`
+that would otherwise be ambiguous. For example, by default we make `s`
 be an alias of `step` to force it to be used. Without the alias, `s`
-might be `step`, `show`, or `set` among others
+might be `step`, `show`, or `set` among others.
 
-**Example:**
+Example:
+-------
 
     alias cat list   # "cat prog.py" is the same as "list prog.py"
     alias s   step   # "s" is now an alias for "step".
                      # The above example is done by default.
 
-See also `unalias` and `show alias`."""
-    
+See also:
+---------
+
+`unalias` and `show alias`.
+    """
+
     category      = 'support'
     min_args      = 0
     max_args      = 2  # Need at most this many
     name          = 'alias'
     need_stack    = True
     short_help    = 'Add an alias for a debugger command'
-  
-    # Run command. 
+
+    # Run command.
     def run(self, args):
         if len(args) == 1:
             self.proc.commands['show'].run(['show', 'alias'])
@@ -54,17 +59,17 @@ See also `unalias` and `show alias`."""
             if command in self.proc.commands:
                 if al in self.proc.aliases:
                     old_command = self.proc.aliases[al]
-                    self.msg(("Alias '%s#' for command '%s'replaced old " + 
+                    self.msg(("Alias '%s#' for command '%s'replaced old " +
                               "alias for '%s'.") %
                              (al, command, old_command))
                 else:
-                    self.msg("New alias '%s' for command '%s' created." % 
+                    self.msg("New alias '%s' for command '%s' created." %
                              (al, command))
                     pass
                 self.proc.aliases[al] = command
             else:
                 self.errmsg(("You must alias to a command name, and '%s' " +
-                             'and is not one.') % command)  
+                             'and is not one.') % command)
                 pass
             return
         pass
