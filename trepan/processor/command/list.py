@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2014 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@ import inspect, os, linecache, pyficache, sys
 
 # Our local modules
 from import_relative import import_relative
+from pygments.console import colorize
 
 Mbase_cmd = import_relative('base_cmd', top_name='trepan')
 Mcmdfns   = import_relative('cmdfns', '..', 'trepan')
@@ -222,6 +223,8 @@ See also:
                     if curframe and lineno == inspect.getlineno(curframe) \
                        and filename == curframe.f_code.co_filename:
                         s += '->'
+                        if 'plain' != self.settings['highlight']:
+                            s = colorize('bold', s)
                     else:
                         s += a_pad
                         pass

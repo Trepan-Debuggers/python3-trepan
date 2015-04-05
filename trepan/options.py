@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys
+
 from optparse import OptionParser
 from import_relative import import_relative
 Mdebugger  = import_relative('debugger', '.')
@@ -117,7 +118,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     optparser.add_option("--no-post-mortem", dest="post_mortem",
                          action='store_false', default=True,
-                         help="Don't enter debugger on an uncaught (fatal) exception")
+                         help="Don't enter debugger on an uncaught (fatal) "
+                         "exception")
 
     optparser.add_option("-n", "--nx", dest="noexecute",
                          action="store_true", default=False,
@@ -132,7 +134,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          help="Use TCP port number NUMBER for "
                          "out-of-process connections.")
     optparser.add_option("--server", dest="server",
-                         default=None, action='store',
+                         action='store_true',
                          help="Out-of-process server connection mode")
     optparser.add_option("--sigcheck", dest="sigcheck",
                          action="store_true", default=False,
@@ -171,22 +173,19 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []
     if not opts.noexecute:
-        # Read debugger startup file(s), e.g. $HOME/.trepan3krc and ./.trepan3krc
-        startup_file = ".%s3krc" % debugger_name
-        # expanded_startup_file = Mclifns.path_expanduser_abs(startup_file)
-        if 'HOME' in os.environ:
-            startup_home_file = os.path.join(os.environ['HOME'], startup_file)
+        # Read debugger startup file(s), e.g. $HOME/.trepan3rc and ~/.trepan3rc
+        startup_file = ".%src" % debugger_name
+        if Mfile.readable(os.path.join('.' , startup_file)):
+            dbg_initfiles.append(startup_file)
+        else:
+            startup_home_file = os.path.join(os.environ.get('HOME', '~'),
+                                             startup_file)
             expanded_startup_home = \
               Mclifns.path_expanduser_abs(startup_home_file)
             if Mfile.readable(expanded_startup_home):
                 dbg_initfiles.append(startup_home_file)
                 pass
             pass
-        #         if Mfile.readable(expanded_startup_file) and \
-        #                 expanded_startup_file != expanded_startup_home:
-        #             dbg_initfiles.append(debugger_startup)
-        #             pass
-        pass
 
     # As per gdb, first we execute user initialization files and then
     # we execute any file specified via --command.
@@ -237,11 +236,6 @@ def _postprocess_options(dbg, opts):
         dbg.settings['highlight'] = opts.highlight
     else:
         dbg.settings['highlight'] = 'plain'
-        pass
-
-    if opts.main:
-        dbg.core.until_condition = "__name__ == '__main__'"
-        pass
 
     # Normally we want to set Mdebugger.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
