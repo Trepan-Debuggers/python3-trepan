@@ -127,5 +127,4 @@ the stock Python debugger, *pdb*. See this_ for those features.
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
-   :target: https://travis-ci.org/rocky/columnize/
    :target: https://pypi.python.org/pypi/trepan/
