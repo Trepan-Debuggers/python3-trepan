@@ -4,6 +4,7 @@
 .python-version
 /*.egg
 /.eggs
+/.tox
 /ChangeLog
 /build
 /dist
