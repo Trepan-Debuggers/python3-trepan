@@ -69,17 +69,41 @@ class RstFilter(Filter):
         pass
 
     def filter(self, lexer, stream):
+        last_was_heading_title = ''
+        last_was_heading = False
         for ttype, value in stream:
             if ttype is Token.Name.Variable:
                 value = value[1:-1]
+                last_was_heading_title  = ''
+                last_was_heading  = ''
                 pass
             if ttype is Token.Generic.Emph:
-                type
                 value = value[1:-1]
+                last_was_heading_title  = ''
+                last_was_heading  = ''
                 pass
             elif ttype is Token.Generic.Strong:
                 value = value[2:-2]
+                last_was_heading_title = ''
+                last_was_heading  = ''
                 pass
+            elif ttype is Token.Text and last_was_heading_title  and value == "\n":
+                value = ''
+                last_was_heading  = False
+            elif ttype is Token.Generic.Heading:
+                # Remove the underline line following a section header
+                # That is remove:
+                # Header
+                # ------ <- remove this line
+                last_was_heading = True
+                if last_was_heading_title and re.match(r'^(?:[=]|[-])+$', value):
+                    value = ''
+                    last_was_heading_title = ''
+                else:
+                    # We store the entire string in case someday we want to match
+                    # whether the underline size matches the title size
+                    last_was_heading_title  = value
+                    pass
             yield ttype, value
             pass
         return
@@ -165,7 +189,9 @@ class RSTTerminalFormatter(Formatter):
         # from trepan.api import debug
         # if u' or ' == text: debug()
         last_last_nl = self.last_was_nl
-        if text[-1] == '\n':
+        if text == '':
+            pass
+        elif text[-1] == '\n':
             if self.last_was_nl:
                 self.write_nl()
                 self.write_nl()
@@ -245,14 +271,11 @@ class MonoRSTTerminalFormatter(RSTTerminalFormatter):
                 text = '"%s"' % text
                 pass
             elif ttype is Token.Generic.Emph:
-                type
                 text = "*%s*" % text
                 pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
                 pass
-            pass
-
             self.reflow_text(text, None)
             pass
         return
@@ -307,29 +330,32 @@ if __name__ == '__main__':
         print(highlight(string, rst_lex, tf))
         return
 
-#    string = '`A` very *emphasis* **strong** `code`'
-#    show_it(string, color_tf)
-#    show_it(string, mono_tf)
-#
-#    test_string ='''
-# This is an example to show off *reformatting.*
-# We have several lines
-# here which should be reflowed.
-#
-# But paragraphs should be respected.
-#
-#    And verbatim
-#    text should not be
-#    touched
-#
-# End of test.
-# '''
+    # string = '`A` very *emphasis* **strong** `code`'
+    # show_it(string, color_tf)
+    # show_it(string, mono_tf)
+
+    test_string ='''
+Heading
+-------
+
+This is an example to show off *reformatting.*
+We have several lines
+here which should be reflowed.
+
+But paragraphs should be respected.
+
+   And verbatim
+   text should not be
+   touched
+
+End of test.
+'''
 #
 #    rst_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 #    show_it(test_string, rst_tf)
 
     rst_tf = MonoRSTTerminalFormatter()
-#    show_it(test_string, rst_tf, 30)
+    show_it(test_string, rst_tf, 30)
 
     text =     """**break** [*location*] [if *condition*]]
 
@@ -343,7 +369,8 @@ The location line number may be prefixed with a filename or module
 name and a colon. Files is searched for using *sys.path*, and the `.py`
 suffix may be omitted in the file name.
 
-**Examples:**
+Examples:
+---------
 
    break              # Break where we are current stopped at
    break if i < j     # Break at current line if i < j

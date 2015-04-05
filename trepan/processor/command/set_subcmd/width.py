@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
 #
 
 from import_relative import import_relative
@@ -9,14 +9,23 @@ Mbase_subcmd = import_relative('base_subcmd', '..', 'pydbgr')
 Mcmdfns      = import_relative('cmdfns', '...', 'pydbgr')
 
 class SetWidth(Mbase_subcmd.DebuggerSubcommand):
-    """Set number of characters the debugger thinks are in a line"""
-    
+    """
+**set width** *number*
+
+Set the number of characters the debugger thinks are in a line.
+
+See also:
+--------
+
+`show width`
+"""
+
     in_list    = True
     min_abbrev = len('wid')
-    
+
     def run(self, args):
         Mcmdfns.run_set_int(self, ' '.join(args),
-                            "The 'width' command requires a line width", 
+                            "The 'width' command requires a line width",
                             0, None)
         return
     pass

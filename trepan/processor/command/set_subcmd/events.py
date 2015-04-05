@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,25 +20,30 @@ Mbase_subcmd  = import_relative('base_subcmd', '..', 'pydbgr')
 
 class SetEvents(Mbase_subcmd.DebuggerSubcommand):
 
-    """Set events [EVENT...]
+    """**set events** [*event* ...]
 
-Sets Turns line tracing on or off and/or the event mask to filter shown
-events. "all" can be used as an abbreviation for listing all event
-names. See the "step" command for a list of event names.
+Sets the events that the debugger will stop on. `all` can be used as
+an abbreviation for listing all event names.
 
 Changing trace event filters works independently of turning on or off
 tracing-event printing.
 
-Examples: 
-  set events line        # Set trace filter for line events only. 
+Examples:
+---------
+
+  set events line        # Set trace filter for line events only.
   set events call return # Trace calls and returns only
   set events all         # Set trace filter to all events.
 
-See also "set trace","show trace", and "show events".
-"""
+See also:
+---------
+
+`set trace`, `show trace`, and `show events`. `help step` lists event names.
+    """
+
 
     in_list    = True
-    min_abbrev = len('ev') 
+    min_abbrev = len('ev')
     short_help = "Set execution-tracing event set"
 
     def run(self, args):

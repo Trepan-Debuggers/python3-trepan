@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,8 +21,15 @@ Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
 Mcmdfns      = import_relative('cmdfns', '...', 'trepan')
 
 class SetMaxString(Mbase_subcmd.DebuggerSubcommand):
-    "Set maximum length to show string output"
-    
+    """**set maxstring** *number*
+
+Set the number of characters allowed in showing string values
+
+See also:
+--------
+
+`show maxstring`
+"""
     in_list    = True
     min_abbrev = len('str')  # Need at least "set max str"
 
@@ -33,5 +40,3 @@ class SetMaxString(Mbase_subcmd.DebuggerSubcommand):
         self.proc._repr.maxstring =  self.settings[self.name]
         return None
     pass
-
-

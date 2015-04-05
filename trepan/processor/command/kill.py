@@ -50,6 +50,11 @@ thread code, use this.
 
 If `unconditionally` is given, no questions are asked. Otherwise, if
 we are in interactive mode, we'll prompt to make sure.
+
+See also:
+---------
+
+`quit`, `restart`
 """
 
         signo =  signal.SIGKILL
