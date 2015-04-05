@@ -15,14 +15,14 @@ def check_args():
         # Rather than use sys.exit let's just raise an error
         raise Exception("Need to give two numbers")
     for i in range(2):
-        try: 
+        try:
             sys.argv[i+1] = int(sys.argv[i+1])
         except ValueError:
             print("** Expecting an integer, got: %s" % repr(sys.argv[i]))
             sys.exit(2)
             pass
         pass
-    
+
 def gcd(a,b):
     """ GCD. We assume positive numbers"""
 
@@ -30,7 +30,7 @@ def gcd(a,b):
     if a > b:
        (a, b) = (b, a)
        pass
-       
+
     if a <= 0:
         return None
     if a == 1 or b-a == 0:
@@ -43,4 +43,3 @@ if __name__=='__main__':
     (a, b) = sys.argv[1:3]
     print("The GCD of %d and %d is %d" % (a, b, gcd(a, b)))
     pass
-

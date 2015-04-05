@@ -1,33 +1,33 @@
-(gcd.py:10): <module>
--> 10 """
+(locale.py:606): getpreferredencoding
+-> 606         def getpreferredencoding(do_setlocale = True):
 Set basename is off.
 Set event is on.
 Set stopping is off.
 No macros defined.
 Macro "foo" defined.
-  5    	not have a 'return' statement.
-  6    	
-  7    	check_args() raises an uncaught exception when given the wrong number
-  8    	of parameters.
-  9    	
- 10  ->	"""
- 11    	import sys
- 12    	
- 13    	def check_args():
- 14    	    if len(sys.argv) != 3:
+601    	            if res is None:
+602    	                # LANG not set, default conservatively to ASCII
+603    	                res = 'ascii'
+604    	            return res
+605    	    else:
+606  ->	        def getpreferredencoding(do_setlocale = True):
+607    	            """Return the charset that the user is likely using,
+608    	            according to the system configuration."""
+609    	            if do_setlocale:
+610    	                oldloc = setlocale(LC_CTYPE)
 foo
 
 Macro "bar" defined.
-  1    	#!/usr/bin/env python3
-  2    	"""Greatest Common Divisor
-  3    	
-  4    	Some characterstics of this program used for testing check_args() does
-  5    	not have a 'return' statement.
+  1    	""" Locale support.
+  2    	
+  3    	    The module provides low-level access to the C lib's locale APIs
+  4    	    and adds high level number formatting APIs as well as a locale
+  5    	    aliasing engine to complement these.
   6    	
-  7    	check_args() raises an uncaught exception when given the wrong number
-  8    	of parameters.
-  9    	
- 10  ->	"""
+  7    	    The aliasing engine includes support for many commonly used locale
+  8    	    names and maps them to values suitable for passing to the C lib's
+  9    	    setlocale() function. It also includes default encodings for all
+ 10    	    supported locale names.
     bar  foo
 
 bar:

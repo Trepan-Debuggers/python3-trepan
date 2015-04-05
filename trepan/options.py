@@ -174,7 +174,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     dbg_initfiles = []
     if not opts.noexecute:
         # Read debugger startup file(s), e.g. $HOME/.trepan3rc and ~/.trepan3rc
-        startup_file = ".%src" % debugger_name
+        startup_file = ".%s3krc" % debugger_name
         if Mfile.readable(os.path.join('.' , startup_file)):
             dbg_initfiles.append(startup_file)
         else:

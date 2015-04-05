@@ -1,23 +1,20 @@
-(gcd.py:10): <module>
--> 10 """
+(locale.py:606): getpreferredencoding
+-> 606         def getpreferredencoding(do_setlocale = True):
 Set basename is on.
 Set event is on.
 Set stopping is off.
-line - gcd.py:10
-line - gcd.py:11
-(gcd.py:11): <module>
--- 11 import sys
- 11  ->	import sys
+line - locale.py:609
+(locale.py:609): getpreferredencoding
+-- 609             if do_setlocale:
+609  ->	            if do_setlocale:
 Set stopping is on.
-line - gcd.py:13
-line - gcd.py:26
-line - gcd.py:40
-(gcd.py:40): <module>
--- 40 if __name__=='__main__':
- 40  ->	if __name__=='__main__':
+line - locale.py:626
+(locale.py:626): getpreferredencoding
+-- 626                 result = nl_langinfo(CODESET)
+626  ->	                result = nl_langinfo(CODESET)
 Set stopping is off.
-line - gcd.py:41
-(gcd.py:41): <module>
--- 41     check_args()
- 41  ->	    check_args()
+line - locale.py:627
+(locale.py:627): getpreferredencoding
+-- 627                 if not result and sys.platform == 'darwin':
+627  ->	                if not result and sys.platform == 'darwin':
 trepan3k: That's all, folks...
