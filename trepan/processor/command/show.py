@@ -19,7 +19,9 @@ from import_relative import import_relative
 Mbase_submgr = import_relative('base_submgr')
 
 class ShowCommand(Mbase_submgr.SubcommandMgr):
-    """Generic command for showing things about the debugger.  You can
+    """**show** *subcommand*
+
+Generic command for showing things about the debugger.  You can
 give unique prefix of the name of a subcommand to get information
 about just that subcommand.
 

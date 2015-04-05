@@ -32,8 +32,10 @@ float or str respectively.
 If the length output string large, the first part of the value is
 shown and `...` indicates it has been truncated
 
-See also `pp` and `examine` for commands which do more in the way of
-formatting.
+See also:
+---------
+
+ `pp` and `examine` for commands which do more in the way of formatting.
 """
     category      = 'data'
     min_args      = 1

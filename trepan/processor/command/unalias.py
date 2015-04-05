@@ -23,7 +23,10 @@ class UnaliasCommand(Mbase_cmd.DebuggerCommand):
 
 Remove alias *alias-name*
 
-See also 'alias'.
+See also:
+---------
+
+'alias'
 """
 
     category      = 'support'

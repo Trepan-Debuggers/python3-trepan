@@ -60,7 +60,8 @@ number of lines to list instead.
 Wherever a number is expected, it does not need to be a constant --
 just something that evaluates to a positive integer.
 
-**Examples:**
+Examples:
+--------
 
     list 5            # List starting from line 5
     list 4+1          # Same as above.
@@ -74,7 +75,10 @@ just something that evaluates to a positive integer.
     list .            # List lines centered from where we currently are stopped
     list -            # List lines previous to those just shown
 
-See `set listize` or `show listsize` to see or set the value.
+See also:
+---------
+
+`set listize` or `show listsize` to see or set the value.
 """
 
     aliases       = ('l',)

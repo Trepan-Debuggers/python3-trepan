@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@ Pretty-print the value of the expression.
 Simple arrays are shown columnized horizontally. Other values are printed
 via *pprint.pformat()*.
 
-See also `pr` and `examine` for commands which do more in the way of
+See also:
+---------
+
+`pr` and `examine` for commands which do more in the way of
 formatting.
 """
 

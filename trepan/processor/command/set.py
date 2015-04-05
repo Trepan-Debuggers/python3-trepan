@@ -19,7 +19,9 @@ from import_relative import import_relative
 base_submgr  = import_relative('base_submgr', top_name='trepan')
 
 class SetCommand(base_submgr.SubcommandMgr):
-    """Modifies parts of the debugger environment.
+    """**set** *set subcommand*
+
+Modifies parts of the debugger environment.
 
 You can give unique prefix of the name of a subcommand to get
 information about just that subcommand.

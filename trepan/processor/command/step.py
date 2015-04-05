@@ -44,7 +44,8 @@ run until the return for that call.)
 If no suffix is given, the debugger setting `different-line`
 determines this behavior.
 
-**Examples:**
+Examples:
+---------
 
   step        # step 1 event, *any* event 
   step 1      # same as above
@@ -54,7 +55,11 @@ determines this behavior.
   step>       # same as above
   step call line # Step line *and* call events
 
-Related and similar is the `next` command.  See also the commands:
+Related and similar is the `next` command.
+
+See also:
+---------
+
 `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
 `finish` for other ways to progress execution.
 """

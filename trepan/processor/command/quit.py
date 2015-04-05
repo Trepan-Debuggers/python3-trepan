@@ -40,8 +40,10 @@ raising an exception in one thread isn't going to quit the
 program. For this see `exit` or `kill` for more forceful termination
 commands.
 
-Also, see `run` and `restart` for other ways to restart the debugged
-program.
+See also:
+---------
+
+`run` and `restart` for other ways to restart the debugged program.
 """
 
     aliases       = ('q',)

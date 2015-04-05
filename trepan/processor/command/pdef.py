@@ -29,7 +29,11 @@ class PrintDefCommand(Mbase_cmd.DebuggerCommand):
 Print the definition header for a callable object *obj*.
 If the object is a class, print the constructor information.
 
-See also `pydocX`."""
+See also:
+---------
+
+ `pydocX`.
+"""
 
     category     = 'data'
     min_args      = 1

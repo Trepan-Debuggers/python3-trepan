@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,10 @@ Arguments are the code numbers of the expressions to stop displaying.
 No argument cancels all automatic-display expressions and is
 the same as `delete display`.
 
-Use `info display` to see current list of code numbers.
+See also:
+---------
+
+`info display` to see current list of code numbers.
 """
 
     aliases       = ('und',)

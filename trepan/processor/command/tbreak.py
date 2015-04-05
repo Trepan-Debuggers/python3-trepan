@@ -37,7 +37,8 @@ The location line number may be prefixed with a filename or module
 name and a colon. Files is searched for using *sys.path*, and the `.py`
 suffix may be omitted in the file name.
 
-**Examples:**
+Examples:
+---------
 
    tbreak     # Break where we are current stopped at
    tbreak 10  # Break on line 10 of the file we are currently stopped at
@@ -46,7 +47,10 @@ suffix may be omitted in the file name.
    tbreak myfile.py:45 # Break on line 45 of myfile.py
    tbreak myfile:45    # Same as above.
 
-See also `break`.
+See also:
+---------
+
+`break`.
 """
 
     category      = 'breakpoints'
