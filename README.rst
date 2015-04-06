@@ -3,10 +3,9 @@
 Overview
 ========
 
-This is a gdb-like debugger for Python. It is a rewrite of pydb_ from the ground up.
+This is a gdb-like debugger for Python. It is a rewrite of pydb_ or *pdb* from the ground up.
 
-This code assumes Python in the version range of 3.2 while trepan2_ supports Python 2.6 and 2.7.
-A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
+This code assumes Python version 3.3 or greater while trepan2_ supports Python 2.6 and 2.7. A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
 
 See the Tutorial_  for how to use.
 
