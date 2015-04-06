@@ -7,7 +7,7 @@ class TestSkip(unittest.TestCase):
     def test_skip(self):
 
         # See that we can skip without parameter. (Same as 'skip 1'.)
-        cmds = ['skip', 'continue']
+        cmds = ['skip', 'continue', 'continue']
         d = strarray_setup(cmds)
         d.core.start()
         ##############################
