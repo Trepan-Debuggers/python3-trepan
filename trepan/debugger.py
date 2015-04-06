@@ -208,12 +208,13 @@ class Trepan:
                        }  # NOQA
         if locals_ is None:
             locals_ = globals_
-        self.core.start(start_opts)
         retval = False
         self.core.execution_status = 'Running'
         try:
-            exec(compile(open(self.mainpyfile).read(), self.mainpyfile,
-                         'exec'), globals_, locals_)
+            compiled = compile(open(self.mainpyfile).read(),
+                               self.mainpyfile, 'exec')
+            self.core.start(start_opts)
+            exec(compiled, globals_, locals_)
             retval = True
         except SyntaxError:
             print(sys.exc_info()[1])

@@ -24,12 +24,6 @@ if package not in sys.modules:
     pass
 
 # Our local modules
-import trepan.interfaces
-import trepan.inout
-import trepan.processor.command  # NOQA
-
-from trepan import interface as Minterface
-from trepan import api as Mapi
 from trepan import client as Mclient
 from trepan import clifns as Mclifns
 from trepan import debugger as Mdebugger
