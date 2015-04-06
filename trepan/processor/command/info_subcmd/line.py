@@ -17,6 +17,7 @@ import inspect, os, re
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.lib import file
 from trepan import clifns as Mclifns, misc as Mmisc
 
 
@@ -84,7 +85,7 @@ class InfoLine(Mbase_subcmd.DebuggerSubcommand):
 
     def run(self, args):
         """Current line number in source file"""
-        #info line identifier
+        # info line identifier
         if not self.proc.curframe:
             self.errmsg("No line number information available.")
             return

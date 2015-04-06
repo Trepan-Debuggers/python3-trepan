@@ -202,7 +202,8 @@ See also:
             for lineno in range(first, last+1):
                 line = pyficache.getline(filename, lineno, opts)
                 if line is None:
-                    line = linecache.getline(filename, lineno, self.proc.frame.f_globals)
+                    line = linecache.getline(filename, lineno,
+                                             self.proc.frame.f_globals)
                     pass
                 if line is None:
                     self.msg('[EOF]')

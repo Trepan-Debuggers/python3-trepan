@@ -39,7 +39,7 @@ class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
         n = co.co_argcount
         if co.co_flags & inspect.CO_VARARGS: n += 1
         if co.co_flags & inspect.CO_VARKEYWORDS: n += 1
-        
+
         if n == 0:
             self.msg("no parameters")
         else:

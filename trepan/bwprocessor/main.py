@@ -313,10 +313,10 @@ class BWProcessor(Mprocessor.Processor):
 
     def process_command(self):
         # process command
-        self.response = {'errs': [], 'msg':[]}
+        self.response = {'errs': [], 'msg': []}
         cmd_hash = self.intf[-1].read_command()
 
-        ## FIXME: put this into a routine
+        # FIXME: put this into a routine
         if not isinstance(cmd_hash, dict):
             Mmsg.errmsg(self, "invalid input, expecting a hash: %s" % cmd_hash,
                         {'set_name': True})
@@ -377,7 +377,7 @@ class BWProcessor(Mprocessor.Processor):
         if self.event in ['exception', 'c_exception']:
             exc_type, exc_value, exc_traceback = self.event_arg
         else:
-            exc_type, _, exc_traceback = (None, None, None,)
+            _, _, exc_traceback = (None, None, None,)  # NOQA
             pass
         if self.frame or exc_traceback:
             self.stack, self.curindex = \

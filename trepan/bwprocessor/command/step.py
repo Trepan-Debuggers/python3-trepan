@@ -45,7 +45,6 @@ is not given, 1 is used, i.e. stop at the next statement.
     need_stack    = True
 
     def run(self, cmd_hash):
-        
         if 'step_count' in cmd_hash:
             step_count = cmd_hash['step_count'] - 1
         else:
@@ -74,7 +73,7 @@ if __name__ == '__main__':
     #     print 'step_ignore %s' % repr(d.core.step_ignore)
     #     print 'continue_running: %s' % cmd.proc.continue_running
     #     pass
-    # for c in (['s'], ['step+'], ['s-'], ['s!'], ['s>'], ['s<']): 
+    # for c in (['s'], ['step+'], ['s-'], ['s!'], ['s>'], ['s<']):
     #     d.core.step_ignore = 0
     #     cmd.continue_running = False
     #     result = cmd.run(c)

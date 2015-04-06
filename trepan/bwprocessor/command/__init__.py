@@ -15,9 +15,9 @@ __import__('pkg_resources').declare_namespace(__name__)
 
 import glob, os
 
-# FIXME: Is it really helpful to "privatize" variable names below? 
+# FIXME: Is it really helpful to "privatize" variable names below?
 # The below names are not part of the standard pre-defined names like
-# __name__ or __file__ are. 
+# __name__ or __file__ are.
 
 # Get the name of our directory.
 __command_dir__ = os.path.dirname(__file__)
@@ -29,8 +29,7 @@ __py_files__    = glob.glob(os.path.join(__command_dir__, '[a-z]*.py'))
 # files in exclude_files and tha becomes the list of modules that
 # commands.py will use to import
 exclude_files = ['mock.py']
-__modules__ = [ os.path.basename(filename[0:-3]) for 
+__modules__ = [ os.path.basename(filename[0:-3]) for
                 filename in __py_files__
                 if os.path.basename(filename) not in exclude_files]
 __all__ =  __modules__  + exclude_files
-

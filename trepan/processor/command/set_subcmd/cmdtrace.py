@@ -33,5 +33,3 @@ class SetCmdtrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
             pass
         return
     pass
-
-

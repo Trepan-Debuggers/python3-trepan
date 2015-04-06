@@ -27,7 +27,7 @@ def extract_expression(text):
         text = re.sub(':(?:\s+.*$|$)', '', text)
     elif re.search('^\s*return\s+', text):
         # EXPRESION in: return EXPRESSION
-        text = re.sub('^\s*return\s+','', text)
+        text = re.sub('^\s*return\s+', '', text)
     elif re.search('\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=[^=>]', text):
         # RHS of an assignment statement.
         text = re.sub('^\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=', '', text)

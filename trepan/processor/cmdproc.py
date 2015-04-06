@@ -570,8 +570,10 @@ class CommandProcessor(Mprocessor.Processor):
             if not (self.core.execution_status in cmd_obj.execution_set):
                 part1 = ("Command '%s' is not available for execution status:"
                          % name)
-                self.errmsg(Mmisc.wrapped_lines(part1, self.core.execution_status,
-                                                self.debugger.settings['width']))
+                mess = Mmisc.wrapped_lines(part1,
+                                        self.core.execution_status,
+                                        self.debugger.settings['width'])
+                self.errmsg(mess)
                 return False
             pass
         if self.frame is None and cmd_obj.need_stack:
@@ -863,7 +865,6 @@ class CommandProcessor(Mprocessor.Processor):
 
     def populate_commands_easy_install(self, Mcommand):
         cmd_instances = []
-        eval_cmd_template = 'command_mod.%s(self)'
         srcdir = get_srcdir()
         sys.path.insert(0, srcdir)
 

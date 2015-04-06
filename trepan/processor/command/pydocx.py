@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, sys
 
-# Import the real pydoc taking care to not confuse this module's 
+# Import the real pydoc taking care to not confuse this module's
 # name with the real one. This is done by adjusting sys.path.
 sys_path_save = sys.path
 # Not sure if the order here matters or if this is 100% correct.
@@ -46,7 +46,7 @@ source file to document. If name is *keywords*, *topics*, or
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
-    short_help    = 'Run pydoc' 
+    short_help    = 'Run pydoc'
 
     def run(self, args):
         sys_path_save = list(sys.path)
@@ -62,5 +62,3 @@ if __name__ == '__main__':
     d, cp = mock.dbg_setup()
     command = PyDocCommand(cp)
     pass
-
-

@@ -27,7 +27,7 @@ class InfoDisplay(Mbase_subcmd.DebuggerSubcommand):
 
     def run(self, args):
         lines = self.proc.display_mgr.all()
-        if 0 == len(lines): 
+        if 0 == len(lines):
             self.errmsg('There are no auto-display expressions now.')
             return
         for line in lines:

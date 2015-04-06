@@ -148,6 +148,7 @@ if __name__=='__main__':
             print("open(%s) called" % inp)
             pass
         pass
+
     class MyOutput(DebuggerInOutBase):
         def writeline(self, s):
             print("writeline:", s)

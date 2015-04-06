@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ from optparse import OptionParser
 # Our local modules
 from trepan import clifns as Mclifns
 from trepan import debugger as Mdebugger, exception as Mexcept, misc as Mmisc
+from trepan import file as Mfile
 from trepan.interfaces import bullwinkle as Mbullwinkle
 
 # The name of the debugger we are currently going by.

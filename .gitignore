@@ -1,3 +1,4 @@
+*.egg
 *.egg-info
 *.py?
 *~
@@ -8,4 +9,4 @@
 /ChangeLog
 /build
 /dist
-*.egg
+/tmp

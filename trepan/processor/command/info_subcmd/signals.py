@@ -20,10 +20,9 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 class InfoSignals(Mbase_subcmd.DebuggerSubcommand):
     'What debugger does when program gets various signals'
-    min_abbrev = 3 # info sig
+    min_abbrev = 3  # info sig
     need_stack = False
     short_help = 'What debugger does when program gets various signals'
-
 
     def run(self, args):
         self.debugger.sigmgr.info_signal(['signal'] + args)

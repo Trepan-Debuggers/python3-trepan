@@ -21,7 +21,7 @@ from trepan import misc as Mmisc
 class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
     'Execution status of the program.'
 
-    min_abbrev = 1 # Need at least info p
+    min_abbrev = 1  # Need at least info p
     need_stack = True
     short_help = 'Execution status of the program'
 
@@ -60,7 +60,8 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
                 pass
             self.msg('It stopped %s.' % self.core.stop_reason)
             if self.proc.event in ['signal', 'exception', 'c_exception']:
-                self.msg('Note: we are stopped *after* running the line shown.')
+                self.msg('Note: we are stopped *after* running the '
+                         'line shown.')
                 pass
         else:
             if mainfile:

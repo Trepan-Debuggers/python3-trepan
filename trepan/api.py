@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@ def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
     This is a wrapper to Debugger.run_eval(), so see that.
 
     When run_eval() returns, it returns the value of the expression.
-    Otherwise this function is similar to run()."""
-
+    Otherwise this function is similar to run().
+"""
 
     dbg = Mdebugger.Trepan(opts=debug_opts)
     try:
@@ -180,7 +180,7 @@ dictionary that gets fed to trepan.Debugger.core.start().
 Parameter "step_ignore" specifies how many line events to ignore after the
 debug() call. 0 means don't even wait for the debug() call to finish.
 """
-    if Mdebugger.Trepan != type(Mdebugger.debugger_obj):
+    if isinstance(Mdebugger.debugger_obj, Mdebugger.Trepan):
         Mdebugger.debugger_obj = Mdebugger.Trepan(dbg_opts)
         Mdebugger.debugger_obj.core.add_ignore(debug, stop)
         pass
@@ -207,7 +207,7 @@ debug() call. 0 means don't even wait for the debug() call to finish.
 
 
 def stop(opts=None):
-    if Mdebugger.Trepan == type(Mdebugger.debugger_obj):
+    if isinstance(Mdebugger.Trepan, Mdebugger.debugger_obj):
         return Mdebugger.debugger_obj.stop(opts)
     return None
 

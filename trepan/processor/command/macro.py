@@ -96,7 +96,7 @@ See also:
             self.errmsg("Expecting a Python lambda expression; got %s" % cmd_argstr)
             pass
         if proc_obj:
-            if type(proc_obj) == types.FunctionType:
+            if isinstance(proc_obj, types.FunctionType):
                 self.proc.macros[cmd_name] = [proc_obj, cmd_argstr]
                 self.msg("Macro \"%s\" defined." % cmd_name)
             else:

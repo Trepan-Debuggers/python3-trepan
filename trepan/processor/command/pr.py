@@ -25,10 +25,10 @@ class PrCommand(Mbase_cmd.DebuggerCommand):
     """**pr** *expression*
 
 Print the value of the expression. Variables accessible are those of the
-environment of the selected stack frame, plus globals. 
+environment of the selected stack frame, plus globals.
 
 The expression may be preceded with */fmt* where *fmt* is one of the
-format letters 'c', 'x', 'o', 'f', or 's' for chr, hex, oct, 
+format letters 'c', 'x', 'o', 'f', or 's' for chr, hex, oct,
 float or str respectively.
 
 If the length output string large, the first part of the value is
@@ -70,10 +70,8 @@ if __name__ == '__main__':
     cp.curframe = inspect.currentframe()
     command = PrCommand(cp)
     me = 10
-    
+
     command.run([command.name, 'me'])
     command.run([command.name, '/x', 'me'])
     command.run([command.name, '/o', 'me'])
     pass
-
-

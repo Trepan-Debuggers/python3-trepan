@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ if __name__=='__main__':
     for opt in ['a', 'b', 'c', 'd']:
         print(opt, get_option(opt))
         pass
-    for b in [True, False]: 
+    for b in [True, False]:
         print(bool2YN(b))
     pass
 

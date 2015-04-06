@@ -40,8 +40,8 @@ In the last form the only definitions of the given macro names is shown."""
     short_help = "List of defined macros"
 
     def complete(self, prefix):
-        return Mcomplete.complete_token(sorted(list(self.proc.macros.keys()) + ['*']),
-                                        prefix)
+        m = sorted(list(self.proc.macros.keys()) + ['*'])
+        return Mcomplete.complete_token(m, prefix)
 
     def run(self, args):
         if len(args) > 0:
@@ -56,7 +56,7 @@ In the last form the only definitions of the given macro names is shown."""
                     self.section("%s:" % macro_name)
                     string = self.proc.macros[macro_name][1]
                     highlight = self.settings['highlight']
-                    if  highlight in ['light', 'dark']:
+                    if highlight in ['light', 'dark']:
                         string = highlight_string(string, highlight)
                         pass
                     self.msg("  %s" % string)

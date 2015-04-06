@@ -1,19 +1,21 @@
 # Compatibility for us old-timers.
 
-# Note: This makefile include remake-style target comments. 
+# Note: This makefile include remake-style target comments.
 # These comments before the targets start with #:
 # remake --tasks to shows the targets and the comments
 
 GIT2CL ?= git2cl
 PYTHON ?= python3
+RM      ?= rm
+LINT    = flake8
 
 #EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
-PHONY=check clean dist distclean test test-unit test-functional rmChangeLog
+PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests
 
 #: Default target - same as "check"
 all: check
 
-#: Same as "check" 
+#: Same as "check"
 test: check
 
 #: Run all tests: unit, functional and integration
@@ -23,54 +25,58 @@ check-short: test-unit-short test-functional-short test-integration-short
 check: test-unit test-functional test-integration
 
 #: Run unit (white-box) tests
-test-unit: 
+test-unit:
 	$(PYTHON) ./setup.py nosetests
 
 #: Run unit (white-box) tests
-test-unit-short: 
+test-unit-short:
 	$(PYTHON) ./setup.py nosetests --quiet | \
 	$(PYTHON) ./make-check-filter.py
 
 #: Run functional tests
-test-functional: 
+test-functional:
 	(cd test/functional && $(PYTHON) ./setup.py nosetests)
 
 #: Run functional tests
-test-functional-short: 
+test-functional-short:
 	(cd test/functional && $(PYTHON) ./setup.py nosetests) | \
 	$(PYTHON) ./make-check-filter.py
 
 #: Run integration (black-box) tests
-test-integration: 
+test-integration:
 	 (cd test/integration && $(PYTHON) ./setup.py nosetests)
 
 #: Run integration (black-box) tests
-test-integration-short: 
+test-integration-short:
 	(cd test/integration && $(PYTHON) ./setup.py nosetests) | \
 	$(PYTHON) ./make-check-filter.py
 
 #: Clean up temporary files
-clean: 
+clean:
 	$(PYTHON) ./setup.py $@
 
 #: Create source (tarball) and binary (egg) distribution
-dist: 
+dist:
 	$(PYTHON) ./setup.py sdist bdist_egg
 
 #: Create source tarball
-sdist: 
+sdist:
 	$(PYTHON) ./setup.py sdist
 
+#: Style check. Set env var LINT to pyflakes, flake, or flake8
+lint:
+	$(LINT) trepan
+
 #: Create binary egg distribution
-bdist_egg: 
+bdist_egg:
 	$(PYTHON) ./setup.py bdist_egg
 
 
 # It is too much work to figure out how to add a new command to distutils
 # to do the following. I'm sure distutils will someday get there.
-DISTCLEAN_FILES = build dist *.pyc
+DISTCLEAN_FILES = build dist
 
-#: Remove ALL dervied files 
+#: Remove ALL derived files
 distclean: clean
 	-rm -fr $(DISTCLEAN_FILES) || true
 	-find . -name \*.pyc -exec rm -v {} \;
@@ -78,14 +84,14 @@ distclean: clean
 	-find . -name \*.egg-info -exec rm -vr {} \;
 
 #: Install package locally
-verbose-install: 
+verbose-install:
 	$(PYTHON) ./setup.py install
 
 #: Install package locally without the verbiage
-install: 
+install:
 	$(PYTHON) ./setup.py install >/dev/null
 
-rmChangeLog: 
+rmChangeLog:
 	rm ChangeLog || true
 
 #: Create a ChangeLog from git via git log and git2cl

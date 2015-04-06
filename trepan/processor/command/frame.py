@@ -79,7 +79,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
             newframe = Mthread.find_debugged_frame(frame)
             if newframe is not None:  frame = newframe
             pass
-        ## FIXME: else: we might be blocked on other threads which are
+        # FIXME: else: we might be blocked on other threads which are
         # about to go into the debugger it not for the fact this one got there
         # first. Possibly in the future we want
         # to hide the blocks into threading of that locking code as well.
@@ -141,7 +141,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
         if frame is None and report_error:
             self.errmsg("I don't know about thread number %s (%d)." %
                         name_or_id, thread_id)
-            ## self.info_thread_terse()
+            # self.info_thread_terse()
             return None, None
         return frame, thread_id
 

@@ -248,7 +248,7 @@ class Breakpoint:
         else: return 'b'
         return
 
-    pass # end of Breakpoint class
+    pass  # end of Breakpoint class
 
 def checkfuncname(b, frame):
     """Check whether we should break here because of `b.funcname`."""

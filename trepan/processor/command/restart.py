@@ -41,7 +41,7 @@ and new copy of the debugger is used."""
                 self.msg(Mmisc.wrapped_lines("Re exec'ing:", repr(sys_argv),
                                              self.settings['width']))
                 # Run atexit finalize routines. This seems to be Kosher:
-                # http://mail.python.org/pipermail/python-dev/2009-February/085791.html
+                # http://mail.python.org/pipermail/python-dev/2009-February/085791.html # NOQA
                 try:
                     atexit._run_exitfuncs()
                 except:

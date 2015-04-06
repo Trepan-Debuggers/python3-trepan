@@ -43,7 +43,6 @@ See also:
 `set trace`, `show trace`, and `show events`. `help step` lists event names.
     """
 
-
     in_list    = True
     min_abbrev = len('ev')
     short_help = "Set execution-tracing event set"

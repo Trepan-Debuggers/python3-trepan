@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
 def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
     '''Try to pretty print a simple case where a list is not nested.
     Return True if we can do it and False if not. '''
-    
+
     if type(val) != list:
         return False
 
@@ -51,7 +51,7 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
                 return False
             pass
         pass
-    lines = columnize([repr(v) for v in val], 
+    lines = columnize([repr(v) for v in val],
                       displaywidth = int(displaywidth)-2,
                       arrange_vertical = False,
                       ljust = not numeric,

@@ -205,7 +205,7 @@ class Trepan:
             globals_ = {"__name__" : "__main__",
                        "__file__" : self.mainpyfile,
                        "__builtins__" : __builtins__
-                       }
+                       }  # NOQA
         if locals_ is None:
             locals_ = globals_
         self.core.start(start_opts)

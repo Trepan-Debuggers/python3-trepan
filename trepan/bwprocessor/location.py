@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
 ''' Location routines'''
 
 import pyficache, linecache, tempfile

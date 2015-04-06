@@ -79,8 +79,8 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
                     relative_pos = relative_pos)
-    elif isinstance(x, (bytes, bytearray)): # Raw bytecode
-        _disassemble_bytes(x)
+    elif isinstance(x, (bytes, bytearray)):  # Raw bytecode
+        disassemble_bytes(x)
     elif isinstance(x, str):    # Source code
         disassemble_string(msg, msg_nocr, x,)
     else:

@@ -24,7 +24,7 @@ from trepan.lib import pp as Mpp
 class PrettyPrintCommand(Mbase_cmd.DebuggerCommand):
     """**pp** *expression*
 
-Pretty-print the value of the expression. 
+Pretty-print the value of the expression.
 
 Simple arrays are shown columnized horizontally. Other values are printed
 via *pprint.pformat()*.

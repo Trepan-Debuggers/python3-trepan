@@ -47,7 +47,7 @@ determines this behavior.
 Examples:
 ---------
 
-  step        # step 1 event, *any* event 
+  step        # step 1 event, *any* event
   step 1      # same as above
   step 5/5+0  # same as above
   step line   # step only line events
@@ -103,12 +103,12 @@ See also:
                 self.core.step_ignore -= 1
                 pass
             elif pos != len(args):
-                self.errmsg("Invalid additional parameters %s" 
+                self.errmsg("Invalid additional parameters %s"
                             % ' '.join(args[pos]))
                 return False
             pass
 
-        if [] == step_events: 
+        if [] == step_events:
             self.core.step_events = None
         else:
             self.core.step_events = step_events
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         print('step_ignore %s' % repr(d.core.step_ignore))
         print('continue_running: %s' % cmd.proc.continue_running)
         pass
-    for c in (['s'], ['step+'], ['s-'], ['s!'], ['s>'], ['s<']): 
+    for c in (['s'], ['step+'], ['s-'], ['s!'], ['s>'], ['s<']):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)

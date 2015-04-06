@@ -24,7 +24,7 @@ from trepan.lib import stack as Mstack, thred as Mthread
 class InfoThread(Mbase_subcmd.DebuggerSubcommand):
     """info threads [thread-name|thread-number] [terse|verbose]
     List all currently-known thread name(s).
-    
+
 If no thread name is given, we list info for all threads. Unless a
 terse listing, for each thread we give:
 
@@ -39,15 +39,15 @@ terse listing, for each thread we give:
 
 To get the full stack trace for a specific thread pass in the thread name.
 """
-    min_abbrev = 2 # Min is "info th"
+    min_abbrev = 2  # Min is "info th"
     need_stack = True
     short_help = "List thread info"
-    
+
     def __init__(self, cmd):
         Mbase_subcmd.DebuggerSubcommand.__init__(self, cmd)
         self.name2id = {}
         return
-    
+
     def stack_trace(self, f):
         """A mini stack trace routine for threads."""
         while f:
@@ -69,7 +69,7 @@ To get the full stack trace for a specific thread pass in the thread name.
                 self.errmsg("Don't know about thread name %s" % thread_name)
                 return
             pass
-            
+
         # Show all threads
         thread_name_list = list(name2id.keys())
         thread_name_list.sort()
@@ -78,7 +78,7 @@ To get the full stack trace for a specific thread pass in the thread name.
             pass
         # self.info_thread_missing()
         return
-                
+
     def info_thread_line(self, thread_name, name2id):
         if thread_name == self.proc.frame_thread_name:
             prefix = '-> '
@@ -101,7 +101,7 @@ To get the full stack trace for a specific thread pass in the thread name.
         # invert threading._active
         for thread_id in list(threading._active.keys()):
             thread = threading._active[thread_id]
-            name = thread.getName() 
+            name = thread.getName()
             if name not in list(self.name2id.keys()):
                 self.name2id[name] = thread_id
                 pass
@@ -123,7 +123,7 @@ To get the full stack trace for a specific thread pass in the thread name.
             try:
                 thread_id = int(thread_name)
                 if thread_id not in list(threading._active.keys()):
-                    self.errmsg("Don't know about thread number %s" % 
+                    self.errmsg("Don't know about thread number %s" %
                                 thread_name)
                     self.info_thread_terse(name2id)
                     return

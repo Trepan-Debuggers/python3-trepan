@@ -27,12 +27,13 @@ class ServerInterface(Minterface.TrepanInterface):
     computer."""
 
     DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'TCP'}
+
     def __init__(self, inout=None, out=None, connection_opts=None):
         get_option = lambda key: \
             Mmisc.option_set(connection_opts, key,
                              self.DEFAULT_INIT_CONNECTION_OPTS)
         atexit.register(self.finalize)
-        self.inout = None # initialize in case assignment below fails
+        self.inout = None  # initialize in case assignment below fails
         if inout:
             self.inout = inout
         else:

@@ -161,10 +161,11 @@ class SignalManager:
                            'SIGVTALRM'   'SIGPROF',  'SIGWINCH',  'SIGPOLL',
                            'SIGWAITING', 'SIGLWP',   'SIGCANCEL', 'SIGTRAP',
                            'SIGTERM',    'SIGQUIT',  'SIGILL',
-			   # Wierd stuff from 3.3
-			   'SIG_SETMASK', 'ITIMER_PROF', 'ITIMER_VIRTUAL', 'ITIMER_REAL',
-               'ITIMER_PROF', 'SIG_BLOCK', 'SIG_UNBLOCK'
-			   ]
+                           # Wierd stuff from 3.3
+                           'SIG_SETMASK', 'ITIMER_PROF', 'ITIMER_VIRTUAL',
+                           'ITIMER_REAL', 'ITIMER_PROF',
+                           'SIG_BLOCK', 'SIG_UNBLOCK'
+                           ]  # NOQA
         self.ignore_list = ignore_list
         self._orig_set_signal  = signal.signal
         signal.signal = self.set_signal_replacement

@@ -34,7 +34,8 @@ See also:
 
     def run(self, args):
         Mcmdfns.run_set_int(self, ' '.join(args),
-                            "The '%s' command requires a character count" % self.name,
+                            "The '%s' command requires a character count"
+                            % self.name,
                             0, None)
         self.proc._repr.maxstring =  self.settings[self.name]
         return None

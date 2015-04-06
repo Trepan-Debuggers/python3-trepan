@@ -41,8 +41,8 @@ class SetAutoList(Mbase_subcmd.DebuggerSetBoolSubcommand):
         return
 
     def run_list(self, args):
-        # Check if there is a "file" to show. Right now we just 
-        # handle the case of a string. 
+        # Check if there is a "file" to show. Right now we just
+        # handle the case of a string.
         # FIXME: generalize this so for other kinds of missing "files"
         # are not shown.
         filename = Mstack.frame2file(self.core, self.proc.curframe)

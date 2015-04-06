@@ -29,7 +29,8 @@ class UpCommand(Mbase_cmd.DebuggerCommand):
     max_args      = 1
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
-    short_help    = 'Move frame in the direction of the caller of the last-selected frame'
+    short_help    = 'Move frame in the direction of the caller of ' \
+      'the last-selected frame'
 
     def complete(self, prefix):
         proc_obj = self.proc

@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
-# 'Helper' function for Processor. Put here so we 
+# 'Helper' function for Processor. Put here so we
 # can use this in a couple of processors.
 
 from tracer import EVENT2SHORT
@@ -43,7 +43,7 @@ class PrintProcessor(Mprocessor.Processor):
             print("%s - %s:%d" % (event, filename, lineno))
         else:
             out.write("%s - %s:%d" % (event, filename, lineno))
-            if arg is not None: 
+            if arg is not None:
                 out.writeline(', %s ' % repr(arg))
             else:
                 out.writeline('')

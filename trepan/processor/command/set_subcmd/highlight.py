@@ -42,7 +42,8 @@ and recolor all source code output."""
         if arg in ['light', 'dark', 'plain', 'off']:
             return arg
         else:
-            self.errmsg('Expecting "light", "dark", "plain", or "off"; got %s' % arg)
+            self.errmsg('Expecting "light", "dark", "plain", or "off"; '
+                        'got %s' % arg)
             return None
         pass
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -128,26 +128,25 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         dbg.program_sys_argv = list(sys.argv[1:])
         dbg.program_sys_argv[:0] = [dbg.mainpyfile]
 
-#     if 0 == len(dbg._sys_argv):
-#         # Fake script invocation (restart) args since we don't have any
-#         dbg._sys_argv = list(dbg.program_sys_argv)
-#         dbg._sys_argv[:0] = [__title__]
+    # if 0 == len(dbg._sys_argv):
+    #     # Fake script invocation (restart) args since we don't have any
+    #     dbg._sys_argv = list(dbg.program_sys_argv)
+    #     dbg._sys_argv[:0] = [__title__]
 
     try:
-
-#         # FIXME: This can be called from except hook in which case we
-#         # need this. Dunno why though.
-#         try:
-#             _pydb_trace.set_trace(t.tb_frame)
-#         except:
-#             pass
+        # # FIXME: This can be called from except hook in which case we
+        # # need this. Dunno why though.
+        # try:
+        #     _pydb_trace.set_trace(t.tb_frame)
+        # except:
+        #     pass
 
         # Possibly a bug in Python 2.5. Why f.f_lineno is
         # not always equal to t.tb_lineno, I don't know.
         f = exc_tb.tb_frame
         if f and f.f_lineno != exc_tb.tb_lineno : f = f.f_back
         dbg.core.processor.event_processor(f, 'exception', exc, 'Trepan3k:pm')
-    except Mexcept.DebuggerRestart:
+    except DebuggerRestart:
         while True:
             sys.argv = list(dbg._program_sys_argv)
             dbg.msg("Restarting %s with arguments:\n\t%s"
@@ -155,17 +154,18 @@ def post_mortem(exc=None, frameno=1, dbg=None):
                      " ".join(dbg._program_sys_argv[1:])))
             try:
                 dbg.run_script(dbg.mainpyfile)
-            except Mexcept.DebuggerRestart:
+            except DebuggerRestart:
                 pass
             pass
-    except Mexcept.DebuggerQuit:
+    except DebuggerQuit:
         pass
     return
 
 def uncaught_exception(dbg):
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    if exc_type == Mexcept.DebuggerQuit: return
-    if exc_type == Mexcept.DebuggerRestart:
+    exc = sys.exc_info()
+    exc_type, exc_value, exc_tb = exc
+    if exc_type == DebuggerQuit: return
+    if exc_type == DebuggerRestart:
         print("restart not done yet - entering post mortem debugging")
     elif exc_tb is None:
         print("You don't seem to have an exception traceback, yet.")

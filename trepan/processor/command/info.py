@@ -20,7 +20,7 @@ from trepan.processor.command import base_submgr as Mbase_submgr
 
 
 class InfoCommand(Mbase_submgr.SubcommandMgr):
-    """Generic command for showing things about the program being debugged. 
+    """Generic command for showing things about the program being debugged.
 
 You can give unique prefix of the name of a subcommand to get
 information about just that subcommand.

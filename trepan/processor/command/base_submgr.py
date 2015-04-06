@@ -22,11 +22,11 @@ from trepan.lib import complete as Mcomplete
 
 def capitalize(s):
     # "abcd" -> "Abcd"
-     if s:
-         return s[0].upper() + s[1:]
-     else:  # empty string
-         return s
-     pass
+    if s:
+        return s[0].upper() + s[1:]
+    else:  # empty string
+        return s
+    pass
 
 class SubcommandMgr(Mbase_cmd.DebuggerCommand):
 

@@ -20,7 +20,7 @@ LOG_MAX_MSG    = 4     # int(log(TCP_MAX_PACKET)
 
 
 def pack_msg(msg):
-    fmt = '%%0%dd' % LOG_MAX_MSG # A funny way of writing: '%04d'
+    fmt = '%%0%dd' % LOG_MAX_MSG  # A funny way of writing: '%04d'
     return bytes(( fmt % len(msg)) + msg, 'UTF-8')
 
 def unpack_msg(buf):
@@ -31,6 +31,6 @@ def unpack_msg(buf):
 
 # Demo
 if __name__=='__main__':
-    print(unpack_msg(pack_msg(msg))[1])
+    print(unpack_msg(pack_msg('Hello, there!'))[1])
     # assert unpack_msg(pack_msg(msg))[1] == msg
     pass

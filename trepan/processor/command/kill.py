@@ -70,7 +70,7 @@ See also:
             try:
                 signo = int(args[1])
                 confirmed = True
-            except ValueError as TypeError:
+            except ValueError:
                 pass
             pass
 

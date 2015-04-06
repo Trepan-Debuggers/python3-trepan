@@ -41,12 +41,12 @@ class DebuggerUserOutput(Mbase.DebuggerInOutBase):
            isinstance(output, io.StringIO) or \
            output == sys.stdout:
             pass
-        elif isinstance(output, 'string'.__class__): # FIXME
+        elif isinstance(output, 'string'.__class__):  # FIXME
             output = open(output, 'w')
         else:
             raise IOError("Invalid output type (%s) for %s" %
-                          (inp.__class__.__name__, output))
-            #raise IOError("Invalid output type (%s) for %s" % (type(output),
+                          (output.__class__.__name__, output))
+            # raise IOError("Invalid output type (%s) for %s" % (type(output),
             #                                                     output))
         self.output = output
         return
@@ -64,8 +64,8 @@ class DebuggerUserOutput(Mbase.DebuggerInOutBase):
 if __name__=='__main__':
     out = DebuggerUserOutput()
     out.writeline("Hello, world!")
-    out.write("Hello");
-    out.writeline(", again.");
+    out.write("Hello")
+    out.writeline(", again.")
 
     out.open(sys.stdout)
     out.flush_after_write = True

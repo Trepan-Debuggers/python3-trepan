@@ -70,38 +70,34 @@ class RstFilter(Filter):
 
     def filter(self, lexer, stream):
         last_was_heading_title = ''
-        last_was_heading = False
         for ttype, value in stream:
             if ttype is Token.Name.Variable:
                 value = value[1:-1]
                 last_was_heading_title  = ''
-                last_was_heading  = ''
                 pass
             if ttype is Token.Generic.Emph:
                 value = value[1:-1]
                 last_was_heading_title  = ''
-                last_was_heading  = ''
                 pass
             elif ttype is Token.Generic.Strong:
                 value = value[2:-2]
                 last_was_heading_title = ''
-                last_was_heading  = ''
                 pass
-            elif ttype is Token.Text and last_was_heading_title  and value == "\n":
+            elif ttype is Token.Text and last_was_heading_title \
+              and value == "\n":
                 value = ''
-                last_was_heading  = False
             elif ttype is Token.Generic.Heading:
                 # Remove the underline line following a section header
                 # That is remove:
                 # Header
                 # ------ <- remove this line
-                last_was_heading = True
-                if last_was_heading_title and re.match(r'^(?:[=]|[-])+$', value):
+                if last_was_heading_title and \
+                  re.match(r'^(?:[=]|[-])+$', value):
                     value = ''
                     last_was_heading_title = ''
                 else:
-                    # We store the entire string in case someday we want to match
-                    # whether the underline size matches the title size
+                    # We store the entire string in case someday we want to
+                    # match whether the underline size matches the title size
                     last_was_heading_title  = value
                     pass
             yield ttype, value
