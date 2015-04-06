@@ -14,12 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
-from import_relative import import_relative
 import tracer
 
 # Our local modules
-Mbase_cmd  = import_relative('base_cmd')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import cmdfns as Mcmdfns
+
 
 class StepCommand(Mbase_cmd.DebuggerCommand):
     """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]

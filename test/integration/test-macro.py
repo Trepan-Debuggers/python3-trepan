@@ -2,8 +2,7 @@
 "General integration tests"
 import unittest
 
-from import_relative import import_relative
-Mhelper = import_relative('helper', '.')
+import helper as Mhelper
 
 
 class GeneralTests(unittest.TestCase):

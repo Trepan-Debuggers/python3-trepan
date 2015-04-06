@@ -14,10 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
-# Our local modules
 
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class ShowListSize(Mbase_subcmd.DebuggerShowIntSubcommand):
     "Show the number lines printed in a 'list' command by default"

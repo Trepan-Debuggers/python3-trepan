@@ -1,10 +1,9 @@
-import difflib, os, sys, time
-from import_relative import get_srcdir
+import difflib, os, re, sys, time
+srcdir = os.path.abspath(os.path.dirname(__file__))
 
 
 def run_debugger(testname, python_file, dbgr_opts='', args='',
                  outfile=None):
-    srcdir    = get_srcdir()
     datadir   = os.path.join(srcdir, '..', 'data')
     progdir   = os.path.join(srcdir, '..', 'example')
     dbgrdir   = os.path.join(srcdir, '..', '..', 'trepan')
@@ -13,8 +12,8 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
 
     rightfile = os.path.join(datadir, "%s.right" % testname)
 
-    sys.path.insert(0, os.path.join(get_srcdir(), '../..'))
-    os.environ['PYTHONPATH']=os.pathsep.join(sys.path)
+    sys.path.insert(0, os.path.join(srcdir, '..', '..'))
+    os.environ['PYTHONPATH'] = os.pathsep.join(sys.path)
     cmdfile     = os.path.join(datadir, "%s.cmd"   % testname)
     outfile     = os.path.join(srcdir, "%s.out" % testname)
     if python_file:
@@ -34,12 +33,15 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
     os.system(cmd)
     fromfile  = rightfile
     fromdate  = time.ctime(os.stat(fromfile).st_mtime)
-    fileout   = open(fromfile, 'U')
-    fromlines = fileout.readlines()
+    fromlines = open(fromfile, 'U').readlines()
     tofile    = outfile
     todate    = time.ctime(os.stat(tofile).st_mtime)
-    filein    = open(tofile, 'U')
-    tolines   = filein.readlines()
+    tolines   = open(tofile, 'U').readlines()
+
+    # Filter out <module> for Python 2.4 and before
+    module_re = re.compile('[)]: <module>')
+    tolines = [re.sub(module_re, '):', line) for line in tolines]
+
     diff = list(difflib.unified_diff(fromlines, tolines, fromfile,
                                      tofile, fromdate, todate))
     if len(diff) == 0:
@@ -48,5 +50,4 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
     for line in diff:
         print(line.rstrip())
         pass
-    filein.close(); fileout.close()
     return len(diff) == 0

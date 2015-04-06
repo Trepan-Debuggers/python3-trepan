@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.bytecode'
 import inspect, unittest
-from import_relative import import_relative
 
-Mcode = import_relative('lib.bytecode', '...trepan')
+from trepan.lib import bytecode as Mcode
 
 
 class TestByteCode(unittest.TestCase):

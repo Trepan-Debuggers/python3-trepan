@@ -17,5 +17,5 @@ __import__('pkg_resources').declare_namespace(__name__)
 __docformat__ = 'restructuredtext'
 
 from trepan.misc import pyfiles
-__all__ = [ pyfiles() ]
+__all__ = pyfiles(__file__)
 __package__ = 'trepan.lib'

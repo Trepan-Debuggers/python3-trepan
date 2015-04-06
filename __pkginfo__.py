@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 # still is some room for improvement.
 
 # Things that change more often go here.
-copyright   = '''Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org>.'''
+copyright   = '''Copyright (C) 2013, 215 Rocky Bernstein <rocky@gnu.org>.'''
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
@@ -37,15 +37,14 @@ classifiers =  ['Development Status :: 4 - Beta',
 author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
-install_requires   = ['columnize >= 0.3.4',
-                      'import-relative >= 0.2.1',
-                      'pyficache >= 0.2.2',
+install_requires   = ['columnize >= 0.3.8',
+                      'pyficache >= 0.2.4',
                       'pygments',
                       'tracer >= 0.3.1']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
-namespace_packages = [
+packages = [
     'trepan',
     'trepan.bwprocessor',
     'trepan.interfaces',
@@ -58,23 +57,32 @@ namespace_packages = [
     'trepan.processor.command.set_subcmd',
     'trepan.processor.command.show_subcmd'
 ]
-packages           = namespace_packages
+namespace_packages = [
+    'trepan',
+    'trepan.processor',
+]
 py_modules         = None
 short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
 import os
 import os.path, sys
-from import_relative import get_srcdir
+
+
+def get_srcdir():
+    filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.realpath(filename)
 
 # VERSION.py sets variable VERSION.
 me = os.path.join(os.path.dirname(__file__), 'trepan', 'VERSION.py')
-exec(compile(open(me).read(), me, 'exec'))
-version            = VERSION
-web                = 'http://code.google.com/p/trepan/'
+ns = {}
+exec(open(os.path.join(get_srcdir(), 'trepan', 'VERSION.py')).read(), ns)
+version            = ns['VERSION']
+web                = 'http://github.com/rocky/python3-trepan/'
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-long_description   = ( read("README.txt") + '\n\n' +  read("NEWS") )
+
+long_description   = ( read("README.rst") + '\n' )

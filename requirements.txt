@@ -1,6 +1,5 @@
 nose
 columnize >= 0.3.4
-import_relative >= 0.2.3
 pyficache >= 0.2.3
 pygments
 tracer >= 0.3.2

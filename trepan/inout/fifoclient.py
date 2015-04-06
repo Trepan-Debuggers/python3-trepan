@@ -17,11 +17,9 @@
 
 import tempfile, os
 
-from import_relative import import_relative
+from trepan.lib import default as Mdefault, file as Mfile
+from trepan import misc as Mmisc
 from trepan.inout.base import DebuggerInOutBase
-Mdefault = import_relative('default', '..lib', 'trepan')
-Mfile    = import_relative('file', '..lib', 'trepan')
-Mmisc    = import_relative('misc', '..', 'trepan')
 
 
 class FIFOClient(DebuggerInOutBase):

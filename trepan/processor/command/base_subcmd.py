@@ -120,9 +120,8 @@ class DebuggerSubcommand:
         self.msg(message)
     pass
 
-from import_relative import import_relative
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mcomplete  = import_relative('complete', '...lib', 'trepan')
+from trepan.processor import cmdfns as Mcmdfns
+from trepan.lib import complete as Mcomplete
 
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
@@ -170,7 +169,6 @@ class DebuggerShowBoolSubcommand(DebuggerSubcommand):
         return
 
 if __name__ == '__main__':
-    from import_relative import import_relative
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     dd = DebuggerSubcommand(cp.commands['quit'])

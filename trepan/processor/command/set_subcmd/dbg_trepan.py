@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2012-2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2012-2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
-from import_relative import import_relative
-# Our local modules
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-Mcmdfns       = import_relative('cmdfns', '...', 'trepan')
-Mcmdproc      = import_relative('cmdproc', '...', 'trepan')
 
-class SetCmdDbgPydb(Mbase_subcmd.DebuggerSetBoolSubcommand):
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor import cmdfns as Mcmdfns, cmdproc as Mcmdproc
+
+
+class SetCmdDbgTrepan(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """Set the ability to debug the debugger.
-    
+
 Setting this allows visibility and access to some of the debugger's
 internals. Specifically variable "frame" contains the current frame and
 variable "debugger" contains the top-level debugger object.
@@ -39,7 +39,6 @@ variable "debugger" contains the top-level debugger object.
             # something to inspect.
             frame = inspect.currentframe()
             # Also give access to the top-level debugger
-            debugger = self.debugger
             self.proc.stack, self.proc.curindex = \
                 Mcmdproc.get_stack(frame, None, self.proc)
             self.proc.curframe = self.proc.stack[self.proc.curindex][0]
@@ -49,8 +48,6 @@ variable "debugger" contains the top-level debugger object.
         else:
             self.core.ignore_filter = self.save_ignore_filter
             pass
-        
+
         return
     pass
-
-

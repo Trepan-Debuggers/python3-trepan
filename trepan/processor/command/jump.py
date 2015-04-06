@@ -14,12 +14,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect, os, sys
-from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd  = import_relative('base_cmd', top_name='pydbgr')
-Mcmdproc   = import_relative('cmdproc', '..', 'pydbgr')
-Mcmdfns    = import_relative('cmdfns',  '..', 'pydbgr')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import cmdproc as Mcmdproc
+
 
 class JumpCommand(Mbase_cmd.DebuggerCommand):
     """**jump** *lineno*
@@ -65,7 +64,7 @@ stopped or bottom-most execution frame frame."""
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = JumpCommand(cp)
     print('jump when not running: ', command.run(['jump', '1']))
@@ -77,5 +76,3 @@ if __name__ == '__main__':
     cp.curindex = len(cp.stack)-1
     command.run(['jump', '1'])
     pass
-
-

@@ -160,10 +160,10 @@ class SignalManager:
                            'SIGIO',      'SIGCLD',
                            'SIGVTALRM'   'SIGPROF',  'SIGWINCH',  'SIGPOLL',
                            'SIGWAITING', 'SIGLWP',   'SIGCANCEL', 'SIGTRAP',
-                           'SIGTERM',    'SIGQUIT',  'SIGILL', 
+                           'SIGTERM',    'SIGQUIT',  'SIGILL',
 			   # Wierd stuff from 3.3
-			   'SIG_SETMASK', 'ITIMER_PROF', 'ITIMER_VIRTUAL',
-                           'ITMIMER_PROF', 'SIG_BLOCK', 'SIG_UNBLOCK'
+			   'SIG_SETMASK', 'ITIMER_PROF', 'ITIMER_VIRTUAL', 'ITIMER_REAL',
+               'ITIMER_PROF', 'SIG_BLOCK', 'SIG_UNBLOCK'
 			   ]
         self.ignore_list = ignore_list
         self._orig_set_signal  = signal.signal
@@ -503,6 +503,8 @@ if __name__=='__main__':
     for signum in range(signal.NSIG):
         signame = lookup_signame(signum)
         if signame is not None:
+            if not signame.startswith('SIG'): continue
+            print(signame, signum, lookup_signum(signame))
             assert(signum == lookup_signum(signame))
             # Try without the SIG prefix
             assert(signum == lookup_signum(signame[3:]))
@@ -521,26 +523,23 @@ if __name__=='__main__':
         print('canonic_signame(%s): %s' % (i, canonic_signame(i)))
         pass
 
-    from import_relative import import_relative
-
-    ## FIXME when finished...
-    # Mdebugger = import_relative('debugger', '..', 'trepan')
-    # dbgr = Mdebugger.Debugger()
-    # h = SignalManager(dbgr)
-    # h.info_signal(["TRAP"])
-    # # Set to known value
-    # h.action('SIGUSR1')
-    # h.action('usr1 print pass stop')
-    # h.info_signal(['USR1'])
-    # # noprint implies no stop
-    # h.action('SIGUSR1 noprint')
-    # h.info_signal(['USR1'])
-    # h.action('foo nostop')
-    # # stop keyword implies print
-    # h.action('SIGUSR1 stop')
-    # h.info_signal(['SIGUSR1'])
-    # h.action('SIGUSR1 noprint')
-    # h.info_signal(['SIGUSR1'])
-    # h.action('SIGUSR1 nopass stack')
-    # h.info_signal(['SIGUSR1'])
+    from trepan import debugger as Mdebugger
+    dbgr = Mdebugger.Trepan()
+    h = SignalManager(dbgr)
+    h.info_signal(["TRAP"])
+    # Set to known value
+    h.action('SIGUSR1')
+    h.action('usr1 print pass stop')
+    h.info_signal(['USR1'])
+    # noprint implies no stop
+    h.action('SIGUSR1 noprint')
+    h.info_signal(['USR1'])
+    h.action('foo nostop')
+    # stop keyword implies print
+    h.action('SIGUSR1 stop')
+    h.info_signal(['SIGUSR1'])
+    h.action('SIGUSR1 noprint')
+    h.info_signal(['SIGUSR1'])
+    h.action('SIGUSR1 nopass stack')
+    h.info_signal(['SIGUSR1'])
     pass

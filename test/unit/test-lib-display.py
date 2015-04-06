@@ -2,8 +2,8 @@
 'Unit test for trepan.lib.display'
 
 import inspect, unittest
-from import_relative import import_relative
-Mdisplay = import_relative('lib.display', '...trepan')
+
+from trepan.lib import display as Mdisplay
 
 
 class TestLibDisplay(unittest.TestCase):

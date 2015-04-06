@@ -15,10 +15,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, linecache
 
-# Our local modules
-from import_relative import import_relative
-Mfile     = import_relative('file', '.lib')
-
 
 # FIXME: do a better job of this. Live parsing?
 def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):

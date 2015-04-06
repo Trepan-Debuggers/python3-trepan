@@ -13,9 +13,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-Mbase_cmd = import_relative('base_cmd', top_name='trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
 
 
 class AliasCommand(Mbase_cmd.DebuggerCommand):
@@ -77,7 +76,7 @@ See also:
 
 if __name__ == '__main__':
     # Demo it.
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command      = AliasCommand(cp)
     command.run(['alias', 'yy', 'foo'])

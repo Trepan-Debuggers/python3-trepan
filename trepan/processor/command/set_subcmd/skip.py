@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein rocky@gnu.org
+#   Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein rocky@gnu.org
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,10 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-import_relative('processor', '....')
-Mbase_subcmd = import_relative('base_subcmd', '..', 'pydbgr')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class SetSkip(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """Set stopping before *def* or *class*' (function or class) statements.
@@ -36,6 +35,6 @@ set this off."""
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'pydbgr')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     sub = Mhelper.demo_run(SetSkip)
     pass

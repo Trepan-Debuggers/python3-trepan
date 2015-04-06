@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-'Unit test for trepan.io.tcp*'
+'Unit test for trepan.inout.tcp*'
 import unittest
+from trepan.inout import tcpserver as Mserver, tcpclient as Mclient
 
-from import_relative import import_relative
-Mserver   = import_relative('trepan.inout.tcpserver', '...', 'trepan')
-Mclient   = import_relative('trepan.inout.tcpclient', '...', 'trepan')
-import_relative('interfaces', '...trepan', 'trepan')
-Mcomcodes = import_relative('interfaces.comcodes', '...trepan', 'trepan')
 
 class TestTCP(unittest.TestCase):
     """Tests TCPServer and TCPClient"""

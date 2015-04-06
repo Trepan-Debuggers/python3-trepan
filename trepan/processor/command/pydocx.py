@@ -27,8 +27,8 @@ Mpydoc = __import__('pydoc')
 sys.path = sys_path_save
 
 # Our local modules
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class PyDocCommand(Mbase_cmd.DebuggerCommand):
     """**pydocx** *name* ...
@@ -58,7 +58,7 @@ source file to document. If name is *keywords*, *topics*, or
         return False
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = PyDocCommand(cp)
     pass

@@ -16,8 +16,8 @@
 """Simulate I/O using lists of strings. """
 
 import types
-from import_relative import import_relative
-Mbase  = import_relative('inout.base', '...trepan')
+
+from trepan.inout import base as Mbase
 
 
 class StringArrayInput(Mbase.DebuggerInputBase):

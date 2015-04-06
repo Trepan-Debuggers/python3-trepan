@@ -16,12 +16,11 @@
 import inspect, os, linecache, pyficache, sys
 
 # Our local modules
-from import_relative import import_relative
 from pygments.console import colorize
 
-Mbase_cmd = import_relative('base_cmd', top_name='trepan')
-Mcmdfns   = import_relative('cmdfns', '..', 'trepan')
-Mfile     = import_relative('file', '...lib', 'trepan')
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 def pyc2py(filename):
     if '.pyc' == filename[-4:]:
@@ -241,7 +240,7 @@ if __name__ == '__main__':
     d = MockDebugger()
     command = ListCommand(d.core.processor)
     command.run(['list'])
-    cmdproc = import_relative('cmdproc', '..')
+    from trepan.processor import cmdproc
     command.proc = d.core.processor = cmdproc.CommandProcessor(d.core)
     command = ListCommand(d.core.processor)
     print('--' * 10)
@@ -257,13 +256,13 @@ if __name__ == '__main__':
     command.run(['list'])
     print('--' * 10)
 
-    Mbreak  = import_relative('break', '.', 'trepan')
+    Mbreak = __import__('trepan.processor.command.break', None, None, ['*'])
     brk_cmd = Mbreak.BreakCommand(d.core.processor)
     brk_cmd.run(['break'])
     command.run(['list', '.'])
     print('--' * 10)
 
-    Mdisable     = import_relative('disable', '.', 'trepan')
+    from trepan.processor.command import disable as Mdisable
     disable_cmd  = Mdisable.DisableCommand(d.core.processor)
     brk_cmd.run(['break'])
     disable_cmd.run(['disable', '2'])

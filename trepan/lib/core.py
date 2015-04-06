@@ -29,14 +29,10 @@ import os, sys, threading
 import tracer
 
 # Our local modules
-from import_relative import import_relative
-breakpoint = import_relative('breakpoint')
-default    = import_relative('default')
-Mmisc      = import_relative('misc', '..', 'trepan')
-Mtrace     = import_relative('trace', '..processor', 'trepan')
-Mstack     = import_relative('stack')
-Mclifns    = import_relative('clifns', '..', 'trepan')
-import trepan.processor.cmdproc as Mcmdproc
+from trepan.lib import breakpoint, default, stack as Mstack
+from trepan import misc as Mmisc
+from trepan import clifns as Mclifns
+from trepan.processor import trace as Mtrace, cmdproc as Mcmdproc
 
 
 class TrepanCore:

@@ -22,9 +22,7 @@ import trepan.interfaces
 import trepan.processor.command
 
 import os, sys
-from import_relative import import_relative
-breakpoint = import_relative('breakpoint', '...lib', 'trepan')
-default    = import_relative('default', '...lib', 'trepan')  # Default settings
+from trepan.lib import breakpoint, default
 
 class MockIO:
     def readline(self, prompt='', add_to_history=False):
@@ -139,6 +137,6 @@ class MockDebugger:
 
 def dbg_setup(d = None):
     if d is None: d = MockDebugger()
-    cmdproc = import_relative('cmdproc', os.path.pardir)
+    from trepan.processor import cmdproc
     cp = cmdproc.CommandProcessor(d.core)
     return d, cp

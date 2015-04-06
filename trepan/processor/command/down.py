@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,11 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
-from import_relative import import_relative
 
-# Our local modules
-Mupcmd   = import_relative('up', '.', 'trepan')
-Mframe    = import_relative('frame',   '..', 'trepan')
+from trepan.processor import frame as Mframe
+from trepan.processor.command import up as Mupcmd
+
 
 class DownCommand(Mupcmd.UpCommand):
 
@@ -39,8 +38,8 @@ See also `up` and `frame`."""
 
 if __name__ == '__main__':
     import inspect
-    Mcmdproc     = import_relative('cmdproc', '..')
-    Mdebugger    = import_relative('debugger', '...')
+    from trepan.processor import cmdproc as Mcmdproc
+    from trepan import debugger as Mdebugger
     d            = Mdebugger.Trepan()
     cp           = d.core.processor
     command = DownCommand(cp)

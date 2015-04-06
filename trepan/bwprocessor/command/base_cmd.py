@@ -22,8 +22,6 @@ and storing it as a list of known debugger commands.
 
 NotImplementedMessage = "This method must be overriden in a subclass"
 
-from import_relative import import_relative
-
 __all__ = ['DebuggerCommand']
 
 
@@ -94,7 +92,7 @@ class DebuggerCommand:
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.bwprocessor.command import mock
     d, cp = mock.dbg_setup()
     dd = DebuggerCommand(cp)
     dd.msg("hi")

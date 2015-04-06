@@ -2,11 +2,10 @@
 'Unit test for trepan.processor.command.quit'
 import unittest
 
-from import_relative import import_relative
-
-Mquit = import_relative('processor.command.quit', '...trepan')
+from trepan.processor.command import quit as Mquit
 
 from cmdhelper import dbg_setup
+
 
 class TestQuit(unittest.TestCase):
     """Tests QuitCommand class"""

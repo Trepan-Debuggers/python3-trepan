@@ -15,8 +15,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-Mbase_submgr = import_relative('base_submgr', top_name='trepan')
+
+from trepan.processor.command import base_submgr as Mbase_submgr
+
 
 class InfoCommand(Mbase_submgr.SubcommandMgr):
     """Generic command for showing things about the program being debugged. 
@@ -37,7 +38,7 @@ Type `help info *` for just a list of *info* subcommands.
     short_help    = 'Information about debugged program and its environment'
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = InfoCommand(cp, 'info')
     command.run(['info'])

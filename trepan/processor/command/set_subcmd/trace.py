@@ -14,8 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class SetTrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
 
@@ -30,7 +31,7 @@ See also "set events","set trace", and "show trace".
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     sub = Mhelper.demo_run(SetTrace)
     d = sub.proc.debugger
     for args in (['on'], ['off']):

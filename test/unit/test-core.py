@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.cmdproc'
 import os, unittest
-from import_relative import import_relative
 
-Mcore = import_relative('lib.core', '...trepan')
+from trepan.lib import core as Mcore
 
 
 class MockProcessor:

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.cmdproc'
 import unittest
-from import_relative import import_relative
 
-Mcmdproc = import_relative('processor.cmdproc', '...trepan')
+from trepan.processor import cmdproc as Mcmdproc
 
 from cmdhelper import dbg_setup
+
 
 class TestProcesor(unittest.TestCase):
     

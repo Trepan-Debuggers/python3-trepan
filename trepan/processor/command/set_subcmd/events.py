@@ -15,8 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tracer
-from import_relative import import_relative
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'pydbgr')
+
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class SetEvents(Mbase_subcmd.DebuggerSubcommand):
 
@@ -66,8 +68,7 @@ See also:
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Mset = import_relative('set', '..')
+    from trepan.processor.command import mock, set as Mset
     d, cp = mock.dbg_setup()
     s = Mset.SetCommand(cp)
     sub = SetEvents(s)

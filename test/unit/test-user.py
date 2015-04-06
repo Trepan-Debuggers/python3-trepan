@@ -2,12 +2,7 @@
 'Unit test for trepan.interfaces.user'
 import os, sys, unittest
 
-from import_relative import import_relative, get_srcdir
-
-srcdir = get_srcdir()
-sys.path.insert(0, os.path.join(srcdir, '..', '..'))
-
-Muser = import_relative('interfaces.user', '...trepan')
+from trepan.interfaces import user as Muser
 
 from cmdhelper import dbg_setup
 

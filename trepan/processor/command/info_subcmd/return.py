@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,12 +15,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
-from import_relative import import_relative
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.lib import pp as Mpp
 
-Mbase_subcmd = import_relative('base_subcmd', '..', top_name='trepan')
-Mfile        = import_relative('file', '....lib', 'trepan')
-Mmisc        = import_relative('misc', '....', 'trepan')
-Mpp          = import_relative('pp', '....lib', 'trepan')
 
 class InfoReturn(Mbase_subcmd.DebuggerSubcommand):
     """return value
@@ -34,23 +31,22 @@ statement."""
     short_help    = 'Show function return value'
 
     def run(self, args):
-        # Not sure if this __return__ stuff works. 
-#         if '__return__' in self.proc.curframe.f_locals:
-#             val = self.proc.curframe.f_locals['__return__']
-#             Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg)
-#         elif self.proc.event == 'return':
+        # Not sure if this __return__ stuff works.
+        # if '__return__' in self.proc.curframe.f_locals:
+        #     val = self.proc.curframe.f_locals['__return__']
+        #     Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg)
+        # elif self.proc.event == 'return':
         if self.proc.event in ['return', 'exception']:
             val = self.proc.event_arg
             Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg)
         else:
-            self.errmsg("Must be in a 'return' or 'exception' event rather than a %s event."
-                        % self.proc.event)
+            self.errmsg("Must be in a 'return' or 'exception' event "
+                        "rather than a %s event." % self.proc.event)
             pass
         return
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Minfo = import_relative('info', '..')
+    from trepan.processor.command import mock, info as Minfo
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoReturn(i)

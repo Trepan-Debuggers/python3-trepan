@@ -14,12 +14,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, sys
-from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mstack     = import_relative('stack', '...lib', 'trepan')
-Mcmdfns    = import_relative('cmdfns', '..',     'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import stack as Mstack
+
 
 class FinishCommand(Mbase_cmd.DebuggerCommand):
     """**finish** [*level*]

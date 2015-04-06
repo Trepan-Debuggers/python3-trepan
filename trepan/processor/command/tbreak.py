@@ -16,13 +16,9 @@
 import os, sys
 
 # Our local modules
-from import_relative import import_relative
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import cmdbreak as Mcmdbreak
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mfile      = import_relative('file', '...lib', 'trepan')
-Mmisc      = import_relative('misc', '...', 'trepan')
-Mcmdbreak  = import_relative('cmdbreak', '..', 'trepan')
 
 class TempBreakCommand(Mbase_cmd.DebuggerCommand):
     """**tbreak** [*location*] [**if** *condition*]
@@ -68,7 +64,7 @@ See also:
         return
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     command = TempBreakCommand(d.core.processor)
     command.proc.frame = sys._getframe()

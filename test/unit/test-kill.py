@@ -2,9 +2,7 @@
 'Unit test for trepan.processor.command.kill'
 import unittest
 
-from import_relative import import_relative
-
-Mkill = import_relative('processor.command.kill', '...trepan')
+from trepan.processor.command import kill as Mkill
 
 from cmdhelper import dbg_setup
 import signal

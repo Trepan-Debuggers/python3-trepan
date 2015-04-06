@@ -14,11 +14,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-Mbase_subcmd = import_relative('base_subcmd', '..', 'pydbgr')
-Mcmdfns      = import_relative('cmdfns', '...', 'pydbgr')
-Mcmdproc     = import_relative('cmdproc', '...', 'pydbgr')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor import cmdfns as Mcmdfns, cmdproc as Mcmdproc
+
 
 class SetAutoPython(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set** **autopython** [**on**|**off**]
@@ -51,6 +50,6 @@ Go into Python on debugger entry."""
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'pydbgr')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     Mhelper.demo_run(SetAutoPython)
     pass

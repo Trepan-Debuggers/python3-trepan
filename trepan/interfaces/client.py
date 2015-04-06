@@ -17,12 +17,9 @@
 The debugged program is at the other end of the communcation."""
 
 # Our local modules
-from import_relative import import_relative
-Muser       = import_relative('user', top_name='trepan')
-Mtcpclient  = import_relative('tcpclient', '..inout', 'trepan')
-Mfifoclient = import_relative('fifoclient', '..inout', 'trepan')
-Mcomcodes   = import_relative('comcodes', '.', 'trepan')
-Mmisc       = import_relative('misc', '..', 'trepan')
+from trepan import misc as Mmisc
+from trepan.interfaces import user as Muser
+from trepan.inout import tcpclient as Mtcpclient, fifoclient as Mfifoclient
 
 
 class ClientInterface(Muser.UserInterface):

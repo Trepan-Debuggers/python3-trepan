@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,9 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-Mbase_subcmd = import_relative('base_subcmd', '..', 'pydbgr')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class SetAutoEval(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set** **autoeval** [**on**|**off**]
@@ -26,7 +26,7 @@ Evaluate unrecognized debugger commands.
 Often inside the debugger, one would like to be able to run arbitrary
 Python commands without having to preface Python expressions with `print` or
 `eval`. Setting *autoeval* on will cause unrecognized debugger
-commands to be *eval*'d as a Python expression. 
+commands to be *eval*'d as a Python expression.
 
 Note that if this is set, on error the message shown on type a bad
 debugger command changes from:
@@ -61,6 +61,6 @@ or `ipython` commands.
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     Mhelper.demo_run(SetAutoEval)
     pass

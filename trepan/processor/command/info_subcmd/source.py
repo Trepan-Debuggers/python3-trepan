@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,11 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-# FIXME: Until import_relative is fixed up...
-import_relative('processor', '....')
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class InfoSource(Mbase_subcmd.DebuggerSubcommand):
     """Information about the current Python file."""
@@ -35,5 +33,3 @@ class InfoSource(Mbase_subcmd.DebuggerSubcommand):
         self.msg('Current Python file is %s' % self.core.filename(filename))
         return False
     pass
-
-

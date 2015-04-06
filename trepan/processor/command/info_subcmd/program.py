@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,12 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-# FIXME: Until import_relative is fixed up...
-import_relative('processor', '....')
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-Mmisc         = import_relative('misc', '....', 'trepan')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan import misc as Mmisc
 
 class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
     'Execution status of the program.'
@@ -33,7 +30,7 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
         mainfile = self.core.filename(None)
         if self.core.is_running():
             if mainfile:
-                part1 = "Python program '%s' is stopped" % mainfile 
+                part1 = "Python program '%s' is stopped" % mainfile
             else:
                 part1 = 'Program is stopped'
                 pass
@@ -46,15 +43,15 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
             if self.proc.curframe:
                 self.msg("PC offset is %d." % self.proc.curframe.f_lasti)
 
-            if self.proc.event == 'return': 
+            if self.proc.event == 'return':
                 val = self.proc.event_arg
                 part1 = 'Return value is'
                 self.msg(Mmisc.wrapped_lines(part1, self.proc._saferepr(val),
                                              self.settings['width']))
                 pass
-            elif self.proc.event == 'exception': 
+            elif self.proc.event == 'exception':
                 exc_type, exc_value, exc_tb = self.proc.event_arg
-                self.msg('Exception type: %s' % 
+                self.msg('Exception type: %s' %
                          self.proc._saferepr(exc_type))
                 if exc_value:
                     self.msg('Exception value: %s' %
@@ -62,13 +59,13 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
                     pass
                 pass
             self.msg('It stopped %s.' % self.core.stop_reason)
-            if self.proc.event in ['signal', 'exception', 'c_exception']: 
+            if self.proc.event in ['signal', 'exception', 'c_exception']:
                 self.msg('Note: we are stopped *after* running the line shown.')
                 pass
         else:
             if mainfile:
                 part1 = "Python program '%s'" % mainfile
-                msg   = "is not currently running. " 
+                msg   = "is not currently running. "
                 self.msg(Mmisc.wrapped_lines(part1, msg,
                                              self.settings['width']))
             else:
@@ -80,9 +77,7 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Minfo = import_relative('info', '..')
-    Mdebugger = import_relative('debugger', '....')
+    from trepan.processor.command import mock, info as Minfo
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoProgram(i)

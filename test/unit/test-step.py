@@ -2,8 +2,7 @@
 'Unit test for trepan.processor.command.step'
 import unittest
 
-from import_relative import import_relative
-Mstep = import_relative('processor.command.step', '...trepan')
+from trepan.processor.command import step as Mstep
 
 from cmdhelper import dbg_setup
 

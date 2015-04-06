@@ -14,14 +14,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
-import_relative('lib', '....')
-import_relative('processor', '....')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor import cmdfns as Mcmdfns
+from trepan.lib import stack as Mstack
 
-Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
-Mcmdfns      = import_relative('cmdfns', '...', 'trepan')
-Mstack       = import_relative('stack', '....lib', 'trepan')
 
 class SetAutoList(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """Run a *list* command every time we enter the debugger."""
@@ -54,6 +51,6 @@ class SetAutoList(Mbase_subcmd.DebuggerSetBoolSubcommand):
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     Mhelper.demo_run(SetAutoList)
     pass

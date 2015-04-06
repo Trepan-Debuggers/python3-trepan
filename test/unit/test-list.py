@@ -3,9 +3,8 @@
 import os, sys  # NOQA
 import unittest
 
-from import_relative import import_relative
-
-Mlist = import_relative('processor.command.list', '...trepan')
+from trepan import debugger
+from trepan.processor.command import list as Mlist
 
 
 class TestListCommand(unittest.TestCase):
@@ -58,7 +57,6 @@ class TestListCommand(unittest.TestCase):
 
     def test_list_command(self):
         import inspect
-        debugger        = import_relative('debugger', '...trepan', 'trepan')
         d               = debugger.Trepan()
         cp              = d.core.processor
         cp.curframe     = inspect.currentframe()

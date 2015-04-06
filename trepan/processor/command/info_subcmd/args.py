@@ -16,10 +16,9 @@
 
 import inspect
 
-from import_relative import import_relative
 # Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
 
-Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
 
 class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
     """Argument variables of the current stack frame."""
@@ -59,8 +58,7 @@ class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Minfo = import_relative('info', '..')
+    from trepan.processor.command import mock, info as Minfo
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoArgs(i)

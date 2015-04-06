@@ -12,11 +12,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, threading
-from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mexcept    = import_relative('exception', '...', 'trepan')
+from trepan.bwprocessor.command import base_cmd as Mbase_cmd
+from trepan import exception as Mexcept
+
 
 class QuitCommand(Mbase_cmd.DebuggerCommand):
     """Gently exit the debugger and debugged program.
@@ -66,8 +66,7 @@ The program being debugged is exited raising a *DebuggerQuit* exception.
         pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
-    Mdebugger = import_relative('debugger', '...')
+    from trepan.bwprocessor.command import mock
     d, cp = mock.dbg_setup()
     command = QuitCommand(cp)
     try:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,11 +15,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger Script input interface. """
 
-import io
-import types
+import io, types
 
-from import_relative import import_relative, get_srcdir
-Mbase = import_relative('base', top_name='trepan')
+from trepan.inout import base as Mbase
 
 
 # Do we need this?
@@ -63,14 +61,15 @@ class ScriptInput(Mbase.DebuggerInputBase):
 
 # Demo
 if __name__=='__main__':
-    inp = ScriptInput('scriptin.py')
+    import os
+    my_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           'scriptin.py')
+    inp = ScriptInput(my_file)
     line = inp.readline()
     print(line)
     inp.close()
     # Note opts below are aren't acted upon. They are there for
     # compatibility
-    import os
-    my_file = os.path.join(get_srcdir(), 'scriptin.py')
     inp.open(my_file, opts={'use_raw': False})
     while True:
         try:

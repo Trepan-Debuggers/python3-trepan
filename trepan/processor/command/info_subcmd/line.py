@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,12 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect, os, re
 
-from import_relative import import_relative
 # Our local modules
-base_subcmd  = import_relative('base_subcmd', '...command')
-Mclifns      = import_relative('clifns', '....')
-Mmisc        = import_relative('misc', '....')
-Mfile        = import_relative('lib.file', '....')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan import clifns as Mclifns, misc as Mmisc
+
 
 def find_function(funcname, filename):
     cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
@@ -43,7 +41,7 @@ def find_function(funcname, filename):
     fp.close()
     return answer
 
-class InfoLine(base_subcmd.DebuggerSubcommand):
+class InfoLine(Mbase_subcmd.DebuggerSubcommand):
     '''Show information about the current line'''
     min_abbrev = 2
     need_stack = True
@@ -120,9 +118,8 @@ class InfoLine(base_subcmd.DebuggerSubcommand):
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Minfo = import_relative('info', '..')
-    Mdebugger = import_relative('debugger', '....')
+    from trepan.processor.command import mock, info as Minfo
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     d, cp = mock.dbg_setup(d)
     i = Minfo.InfoCommand(cp)

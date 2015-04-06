@@ -2,8 +2,8 @@
 'Unit test for trepan.lib.complete'
 
 import unittest
-from import_relative import import_relative
-Mcomplete = import_relative('lib.complete', '...trepan')
+
+from trepan.lib import complete as Mcomplete
 
 
 class TestLibComplete(unittest.TestCase):

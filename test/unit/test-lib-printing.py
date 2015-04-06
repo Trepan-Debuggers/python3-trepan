@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-'Unit test for trepan.lib.print'
+'Unit test for trepan.lib.printing'
 import unittest
-from import_relative import import_relative
 
-Mprint = import_relative('lib.print', '...trepan')
+from trepan.lib import printing as Mprint
 
 
 class TestLibPrint(unittest.TestCase):
@@ -16,8 +15,8 @@ class TestLibPrint(unittest.TestCase):
         return
 
     def test_lib_argspec(self):
-        self.assertEqual('test_lib_argspec(self)', 
-                         Mprint.print_argspec(self.test_lib_argspec, 
+        self.assertEqual('test_lib_argspec(self)',
+                         Mprint.print_argspec(self.test_lib_argspec,
                                               'test_lib_argspec'))
         self.assertFalse(Mprint.print_argspec(None, 'invalid_fn'))
         return

@@ -17,21 +17,12 @@ import inspect, linecache, sys, traceback, types
 import pyficache
 from reprlib import Repr
 
-from import_relative import import_relative, get_srcdir
+from trepan import vprocessor as Mprocessor
+from trepan import exception as Mexcept, misc as Mmisc
+from trepan.lib import bytecode as Mbytecode, display as Mdisplay
+from trepan.lib import thred as Mthread
+from trepan.bwprocessor import location as Mlocation, msg as Mmsg
 
-import_relative('lib', '...trepan')
-import_relative('bwprocessor', '...trepan')
-
-Mprocessor = import_relative('vprocessor', '..')
-Mbytecode  = import_relative('bytecode', '..lib', 'trepan')
-Mexcept    = import_relative('exception', '..', 'trepan')
-Mdisplay   = import_relative('display', '..lib', 'trepan')
-Mmisc      = import_relative('misc', '..', 'trepan')
-Mfile      = import_relative('file', '..lib', 'trepan')
-Mlocation  = import_relative('location', '.', 'trepan')
-Mmsg       = import_relative('msg',      '.', 'trepan')
-Mstack     = import_relative('stack', '..lib', 'trepan')
-Mthread    = import_relative('thred', '..lib', 'trepan')
 
 def get_stack(f, t, botframe, proc_obj=None):
     """Return a stack of frames which the debugger will use for in
@@ -422,10 +413,8 @@ class BWProcessor(Mprocessor.Processor):
         DebuggerCommand class instances form set of possible debugger
         commands."""
         cmd_instances = []
-        Mcommand = import_relative('command')
+        from trepan.bwprocessor import command as Mcommand
         eval_cmd_template = 'command_mod.%s(self)'
-        srcdir = get_srcdir()
-        sys.path.insert(0, srcdir)
         for mod_name in Mcommand.__modules__:
             import_name = "command." + mod_name
             try:
@@ -449,7 +438,6 @@ class BWProcessor(Mprocessor.Processor):
                     pass
                 pass
             pass
-        sys.path.remove(srcdir)
         return cmd_instances
 
     def _populate_cmd_lists(self):
@@ -465,7 +453,7 @@ class BWProcessor(Mprocessor.Processor):
 
 # Demo it
 if __name__=='__main__':
-    Mbullwinkle  = import_relative('bullwinkle', '..interfaces', 'trepan')
+    from trepan.interfaces import bullwinkle as Mbullwinkle
 
     class Debugger:
         def __init__(self):

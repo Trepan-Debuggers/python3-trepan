@@ -15,10 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import columnize
-from import_relative import import_relative
 
 # Our local modules
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+
 
 class ShowAliases(Mbase_subcmd.DebuggerShowIntSubcommand):
     '''**show aliases** [*alias* ...| *]
@@ -68,7 +68,7 @@ of aliases is printed, not what commands they are attached to.
         return
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.show_subcmd import __demo_helper__ as Mhelper
     sub = Mhelper.demo_run(ShowAliases)
     sub.run(['*'])
     sub.run(['s+', "n+"])

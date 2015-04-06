@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,33 +24,26 @@ if not package in sys.modules:
     pass
 
 # Our local modules
-from import_relative import import_relative, get_srcdir
-try:
-    import trepan.interfaces
-    import trepan.inout
-    import trepan.processor.command  # NOQA
-except:
-    pass
-Minterface = import_relative('interface', '.', package)
-Mapi       = import_relative('api', top_name=package)
-Mclient    = import_relative('client', top_name=package)
-Mclifns    = import_relative('clifns', top_name=package)
-Mdebugger  = import_relative('debugger', top_name=package)
-Mexcept    = import_relative('exception', top_name=package)
-Moutput    = import_relative('output', '.inout', package)
-Moptions   = import_relative('options',   '.',   package)
-Mserver    = import_relative('server', '.interfaces', package)
-Mfile      = import_relative('file',   '.lib', package)
-Mmisc      = import_relative('misc', '.', package)
+import trepan.interfaces
+import trepan.inout
+import trepan.processor.command  # NOQA
+
+from trepan import interface as Minterface
+from trepan import api as Mapi
+from trepan import client as Mclient
+from trepan import clifns as Mclifns
+from trepan import debugger as Mdebugger
+from trepan import exception as Mexcept
+from trepan import options as Moptions
+from trepan.interfaces import server as Mserver
+from trepan.lib import file as Mfile
+from trepan import misc as Mmisc
 
 # The name of the debugger we are currently going by.
 __title__ = package
 
 # VERSION.py sets variable VERSION.
-VERSION='??'
-exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(),
-             os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
-__version__ = VERSION
+from trepan.VERSION import VERSION as __version__
 
 
 def main(dbg=None, sys_argv=list(sys.argv)):

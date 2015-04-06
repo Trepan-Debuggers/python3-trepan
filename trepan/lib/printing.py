@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2007-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2007-2010, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,8 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect
-import collections
+import inspect, types
 
 
 def print_dict(s, obj, title):
@@ -24,13 +23,14 @@ def print_dict(s, obj, title):
         pass
     if isinstance(obj, dict):
         s += "\n%s:\n" % title
-        keys = list(obj.keys())
+        keys = obj.keys()
         keys.sort()
         for key in keys:
             s+="  %s:\t%s\n" % (repr(key), obj[key])
             pass
         pass
     return s
+
 
 def print_argspec(obj, obj_name):
     '''A slightly decorated version of inspect.format_argspec'''
@@ -39,6 +39,7 @@ def print_argspec(obj, obj_name):
     except:
         return None
     return  # Not reached
+
 
 def print_obj(arg, frame, format=None, short=False):
     """Return a string representation of an object """
@@ -60,14 +61,14 @@ def print_obj(arg, frame, format=None, short=False):
     s = '%s = %s' % (what, obj)
     if not short:
         s += '\ntype = %s' % type(obj)
-        if isinstance(obj, collections.Callable):
+        if callable(obj):
             argspec = print_argspec(obj, arg)
             if argspec:
                 s += ':\n\t'
                 if inspect.isclass(obj):
                     s += 'Class constructor information:\n\t'
                     obj = obj.__init__
-                elif isinstance(obj, object):
+                elif isinstance(obj, types.InstanceType):
                     obj = obj.__call__
                     pass
                 s+= argspec
@@ -95,9 +96,9 @@ def printf(val, fmt):
     if fmt[0] == '/':
         fmt = fmt[1:]
     f = fmt[0]
-    if f in list(pconvert.keys()):
+    if f in pconvert.keys():
         try:
-            return pconvert[f](*(val,))
+            return pconvert[f](val)
         except:
             return str(val)
     # binary (t is from 'twos')
@@ -127,8 +128,7 @@ if __name__ == '__main__':
     print(print_obj('Foo.__init__', None))
     print('-' * 30)
     print(print_argspec(Foo.__init__, '__init__'))
-    assert printf(31, "/o") == '0o37'
+    assert printf(31, "/o") == '037'
     assert printf(31, "/t") == '00011111'
     assert printf(33, "/c") == '!'
     assert printf(33, "/x") == '0x21'
-    pass

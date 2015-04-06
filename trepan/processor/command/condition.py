@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,12 +15,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mfile      = import_relative('file', '...lib', 'trepan')
-Mmisc      = import_relative('misc', '...', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
 
 
 class ConditionCommand(Mbase_cmd.DebuggerCommand):
@@ -47,7 +43,7 @@ made unconditional.
 
     def run(self, args):
         success, msg, bp = self.core.bpmgr.get_breakpoint(int(args[1]))
-        if not success: 
+        if not success:
             self.errmsg(msg)
             return
         if len(args) > 2:
@@ -57,12 +53,12 @@ made unconditional.
             self.msg('Breakpoint %d is now unconditional.' % bp.number)
             pass
         bp.condition = condition
-        return 
+        return
 
 if __name__ == '__main__':
     import sys
-    Mdebugger = import_relative('debugger', '...')
-    Mbreak    = import_relative('break', '.')
+    from trepan import debugger as Mdebugger
+    Mbreak = __import__('trepan.processor.command.break', None, None, ['*'])
     d = Mdebugger.Trepan()
     brkcmd = Mbreak.BreakCommand(d.core.processor)
     command = ConditionCommand(d.core.processor)

@@ -16,8 +16,7 @@
 "CommandProcessor completion routines"
 import re
 
-from import_relative import import_relative
-Mcomplete = import_relative('complete', '..lib', 'trepan')
+from trepan.lib import complete as Mcomplete
 
 
 def complete_token_filtered(aliases, prefix, expanded):

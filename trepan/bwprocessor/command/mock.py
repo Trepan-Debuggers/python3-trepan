@@ -19,10 +19,8 @@
 demonstrating how the command works.'''
 
 import os, sys
-from import_relative import import_relative
-import_relative('lib', '...', 'trepan')
-breakpoint = import_relative('breakpoint', '...lib', 'trepan')
-default    = import_relative('default', '...lib', 'trepan')  # Default settings
+
+from trepan.lib import breakpoint, default
 
 
 class MockIO:
@@ -137,6 +135,6 @@ class MockDebugger:
 
 def dbg_setup(d = None):
     if d is None: d = MockDebugger()
-    bwproc = import_relative('main', os.path.pardir)
+    from trepan.bwprocessor import main as bwproc
     cp = bwproc.BWProcessor(d.core)
     return d, cp

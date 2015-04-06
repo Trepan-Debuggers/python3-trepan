@@ -19,9 +19,9 @@
 import inspect, os, types
 
 # Our local modules
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mprint     = import_relative('print', '...lib', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import printing as Mprint
+
 
 class PrintDefCommand(Mbase_cmd.DebuggerCommand):
     """**pdef** *obj*
@@ -67,12 +67,10 @@ See also:
         return
 
 if __name__ == '__main__':
-    cmdproc     = import_relative('cmdproc', '..')
-    debugger    = import_relative('debugger', '...')
+    from trepan import debugger
     d           = debugger.Trepan()
     cp          = d.core.processor
     cp.curframe = inspect.currentframe()
     command = PrintDefCommand(cp)
-    command.run(['pdef', 'import_relative'])
     command.run(['pdef', 'PrintDefCommand'])
     pass

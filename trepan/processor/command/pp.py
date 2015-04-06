@@ -15,10 +15,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', '.', 'trepan')
-Mdebugger  = import_relative('debugger', '...', 'trepan')
-Mpp        = import_relative('pp', '...lib', 'trepan')
+
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import pp as Mpp
+
 
 class PrettyPrintCommand(Mbase_cmd.DebuggerCommand):
     """**pp** *expression*
@@ -51,7 +52,7 @@ formatting.
 
 if __name__ == '__main__':
     import inspect
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     cp.curframe = inspect.currentframe()
     command = PrettyPrintCommand(cp)

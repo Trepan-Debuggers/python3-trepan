@@ -17,9 +17,8 @@
 # Call-frame-oriented helper function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from import_relative import import_relative
-Mcmdfns = import_relative('cmdfns',   '.')
-Mcomplete = import_relative('complete', '..lib')
+from trepan.processor import cmdfns as Mcmdfns
+from trepan.lib import complete as Mcomplete
 
 
 def frame_low_high(proc_obj, direction):

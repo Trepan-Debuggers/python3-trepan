@@ -17,9 +17,8 @@
 
 import io, sys, types
 
-from import_relative import import_relative
-Mmisc  = import_relative('misc', '..')
-Mbase  = import_relative('base', top_name='trepan')
+from trepan import misc as Mmisc
+from trepan.inout import base as Mbase
 
 
 def readline_importable():

@@ -16,12 +16,11 @@
 """Debugger Socket Input/Output Interface."""
 
 import socket
-from import_relative import import_relative
-import trepan.lib
+
+from trepan.lib import default as Mdefault
+from trepan.inout import tcpfns as Mtcpfns
 from trepan.inout.base import DebuggerInOutBase
-Mdefault = import_relative('default', '..lib', 'trepan')
 from trepan.misc import option_set
-Mtcpfns  = import_relative('tcpfns', '.', 'trepan')
 
 
 class TCPClient(DebuggerInOutBase):

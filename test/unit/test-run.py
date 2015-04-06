@@ -2,15 +2,11 @@
 'Unit test for trepan.processor.command.run'
 import unittest
 
-from import_relative import import_relative
-
-# FIXME: until import_relative is fixed
-import_relative('trepan', '...', 'trepan')
-
-Mexcept  = import_relative('exception', '...trepan', 'trepan')
-Mrun     = import_relative('trepan.processor.command.run', '...', 'trepan')
+from trepan import exception as Mexcept
+from trepan.processor.command import run as Mrun
 
 from cmdhelper import dbg_setup
+
 
 class TestRun(unittest.TestCase):
     """Tests RunCommand class"""

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.lib.file'
 import os, stat, tempfile, unittest
-from import_relative import import_relative
 
-import_relative('lib', '...trepan')
-Mfile = import_relative('lib.file', '...trepan')
+from trepan.lib import file as Mfile
 
 
 class TestLibFile(unittest.TestCase):

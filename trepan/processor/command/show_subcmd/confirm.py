@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import *
 # Our local modules
-
-# FIXME: Until import_relative is fixed up...
-import_relative('processor', '....')
-
-Mbase_subcmd  = import_relative('base_subcmd', os.path.pardir)
+from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
@@ -29,6 +24,7 @@ class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.show_subcmd \
+      import __demo_helper__ as Mhelper
     Mhelper.demo_run(ShowConfirm)
     pass

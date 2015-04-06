@@ -15,14 +15,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect, os, sys, threading
-from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd = import_relative('base_cmd', '.', 'trepan')
-Mcmdproc  = import_relative('cmdproc', '..', 'trepan')
-Mcomplete = import_relative('complete',  '...lib', 'trepan')
-Mframe    = import_relative('frame', '..', 'trepan')
-Mthread   = import_relative('thred', '...lib', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import frame as Mframe, cmdproc as Mcmdproc
+from trepan.lib import thred as Mthread, complete as Mcomplete
+
 
 class FrameCommand(Mbase_cmd.DebuggerCommand):
     """**frame** [*thread-Name*|*thread-number*] [*frame-number*]
@@ -182,7 +180,7 @@ See also `up`, `down`, `backtrace`, and `info thread`.
         return False
 
 if __name__ == '__main__':
-    Mdebugger    = import_relative('debugger', '...', 'trepan')
+    from trepan import debugger as Mdebugger
     d            = Mdebugger.Trepan()
     cp           = d.core.processor
     command = FrameCommand(cp)

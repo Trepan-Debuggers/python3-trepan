@@ -1,7 +1,6 @@
 import os, sys
-from import_relative import import_relative
 
-# FIXME: DRY with other demo_helper's 
+# FIXME: DRY with other demo_helper's
 
 def get_name():
     """Get the name caller's caller.
@@ -14,9 +13,7 @@ def get_name():
     return os.path.splitext(filename)[0]
 
 def demo_setup():
-    Mmock = import_relative('mock', '..')
-    Mshow = import_relative('show', '..')
-    Mdebugger = import_relative('debugger', '....')
+    from trepan.processor.command import mock as Mmock, show as Mshow
     d, cp = Mmock.dbg_setup()
     mgr = Mshow.ShowCommand(cp)
     return mgr

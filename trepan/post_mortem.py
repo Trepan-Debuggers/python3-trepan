@@ -16,11 +16,9 @@
 # Post-Mortem interface
 
 import inspect, os, sys, re, traceback
-import trepan.inout
 
 # Our local modules
-from import_relative import import_relative
-Mdebugger = import_relative('debugger', '.', 'trepan')
+from trepan import debugger as Mdebugger
 from trepan.exception import DebuggerQuit, DebuggerRestart
 
 

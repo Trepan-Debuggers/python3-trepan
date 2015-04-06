@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.disassemble'
 import inspect, unittest
-from import_relative import import_relative
 
-import_relative('trepan', '...', 'trepan')
-import trepan.inout
-import trepan.interfaces
-import trepan.lib
-import trepan.processor.command
-Mdis = import_relative('processor.command.disassemble', '...trepan')
+from trepan.processor.command import disassemble as Mdis
 
 from cmdhelper import dbg_setup
 

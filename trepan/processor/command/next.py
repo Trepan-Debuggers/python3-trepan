@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,12 +15,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
 
 # Our local modules
-base_cmd   = import_relative('base_cmd')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mstack     = import_relative('stack',  '...lib', 'trepan')
+from trepan.processor.command import base_cmd
+from trepan.processor import cmdfns as Mcmdfns
+
 
 class NextCommand(base_cmd.DebuggerCommand):
 
@@ -58,7 +57,7 @@ the debugger setting 'different-line' determines this behavior.
             step_ignore -= 1
             pass
         self.core.different_line   = \
-            Mcmdfns.want_different_line(args[0], 
+            Mcmdfns.want_different_line(args[0],
                                         self.debugger.settings['different'])
         self.core.set_next(self.proc.frame, step_ignore)
         self.proc.continue_running = True   # Break out of command read loop
@@ -79,7 +78,7 @@ if __name__ == '__main__':
         print('step_ignore %d, continue_running: %s' % (d.core.step_ignore,
                                                         cmd.continue_running,))
         pass
-    for c in (['n'], ['next+'], ['n-']): 
+    for c in (['n'], ['next+'], ['n-']):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)

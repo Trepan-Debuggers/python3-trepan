@@ -15,10 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
 
-Mbase_cmd = import_relative('base_cmd', top_name='trepan')
-Mcomplete = import_relative('complete', '...lib')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import complete as Mcomplete
+
 
 class UndisplayCommand(Mbase_cmd.DebuggerCommand):
     """**undisplay** *display-number*...
@@ -66,11 +66,9 @@ See also:
     pass
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
-    d = Mdebugger.Trepan()
+    from trepan import debugger as Mdebugger
+    from trepan.processor import cmdproc as Mcmdproc
     import inspect
-    Mcmdproc     = import_relative('cmdproc', '..')
-    Mdebugger    = import_relative('debugger', '...')
     d            = Mdebugger.Trepan()
     cp           = d.core.processor
     command = UndisplayCommand(d.core.processor)

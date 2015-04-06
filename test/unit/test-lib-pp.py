@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.lib.pp'
 import sys, unittest
-from import_relative import import_relative
 
-Mpp = import_relative('lib.pp', '...trepan')
+from trepan.lib import pp as Mpp
 
 
 class TestLibPrint(unittest.TestCase):

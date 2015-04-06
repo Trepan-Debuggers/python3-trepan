@@ -18,13 +18,9 @@
 import os, sys
 
 from optparse import OptionParser
-from import_relative import import_relative
-Mdebugger  = import_relative('debugger', '.')
-Mapi       = import_relative('api',      '.')
-Mclifns    = import_relative('clifns',   '.')
-Mfile      = import_relative('file',     '.lib')
-Moutput    = import_relative('output',   '.inout')
-
+from trepan import debugger as Mdebugger, api as Mapi, clifns as Mclifns
+from trepan.lib import file as Mfile
+from trepan.inout import output as Moutput
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing

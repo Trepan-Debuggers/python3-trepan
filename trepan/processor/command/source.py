@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,14 +14,13 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, sys
-from import_relative import import_relative
 
 # Our local modules
-Mbase_cmd = import_relative('base_cmd', top_name='trepan')
-Mcomplete = import_relative('complete', '...lib', 'trepan')
-Mdebugger = import_relative('debugger', '...', 'trepan')
-Mfile     = import_relative('file', '...lib', 'trepan')
-Mscript   = import_relative('script', '...interfaces', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import complete as Mcomplete, file as Mfile
+from trepan.interfaces import script as Mscript
+from trepan import debugger as Mdebugger
+
 
 class SourceCommand(Mbase_cmd.DebuggerCommand):
     """**source** [**-v**][**-Y**|**-N**][**-c**] *file*
@@ -60,7 +59,7 @@ unless option `-c` is given."""
             pass
         filename = args[-1]
 
-        expanded_file = os.path.expanduser(filename)            
+        expanded_file = os.path.expanduser(filename)
         if not Mfile.readable(expanded_file):
             self.errmsg("Debugger command file '%s' is not a readable file"
                         % filename)
@@ -75,7 +74,7 @@ unless option `-c` is given."""
 
 # Demo it
 if __name__ == '__main__':
-    Mmock   = import_relative('mock')
+    from trepan.processor.command import mock as Mmock
     d, cp   = Mmock.dbg_setup()
     command = SourceCommand(cp)
     if len(sys.argv) > 1:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,8 @@
 import code, os, sys
 
 # Our local modules
-from import_relative import import_relative
+from trepan.processor.command import base_cmd as Mbase_cmd
 
-Mbase_cmd  = import_relative('base_cmd', top_name='pydbgr')
-Mcmdfns    = import_relative('cmdfns', '..', 'pydbgr')
-Mmisc      = import_relative('misc',   '...', 'pydbgr')
 
 class PythonCommand(Mbase_cmd.DebuggerCommand):
     """**python** [**-d**]
@@ -162,8 +159,8 @@ def runcode(obj, code_obj):
 
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
-    d = Mdebugger.Debugger()
+    from trepan import debugger as Mdebugger
+    d = Mdebugger.Trepan()
     command = PythonCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()

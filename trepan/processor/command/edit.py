@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2014 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,8 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect, os
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
+
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class EditCommand(Mbase_cmd.DebuggerCommand):
     """**edit** *position*
@@ -45,8 +47,8 @@ With no argument, edits file containing most recent line listed.
         elif len(args) == 2:
             (modfunc, filename, lineno) = self.proc.parse_position(args[1])
             if inspect.ismodule(modfunc) and lineno is None and len(args) > 2:
-                val = self.proc.get_an_int(args[1], 
-                                           'Line number expected, got %s.' % 
+                val = self.proc.get_an_int(args[1],
+                                           'Line number expected, got %s.' %
                                            args[1])
                 if val is None: return
                 lineno = val
@@ -68,7 +70,7 @@ With no argument, edits file containing most recent line listed.
     pass
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     cmd = EditCommand(d.core.processor)
     for c in (['edit'],

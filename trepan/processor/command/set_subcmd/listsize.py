@@ -14,11 +14,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from import_relative import import_relative
 # Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor import cmdfns as Mcmdfns
 
-Mbase_subcmd = import_relative('base_subcmd', '..', 'trepan')
-Mcmdfns      = import_relative('cmdfns', '...', 'trepan')
 
 class SetListSize(Mbase_subcmd.DebuggerSubcommand):
     "Set the number lines printed in a *list* command by default"
@@ -34,6 +33,6 @@ class SetListSize(Mbase_subcmd.DebuggerSubcommand):
     pass
 
 if __name__ == '__main__':
-    Mhelper = import_relative('__demo_helper__', '.', 'trepan')
+    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
     Mhelper.demo_run(SetListSize)
     pass

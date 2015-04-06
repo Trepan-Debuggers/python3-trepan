@@ -5,9 +5,7 @@ if hasattr(os, 'mkfifo'):
 
     import unittest
 
-    from import_relative import import_relative
-    Mserver = import_relative('trepan.inout.fifoserver', '...')
-    Mclient = import_relative('trepan.inout.fifoclient', '...')
+    from trepan.inout import fifoserver as Mserver, fifoclient as Mclient
 
     class TestFIFO(unittest.TestCase):
         """Tests FIFOServer and FIFOClient"""

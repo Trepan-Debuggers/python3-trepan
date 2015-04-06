@@ -2,8 +2,7 @@
 'Unit test for trepan.lib.sighandler'
 import signal, unittest
 
-from import_relative import import_relative
-Msig = import_relative('lib.sighandler', '...trepan', 'trepan')
+from trepan.lib import sighandler as Msig
 
 
 class TestLibSigHandle(unittest.TestCase):

@@ -7,9 +7,7 @@ from dis import distb, findlabels, findlinestarts
 from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, hasjrel, \
     haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
 
-import trepan.lib.format
-from import_relative import import_relative
-Mformat   = import_relative('format', top_name='trepan')
+from trepan.lib import format as Mformat
 format_token = Mformat.format_token
 
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)

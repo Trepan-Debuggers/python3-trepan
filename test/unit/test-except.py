@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.exception'
 import unittest
-from import_relative import import_relative
 
-Mexcept = import_relative('exception', '...trepan')
+from trepan import exception as Mexcept
 
 
 class TestDeguggerExcept(unittest.TestCase):

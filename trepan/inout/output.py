@@ -17,8 +17,7 @@
 
 import io, sys, types
 
-from import_relative import import_relative
-Mbase  = import_relative('base', top_name='trepan')
+from trepan.inout import base as Mbase
 
 class DebuggerUserOutput(Mbase.DebuggerInOutBase):
     """Debugger output shown directly to what we think of as end-user

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2010, 2012-2014 Rocky Bernstein
+#  Copyright (C) 2010, 2012-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys, threading
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mdebugger  = import_relative('debugger', '...', top_name='trepan')
+
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class DebugCommand(Mbase_cmd.DebuggerCommand):
     """**debug** *python-expression*
@@ -86,8 +86,8 @@ environment."""
 
 if __name__ == '__main__':
     import inspect
-    Mcmdproc    = import_relative('cmdproc', '..', 'trepan')
-    debugger    = import_relative('debugger', '...')
+    from trepan.processor import cmdproc as Mcmdproc
+    from trepan import debugger
     d           = debugger.Trepan()
     cp          = d.core.processor
     cp.curframe = inspect.currentframe()

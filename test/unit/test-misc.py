@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.misc'
 import unittest
-from import_relative import import_relative
 
-Mmisc = import_relative('misc', '...trepan', 'trepan')
+from trepan import misc as Mmisc
 
 
 class TestMisc(unittest.TestCase):

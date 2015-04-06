@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 'Unit test for trepan.lib.eval'
 import unittest
-from import_relative import import_relative
 
-import_relative('lib', '...trepan')
-Meval = import_relative('lib.eval', '...trepan')
+from trepan.lib import eval as Meval
 
 
 class TestExtractExpression(unittest.TestCase):

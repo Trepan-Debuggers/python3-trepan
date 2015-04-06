@@ -15,8 +15,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-base_submgr  = import_relative('base_submgr', top_name='trepan')
+
+from trepan.processor.command import base_submgr
+
 
 class SetCommand(base_submgr.SubcommandMgr):
     """**set** *set subcommand*
@@ -38,7 +39,7 @@ Type `help set *` for just the list of *set* subcommands.
     short_help    = 'Modify parts of the debugger environment'
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = SetCommand(cp, 'set')
     command.run(['set'])

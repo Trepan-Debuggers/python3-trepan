@@ -1,9 +1,9 @@
 import sys
-from import_relative import import_relative
 
-Mdebugger    = import_relative('debugger', '...trepan')
 import trepan.inout.stringarray
-Mstringarray = trepan.inout.stringarray
+from trepan import debugger as Mdebugger
+from trepan.inout import stringarray as Mstringarray
+
 
 def strarray_setup(debugger_cmds):
     ''' Common setup to create a debugger with stringio attached '''

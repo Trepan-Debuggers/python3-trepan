@@ -18,9 +18,9 @@
 # 'Helper' function for Processor. Put here so we 
 # can use this in a couple of processors.
 
-from import_relative import import_relative
 from tracer import EVENT2SHORT
-Mprocessor = import_relative('vprocessor', '..', 'trepan')
+
+from trepan import vprocessor as Mprocessor
 
 
 class PrintProcessor(Mprocessor.Processor):

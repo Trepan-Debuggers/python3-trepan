@@ -17,13 +17,10 @@
 #    02110-1301 USA.
 
 import os
-from import_relative import import_relative
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mfile      = import_relative('file',   '...lib', 'trepan')
-Mmisc      = import_relative('misc',   '...', 'trepan')
-Mbreak     = import_relative('break',  '.', 'trepan')
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class EnableCommand(Mbase_cmd.DebuggerCommand):
     """**enable** *bpnumber* [*bpnumber* ...]
@@ -57,10 +54,10 @@ numbers. See also `info break` to get a list.
                 pass
             pass
         return
-        
+
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     command = EnableCommand(d.core.processor)
     pass

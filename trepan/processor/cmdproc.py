@@ -17,19 +17,22 @@ import inspect, linecache, os, sys, shlex, tempfile, traceback, types
 import pyficache
 from reprlib import Repr
 
-from import_relative import import_relative, get_srcdir
 from tracer import EVENT2SHORT
 
-Mprocessor = import_relative('vprocessor', '..', 'trepan')
-Mbytecode  = import_relative('bytecode', '..lib', 'trepan')
-Mexcept    = import_relative('exception', '...trepan', 'trepan')
-Mdisplay   = import_relative('display', '..lib', 'trepan')
-Mmisc      = import_relative('misc', '..', 'trepan')
-Mfile      = import_relative('file', '..lib', 'trepan')
-Mstack     = import_relative('stack', '..lib', 'trepan')
-Mthread    = import_relative('thred', '..lib', 'trepan')
-Mcomplete  = import_relative('processor.complete', '...trepan')
-import trepan
+from trepan import vprocessor as Mprocessor
+from trepan.lib import bytecode as Mbytecode
+from trepan import exception as Mexcept
+from trepan.lib import display as Mdisplay
+from trepan import misc as Mmisc
+from trepan.lib import file as Mfile
+from trepan.lib import stack as Mstack
+from trepan.lib import thred as Mthread
+from trepan.processor import complete as Mcomplete
+
+def get_srcdir():
+    filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.realpath(filename)
+
 
 # arg_split culled from ipython's routine
 def arg_split(s, posix=False):
@@ -194,8 +197,6 @@ def print_location(proc_obj):
         fn_name = frame.f_code.co_name
         print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
                                    remapped_file = remapped_file)
-                                   # proc_obj.curframe.f_lasti)
-
         opts = {
             'reload_on_change' : proc_obj.settings('reload'),
             'output'           : proc_obj.settings('highlight')
@@ -241,11 +242,13 @@ class CommandProcessor(Mprocessor.Processor):
         self.event2short['brkpt']  = 'xx'
 
         self.cmd_instances    = self._populate_commands()
-        self.cmd_argstr       = ''     # command argument string. Is
-                                       # like current_command, but the part
-                                       # after cmd_name has been removed.
-        self.cmd_name         = ''     # command name before alias or
-                                       # macro resolution
+
+        # command argument string. Is like current_command, but the part
+        # after cmd_name has been removed.
+        self.cmd_argstr       = ''
+
+        # command name before alias or macro resolution
+        self.cmd_name         = ''
         self.cmd_queue        = []     # Queued debugger commands
         self.completer        = lambda text, state: \
           Mcomplete.completer(self, text, state)
@@ -742,7 +745,7 @@ class CommandProcessor(Mprocessor.Processor):
         if self.event in ['exception', 'c_exception']:
             exc_type, exc_value, exc_traceback = self.event_arg
         else:
-            _, _, exc_traceback = (None, None, None,)
+            _, _, exc_traceback = (None, None, None,)  # NOQA
             pass
         if self.frame or exc_traceback:
             self.stack, self.curindex = \
@@ -888,13 +891,12 @@ class CommandProcessor(Mprocessor.Processor):
                            if ('DebuggerCommand' != tup[0] and
                                tup[0].endswith('Command')) ]
             for classname in classnames:
-                eval_cmd = eval_cmd_template % classname
                 if False:
-                    instance = eval(eval_cmd)
+                    instance = getattr(command_mod, classname)(self)
                     cmd_instances.append(instance)
                 else:
                     try:
-                        instance = eval(eval_cmd)
+                        instance = getattr(command_mod, classname)(self)
                         cmd_instances.append(instance)
                     except:
                         print('Error loading %s from %s: %s' %
@@ -903,7 +905,6 @@ class CommandProcessor(Mprocessor.Processor):
                     pass
                 pass
             pass
-        sys.path.remove(srcdir)
         return cmd_instances
 
     def _populate_cmd_lists(self):
@@ -942,7 +943,7 @@ class CommandProcessor(Mprocessor.Processor):
 
 # Demo it
 if __name__=='__main__':
-    Mmock = import_relative('command.mock')
+    from trepan.processor.command import mock as Mmock
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)
     print('commands:')

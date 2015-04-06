@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.help'
-import inspect, os, sys, unittest, types
+import unittest
 
-from import_relative import import_relative
-
-# FIXME: until import_relative is fixed
-import_relative('trepan', '...', 'trepan')
-
-Mhelp    = import_relative('processor.command.help', '...trepan', 'trepan')
-Mcmdproc = import_relative('processor.cmdproc', '...trepan', 'trepan')
-
-from cmdhelper import dbg_setup
-import signal
-
-Mmock = import_relative('processor.command.mock', '...trepan')
+from trepan.processor.command import help as Mhelp, mock as Mmock
+from trepan.processor import cmdproc as Mcmdproc
 
 
 class TestHelp(unittest.TestCase):
@@ -24,7 +14,7 @@ class TestHelp(unittest.TestCase):
         self.msgs               = []
         self.d                  = Mmock.MockDebugger()
         self.cp                 = Mcmdproc.CommandProcessor(self.d.core)
-        self.cp.intf[-1].msg    = self.msg 
+        self.cp.intf[-1].msg    = self.msg
         self.cp.intf[-1].errmsg = self.errmsg
         self.cmd                = Mhelp.HelpCommand(self.cp)
         self.cmd.msg            = self.msg
@@ -41,7 +31,7 @@ class TestHelp(unittest.TestCase):
 
     def test_help_command(self):
         """Test we can run 'help *cmd* for each command"""
-        
+
         for name in self.cp.commands.keys():
             self.cmd.run(['help', name])
             pass

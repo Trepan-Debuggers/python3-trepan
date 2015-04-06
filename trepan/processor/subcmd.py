@@ -116,9 +116,8 @@ List of %s subcommands:
 # When invoked as main program, invoke the debugger on a script
 if __name__ == '__main__':
 
-    from import_relative import import_relative
-    Mmock = import_relative('command.mock')
-    Mbase_cmd = import_relative('command.base_cmd')
+    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command import base_cmd as Mbase_cmd
 
     class TestCommand(Mbase_cmd.DebuggerCommand):
         '''Doc string for testing'''

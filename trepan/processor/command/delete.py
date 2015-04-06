@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,13 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mcmdfns    = import_relative('cmdfns', '..', 'trepan')
-Mfile      = import_relative('file', '...lib', 'trepan')
-Mmisc      = import_relative('misc', '...', 'trepan')
-Mbreak     = import_relative('break', '.', 'trepan')
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class DeleteCommand(Mbase_cmd.DebuggerCommand):
     """**delete** [*bpnumber* [*bpnumber*...]]
@@ -31,7 +28,7 @@ Delete some breakpoints.
 Arguments are breakpoint numbers with spaces in between.  To delete
 all breakpoints, give no argument.  those breakpoints.  Without
 argument, clear all breaks (but first ask confirmation).
-    
+
 See also the `clear` command which clears breakpoints by line/file
 number."""
 
@@ -61,10 +58,10 @@ number."""
                 pass
             pass
         return
-        
+
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     command = DeleteCommand(d.core.processor)
     pass

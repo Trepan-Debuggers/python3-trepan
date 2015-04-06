@@ -2,11 +2,8 @@
 'Unit test for debugger command completion'
 
 import unittest
-from import_relative import import_relative
-import trepan.inout
-import trepan.processor.command
-import trepan.interfaces
-Mdebugger = import_relative('debugger', '...trepan')
+
+from trepan import debugger as Mdebugger
 
 line_buffer = ''
 

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.subcmd'
 import unittest
-from import_relative import import_relative
 
-Msubcmd   = import_relative('processor.subcmd', '...trepan')
-Mbase_cmd = import_relative('processor.command.base_cmd', '...trepan')
-Mmock     = import_relative('processor.command.mock', '...trepan')
+from trepan.processor import subcmd as Msubcmd
+from trepan.processor.command import base_cmd as Mbase_cmd, mock as Mmock
+
 
 class MyCommand(Mbase_cmd.DebuggerCommand):
     '''Doc string for testing'''

@@ -16,12 +16,8 @@
 """ Functions for working with Python frames"""
 import re, types
 
-from import_relative import import_relative
-import trepan.lib
-
-Mbytecode = import_relative('bytecode', '..lib', 'trepan')
-Mprint    = import_relative('print', '..lib', 'trepan')
-Mformat   = import_relative('format', '..lib', 'trepan')
+from trepan.lib import bytecode as Mbytecode, printing as Mprint
+from trepan.lib import format as Mformat
 format_token = Mformat.format_token
 
 def count_frames(frame, count_start=0):

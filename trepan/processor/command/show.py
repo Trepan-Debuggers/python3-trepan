@@ -15,8 +15,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-Mbase_submgr = import_relative('base_submgr')
+
+from trepan.processor.command import base_submgr as Mbase_submgr
+
 
 class ShowCommand(Mbase_submgr.SubcommandMgr):
     """**show** *subcommand*
@@ -46,7 +47,7 @@ Type `help show *` for just a list of *show* subcommands.
         return
 
 if __name__ == '__main__':
-    mock = import_relative('mock')
+    from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = ShowCommand(cp, 'show')
     command.run(['show'])

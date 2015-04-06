@@ -2,8 +2,7 @@
 ''' Location routines'''
 
 import pyficache, linecache, tempfile
-from import_relative import import_relative, get_srcdir
-Mstack = import_relative('stack', '..lib', 'pydbgr')
+from trepan.lib import stack as Mstack
 
 
 def format_location(proc_obj):

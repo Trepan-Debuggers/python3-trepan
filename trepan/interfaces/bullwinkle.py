@@ -18,12 +18,8 @@
 import atexit, pprint
 
 # Our local modules
-from import_relative import import_relative
-import_relative('inout',                  '..',   'trepan')
-import_relative('interfaces',             '..',   'trepan')
-Minterface = import_relative('interface', '..',   'trepan')
-Minput     = import_relative('input',     '..inout', 'trepan')
-Moutput    = import_relative('output',    '..inout', 'trepan')
+from trepan import interface as Minterface
+from trepan.inout import input as Minput, output as Moutput
 
 
 class BWInterface(Minterface.TrepanInterface):

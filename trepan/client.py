@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,20 +18,16 @@
 #    02110-1301 USA.
 
 import os, sys, time
+
 # Our local modules
-from import_relative import import_relative
-Mmisc = import_relative('misc', '.', 'trepan')
-Mclient   = import_relative('client', '.interfaces', 'trepan')
-Mcomcodes = import_relative('comcodes', '.interfaces', 'trepan')
+from trepan.interfaces import client as Mclient
+from trepan.interfaces import comcodes as Mcomcodes
 
 from optparse import OptionParser
 
-# Our local modules
-from import_relative import import_relative, get_srcdir
-
 # VERSION.py sets variable VERSION.
-exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(), os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
-__version__ = VERSION
+from trepan.VERSION import VERSION as __version__
+
 
 def process_options(pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -65,68 +61,65 @@ def process_options(pkg_version, sys_argv, option_list=None):
 
     sys.argv = list(sys_argv)
     (opts, sys.argv) = optparser.parse_args()
-
     return opts, sys.argv
-
 
 #
 # Connects to a debugger in server mode
 #
 
-#DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP',
-#                                  'HOST': '127.0.0.1', 'PORT': 1027}
-DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'FIFO'}
-
+# DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'FIFO'}
+DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'TCP',
+                                  'HOST': '127.0.0.1', 'PORT': 1027}
 def start_client(connection_opts):
-      intf = Mclient.ClientInterface(connection_opts=connection_opts)
-      # debugger.interface.append(intf)
-      intf.msg("Connected.")
-      done=False
-      while not done:
-            control, remote_msg = intf.read_remote()
-            # print 'c, r', control, remote_msg
-            if Mcomcodes.PRINT == control:
-                  print(remote_msg, end=' ')
-                  pass
-            elif control in [Mcomcodes.CONFIRM_TRUE, Mcomcodes.CONFIRM_FALSE]:
-                  default = (Mcomcodes.CONFIRM_TRUE == control)
-                  if intf.confirm(remote_msg.rstrip('\n'), default):
-                        msg='Y'
-                  else:
-                        msg='N'
-                        pass
-                  intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
-                  pass
-            elif Mcomcodes.PROMPT == control:
-                  msg = intf.read_command('(Trepan*) ').strip()
-                  intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
-            elif Mcomcodes.QUIT == control:
-                  print('Quitting...')
-                  done = True
-                  break
-            elif Mcomcodes.RESTART == control:
-                  # FIXME need to save stuff like port # and
-                  # and for FIFO we need new pid.
-                  if 'TCP' == connection_opts['IO']:
-                        print('Restarting...')
-                        intf.inout.close()
-                        time.sleep(1)
-                        intf.inout.open()
-                  else:
-                        print("Don't know how to hard-restart FIFO...")
-                        done=True
-                        pass
-                  break
-            else:
-                  print("!! Weird status code received '%s'" % control)
-                  print(remote_msg, end=' ')
-                  pass
+    intf = Mclient.ClientInterface(connection_opts=connection_opts)
+    # debugger.interface.append(intf)
+    intf.msg("Connected.")
+    done=False
+    while not done:
+        control, remote_msg = intf.read_remote()
+        # print 'c, r', control, remote_msg
+        if Mcomcodes.PRINT == control:
+            print(remote_msg, end=' ')
             pass
-      intf.close()
-      pass
+        elif control in [Mcomcodes.CONFIRM_TRUE, Mcomcodes.CONFIRM_FALSE]:
+            default = (Mcomcodes.CONFIRM_TRUE == control)
+            if intf.confirm(remote_msg.rstrip('\n'), default):
+                    msg='Y'
+            else:
+                msg='N'
+                pass
+            intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
+        elif Mcomcodes.PROMPT == control:
+            msg = intf.read_command('(Trepan*) ').strip()
+            intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
+        elif Mcomcodes.QUIT == control:
+            print('Quitting...')
+            done = True
+            break
+        elif Mcomcodes.RESTART == control:
+            # FIXME need to save stuff like port # and
+            # and for FIFO we need new pid.
+            if 'TCP' == connection_opts['IO']:
+                print('Restarting...')
+                intf.inout.close()
+                time.sleep(1)
+                intf.inout.open()
+            else:
+                print("Don't know how to hard-restart FIFO...")
+                done=True
+                pass
+            break
+        else:
+            print("!! Weird status code received '%s'" % control)
+            print(remote_msg, end=' ')
+            pass
+        pass
+    intf.close()
+    return
+
 
 def main(opts, sys_argv):
-    print(opts)
+    # print(opts)
     if hasattr(opts, 'pid') and opts.pid > 0:
         remote_opts = {'open': opts.pid, 'IO': 'FIFO'}
     else:

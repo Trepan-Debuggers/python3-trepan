@@ -16,8 +16,7 @@
 
 import inspect, os, pyficache
 
-from import_relative import import_relative
-Mmisc = import_relative('misc', '..')
+from trepan import misc as Mmisc
 
 
 def set_break(cmd_obj, func, filename, lineno, condition, temporary, args):

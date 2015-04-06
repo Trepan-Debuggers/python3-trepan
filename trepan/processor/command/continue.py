@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,11 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
-from import_relative import import_relative
 
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mfile      = import_relative('file', '...lib', 'trepan')
-Mcmdbreak  = import_relative('cmdbreak', '..', 'trepan')
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import cmdbreak as Mcmdbreak
+
 
 class ContinueCommand(Mbase_cmd.DebuggerCommand):
     """**continue** [[*file*:]*lineno* | *function*]
@@ -65,7 +64,7 @@ position before continuing.
 
 if __name__ == '__main__':
     import sys
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Debugger()
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()

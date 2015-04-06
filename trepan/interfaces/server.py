@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,9 @@
 import atexit, os
 
 # Our local modules
-from import_relative import *
-Minterface  = import_relative('interface',  '..',   'trepan')
-Mtcpserver  = import_relative('tcpserver', '..inout', 'trepan')
-Mfifoserver = import_relative('fifoserver', '..inout', 'trepan')
-Mmisc       = import_relative('misc', '..', 'trepan')
-Mcomcodes   = import_relative('comcodes', '.', 'trepan')
+from trepan import interface as Minterface, misc as Mmisc
+from trepan.inout import tcpserver as Mtcpserver, fifoserver as Mfifoserver
+from trepan.interfaces import comcodes as Mcomcodes
 
 class ServerInterface(Minterface.TrepanInterface):
     """Interface for debugging a program but having user control

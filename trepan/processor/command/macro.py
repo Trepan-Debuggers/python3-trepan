@@ -16,9 +16,9 @@
 
 import os, sys, types
 
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mdebugger  = import_relative('debugger', '...', 'trepan')
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class MacroCommand(Mbase_cmd.DebuggerCommand):
     """**macro** *macro-name* *lambda-object*
@@ -109,7 +109,7 @@ See also:
 
 # Demo it
 if __name__ == '__main__':
-    Mmock = import_relative('mock')
+    from trepan.processor.command import mock as Mmock
     dbgr, cmd = Mmock.dbg_setup()
     command = MacroCommand(cmd)
     for cmdline in ["macro foo lambda a,y: x+y",

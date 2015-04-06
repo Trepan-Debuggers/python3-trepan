@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,14 +15,16 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd', top_name='trepan')
-Mprint     = import_relative('print', '...lib', 'trepan')
+
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.lib import printing as Mprint
+
 
 class ExamineCommand(Mbase_cmd.DebuggerCommand):
     """**examine** *expr1* [*expr2* ...]
-   
-Examine value, type and object attributes of an expression. 
+
+Examine value, type and object attributes of an expression.
 
 In contrast to normal Python expressions, expressions should not have
 blanks which would cause shlex to see them as different tokens.
@@ -34,7 +36,7 @@ blanks which would cause shlex to see them as different tokens.
 
 See also `pr`, `pp`, and `whatis`.
 """
-        
+
     aliases       = ('x',)
     category      = 'data'
     min_args      = 1
@@ -49,14 +51,13 @@ See also `pr`, `pp`, and `whatis`.
             s = Mprint.print_obj(arg, self.proc.curframe)
             self.msg(s)
             pass
-        return 
+        return
 
     pass
 
 if __name__ == '__main__':
     import inspect
-    cmdproc     = import_relative('cmdproc', '..')
-    debugger    = import_relative('debugger', '...')
+    from trepan import debugger
     d           = debugger.Trepan()
     cp          = d.core.processor
     cp.curframe = inspect.currentframe()
@@ -68,5 +69,3 @@ if __name__ == '__main__':
     print('=' * 30)
     command.run(['examine', 'Mbase_cmd.DebuggerCommand'])
     pass
-
-

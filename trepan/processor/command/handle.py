@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,9 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from import_relative import import_relative
-Mbase_cmd  = import_relative('base_cmd')
-Msig       = import_relative('sighandler', '...lib', 'trepan')
+
+# Our local modules
+from trepan.processor.command import base_cmd as Mbase_cmd
+
 
 class HandleCommand(Mbase_cmd.DebuggerCommand):
     """**handle** [*signal-name* [*action1* *action2* ...]]
@@ -59,22 +60,20 @@ Without any action names the current settings are shown.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = "Specify how to handle a signal"
-    
+
     def run(self, args):
         if (self.debugger.sigmgr.action(' '.join(args[1:]))
             and len(args) > 2):
             # Show results of recent change
             self.debugger.sigmgr.info_signal([args[1]])
             pass
-        return 
+        return
     pass
 
 if __name__ == '__main__':
-    Mdebugger = import_relative('debugger', '...')
+    from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
     command = HandleCommand(d.core.processor)
     command.run(['handle', 'USR1'])
     command.run(['handle', 'term', 'stop'])
     pass
-
-

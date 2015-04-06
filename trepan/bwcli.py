@@ -18,33 +18,18 @@
 '''
 import os, os.path, sys
 
-package='trepan'
-if package not in sys.modules:
-    __import__('pkg_resources').declare_namespace(package)
-    pass
-
 from optparse import OptionParser
 
 # Our local modules
-from import_relative import import_relative, get_srcdir
-Minterface  = import_relative('interface', '.', package)
-Mbullwinkle = import_relative('bullwinkle', '.interfaces', package)
-Mapi        = import_relative('api', top_name=package)
-Mclifns     = import_relative('clifns', top_name=package)
-Mdebugger   = import_relative('debugger', top_name=package)
-Mexcept     = import_relative('exception', top_name=package)
-Moutput     = import_relative('output', '.io', package)
-Mserver     = import_relative('server', '.interfaces', package)
-Mfile       = import_relative('file', '.lib', package)
-Mmisc       = import_relative('misc', '.', package)
+from trepan import clifns as Mclifns
+from trepan import debugger as Mdebugger, exception as Mexcept, misc as Mmisc
+from trepan.interfaces import bullwinkle as Mbullwinkle
 
 # The name of the debugger we are currently going by.
-__title__ = package
+__title__ = 'trepan'
 
 # VERSION.py sets variable VERSION.
-exec(compile(open(os.path.join(get_srcdir(), 'VERSION.py')).read(),
-             os.path.join(get_srcdir(), 'VERSION.py'), 'exec'))
-__version__ = VERSION  # NOQA
+from trepan.VERSION import VERSION as __version__
 
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):

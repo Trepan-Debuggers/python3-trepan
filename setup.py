@@ -42,13 +42,12 @@ short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
 import os
 import os.path, sys
-from import_relative import get_srcdir
 
 # VERSION.py sets variable VERSION.
 me = os.path.join(os.path.dirname(__file__), 'trepan', 'VERSION.py')
 exec(compile(open(me).read(), me, 'exec'))
 version            = VERSION
-web                = 'http://code.google.com/p/trepan/'
+web                = 'http://github.com/rocky/python3-trepan/'
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False
@@ -65,10 +64,9 @@ setup(
        author_email       = author_email,
        classifiers        = classifiers,
        description        = short_desc,
-      entry_points = {
+       entry_points = {
        'console_scripts': [
            'trepan3k  = trepan.cli:main',
-           'trepan3k-client = trepan.client:main',
        ]},
        install_requires   = install_requires,
        license            = license,
@@ -80,5 +78,5 @@ setup(
        test_suite         = 'nose.collector',
        url                = web,
        setup_requires     = ['nose>=1.0'],
-       version            = VERSION,
+       version            = version,
        zip_safe           = zip_safe)

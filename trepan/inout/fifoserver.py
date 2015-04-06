@@ -20,9 +20,8 @@ import os
 if hasattr(os, 'mkfifo'):
     import atexit, tempfile
 
-    from import_relative import import_relative
+    from trepan import misc as Mmisc
     from trepan.inout.base import DebuggerInOutBase
-    Mmisc    = import_relative('misc', '..')
 
     # FIXME: Consider using Python's socketserver/SocketServer?
     class FIFOServer(DebuggerInOutBase):

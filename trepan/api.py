@@ -33,15 +33,13 @@ if necessary, first.
 # we see below. So for now, we'll live with the code duplication.
 
 import sys
-from import_relative import import_relative
 
 import trepan.lib
 import trepan.interfaces
 import trepan.inout
 import trepan.processor.command
-
-Mdebugger    = import_relative('debugger', '.', 'trepan')
-Mpost_mortem = import_relative('post_mortem', '.', 'trepan')
+from trepan import debugger as Mdebugger
+from trepan import post_mortem as Mpost_mortem
 
 
 def debugger_on_post_mortem():
@@ -223,7 +221,7 @@ if __name__=='__main__':
             print(i)
             pass
         return y
-    Mdefault = import_relative('default', 'lib', 'trepan')
+    from trepan.lib import default as Mdefault
     settings = dict(Mdefault.DEBUGGER_SETTINGS)
     settings.update({'trace': True, 'printset': tracer.ALL_EVENTS})
     debug_opts={'step_ignore': -1, 'settings': settings}

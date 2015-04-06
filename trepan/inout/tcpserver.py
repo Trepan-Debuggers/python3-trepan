@@ -17,12 +17,10 @@
 
 import socket
 
-import trepan.lib
-from import_relative import import_relative
+from trepan.lib import default as Mdefault
+from trepan import misc as Mmisc
+from trepan.inout import tcpfns as Mtcpfns
 from trepan.inout.base import DebuggerInOutBase
-Mdefault = import_relative('default', '..lib', top_name='trepan')
-Mmisc    = import_relative('misc', '..', 'trepan')
-Mtcpfns  = import_relative('tcpfns', '.', 'trepan')
 
 
 # FIXME: Consider using Python's socketserver/SocketServer?

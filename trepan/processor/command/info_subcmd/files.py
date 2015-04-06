@@ -15,11 +15,11 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import columnize, inspect, pyficache, sys
 
-from import_relative import import_relative
 # Our local modules
-Mbase_subcmd  = import_relative('base_subcmd', '..', 'trepan')
-Mcomplete     = import_relative('complete', '....lib', 'trepan')
-Mmisc         = import_relative('misc', '....', 'trepan')
+from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan import misc as Mmisc
+from trepan.lib import complete as Mcomplete
+
 
 class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
     '''**info files** [*filename* [**all** | **lines** | **sha1** | **size**]]
@@ -131,9 +131,7 @@ current stack entry is used. Sub options which can be shown about a file are:
     pass
 
 if __name__ == '__main__':
-    mock = import_relative('mock', '..')
-    Minfo = import_relative('info', '..')
-    Mdebugger = import_relative('debugger', '....')
+    from trepan.processor.command import mock, info as Minfo
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoFiles(i)

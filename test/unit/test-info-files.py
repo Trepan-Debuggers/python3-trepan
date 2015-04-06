@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 'Unit test for debugger info file'
 import inspect, unittest
-from import_relative import import_relative
 
-debugger  = import_relative('debugger', '...trepan', 'trepan')
-Minfo     = import_relative('trepan.processor.command.info', '...')
-MinfoFile = import_relative('trepan.processor.command.info_subcmd.files',
-                            '...')
-Mdebugger = import_relative('debugger', '...trepan')
+from trepan import debugger as Mdebugger
+from trepan.processor.command import info as Minfo
+from trepan.processor.command.info_subcmd import files as MinfoFile
 
 from cmdhelper import dbg_setup
 
