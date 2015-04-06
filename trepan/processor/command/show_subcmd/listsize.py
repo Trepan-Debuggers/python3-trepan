@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009 Rocky Bernstein
+#  Copyright (C) 2009, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,4 +22,5 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class ShowListSize(Mbase_subcmd.DebuggerShowIntSubcommand):
     "Show the number lines printed in a 'list' command by default"
     min_abbrev = len('lis')
+    short_help = 'Show number of lines in `list`'
     pass

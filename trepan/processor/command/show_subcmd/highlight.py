@@ -24,6 +24,7 @@ class ShowHighlight(Mbase_subcmd.DebuggerSubcommand):
     """**show highlight**
 
 Show whether we use terminal highlighting."""
+    short_help = 'Show if we use terminal highlight'
 
     def run(self, args):
         val = self.settings['highlight']

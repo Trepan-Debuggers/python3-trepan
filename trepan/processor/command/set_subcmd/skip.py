@@ -30,7 +30,7 @@ set this off."""
 
     in_list    = True
     min_abbrev = len('sk')    # Min 'set sk'
-
+    short_help = "Set stopping before def or class statements"
     # FIXME allow individual setting for class and skip.
     pass
 

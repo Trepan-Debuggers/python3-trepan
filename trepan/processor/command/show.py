@@ -37,15 +37,6 @@ Type `help show *` for just a list of *show* subcommands.
     need_stack    = False
     short_help    = 'Show parts of the debugger environment'
 
-    def summary_help(self, subcmd_name, subcmd):
-        self.msg_nocr("%-13s(%d): " % (subcmd_name, subcmd.min_abbrev))
-        if subcmd.run_in_help and subcmd.run_cmd:
-            return subcmd.run([])
-        else:
-            self.rst_msg("%s." % subcmd.short_help)
-            pass
-        return
-
 if __name__ == '__main__':
     from trepan.processor.command import mock
     d, cp = mock.dbg_setup()

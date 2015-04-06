@@ -31,6 +31,7 @@ See also:
 """
     in_list    = True
     min_abbrev = len('str')  # Need at least "set max str"
+    short_help = "Set maximum characters in showing strings"
 
     def run(self, args):
         Mcmdfns.run_set_int(self, ' '.join(args),

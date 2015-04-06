@@ -19,8 +19,9 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowAutoList(Mbase_subcmd.DebuggerShowBoolSubcommand):
-    """Show debugger *list* command automatically on entry."""
+    """Show debugger `list` command automatically on entry."""
     min_abbrev = len('autol')
+    short_help = 'Show `list` on debugger entry'
     pass
 
 if __name__ == '__main__':

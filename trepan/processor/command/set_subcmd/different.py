@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -35,14 +35,17 @@ stepping comfortable. Because of the above, stepping all events can
 often be too fine-grained and annoying. By setting different on you
 can set a more coarse-level of stepping which often still is small
 enough that you won't miss anything important.
-
 Note that the `step` and `next` debugger commands have `+` and `-`
 suffixes if you wan to override this setting on a per-command basis.
 
-See also `set trace` to change what events you want to filter.
+See also:
+---------
+`set trace` to change what events you want to filter.
+`show trace`
 """
     in_list    = True
     min_abbrev = len('dif')    # Min is "set dif"
+    short_help = "Set whether consecutive stops are different"
     pass
 
 if __name__ == '__main__':

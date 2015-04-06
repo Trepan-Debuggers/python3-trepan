@@ -22,6 +22,7 @@ class ShowArgs(Mbase_subcmd.DebuggerSubcommand):
     """Show argument list to give debugged program when it is started"""
     min_abbrev = len('arg')
     run_in_help = False
+    short_help = 'Show arguments when program is started'
 
     def run(self, args):
         self.msg("Argument list to give program being debugged " +
