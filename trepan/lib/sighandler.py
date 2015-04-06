@@ -39,7 +39,8 @@ def lookup_signame(num):
     signames = signal.__dict__
     num = abs(num)
     for signame in list(signames.keys()):
-        if signames[signame] == num: return signame
+        if signame.startswith('SIG') and signames[signame] == num:
+            return signame
         pass
     # Something went wrong. Should have returned above
     return None
