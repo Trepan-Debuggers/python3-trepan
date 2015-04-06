@@ -4,7 +4,7 @@ from fn_helper import strarray_setup, compare_output
 
 
 class TestSkip(unittest.TestCase):
-    @unittest.skipIf('TRAVIS' not in os.environ,
+    @unittest.skipIf('TRAVIS' in os.environ,
                      "FIXME: figure out why this doesn't work in travis")
     def test_skip(self):
 
