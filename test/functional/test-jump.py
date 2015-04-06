@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import unittest, inspect
+import unittest, inspect, os
 from fn_helper import compare_output, strarray_setup
 
 
