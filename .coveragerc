@@ -1,0 +1,16 @@
+[run]
+source = trepan
+
+[report]
+exclude_lines =
+    pragma: no cover
+    pass
+    def __repr__
+    if __name__ *== *.__main__.:
+    raise AssertionError
+    raise NotImplementedError
+omit =
+    */site-packages/nose/*
+    */site-packages/*
+    ./test/*
+    ./dev/*

@@ -1,33 +1,33 @@
-(locale.py:606): getpreferredencoding
--> 606         def getpreferredencoding(do_setlocale = True):
+(_bootlocale.py:23): getpreferredencoding
+-> 23         def getpreferredencoding(do_setlocale=True):
 Set basename is off.
 Set event is on.
 Set stopping is off.
 No macros defined.
 Macro "foo" defined.
-601    	            if res is None:
-602    	                # LANG not set, default conservatively to ASCII
-603    	                res = 'ascii'
-604    	            return res
-605    	    else:
-606  ->	        def getpreferredencoding(do_setlocale = True):
-607    	            """Return the charset that the user is likely using,
-608    	            according to the system configuration."""
-609    	            if do_setlocale:
-610    	                oldloc = setlocale(LC_CTYPE)
+ 18    	            # This path for legacy systems needs the more complex
+ 19    	            # getdefaultlocale() function, import the full locale module.
+ 20    	            import locale
+ 21    	            return locale.getpreferredencoding(do_setlocale)
+ 22    	    else:
+ 23  ->	        def getpreferredencoding(do_setlocale=True):
+ 24    	            assert not do_setlocale
+ 25    	            result = _locale.nl_langinfo(_locale.CODESET)
+ 26    	            if not result and sys.platform == 'darwin':
+ 27    	                # nl_langinfo can return an empty string
 foo
 
 Macro "bar" defined.
-  1    	""" Locale support.
-  2    	
-  3    	    The module provides low-level access to the C lib's locale APIs
-  4    	    and adds high level number formatting APIs as well as a locale
-  5    	    aliasing engine to complement these.
+  1    	"""A minimal subset of the locale module used at interpreter startup
+  2    	(imported by the _io module), in order to reduce startup time.
+  3    	
+  4    	Don't import directly from third-party code; use the `locale` module instead!
+  5    	"""
   6    	
-  7    	    The aliasing engine includes support for many commonly used locale
-  8    	    names and maps them to values suitable for passing to the C lib's
-  9    	    setlocale() function. It also includes default encodings for all
- 10    	    supported locale names.
+  7    	import sys
+  8    	import _locale
+  9    	
+ 10    	if sys.platform.startswith("win"):
     bar  foo
 
 bar:

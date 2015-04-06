@@ -1,3 +1,15 @@
+trepan 0.4.2 2015-04-06
+
+- Should work with pip without needing --egg. Thanks to Georg Brandl
+- Go over set/show help
+- Go over docs and increase docstring RsT use
+- Use flake8 and remove warnings
+- Fix bug in signal-name lookup. From Georg Brandl
+- remote execution options --host and --port
+- Add fin and kill! aliases
+- Fix bug in eval? elif
+- Fix bug in signal-name lookup. From Georg Brandl
+
 trepan 0.2.8 2013-05-12
 
 - Fill out command completion more
