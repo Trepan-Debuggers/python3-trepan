@@ -124,3 +124,4 @@ the stock Python debugger, *pdb*. See this_ for those features.
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
    :target: https://pypi.python.org/pypi/trepan/
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
+   :target: https://travis-ci.org/rocky/python3-trepan/
