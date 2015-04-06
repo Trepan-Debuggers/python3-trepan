@@ -40,7 +40,7 @@ ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
                       'pyficache >= 0.2.4',
                       'pygments',
-                      'tracer >= 0.3.1']
+                      'tracer >= 0.3.2']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
@@ -48,7 +48,7 @@ packages = [
     'trepan',
     'trepan.bwprocessor',
     'trepan.interfaces',
-    'trepan.io',
+    'trepan.inout',
     'trepan.lib',
     'trepan.processor',
     'trepan.processor.command',
@@ -73,7 +73,6 @@ def get_srcdir():
     return os.path.realpath(filename)
 
 # VERSION.py sets variable VERSION.
-me = os.path.join(os.path.dirname(__file__), 'trepan', 'VERSION.py')
 ns = {}
 exec(open(os.path.join(get_srcdir(), 'trepan', 'VERSION.py')).read(), ns)
 version            = ns['VERSION']
