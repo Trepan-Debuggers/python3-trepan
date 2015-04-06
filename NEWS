@@ -1,3 +1,6 @@
+trepan 0.4.3 2015-04-06
+- Make sure we don't step/trace into open() when running debugger
+
 trepan 0.4.2 2015-04-06
 
 - Should work with pip without needing --egg. Thanks to Georg Brandl
