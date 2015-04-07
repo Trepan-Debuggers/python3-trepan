@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-"""
-Abstract
+"""Abstract
+
 ========
 A gdb-like debugger for Python3.
 
 
-This is Python of 3.2 to 3.4.
-Use *python3-trepan*: <http://github./rocky/python2-trepan> for Python
+This code works with Python 3.3 or greater.
+Use `python2-trepan: <http://github./rocky/python2-trepan`_ for Python
 2.6 to 3.7.
 
 A command-line interface (CLI) is provided.
 
-See the _Tutorial: <http://code.google.com/p/trepan/wiki/Tutorial for
+See the `Tutorial: http://code.google.com/p/trepan/wiki/Tutorial`_ for
 how to use.
 
 Features
 ========
+
 There's a lot of cool stuff here that's not in *pydb* or the stock
 Python debugger *pdb*.
 
@@ -107,16 +108,16 @@ We do more in the way of looking at the byte codes to give better
 information. Through this we can provide:
 
 * a *skip* command. It is like the *jump* command, but you don't have to deal
-  with line numbers.
+with line numbers.
 * disassembly of code fragments. You can now disassemble relative to
-  the stack frames
+the stack frames
 
-  you are currently stopped at.
+you are currently stopped at.
 * Better interpretation of where you are when inside execfile or exec.
-  (But really though this is probably a Python compiler misfeature.)
+(But really though this is probably a Python compiler misfeature.)
 * Check that breakpoints are set only where they make sense.
 * A more accurate determination of if you are at a function-defining *def*
-  statement (because the caller instruction contains *MAKE_FUNCTION*.)
+statement (because the caller instruction contains *MAKE_FUNCTION*.)
 
 Debugger Command Arguments can be Variables and Expressions
 ===========================================================
@@ -144,19 +145,19 @@ it does eventually by way of more robust and featureful code. And
 keeping developers happy is a good thing.(TM)
 
 * Commands and subcommands are individual classes now, not methods in a class.
-  This means they now have properties like the context in which they can
-  be run,  minimum abbreviation name or alias names.
-  To add a new command you basically add a file in a directory.
+This means they now have properties like the context in which they can
+be run,  minimum abbreviation name or alias names.
+To add a new command you basically add a file in a directory.
 
 * I/O is it's own layer. This simplifies interactive readline behavior
-  from reading commands over a TCP socket.
+from reading commands over a TCP socket.
 * An interface is it's own layer. Local debugging, remote debugging,
-  running debugger commands from a file (`source`) are different interfaces.
-  This means, for example, that we are able to give better error reporting
-  if a debugger command file has an error.
+running debugger commands from a file (`source`) are different interfaces.
+This means, for example, that we are able to give better error reporting
+if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of _pydb_'s
-  integration test will eventually be added.
+integration test will eventually be added.
 
 Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 """
