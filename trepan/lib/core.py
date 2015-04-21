@@ -383,6 +383,7 @@ class TrepanCore:
         "Sets to stop on the next event that happens in frame 'frame'."
         self.step_events      = None  # Consider all events
         self.stop_level       = Mstack.count_frames(frame)
+        self.last_level       = self.stop_level
         self.last_frame       = frame
         self.stop_on_finish   = False
         self.step_ignore      = step_ignore

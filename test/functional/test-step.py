@@ -24,8 +24,8 @@ class TestStep(unittest.TestCase):
         compare_output(self, out, d, cmds)
         return
 
-    def NO__test_step_computed_valued(self):
-        return
+    @unittest.skip("Need to fix")
+    def test_step_computed_valued(self):
         # See that we can step with a computed count value
         cmds = ['step 5-3', 'continue']
         d = strarray_setup(cmds)
@@ -37,7 +37,7 @@ class TestStep(unittest.TestCase):
         ##############################
         d.core.stop(options={'remove': True})
         out = ['-- x = 5',
-               '-- z = 7\n']
+               '-- z = 7']
         compare_output(self, out, d, cmds)
 
         # Test step>
@@ -54,7 +54,7 @@ class TestStep(unittest.TestCase):
         ##############################
         d.core.stop(options={'remove': True})
         out = ['-- x = 5',
-               '-> def foo():\n']
+               '-> def foo():']
         compare_output(self, out, d, cmds)
 
         # # Test step!
@@ -122,24 +122,24 @@ class TestStep(unittest.TestCase):
 
         return
 
-    def NO__test_step_between_fn(self):
-        return
+    @unittest.skip("Need to fix")
+    def test_step_between_fn(self):
 
         # Step into and out of a function
         def sqr(x):
             return x * x
         for cmds, out, eventset in (
             (['step', 'step', 'continue'],
-             ['-- x = sqr(4)',
+             ['-- x = sqr(4)   # NOQA',
               '-- return x * x',
-              '-- y = 5'],
+              '-- y = 5  # NOQA'],
              frozenset(('line',))),
             (['step', 'step', 'step', 'step', 'continue'],
-             ['-- x = sqr(4)',
+             ['-- d.core.start()',
+              '-- x = sqr(4)   # NOQA',
                '-> def sqr(x):',
                '-- return x * x',
-               '<- return x * x',
-               '-- y = 5'],
+               '<- return x * x'],
              tracer.ALL_EVENTS), ):
             d = strarray_setup(cmds)
             d.settings['events'] = eventset
@@ -153,7 +153,8 @@ class TestStep(unittest.TestCase):
             pass
         return
 
-    def NO__test_step_in_exception(self):
+    @unittest.skip("Need to fix")
+    def test_step_in_exception(self):
         return
         def boom(x):
             y = 0/x  # NOQA
@@ -175,16 +176,16 @@ class TestStep(unittest.TestCase):
             d.core.stop(options={'remove': True})
             pass
 
-        out = ['-- x = bad(0)',    # line event
-               '-> def bad(x):',   # call event
-               '-- boom(x)',       # line event
-               '-> def boom(x):',  # call event
-               '-- y = 0/x',       # line event
-               '!! y = 0/x',       # exception event
-               '<- y = 0/x',       # return event
-               '!! boom(x)',       # exception event
-               '<- boom(x)',       # return event
-               '!! x = bad(0)',    # return event
+        out = ['-- x = bad(0)  # NOQA', # line event
+               '-> def bad(x):',        # call event
+               '-- boom(x)',            # line event
+               '-> def boom(x):',       # call event
+               '-- y = 0/x  # NOQA',    # line event
+               '!! y = 0/x  # NOQA',    # exception event
+               '<- y = 0/x  # NOQA',    # return event
+               '!! boom(x)',            # exception event
+               '<- boom(x)',            # return event
+               '!! x = bad(0)  # NOQA', # exception event
                '-- except ZeroDivisionError:']
         compare_output(self, out, d, cmds)
         return
