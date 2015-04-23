@@ -149,7 +149,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
                 pass
         else:
             cmds = [c for c in self.cmds.list()
-                    if re.match('^' + subcmd_name, cmd) ]
+                    if re.match('^' + subcmd_name, c) ]
             if cmds == []:
                 self.errmsg("No %s subcommands found matching /^%s/. "
                             "Try \"help\"." % (self.name, subcmd_name))
