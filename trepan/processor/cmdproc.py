@@ -792,7 +792,6 @@ class CommandProcessor(Mprocessor.Processor):
 
     def read_history_file(self):
         """Read the command history file -- possibly."""
-        settings = self.debugger.settings
         histfile = self.debugger.intf[-1].histfile
         try:
             import readline

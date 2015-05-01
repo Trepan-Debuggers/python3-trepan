@@ -99,7 +99,6 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
         my_locals['dbgr'] = self.dbgr
         cfg.TerminalInteractiveShell.confirm_exit = False
 
-
         # sys.ps1 = 'trepan3 >>> '
         if len(my_locals):
             banner=(banner_tmpl % ' with locals')
