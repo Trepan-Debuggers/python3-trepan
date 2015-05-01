@@ -23,8 +23,7 @@ from IPython.config.loader import Config
 class IPythonCommand(Mbase_cmd.DebuggerCommand):
     """**ipython** [**-d**]
 
-Run IPython as a command subshell. The *sys.ps1* prompt will be set to
-`trepan2 >>> `.
+Run IPython as a command subshell.
 
 If *-d* is passed, you can access debugger state via local variable *debugger*.
 
