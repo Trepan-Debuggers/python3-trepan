@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,12 +18,13 @@ import code, os, sys
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 
+from IPython.config.loader import Config
 
-class PythonCommand(Mbase_cmd.DebuggerCommand):
-    """**python** [**-d**]
+class IPythonCommand(Mbase_cmd.DebuggerCommand):
+    """**ipython** [**-d**]
 
-Run Python as a command subshell. The *sys.ps1* prompt will be set to
-`Pydbgr >>> `.
+Run IPython as a command subshell. The *sys.ps1* prompt will be set to
+`trepan2 >>> `.
 
 If *-d* is passed, you can access debugger state via local variable *debugger*.
 
@@ -32,17 +33,16 @@ To issue a debugger command use function *dbgr()*. For example:
   dbgr('info program')
 """
 
-    aliases      = ('py', 'shell')
     category      = 'support'
     min_args      = 0
     max_args      = 1
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
-    short_help    = 'Run Python as a command subshell'
+    short_help    = 'Run IPython as a command subshell'
 
     def dbgr(self, string):
-        '''Invoke a debugger command from inside a python shell called inside
-        the debugger.
+        '''Invoke a debugger command from inside a IPython shell called
+        inside the debugger.
         '''
         self.proc.cmd_queue.append(string)
         self.proc.process_command()
@@ -61,14 +61,29 @@ To issue a debugger command use function *dbgr()*. For example:
                 pass
             pass
 
-        banner_tmpl='''Pydbgr python shell%s
-Use dbgr(*string*) to issue debugger command: *string*'''
+        cfg = Config()
+        banner_tmpl='''IPython trepan2 shell%s
+
+Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
 
         debug = len(args) > 1 and args[1] == '-d'
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a pydbgr" +
+            banner_tmpl += ("\nVariable 'debugger' contains a trepan "
                             "debugger object.")
             pass
+        try:
+            from IPython.terminal.embed import InteractiveShellEmbed
+        except ImportError:
+            from IPython.frontend.terminal.embed import InteractiveShellEmbed
+
+        # Now create an instance of the embeddable shell. The first
+        # argument is a string with options exactly as you would type them
+        # if you were starting IPython at the system command line. Any
+        # parameters you want to define for configuration can thus be
+        # specified here.
+
+        # Add common classes and methods our namespace here so that
+        # inside the ipython shell users don't have run imports
 
         my_locals  = {}
         my_globals = None
@@ -76,21 +91,26 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             my_globals = self.proc.curframe.f_globals
             if self.proc.curframe.f_locals:
                 my_locals = self.proc.curframe.f_locals
-                pass
             pass
+        pass
 
-        # Give python and the user a way to get access to the debugger.
+        # Give IPython and the user a way to get access to the debugger.
         if debug: my_locals['debugger'] = self.debugger
         my_locals['dbgr'] = self.dbgr
+        cfg.TerminalInteractiveShell.confirm_exit = False
 
-        sys.ps1 = 'Pydbgr >>> '
+
+        # sys.ps1 = 'trepan2 >>> '
         if len(my_locals):
-            interact(banner=(banner_tmpl % ' with locals'),
-                     my_locals=my_locals, my_globals=my_globals)
+            banner=(banner_tmpl % ' with locals')
         else:
-            interact(banner=(banner_tmpl % ''))
+            banner=(banner_tmpl % '')
             pass
 
+        InteractiveShellEmbed(config=cfg, banner1=banner,
+                              user_ns = my_locals,
+                              module = my_globals,
+                              exit_msg='IPython exiting to trepan3k...')()
         # restore our history if we can do so.
         if have_line_edit:
             self.proc.read_history_file()
@@ -116,7 +136,7 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     local -- passed to InteractiveInterpreter.__init__()
 
     """
-    console = code.InteractiveConsole(my_locals, filename='<pydbgr>')
+    console = code.InteractiveConsole(my_locals, filename='<trepan>')
     console.runcode = lambda code_obj: runcode(console, code_obj)
     setattr(console, 'globals', my_globals)
     if readfunc is not None:
@@ -150,14 +170,17 @@ def runcode(obj, code_obj):
     except:
         obj.showtraceback()
     else:
+        if code.softspace(sys.stdout, 0):
+            print()
+            pass
         pass
     return
 
 
 if __name__ == '__main__':
     from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
-    command = PythonCommand(d.core.processor)
+    d = Mdebugger.Debugger()
+    command = IPythonCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
     if len(sys.argv) > 1:

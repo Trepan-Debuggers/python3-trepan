@@ -790,6 +790,19 @@ class CommandProcessor(Mprocessor.Processor):
         self.errmsg('Undefined command: "%s". Try "help".' % cmd)
         return
 
+    def read_history_file(self):
+        """Read the command history file -- possibly."""
+        settings = self.debugger.settings
+        histfile = self.debugger.intf[-1].histfile
+        try:
+            import readline
+            readline.read_history_file(histfile)
+        except IOError:
+                pass
+        except ImportError:
+            pass
+        return
+
     def write_history_file(self):
         """Write the command history file -- possibly."""
         settings = self.debugger.settings
@@ -835,6 +848,8 @@ class CommandProcessor(Mprocessor.Processor):
                     pass
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
+                except ImportError:
+                    pass
                 except:
                     print('Error importing %s: %s' %
                           (mod_name, sys.exc_info()[0]))
@@ -881,6 +896,8 @@ class CommandProcessor(Mprocessor.Processor):
                 # command_mod = getattr(__import__(import_name), mod_name)
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
+                except ImportError:
+                    pass
                 except:
                     print('Error importing %s: %s' %
                           (mod_name, sys.exc_info()[0]))
