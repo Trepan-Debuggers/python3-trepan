@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
         cfg.TerminalInteractiveShell.confirm_exit = False
 
 
-        # sys.ps1 = 'trepan2 >>> '
+        # sys.ps1 = 'trepan3 >>> '
         if len(my_locals):
             banner=(banner_tmpl % ' with locals')
         else:
