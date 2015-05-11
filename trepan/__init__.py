@@ -1,18 +1,32 @@
 # -*- coding: utf-8 -*-
-"""Abstract
-
+#  Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Abstract
 ========
 A gdb-like debugger for Python3.
 
 
 This code works with Python 3.3 or greater.
-Use `python2-trepan: <http://github./rocky/python2-trepan`_ for Python
-2.6 to 3.7.
+Use `trepan: <http://github./rocky/python2-trepan`_ for Python
+2.6 to 2.7.
 
 A command-line interface (CLI) is provided.
 
-See the `Tutorial: http://code.google.com/p/trepan/wiki/Tutorial`_ for
+See the _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial for
 how to use.
+
 
 Features
 ========
@@ -110,14 +124,14 @@ information. Through this we can provide:
 * a *skip* command. It is like the *jump* command, but you don't have to deal
 with line numbers.
 * disassembly of code fragments. You can now disassemble relative to
-the stack frames
+  the stack frames
 
-you are currently stopped at.
+  you are currently stopped at.
 * Better interpretation of where you are when inside execfile or exec.
-(But really though this is probably a Python compiler misfeature.)
+  (But really though this is probably a Python compiler misfeature.)
 * Check that breakpoints are set only where they make sense.
 * A more accurate determination of if you are at a function-defining *def*
-statement (because the caller instruction contains *MAKE_FUNCTION*.)
+  statement (because the caller instruction contains *MAKE_FUNCTION*.)
 
 Debugger Command Arguments can be Variables and Expressions
 ===========================================================
@@ -145,24 +159,24 @@ it does eventually by way of more robust and featureful code. And
 keeping developers happy is a good thing.(TM)
 
 * Commands and subcommands are individual classes now, not methods in a class.
-This means they now have properties like the context in which they can
-be run,  minimum abbreviation name or alias names.
-To add a new command you basically add a file in a directory.
+  This means they now have properties like the context in which they can
+  be run,  minimum abbreviation name or alias names.
+  To add a new command you basically add a file in a directory.
 
 * I/O is it's own layer. This simplifies interactive readline behavior
-from reading commands over a TCP socket.
+  from reading commands over a TCP socket.
 * An interface is it's own layer. Local debugging, remote debugging,
-running debugger commands from a file (`source`) are different interfaces.
-This means, for example, that we are able to give better error reporting
-if a debugger command file has an error.
+  running debugger commands from a file (`source`) are different interfaces.
+  This means, for example, that we are able to give better error reporting
+  if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of _pydb_'s
-integration test will eventually be added.
+  integration test will eventually be added.
 
 Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 """
-
 __docformat__ = 'restructuredtext'
+
 __import__('pkg_resources').declare_namespace(__name__)
 
 from trepan.misc import pyfiles

@@ -43,7 +43,7 @@ install_requires   = ['columnize >= 0.3.8',
                       'tracer >= 0.3.2']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
-modname            = 'trepan'
+modname            = 'trepan3k'
 packages = [
     'trepan',
     'trepan.bwprocessor',
