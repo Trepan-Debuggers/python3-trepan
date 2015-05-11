@@ -13,6 +13,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+|Downloads| |Build Status|
+
 Abstract
 ========
 A gdb-like debugger for Python3.
@@ -168,6 +170,9 @@ keeping developers happy is a good thing.(TM)
   integration test will eventually be added.
 
 Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+
+.. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
+.. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
 """
 __docformat__ = 'restructuredtext'
 
