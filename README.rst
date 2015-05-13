@@ -1,11 +1,13 @@
 |Downloads| |Build Status|
 
-Overview
+.. contents:: :local:
+
+Abstract
 ========
 
 This is a gdb-like debugger for Python. It is a rewrite of pydb_ or *pdb* from the ground up.
 
-This code assumes Python version 3.3 or greater while trepan2_ supports Python 2.6 and 2.7. A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
+A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
 
 See the Tutorial_  for how to use.
 
@@ -80,7 +82,7 @@ We do more in the way of looking at the byte codes to give better information. T
 Source-code Syntax Colorization
 -------------------------------
 
-Starting with release 0.2.0, terminal source code is colorized via `pygments http://pygments.org`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off.
+Starting with release 0.2.0, terminal source code is colorized via `pygments <http://pygments.org>`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off.
 
 Debugger Command Arguments can be Variables and Expressions
 -----------------------------------------------------------
@@ -96,6 +98,11 @@ Out-of-Process Debugging
 ------------------------
 
 You can now debug your program in a different process or even a different computer on a different network!
+
+Egg and PIP Installable
+-----------------------
+
+Can be installed via the usual *pip* or *easy_install*. `How To Install <https://github.com/rocky/python2-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
 
 Modularity
 ----------
