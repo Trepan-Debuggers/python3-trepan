@@ -77,6 +77,7 @@ class BreakpointManager:
         bpnum = bp.number
         self.bpbynumber[bpnum] = None   # No longer in list
         index = (bp.filename, bp.line)
+        if index not in self.bplist: return False
         self.bplist[index].remove(bp)
         if not self.bplist[index]:
             # No more breakpoints for this file:line combo
