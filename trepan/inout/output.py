@@ -56,7 +56,7 @@ class DebuggerUserOutput(Mbase.DebuggerInOutBase):
         writeline, no newline is added to the end to `str'.
         """
         if self.output.closed:
-             raise IOError("writing %s on a closed file" % msg)
+            raise IOError("writing %s on a closed file" % msg)
         self.output.write(msg)
         if self.flush_after_write: self.flush()
         return
