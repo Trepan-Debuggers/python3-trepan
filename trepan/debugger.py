@@ -42,7 +42,7 @@ from trepan.processor import cmdproc as Mcmdproc
 import sys, types
 
 # External Egg packages
-import tracer, tracefilter
+import tracer, tracefilter, pyficache
 
 debugger_obj = None
 
@@ -175,6 +175,7 @@ class Trepan:
         except DebuggerQuit:
             pass
         finally:
+            pyficache.remove_remap_file('<string>')
             self.core.stop()
         return retval
 
