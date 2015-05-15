@@ -20,7 +20,14 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoDisplay(Mbase_subcmd.DebuggerSubcommand):
-    '''Expressions to display when program stops'''
+    '''**info display**
+
+Show the display expression evaluated when the program stops.
+
+See also:
+---------
+`display`, `undisplay`'''
+
     min_abbrev = 2  # info di
     need_stack = True
     short_help = 'Expressions to display when program stops'

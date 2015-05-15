@@ -43,7 +43,14 @@ def find_function(funcname, filename):
     return answer
 
 class InfoLine(Mbase_subcmd.DebuggerSubcommand):
-    '''Show information about the current line'''
+    '''**info line**
+
+Show information about the current line
+
+See also:
+---------
+`info program`, `info frame`'''
+
     min_abbrev = 2
     need_stack = True
     short_help = 'Show current-line information'

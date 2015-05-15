@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,13 @@ from trepan.lib import pp as Mpp
 
 
 class InfoGlobals(Mbase_subcmd.DebuggerSubcommand):
-    '''Show the debugged programs's global variables'''
+    """**info globals**
+
+Show the global variables of the current stack frame.
+
+See also:
+---------
+`info locals`, `info args`, `info frame`"""
     min_abbrev = 2
     need_stack = True
     short_help = '''Show the debugged programs's global variables'''

@@ -21,7 +21,13 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
-    """Show breakpoints."""
+    """**info breakpoints**
+
+Show breakpoints.
+
+See also:
+---------
+`break`, `delete`"""
 
     min_abbrev = 1  # Min is info b
     need_stack = False
