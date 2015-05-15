@@ -49,7 +49,7 @@ def debugger_on_post_mortem():
 
 
 def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
-             locals_=None):
+             locals_=None, tb_fn = None):
 
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement subsequent to the place that
@@ -66,8 +66,11 @@ def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
         return dbg.run_eval(expression, start_opts=start_opts,
                             globals_=globals_, locals_=locals_)
     except:
-        Mpost_mortem.uncaught_exception(dbg)
-        pass
+        dbg.core.trace_hook_suspend = True
+        if start_opts and 'tb_fn' in start_opts: tb_fn = start_opts['tb_fn']
+        Mpost_mortem.uncaught_exception(dbg, tb_fn)
+    finally:
+        dbg.core.trace_hook_suspend = False
     return
 
 

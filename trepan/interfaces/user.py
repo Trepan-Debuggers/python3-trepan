@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -102,7 +102,10 @@ class UserInterface(Minterface.TrepanInterface):
         return self.msg("%s%s" %(prefix, msg))
 
     def finalize(self, last_wishes=None):
-        self.msg("trepan3k: That's all, folks...")
+        try:
+            self.msg("trepan3k: That's all, folks...")
+        except IOError:
+            pass
         # save history
         self.close()
         return

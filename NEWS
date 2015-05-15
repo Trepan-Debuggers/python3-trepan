@@ -1,3 +1,12 @@
+trepan 0.4.6 2015-05-15
+
+- Support for getting called from within ipython (--from_ipython)
+  See also https://github.com/rocky/ipython-trepan/
+- prompt is underlined if highlight is on
+- Fix bug in string eval to file remapping
+- Add boolean closed on I/O routines
+
+
 trepan 0.4.5 2015-05-10
 - Fix bug in "next" command
 - Try to fix RST in pypi

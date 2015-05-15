@@ -51,7 +51,7 @@ def pm(frameno=1, dbg=None):
     return
 
 
-def post_mortem_excepthook(exc_type, exc_value, exc_tb):
+def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn):
     if str(exc_type) == str(DebuggerQuit): return
     if str(exc_type) == str(DebuggerRestart):
         if ( exc_value and exc_value.sys_argv and
@@ -63,7 +63,10 @@ def post_mortem_excepthook(exc_type, exc_value, exc_tb):
             print("No restart handler, no params registered")
             print("Entering post-mortem debugger...")
     else:
-        traceback.print_exception(exc_type, exc_value, exc_tb)
+        if tb_fn:
+            tb_fn(exc_type, exc_value, exc_tb)
+        else:
+            traceback.print_exception(exc_type, exc_value, exc_tb)
         print("Uncaught exception. Entering post-mortem debugger...")
         pass
     post_mortem((exc_type, exc_value, exc_tb))
@@ -161,7 +164,7 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         pass
     return
 
-def uncaught_exception(dbg):
+def uncaught_exception(dbg, tb_fn=None):
     exc = sys.exc_info()
     exc_type, exc_value, exc_tb = exc
     if exc_type == DebuggerQuit: return
@@ -171,7 +174,10 @@ def uncaught_exception(dbg):
         print("You don't seem to have an exception traceback, yet.")
         return
     else:
-        traceback.print_exception(exc_type, exc_value, exc_tb)
+        if tb_fn:
+            tb_fn(exc_type, exc_value, exc_tb)
+        else:
+            traceback.print_exception(exc_type, exc_value, exc_tb)
         print("uncaught exception. entering post mortem debugging")
         pass
     dbg.core.execution_status = ('Terminated with unhandled exception %s'

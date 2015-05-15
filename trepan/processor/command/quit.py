@@ -68,9 +68,10 @@ See also:
 
     def run(self, args):
         threading_list = threading.enumerate()
-        if (len(threading_list) == 1 and
-            threading_list[0].getName() == 'MainThread'):
-            # We just have a main thread so that's safe to quit
+        if ((len(threading_list) == 1 or self.debugger.from_ipython) and
+            threading_list[0].getName() == 'MainThread') :
+            # We are in a main thread and either there is one thread or we
+            # or are in ipython, so that's safe to quit.
             return self.nothread_quit(args)
         else:
             return self.threaded_quit(args)

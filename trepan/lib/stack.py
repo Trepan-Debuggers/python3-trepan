@@ -87,7 +87,9 @@ def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
         is_pseudo_file = _re_pseudo_file.match(filename)
         add_quotes_around_file = not is_pseudo_file
         if is_module:
-            if not is_exec_stmt(frame) and not is_pseudo_file:
+            if filename == '<string>':
+                s += ' in exec'
+            elif not is_exec_stmt(frame) and not is_pseudo_file:
                 s += ' file'
         elif s == '?()':
             if is_exec_stmt(frame):

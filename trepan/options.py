@@ -138,6 +138,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     optparser.add_option("-t", "--target", dest="target",
                          help="Specify a target to connect to. Arguments"
                          + " should be of form, 'protocol address'."),
+    optparser.add_option("--from_ipython", dest='from_ipython', action='store_true',
+                         default=False, help="Called from inside ipython")
 
     # annotate option produces annotations, used in trepan.el for a
     # better emacs integration. Annotations are similar in purpose to
@@ -164,7 +166,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     sys.argv = list(sys_argv)
     (opts, sys.argv) = optparser.parse_args()
-    dbg_opts = {}
+    dbg_opts = {'from_ipython': opts.from_ipython}
 
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []
