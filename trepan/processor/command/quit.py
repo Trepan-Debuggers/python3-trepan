@@ -65,7 +65,7 @@ See also:
         """ quit command when several threads are involved. """
         threading_list = threading.enumerate()
         if threading_list[0].getName() == 'MainThread' :
-            nothread_quit(self, arg)
+            self.nothread_quit(arg)
             return False
         self.msg("Quit for threading not fully done yet. Try 'kill'.")
         return False
