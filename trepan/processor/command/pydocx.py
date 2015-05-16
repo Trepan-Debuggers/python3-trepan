@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ sys.path = sys_path_save
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import complete as Mcomplete
 
 
 class PyDocCommand(Mbase_cmd.DebuggerCommand):
@@ -47,6 +48,8 @@ source file to document. If name is *keywords*, *topics*, or
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Run pydoc'
+
+    complete = Mcomplete.complete_id_and_builtins
 
     def run(self, args):
         sys_path_save = list(sys.path)

@@ -116,11 +116,49 @@ def next_complete(str, next_blank_pos, cmd, last_token):
 def complete_bpnumber(self, prefix):
     return Mcomplete.complete_brkpts(self.core.bpmgr, prefix)
 
+def complete_identifier(cmd, prefix):
+    '''Complete an arbitrary expression.'''
+    if not cmd.proc.curframe: return [None]
+    # Collect globals and locals.  It is usually not really sensible to also
+    # complete builtins, and they clutter the namespace quite heavily, so we
+    # leave them out.
+    ns = cmd.proc.curframe.f_globals.copy()
+    ns.update(cmd.proc.curframe.f_locals)
+    if '.' in prefix:
+        # Walk an attribute chain up to the last part, similar to what
+        # rlcompleter does.  This will bail if any of the parts are not
+        # simple attribute access, which is what we want.
+        dotted = prefix.split('.')
+        try:
+            obj = ns[dotted[0]]
+            for part in dotted[1:-1]:
+                obj = getattr(obj, part)
+        except (KeyError, AttributeError):
+            return []
+        pre_prefix = '.'.join(dotted[:-1]) + '.'
+        return [pre_prefix + n for n in dir(obj) if
+                n.startswith(dotted[-1])]
+    else:
+        # Complete a simple name.
+        return Mcomplete.complete_token(ns.keys(), prefix)
+
+def complete_id_and_builtins(cmd, prefix):
+    if not cmd.proc.curframe: return [None]
+    items = (list(cmd.proc.curframe.f_builtins.keys()) +
+             complete_identifier(cmd, prefix))
+    return Mcomplete.complete_token(items, prefix)
+
 
 if __name__=='__main__':
-    print(Mcomplete.complete_token(['ba', 'aa', 'ab'], 'a'))
-    print(Mcomplete.complete_token(['cond', 'condition', 'continue'], 'cond'))
-    h = {'ab': 1, 'aac': 2, 'aa': 3, 'b': 4}
-    print(Mcomplete.complete_token(h.keys(), 'a'))
-    print(Mcomplete.complete_token_with_next(h, 'a'))
+    import inspect
+    from trepan.processor import cmdproc as Mcmdproc
+    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command import base_cmd as mBaseCmd
+    d = Mmock.MockDebugger()
+    cmdproc = Mcmdproc.CommandProcessor(d.core)
+    cmdproc.curframe = inspect.currentframe()
+    cmd = mBaseCmd.DebuggerCommand(cmdproc)
+    print(complete_identifier(cmd, ''))
+    print(complete_identifier(cmd, 'M'))
+    print(complete_id_and_builtins(cmd, 'M'))
     pass

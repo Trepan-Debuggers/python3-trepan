@@ -101,3 +101,9 @@ if __name__=='__main__':
         print(next_token(x, pos))
         pass
     pass
+
+    print(complete_token(['ba', 'aa', 'ab'], 'a'))
+    print(complete_token(['cond', 'condition', 'continue'], 'cond'))
+    h = {'ab': 1, 'aac': 2, 'aa': 3, 'b': 4}
+    print(complete_token(h.keys(), 'a'))
+    print(complete_token_with_next(h, 'a'))

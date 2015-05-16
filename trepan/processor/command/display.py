@@ -18,14 +18,14 @@ import os
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
-
+from trepan.processor import complete as Mcomplete
 
 class DisplayCommand(Mbase_cmd.DebuggerCommand):
     """**display** [*format*] *expression*
 
 Print value of expression *expression* each time the program stops.
-*format* may be used before *expression* and may be one of `c` for char,
-`x` for hex, `o` for octal, `f` for float or `s` for string.
+*format* may be used before *expression* and may be one of `/c` for
+char, `/x` for hex, `/o` for octal, `/f` for float or `/s` for string.
 
 For now, display expressions are only evaluated when in the same
 code as the frame that was in effect when the display expression
@@ -44,6 +44,12 @@ requests previously made."""
     need_stack    = False
     short_help    = 'Display expressions when entering debugger'
 
+    format_specs = ('/c', '/x', '/o', '/f', '/s')
+
+    def complete(self, prefix):
+        return (DisplayCommand.format_specs +
+                Mcomplete.complete_expression(self, prefix))
+
     def run_eval_display(self, args=None):
         for line in self.proc.display_mgr.display(self.proc.curframe):
             self.msg(line)
@@ -54,7 +60,7 @@ requests previously made."""
             # Display anything active
             self.run_eval_display(self)
         else:
-            if args[1] in ['/c', '/x', '/o', '/f', '/s']:
+            if args[1] in DisplayCommand.format_specs:
                 if len(args) == 2:
                     self.errmsg("Expecting an expression after the format")
                     return

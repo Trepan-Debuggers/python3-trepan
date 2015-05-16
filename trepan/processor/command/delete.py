@@ -18,6 +18,7 @@ import os
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import complete as Mcomplete
 
 
 class DeleteCommand(Mbase_cmd.DebuggerCommand):
@@ -31,13 +32,14 @@ argument, clear all breaks (but first ask confirmation).
 
 See also the `clear` command which clears breakpoints by line/file
 number."""
-
     category      = 'breakpoints'
     min_args      = 0
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Delete some breakpoints or auto-display expressions'
+
+    complete = Mcomplete.complete_bpnumber
 
     def run(self, args):
         if len(args) <= 1:

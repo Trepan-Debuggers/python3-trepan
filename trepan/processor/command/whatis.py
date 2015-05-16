@@ -19,6 +19,7 @@ import inspect, os, sys, types
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import complete as Mcomplete
 
 
 class WhatisCommand(Mbase_cmd.DebuggerCommand):
@@ -32,6 +33,8 @@ Prints the type of the argument which can be a Python expression.'''
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help   = 'Print data type of expression EXP'
+
+    complete = Mcomplete.complete_id_and_builtins
 
     def run(self, args):
         arg = ' '.join(args[1:])
@@ -63,8 +66,7 @@ Prints the type of the argument which can be a Python expression.'''
             return False
         elif inspect.isfunction(value):
             self.msg('function %s%s' %
-                     (value.__code__.co_name,
-                       inspect.formatargspec(inspect.getargspec(value))))
+                     (value.__code__.co_name, inspect.signature(value)))
             if inspect.getdoc(value):
                 self.msg('%s:\n%s' %
                          (value, inspect.getdoc(value)))

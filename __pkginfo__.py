@@ -62,7 +62,7 @@ namespace_packages = [
     'trepan.processor',
 ]
 py_modules         = None
-short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
+short_desc         = 'GDB-like Python Debugger in the Trepan family'
 
 import os
 import os.path, sys

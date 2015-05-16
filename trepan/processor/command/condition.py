@@ -17,6 +17,7 @@
 import os
 
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import complete as Mcomplete
 
 
 class ConditionCommand(Mbase_cmd.DebuggerCommand):
@@ -40,6 +41,8 @@ made unconditional.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Specify breakpoint number N to break only if COND is True'
+
+    complete = Mcomplete.complete_bpnumber
 
     def run(self, args):
         success, msg, bp = self.core.bpmgr.get_breakpoint(int(args[1]))

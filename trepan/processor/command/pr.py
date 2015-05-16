@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import os
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import printing as Mprint
+from trepan.processor import complete as Mcomplete
 
 
 class PrCommand(Mbase_cmd.DebuggerCommand):
@@ -45,6 +46,8 @@ See also:
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help    = 'Print value of expression EXP'
+
+    complete = Mcomplete.complete_identifier
 
     def run(self, args):
         if len(args) > 2 and '/' == args[1][0]:

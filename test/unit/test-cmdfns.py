@@ -34,30 +34,30 @@ class TestCommandHelper(unittest.TestCase):
         self.assertEqual(5, Mcmdfns.get_int(self.errmsg, None, 5))
         self.assertEqual(1, Mcmdfns.get_int(self.errmsg, None))
         self.assertRaises(ValueError, Mcmdfns.get_int,
-                          *(self.errmsg, 'Foo', 5,))
+                          *(self.errmsg, 'Foo', 5))
         return
 
     def test_get_onoff(self):
-        for arg in ('1', 'on',):
+        for arg in ('1', 'on'):
             self.assertEqual(True, Mcmdfns.get_onoff(self.errmsg, arg))
             pass
-        for arg in ('0', 'off',):
+        for arg in ('0', 'off'):
             self.assertEqual(False, Mcmdfns.get_onoff(self.errmsg, arg))
             pass
-        for result in (True, False,):
+        for result in (True, False):
             self.assertEqual(result, Mcmdfns.get_onoff(self.errmsg, None,
                                                        result))
             pass
         self.assertRaises(ValueError, Mcmdfns.get_onoff, *(self.errmsg,
-                                                           'Foo',))
+                                                           'Foo'))
         return
 
     def test_want_different_line(self):
         for cmd, default, expected in [
-        ('s+', False, True,),
-        ('s-', True,  False,),
-        ('s',  False, False,),
-        ('n',  True,  True,), ]:
+        ('s+', False, True),
+        ('s-', True,  False),
+        ('s',  False, False),
+        ('n',  True,  True) ]:
             self.assertEqual(expected,
                              Mcmdfns.want_different_line(cmd, default),
                              cmd)

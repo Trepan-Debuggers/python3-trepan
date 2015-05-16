@@ -12,10 +12,10 @@ class TestFinishCommand(unittest.TestCase):
         d, cp = dbg_setup()
         import trepan.processor.command.finish as Mfinish
         command = Mfinish.FinishCommand(cp)
-        for c in ((['finish', '5'], True,),
+        for c in ((['finish', '5'], True),
                   (['finish', '0*5+1'], True)):
             command.continue_running = False
-            command.proc.stack = [(sys._getframe(0), 14,)]
+            command.proc.stack = [(sys._getframe(0), 14)]
             result = command.run(c[0])
             self.assertEqual(c[1], result)
             pass

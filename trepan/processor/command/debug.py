@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys, threading
-
+from trepan.processor import complete as Mcomplete
 from trepan.processor.command import base_cmd as Mbase_cmd
 
 
@@ -32,6 +32,8 @@ environment."""
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help    = 'Debug PYTHON-EXPR'
+
+    complete = Mcomplete.complete_identifier
 
     def run(self, args):
         arg = ' '.join(args[1:])

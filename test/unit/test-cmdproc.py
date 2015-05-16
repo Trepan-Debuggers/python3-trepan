@@ -87,14 +87,14 @@ class TestCmdProc(unittest.TestCase):
 
     def test_args_split(self):
         for test, expect in (
-            ("Now is the time",    [['Now', 'is', 'the', 'time']],),
-            ("Now is the time ;;", [['Now', 'is', 'the', 'time'], []],),
+            ("Now is the time",    [['Now', 'is', 'the', 'time']]),
+            ("Now is the time ;;", [['Now', 'is', 'the', 'time'], []]),
             ("Now is 'the time'",  [['Now', 'is', "'the time'"]]),
             ("Now is the time ;; for all good men",
-             [['Now', 'is', 'the', 'time'], ['for', 'all', 'good', 'men']],),
+             [['Now', 'is', 'the', 'time'], ['for', 'all', 'good', 'men']]),
             ("Now is the time ';;' for all good men",
              [['Now', 'is', 'the', 'time', "';;'",
-               'for', 'all', 'good', 'men']],) ):
+               'for', 'all', 'good', 'men']]) ):
             self.assertEqual(expect, Mcmdproc.arg_split(test))
             pass
         return

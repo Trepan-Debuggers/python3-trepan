@@ -2,6 +2,7 @@
 'Unit test for debugger command completion'
 
 import unittest
+import inspect
 
 from trepan import debugger as Mdebugger
 
@@ -27,6 +28,21 @@ class TestCompletion(unittest.TestCase):
             got = self.dbgr.complete(line, i)
             pass
         return results
+
+    def test_complete_identifier(self):
+        from trepan.processor.command import base_cmd as mBaseCmd
+        from trepan.processor import complete as mComplete
+        self.dbgr = Mdebugger.Trepan()
+
+        cmdproc = self.dbgr.core.processor
+        cmdproc.curframe = inspect.currentframe()
+        cmd = mBaseCmd.DebuggerCommand(cmdproc)
+
+        self.assertEqual(mComplete.complete_id_and_builtins(cmd, 'ma'),
+                         ['map', 'max'])
+        self.assertEqual(mComplete.complete_identifier(cmd, 'm'),
+                         ['mBaseCmd', 'mComplete'])
+        return
 
     def test_completion(self):
 
@@ -73,6 +89,7 @@ class TestCompletion(unittest.TestCase):
                              "Completion of '%s', expecting %s, got %s" %
                              (line, expect_completion, got))
             pass
+
         got = self.run_complete('')
         self.assertTrue(len(got) > 30,
                         'Initial completion should return more '

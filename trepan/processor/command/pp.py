@@ -19,6 +19,7 @@ import os
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import pp as Mpp
+from trepan.processor import complete as Mcomplete
 
 
 class PrettyPrintCommand(Mbase_cmd.DebuggerCommand):
@@ -42,6 +43,8 @@ formatting.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Pretty print value of expression EXP'
+
+    complete = Mcomplete.complete_identifier
 
     def run(self, args):
         arg = ' '.join(args[1:])

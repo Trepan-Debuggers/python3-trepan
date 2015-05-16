@@ -54,7 +54,7 @@ class TestLibComplete(unittest.TestCase):
         for find in ('1'):
             self.assertEqual(Mcomplete.complete_brkpts(bpmgr, find), ['1'],
                              "breakpoint completion of '%s'" % find)
-        for find in ('2', '11',):
+        for find in ('2', '11'):
             self.assertEqual(Mcomplete.complete_brkpts(bpmgr, find), [],
                              "breakpoint non-completion of '%s'" % find)
             pass

@@ -8,26 +8,26 @@ from trepan.processor.command import base_cmd as Mbase_cmd, mock as Mmock
 
 class MyCommand(Mbase_cmd.DebuggerCommand):
     '''Doc string for testing'''
-    
+
     category = 'data'
     min_args = 0
     max_args = 5
-    name_aliases = ('mycommand',)
-    
+    name_aliases = ('mycommand')
+
     def __init__(self):
         self.name  = 'test'
         return
-    
+
     def run(self, args): print('test command run')
     pass
-    
+
 class MySubcommand:
     '''Doc string for test testing subcommand'''
-    
+
     def __init__(self):
         self.name  = 'testing'
         return
-    
+
     short_help = 'This is short help for test testing'
     min_abbrev = 4
     in_list    = True
@@ -48,17 +48,17 @@ class TestSubcommand(unittest.TestCase):
     def test_lookup(self):
         """Test processor.subcmd.lookup()"""
         for prefix, expected in (
-            ('tes',      'None',),     # Too few chars
-            ('test',     'testing',),  # A valid abbrev
-            ('testing',  'testing',),  # equal name
-            ('testing1', 'None',)):    # Too long 
+            ('tes',      'None'),     # Too few chars
+            ('test',     'testing'),  # A valid abbrev
+            ('testing',  'testing'),  # equal name
+            ('testing1', 'None')):    # Too long
             x = self.mycmdMgr.lookup(prefix)
-            if x: s = x.name 
+            if x: s = x.name
             else: s = 'None'
-            self.assertEqual(expected, s, 
+            self.assertEqual(expected, s,
                              ("prefix %s, expected: %s result: %s" %
 
-                             (prefix, expected, s,)))
+                             (prefix, expected, s)))
             pass
         return
 
