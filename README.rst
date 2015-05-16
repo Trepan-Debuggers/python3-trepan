@@ -5,9 +5,11 @@
 Abstract
 ========
 
-This is a gdb-like debugger for Python. It is a rewrite of pydb_ or *pdb* from the ground up.
+This is a gdb-like debugger for Python. It is a rewrite of pydb_ or
+*pdb* from the ground up.
 
-A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
+A command-line interface (CLI) is provided as well as an remote access
+interface over TCP/IP.
 
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
@@ -15,7 +17,12 @@ in *ipython* or an *ipython notebook*.
 Features
 ========
 
-There's a lot of cool stuff here that's not in *pydb* or the stock Python debugger *pdb*.
+Since this debugger is similar to other_ trepanning_ debuggers_ and *gdb*
+in general, knowledge gained by learning this is transferable to those
+debuggers and vice versa.
+
+There's a lot of cool stuff here that's not in *pydb* or the stock
+Python debugger *pdb*.
 
 
 Command Completion
@@ -127,6 +134,9 @@ the stock Python debugger, *pdb*. See this_ for those features.
 .. _pydb:  http://bashdb.sf.net/pydb
 .. _trepan2: https://github.com/rocky/python2-trepan
 .. _trepan3: https://github.com/rocky/python3-trepan
+.. _other: https://metacpan.org/pod/Devel::Trepan
+.. _trepanning: https://www.npmjs.com/package/trepanjs
+.. _debuggers: https://rubygems.org/gems/trepanning
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
