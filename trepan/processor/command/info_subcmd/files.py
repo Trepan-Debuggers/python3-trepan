@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2012-2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2012-2013, 2015 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ from trepan.lib import complete as Mcomplete
 
 
 class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
-    '''**info files** [*filename* [**all** | **lines** | **sha1** | **size**]]
+    '''**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
 
 Show information about the current file. If no filename is given and
 the program is running then the current file associated with the
@@ -31,7 +31,8 @@ current stack entry is used. Sub options which can be shown about a file are:
  * **brkpts** Line numbers where there are statement boundaries. These
  lines can be used in breakpoint commands.
 
- * **sha1**	A SHA1 hash of the source text. This may be useful in comparing source code.
+ * **sha1**	A SHA1 hash of the source text. ''' + \
+'''This may be useful in comparing source code.
 
  * **size**	The number of lines in the file.
 

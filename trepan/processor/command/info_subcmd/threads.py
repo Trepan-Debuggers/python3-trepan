@@ -172,8 +172,9 @@ To get the full stack trace for a specific thread pass in the thread name.
                 s += "    thread id: %d" % thread_id
                 pass
             s += "\n    "
-            s += Mstack.format_stack_entry(self, (frame, frame.f_lineno))
-            self.msg('-' * 40)
+            s += Mstack.format_stack_entry(self, (frame, frame.f_lineno),
+                                           color=self.settings['highlight'])
+            self.section('-' * 40)
             self.msg(s)
             frame = frame.f_back
             if all_verbose and frame:
