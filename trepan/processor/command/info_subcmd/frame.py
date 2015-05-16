@@ -26,11 +26,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
     short_help = '''Show detailed info abotu the current frame'''
 
     def run(self, args):
-        frame = self.proc.curframe
+        proc = self.proc
+        frame = proc.curframe
         if not frame:
             self.errmsg("No frame selected.")
             return False
-        self.section('Frame %d' % self.proc.curindex)
+        self.section('Frame %d' % (len(proc.stack)-1-proc.curindex))
         if hasattr(frame, 'f_restricted'):
             self.msg('  restricted execution: %s' % frame.f_restricted)
         self.msg('  tracing function: %s' % frame.f_trace)
