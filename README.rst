@@ -134,9 +134,9 @@ the stock Python debugger, *pdb*. See this_ for those features.
 .. _pydb:  http://bashdb.sf.net/pydb
 .. _trepan2: https://github.com/rocky/python2-trepan
 .. _trepan3: https://github.com/rocky/python3-trepan
-.. _other: https://metacpan.org/pod/Devel::Trepan
-.. _trepanning: https://www.npmjs.com/package/trepanjs
-.. _debuggers: https://rubygems.org/gems/trepanning
+.. _other: https://www.npmjs.com/package/trepanjs
+.. _trepanning: https://rubygems.org/gems/trepanning
+.. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
