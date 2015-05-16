@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -20,6 +21,11 @@ class BreakpointManager:
     def __init__(self):
         self.reset()
         return
+
+    def bpnumbers(self):
+        '''Returns a list of strings of breakpoint numbers'''
+        return ["%d" % bp.number for bp in self.bpbynumber if
+                bp is not None]
 
     def get_breakpoint(self, i):
         if isinstance(i, bytes):
@@ -309,3 +315,4 @@ if __name__=='__main__':
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint('foo', 5, temporary=True)
     print(bp3.icon_char())
+    print(bpmgr.bpnumbers())

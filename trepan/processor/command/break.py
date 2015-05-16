@@ -62,7 +62,7 @@ See also:
 
     def run(self, args):
         func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,
-                                                                   args[1:])
+                args[1:])
         Mcmdbreak.set_break(self, func, filename, lineno, condition,
                             False, args)
         return

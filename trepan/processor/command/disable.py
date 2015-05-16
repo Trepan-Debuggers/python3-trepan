@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2014 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ import os
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
-
+from trepan.processor import complete as Mcomplete
 
 class DisableCommand(Mbase_cmd.DebuggerCommand):
     """**disable** *bpnumber* [*bpnumber* ...]
@@ -33,6 +33,8 @@ numbers. See also `info break` to get a list.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Disable some breakpoints'
+
+    complete = Mcomplete.complete_bpnumber
 
     def run(self, args):
         if len(args) == 1:

@@ -65,6 +65,8 @@ def complete_token_filtered(aliases, prefix, expanded):
     complete_ary = aliases.keys()
     return [cmd for cmd in complete_ary if cmd.startswith(prefix)]
 
+def complete_brkpts(bpmgr, prefix):
+    return complete_token(sorted(bpmgr.bpnumbers()), prefix)
 
 def next_token(str, start_pos):
     """Find the next token in str string from start_pos, we return

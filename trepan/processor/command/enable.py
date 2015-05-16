@@ -20,6 +20,7 @@ import os
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor import complete as Mcomplete
 
 
 class EnableCommand(Mbase_cmd.DebuggerCommand):
@@ -36,6 +37,8 @@ numbers. See also `info break` to get a list.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Enable some breakpoints'
+
+    complete = Mcomplete.complete_bpnumber
 
     def run(self, args):
         if len(args) == 1:

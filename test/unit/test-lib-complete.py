@@ -4,6 +4,7 @@
 import unittest
 
 from trepan.lib import complete as Mcomplete
+from trepan.lib import breakpoint as Mbreakpoint
 
 
 class TestLibComplete(unittest.TestCase):
@@ -46,6 +47,19 @@ class TestLibComplete(unittest.TestCase):
                              "Trouble with next_token(%s, %d)" % (x, pos))
             pass
         return
+
+    def test_complete_brkpts(self):
+        bpmgr = Mbreakpoint.BreakpointManager()
+        bp = bpmgr.add_breakpoint('foo', 5)
+        for find in ('1'):
+            self.assertEqual(Mcomplete.complete_brkpts(bpmgr, find), ['1'],
+                             "breakpoint completion of '%s'" % find)
+        for find in ('2', '11',):
+            self.assertEqual(Mcomplete.complete_brkpts(bpmgr, find), [],
+                             "breakpoint non-completion of '%s'" % find)
+            pass
+        return
+
     pass
 
 if __name__ == '__main__':
