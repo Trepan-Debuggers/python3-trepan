@@ -772,7 +772,7 @@ class CommandProcessor(Mprocessor.Processor):
                     - int(self.settings('listsize') / 2)) - 1
             self.list_filename = self.curframe.f_code.co_filename
         else:
-            self.list_lineno = None
+            if not exc_traceback: self.list_lineno = None
             pass
         # if self.execRcLines()==1: return True
         return False
