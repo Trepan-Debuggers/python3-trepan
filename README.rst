@@ -9,7 +9,8 @@ This is a gdb-like debugger for Python. It is a rewrite of pydb_ or *pdb* from t
 
 A command-line interface (CLI) is provided as well as an remote access interface over TCP/IP.
 
-See the Tutorial_  for how to use.
+See the Tutorial_ for how to use. See ipython-trepan_ for using this
+in *ipython* or an *ipython notebook*.
 
 Features
 ========
@@ -124,11 +125,12 @@ Of course, I think *pydb* has a number of cool things that are not in
 the stock Python debugger, *pdb*. See this_ for those features.
 
 .. _pydb:  http://bashdb.sf.net/pydb
-.. _trepan2: http://github.com/rocky/python2-trepan
-.. _trepan3: http://github.com/rocky/python3-trepan
+.. _trepan2: https://github.com/rocky/python2-trepan
+.. _trepan3: https://github.com/rocky/python3-trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
    :target: https://pypi.python.org/pypi/trepan/
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
    :target: https://travis-ci.org/rocky/python3-trepan/
+.. _ipython-trepan: https://github.com/rocky/ipython-trepan
