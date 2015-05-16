@@ -1,3 +1,13 @@
+trepan 0.4.7 2015-05-16
+
+- Better command completion for on display numbers and identifiers
+  (commands: enable, disable, info break, delete, debug, whatis, pydocx,
+   pr, pp)
+- "info break [nums..]" allows giving breakpoint numbers to narrow results
+- add "info frame" to show current call-stack information,
+- add "info signals * to show a list of signals
+- fix misc bugs
+
 trepan 0.4.6 2015-05-15
 
 - Support for getting called from within ipython (--from_ipython)
