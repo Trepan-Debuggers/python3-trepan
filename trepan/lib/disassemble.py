@@ -1,16 +1,45 @@
 # -*- coding: utf-8 -*-
 #   Modification of Python's Lib/dis.py
+# FIXME: see if we can use more of Lib/dis in Python3
 '''Disassembly Routines'''
 
 import inspect, sys, struct, time, types, marshal
 from dis import distb, findlabels, findlinestarts
-from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, hasjrel, \
-    haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
+from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
+     hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
 
 from trepan.lib import format as Mformat
 format_token = Mformat.format_token
 
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
+
+
+def _get_const_info(const_index, const_list):
+    """Helper to get optional details about const references
+
+       Returns the dereferenced constant and its repr if the constant
+       list is defined.
+       Otherwise returns the constant index and its repr().
+    """
+    argval = const_index
+    if const_list is not None:
+        argval = const_list[const_index]
+    return argval, repr(argval)
+
+def _get_name_info(name_index, name_list):
+    """Helper to get optional details about named references
+
+       Returns the dereferenced name as both value and repr if the name
+       list is defined.
+       Otherwise returns the name index and its repr().
+    """
+    argval = name_index
+    if name_list is not None:
+        argval = name_list[name_index]
+        argrepr = argval
+    else:
+        argrepr = repr(argval)
+    return argval, argrepr
 
 
 def _try_compile(source, name):
@@ -165,45 +194,58 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                               highlight=color))
         i += 1
         if op >= HAVE_ARGUMENT:
-            oparg = code[i] + code[i+1]*256 + extended_arg
+            arg = code[i] + code[i+1]*256 + extended_arg
             extended_arg = 0
             i += 2
             if op == EXTENDED_ARG:
-                extended_arg = oparg*65536
-            msg_nocr(repr(oparg).rjust(5))
+                extended_arg = arg*65536
+            #  Set argval to the dereferenced value of the argument when
+            #  available, and argrepr to the string representation of argval.
+            #  _disassemble_bytes needs the string repr of the
+            #  raw name index for LOAD_GLOBAL, LOAD_CONST, etc.
+            argval = arg
+            msg_nocr(repr(arg).rjust(5))
             msg_nocr(' ')
             if op in hasconst:
+                argval, argrepr = _get_const_info(arg, consts)
                 msg_nocr('(' +
-                         format_token(Mformat.Const,
-                                      repr(consts[oparg]),
+                         format_token(Mformat.Const,  argrepr,
                                       highlight=color)
                          + ')')
                 pass
             elif op in hasname:
+                argval, argrepr = _get_name_info(arg, names)
                 msg_nocr('(' +
-                         format_token(Mformat.Name,
-                                      names[oparg],
+                         format_token(Mformat.Name, argrepr,
                                       highlight=color)
                          + ')')
             elif op in hasjrel:
+                argval = i + arg
                 msg_nocr(format_token(Mformat.Label,
-                                      '(to ' + repr(i + oparg) + ')',
+                                      '(to ' + repr(argval) + ')',
                                       highlight=color))
             elif op in haslocal:
+                argval, argrepr = _get_name_info(arg, varnames)
                 msg_nocr('(' +
-                         format_token(Mformat.Var,
-                                      varnames[oparg],
+                         format_token(Mformat.Var, argrepr,
                                       highlight=color) + ')')
             elif op in hascompare:
                 msg_nocr('(' +
                          format_token(Mformat.Compare,
-                                      cmp_op[oparg],
+                                      cmp_op[arg],
                                       highlight=color) + ')')
             elif op in hasfree:
                 if free is None:
                     free = cellvars + freevars
-                msg_nocr('(' + free[oparg] + ')')
+                argval, argrepr = _get_name_info(arg, free)
+                msg_nocr('(' + argrepr + ')')
                 pass
+            elif op in hasnargs:
+                argrepr = "%d positional, %d keyword pair" % (code[i-2],
+                                                              code[i-1])
+                msg_nocr('(' +
+                         format_token(Mformat.Name, argrepr,
+                                      highlight=color) + ')')
             pass
         msg("")
     return

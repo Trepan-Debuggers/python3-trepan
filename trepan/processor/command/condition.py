@@ -28,11 +28,16 @@ must evaluate to *True* before the breakpoint is honored.  If *condition*
 is absent, any existing condition is removed; i.e., the breakpoint is
 made unconditional.
 
-**Examples:**
+Examples:
+---------
 
    condition 5 x > 10  # Breakpoint 5 now has condition x > 10
    condition 5         # Remove above condition
-"""
+
+See also:
+---------
+
+`break`, `tbreak`."""
 
     aliases       = ('cond',)
     category      = 'breakpoints'
@@ -41,7 +46,6 @@ made unconditional.
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Specify breakpoint number N to break only if COND is True'
-
     complete = Mcomplete.complete_bpnumber
 
     def run(self, args):
