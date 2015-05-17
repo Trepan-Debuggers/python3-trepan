@@ -25,10 +25,29 @@ from trepan.processor import complete as Mcomplete
 class WhatisCommand(Mbase_cmd.DebuggerCommand):
     '''**whatis** *arg*
 
-Prints the type of the argument which can be a Python expression.'''
+Prints the information argument which can be a Python expression.
+
+When possible, we give information about:
+
+* type of argument
+
+* doc string for the argument (if a module, class, or function)
+
+* comments around the definition of the argument (module)
+
+* the module it was defined in
+
+* where the argument was defined
+
+We get this most of this information via the *inspect* module.
+
+See Also:
+--------
+`pydocx`, the *inspect* module.'''
+
     aliases       = ()
     category      = 'data'
-    min_args      = 0
+    min_args      = 1
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
@@ -37,15 +56,16 @@ Prints the type of the argument which can be a Python expression.'''
     complete = Mcomplete.complete_id_and_builtins
 
     def run(self, args):
-        arg = ' '.join(args[1:])
+        proc = self.proc
+        arg = proc.cmd_argstr
         try:
-            if not self.proc.curframe:
+            if not proc.curframe:
                 # ?? Should we have set up a dummy globals
                 # to have persistence?
                 value = eval(arg, None, None)
             else:
-                value = eval(arg, self.proc.curframe.f_globals,
-                             self.proc.curframe.f_locals)
+                value = eval(arg, proc.curframe.f_globals,
+                             proc.curframe.f_locals)
         except:
             t, v = sys.exc_info()[:2]
             if type(t) == str:
@@ -54,25 +74,45 @@ Prints the type of the argument which can be a Python expression.'''
             if exc_type_name == 'NameError':
                 self.errmsg("Name Error: %s" % arg)
             else:
-                self.errmsg("%s: %s" % (exc_type_name, self.proc._saferepr(v)))
+                self.errmsg("%s: %s" % (exc_type_name, proc._saferepr(v)))
             return False
+
+        self.section("What is for %s" % arg)
+
+        get_doc = False
         if inspect.ismethod(value):
-            self.msg('method %s%s' %
+            get_doc = True
+            self.msg('  method %s%s' %
                      (value.__code__.co_name,
                        inspect.formatargspec(inspect.getargspec(value))))
-            if inspect.getdoc(value):
-                self.msg('%s:\n%s' %
-                         (value, inspect.getdoc(value)))
-            return False
         elif inspect.isfunction(value):
-            self.msg('function %s%s' %
+            get_doc = True
+            self.msg('  function %s%s' %
                      (value.__code__.co_name, inspect.signature(value)))
-            if inspect.getdoc(value):
-                self.msg('%s:\n%s' %
-                         (value, inspect.getdoc(value)))
-            return False
-        # None of the above...
-        self.msg(type(value))
+        elif inspect.isabstract(value) or \
+             inspect.isbuiltin(value) or \
+             inspect.isclass(value) or \
+             inspect.isgeneratorfunction(value) or \
+             inspect.ismethoddescriptor(value):
+            get_doc = True
+
+        self.msg('  type: %s' % type(value))
+        doc = inspect.getdoc(value)
+        if get_doc and doc:
+            self.msg('  doc:\n%s' % doc)
+        comments = inspect.getcomments(value)
+        if comments:
+            self.msg('  comments:\n%s' % comments)
+        try:
+            m = inspect.getmodule(value)
+            if m: self.msg("  module:\t%s" % m)
+        except:
+            try:
+                f = inspect.getfile(value)
+                self.msg("  file: %s" % f)
+            except:
+                pass
+            pass
         return False
 
     pass
@@ -85,6 +125,11 @@ if __name__ == '__main__':
     cp.curframe = inspect.currentframe()
     cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None,
                                                cp)
-    command.run(['whatis', 'cp'])
-    command.run(['whatis', '5'])
+
+    words = '''5 1+2 thing len trepan os.path.basename WhatisCommand cp
+               __name__ Mmock Mbase_cmd.DebuggerCommand'''.split()
+    for thing in words:
+        cp.cmd_argstr = thing
+        command.run(['whatis', thing])
+        print('-' * 10)
     pass
