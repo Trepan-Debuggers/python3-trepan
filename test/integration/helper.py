@@ -42,6 +42,10 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
     module_re = re.compile('[)]: <module>')
     tolines = [re.sub(module_re, '):', line) for line in tolines]
 
+    # Filter out last instruction. For example:
+    # (gcd.py:11 @6): -> (gcd.py:11)
+    tolines = [re.sub(' @\d+\):', '):', line) for line in tolines]
+
     diff = list(difflib.unified_diff(fromlines, tolines, fromfile,
                                      tofile, fromdate, todate))
     if len(diff) == 0:

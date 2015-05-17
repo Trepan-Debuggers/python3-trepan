@@ -132,7 +132,7 @@ def print_source_location_info(print_fn, filename, lineno, fn_name=None,
                                f_lasti=None, remapped_file=None):
     """Print out a source location , e.g. the first line in
     line in:
-        (/tmp.py:2):  <module>
+        (/tmp.py:2 @21):  <module>
         L -- 2 import sys,os
         (trepan3k)
     """
@@ -196,8 +196,10 @@ def print_location(proc_obj):
             pass
 
         fn_name = frame.f_code.co_name
+        last_i  = frame.f_lasti
         print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
-                                   remapped_file = remapped_file)
+                                   remapped_file = remapped_file,
+                                   f_lasti = last_i)
         opts = {
             'reload_on_change' : proc_obj.settings('reload'),
             'output'           : proc_obj.settings('highlight')
