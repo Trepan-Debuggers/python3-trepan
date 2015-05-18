@@ -226,7 +226,7 @@ def _postprocess_options(dbg, opts):
         dbg.settings['printset'] = frozenset(print_events)
         pass
 
-    for setting in ('annotate', 'basename', 'different',):
+    for setting in ('annotate', 'basename', 'different'):
         dbg.settings[setting] = getattr(opts, setting)
         pass
 

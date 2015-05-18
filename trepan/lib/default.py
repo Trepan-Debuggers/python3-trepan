@@ -15,8 +15,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ A place for the debugger default settings """
 
-from os import environ as ENV
-
 # External Egg packages
 import os, tracer
 from columnize import computed_displaywidth
