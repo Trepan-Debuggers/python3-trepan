@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, shlex, tempfile, traceback, types
+import inspect, linecache, os, sys, shlex, tempfile, traceback
 import pyficache
 from reprlib import Repr
 from pygments.console import colorize
