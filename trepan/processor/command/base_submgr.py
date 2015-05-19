@@ -193,6 +193,17 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         # Run that.
         subcmd = self.cmds.lookup(subcmd_prefix)
         if subcmd:
+            nargs = len(args) - 2
+            if nargs < subcmd.min_args:
+                self.errmsg(("Subcommand '%s %s' needs at least %d argument(s); " +
+                             "got %d.") %
+                             (self.name, subcmd.name, subcmd.min_args, nargs))
+                return False
+            if subcmd.max_args is not None and nargs > subcmd.max_args:
+                self.errmsg(("Subcommand '%s %s' takes at most %d argument(s); " +
+                             "got %d.") %
+                             (self.name, subcmd.name, subcmd.max_args, nargs))
+                return False
             return subcmd.run(args[2:])
         else:
             return self.undefined_subcmd(self.name, subcmd_prefix)

@@ -21,8 +21,9 @@ import columnize
 
 
 class InfoSignals(Mbase_subcmd.DebuggerSubcommand):
-    '''**info signals** [*signal-name]
-**info-signals** \*
+    '''**info signals** [*signal-name*]
+
+**info signals** \*
 
 Show information about how debugger treats signals to the program.
 Here are the boolean actions we can take:

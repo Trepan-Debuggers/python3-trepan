@@ -13,10 +13,10 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import re
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.lib import complete as Mcomplete
 
 
 class InfoBuiltins(Mbase_subcmd.DebuggerSubcommand):
@@ -24,18 +24,28 @@ class InfoBuiltins(Mbase_subcmd.DebuggerSubcommand):
 
 Show the builtin-functions for the current stack frame."""
 
+    max_args   = 1
     min_abbrev = 2
     need_stack = True
     short_help = "Show the builtins for current stack frame"
+
+    def complete(self, prefix):
+        completions = sorted(['*'] +
+                              self.proc.curframe.f_builtins.keys())
+        return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
         if not self.proc.curframe:
             self.errmsg("No frame selected.")
             return False
-        builtins = list(self.proc.curframe.f_builtins.keys())
-        if len(builtins) > 0:
+        names = list(self.proc.curframe.f_builtins.keys())
+        if len(args) > 0 and args[0] == '*' :
             self.section("builtins")
-            self.msg(self.columnize_commands(list(builtins)))
+            self.msg(self.columnize_commands(names))
+        elif len(args) == 0:
+            if len(names) > 0:
+                self.section("builtins")
+                self.msg(self.columnize_commands(names))
         return False
     pass
 

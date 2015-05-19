@@ -22,6 +22,7 @@ class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
     'Execution status of the program.'
 
     min_abbrev = 1  # Need at least info p
+    max_args   = 0
     need_stack = True
     short_help = 'Execution status of the program'
 

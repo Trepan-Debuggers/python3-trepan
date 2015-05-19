@@ -43,6 +43,7 @@ the thread name and thread id.
 To get the full stack trace for a specific thread pass in the thread name.
 """
     min_abbrev = 2  # Min is "info th"
+    max_args = 2
     need_stack = True
     short_help = "List thread info"
 

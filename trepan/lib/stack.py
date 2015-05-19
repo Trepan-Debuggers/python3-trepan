@@ -180,6 +180,7 @@ def print_stack_trace(proc_obj, count=None, color='plain'):
         pass
     return
 
+
 def print_dict(s, obj, title):
     if hasattr(obj, "__dict__"):
         d=obj.__dict__

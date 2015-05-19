@@ -37,6 +37,8 @@ class DebuggerSubcommand:
                         # which append current settings to list output.
     run_in_help = True  # Run to get value in 'show' command?
     min_abbrev  = 1
+    min_args    = 0
+    max_args    = None
     need_stack  = False
 
     def __init__(self, cmd):
@@ -125,6 +127,7 @@ from trepan.lib import complete as Mcomplete
 
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
+    max_args = 1
 
     def complete(self, prefix):
         result = Mcomplete.complete_token(('on', 'off'), prefix)
@@ -150,6 +153,8 @@ class DebuggerSetBoolSubcommand(DebuggerSubcommand):
 
 
 class DebuggerShowIntSubcommand(DebuggerSubcommand):
+    max_args = 0
+
     def run(self, args):
         if hasattr(self, 'short_help'):
             short_help = self.short_help
@@ -161,6 +166,8 @@ class DebuggerShowIntSubcommand(DebuggerSubcommand):
 
 
 class DebuggerShowBoolSubcommand(DebuggerSubcommand):
+    max_args = 0
+
     def run(self, args):
         # Strip off ReStructuredText tags
         doc = re.sub('[*]', '', self.__doc__)

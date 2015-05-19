@@ -18,6 +18,8 @@ import re
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import pp as Mpp
+from trepan.lib import complete as Mcomplete
+import columnize
 
 
 # when the "with" statement is used we seem to get variables having names
@@ -25,7 +27,9 @@ from trepan.lib import pp as Mpp
 _with_local_varname = re.compile(r'_\[[0-9+]\]')
 
 class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
-    """**info locals**
+    """**info locals** [*var1 ...*]
+
+**info locals** \*
 
 Show the local variables of the current stack frame.
 
@@ -37,25 +41,52 @@ See also:
     need_stack = True
     short_help = "Show the local variables of current stack frame"
 
+    def complete(self, prefix):
+        completions = sorted(['*'] +
+                              self.proc.curframe.f_locals.keys())
+        return Mcomplete.complete_token(completions, prefix)
+
     def run(self, args):
         if not self.proc.curframe:
-            self.errmsg("No frame selected.")
+            self.errmsg("No frame selected")
             return False
-        var_names = list(self.proc.curframe.f_locals.keys())
-        var_names.sort()
-        for var_name in var_names:
-            # ALB: a fix for a problem with the new 'with'
-            # statement. It seems to work, but I don't know exactly
-            # why... (the problem was in self.getval called by
-            # info_locals)
-            if _with_local_varname.match(var_name):
-                val = self.proc.curframe.f_locals[var_name]
-            else:
-                val = self.proc.getval(var_name)
+        names = list(self.proc.curframe.f_locals.keys())
+        if len(args) > 0 and args[0] == '*' :
+            self.section("locals")
+            self.msg(self.columnize_commands(names))
+        elif len(args) == 0:
+            for name in sorted(names):
+                # ALB: a fix for a problem with the new 'with'
+                # statement. It seems to work, but I don't know exactly
+                # why... (the problem was in self.getval called by
+                # info_locals)
+                if _with_local_varname.match(name):
+                    val = self.proc.curframe.f_locals[name]
+                else:
+                    val = self.proc.getval(name)
+                    pass
+                Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg,
+                       prefix='%s =' % name)
                 pass
-            Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg,
-                   prefix='%s =' % var_name)
             pass
+        else:
+            for name in args:
+                # ALB: a fix for a problem with the new 'with'
+                # statement. It seems to work, but I don't know exactly
+                # why... (the problem was in self.getval called by
+                # info_locals)
+                if name in names:
+                    if _with_local_varname.match(name):
+                        val = self.proc.curframe.f_locals[name]
+                    else:
+                        val = self.proc.getval(name)
+                        pass
+                    Mpp.pp(val, self.settings['width'], self.msg_nocr,
+                           self.msg,
+                           prefix='%s =' % name)
+                else:
+                    self.errmsg("%s is not a local variable" % name)
+                    pass
         return False
     pass
 
@@ -70,4 +101,6 @@ if __name__ == '__main__':
     import inspect
     cp.curframe = inspect.currentframe()
     sub.run([])
+    sub.run(['*'])
+    sub.run(['Minfo'])
     pass

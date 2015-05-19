@@ -17,13 +17,23 @@
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.lib import complete as Mcomplete
+from trepan.processor import frame as Mframe
 
 
 class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
     '''Show the detailed information about the current frame'''
     min_abbrev = 2
+    max_args = 1
     need_stack = True
     short_help = '''Show detailed info abotu the current frame'''
+
+    def complete(self, prefix):
+        proc_obj = self.proc
+        low, high = Mframe.frame_low_high(proc_obj, None)
+        ary = [str(low+i) for i in range(high-low+1)]
+        # FIXME: add in Thread names
+        return Mcomplete.complete_token(ary, prefix)
 
     def run(self, args):
         proc = self.proc
@@ -31,7 +41,25 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if not frame:
             self.errmsg("No frame selected.")
             return False
-        self.section('Frame %d' % (len(proc.stack)-1-proc.curindex))
+
+        if len(args) == 1:
+            frame_num = self.proc.get_an_int(args[0],
+                                         ("The 'frame' command requires a" +
+                                          " frame number. Got: %s") %
+                                         args[0])
+            if frame_num is None: return False
+
+            i_stack = len(proc.stack)
+            if frame_num < -i_stack or frame_num > i_stack-1:
+                self.errmsg(('Frame number has to be in the range %d to %d.' +
+                             ' Got: %d (%s).') % (-i_stack, i_stack-1,
+                                                  frame_num, args[0]))
+                return False
+            frame = proc.stack[frame_num][0]
+        else:
+            frame_num = len(proc.stack)-1-proc.curindex
+
+        self.section('Frame %d' % frame_num)
         if hasattr(frame, 'f_restricted'):
             self.msg('  restricted execution: %s' % frame.f_restricted)
         self.msg('  tracing function: %s' % frame.f_trace)
