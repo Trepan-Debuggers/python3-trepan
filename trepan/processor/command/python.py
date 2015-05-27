@@ -83,7 +83,7 @@ Use dbgr(*string*) to issue debugger command: *string*'''
         if debug: my_locals['debugger'] = self.debugger
         my_locals['dbgr'] = self.dbgr
 
-        sys.ps1 = 'Pydbgr >>> '
+        sys.ps1 = 'trepan3k >>> '
         if len(my_locals):
             interact(banner=(banner_tmpl % ' with locals'),
                      my_locals=my_locals, my_globals=my_globals)
