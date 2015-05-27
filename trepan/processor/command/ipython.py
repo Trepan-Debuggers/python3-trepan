@@ -109,6 +109,7 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
                               user_ns = my_locals,
                               module = my_globals,
                               exit_msg='IPython exiting to trepan3k...')()
+
         # restore completion and our history if we can do so.
         if hasattr(self.proc.intf[-1], 'complete'):
             try:
