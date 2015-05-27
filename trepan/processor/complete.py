@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "CommandProcessor completion routines"
-import re
+import pyficache, re
 
 from trepan.lib import complete as Mcomplete
 
@@ -115,6 +115,12 @@ def next_complete(str, next_blank_pos, cmd, last_token):
 
 def complete_bpnumber(self, prefix):
     return Mcomplete.complete_brkpts(self.core.bpmgr, prefix)
+
+def complete_break_linenumber(self, prefix):
+    canonic_name = self.proc.curframe.f_code.co_filename
+    completions = pyficache.trace_line_numbers(canonic_name)
+    return Mcomplete.complete_token([str(i) for i in completions],
+                                    prefix)
 
 def complete_identifier(cmd, prefix):
     '''Complete an arbitrary expression.'''

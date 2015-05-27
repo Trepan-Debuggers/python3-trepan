@@ -1,3 +1,14 @@
+trepan 0.4.8 2015-05-16
+
+- Include instruction number in location
+- whatis: more info via Python3 inspect
+- align disassembly more with dis.dis.
+- Add "info *" and "info arg1, arg2".
+- Add "info frame *number*
+- Set/check max args in subcommands
+- Add completion on "tbreak", "break" and "set highlight"
+- Update online-help
+
 trepan 0.4.7 2015-05-16
 
 - Better command completion for on display numbers and identifiers

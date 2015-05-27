@@ -18,6 +18,7 @@ import os
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.processor import cmdbreak as Mcmdbreak
+from trepan.processor import complete as Mcomplete
 
 
 class BreakCommand(Mbase_cmd.DebuggerCommand):
@@ -59,6 +60,8 @@ See also:
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help    = 'Set breakpoint at specified line or function'
+
+    complete= Mcomplete.complete_break_linenumber
 
     def run(self, args):
         func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,

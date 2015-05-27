@@ -19,6 +19,7 @@ import columnize, inspect, pyficache, sys
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan import misc as Mmisc
 from trepan.lib import complete as Mcomplete
+from trepan.lib.file import file_list
 
 
 class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
@@ -43,12 +44,8 @@ current stack entry is used. Sub options which can be shown about a file are:
     need_stack = False
     short_help = 'Show information about an imported or loaded Python file'
 
-    def file_list(self):
-        return list(set(pyficache.cached_files() +
-                        list(pyficache.file2file_remap.keys())))
-
     def complete(self, prefix):
-        completions = sorted(['.'] + self.file_list())
+        completions = sorted(['.'] + file_list())
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
@@ -75,7 +72,7 @@ current stack entry is used. Sub options which can be shown about a file are:
                 pass
             self.msg(m)
         else:
-            matches = [file for file in self.file_list() if
+            matches = [file for file in file_list() if
                        file.endswith(filename)]
             if (len(matches) > 1):
                 self.msg("Multiple files found ending filename string:")

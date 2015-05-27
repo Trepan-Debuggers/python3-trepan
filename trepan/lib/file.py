@@ -14,8 +14,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''Things related to file/module status'''
-import os, stat, sys
+import os, pyficache, stat, sys
 
+def file_list():
+    return list(set(pyficache.cached_files() +
+                    list(pyficache.file2file_remap.keys())))
 
 def file_pyc2py(filename):
     """Given a file name, if the suffix is pyo or pyc (an optimized bytecode
