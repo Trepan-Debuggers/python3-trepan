@@ -11,6 +11,8 @@ class TestExtractExpression(unittest.TestCase):
             ('if condition(x):',     'condition(x)'),
             ('elif is_magic(name):', 'is_magic(name)'),
             ('while expression:',    'expression'),
+            ('for i in range(3):',   'range(3)'),
+            ('abc = 123',            '123'),
             ('return return_value',  'return_value'),
             ('nothing_to_be.done',   'nothing_to_be.done'), ):
             self.assertEqual(expect , Meval.extract_expression(fragment))

@@ -28,9 +28,13 @@ def extract_expression(text):
     elif re.search('^\s*return\s+', text):
         # EXPRESION in: return EXPRESSION
         text = re.sub('^\s*return\s+', '', text)
+    elif re.search('^\s*for\s+.+\s+in\s+.*:', text):
+        # EXPRESION in: for VAR in EXPRESSION:
+        text = re.sub('^\s*for\s+.+\s+in\s+', '', text)
+        text = re.sub(':.*$', '', text)
     elif re.search('\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=[^=>]', text):
         # RHS of an assignment statement.
-        text = re.sub('^\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=', '', text)
+        text = re.sub('^\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=\s*', '', text)
         pass
     return text
 
@@ -41,6 +45,8 @@ if __name__=='__main__':
         'if condition(x):',
         'elif _is_magic(name):',
         'while expression:',
+        'for i in range(3):',
+        'abc = 123',
         'return return_value',
         'nothing_to_be.done'):
         print(extract_expression(stmt))

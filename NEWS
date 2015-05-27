@@ -8,6 +8,7 @@ trepan 0.4.8 2015-05-16
 - Set/check max args in subcommands
 - Add completion on "tbreak", "break" and "set highlight"
 - Don't highlight prompt when highlight is plain or off
+- eval? picks out EXPR in for VAR in EXPR:
 - Update online-help
 
 trepan 0.4.7 2015-05-16
