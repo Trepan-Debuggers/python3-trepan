@@ -23,7 +23,7 @@ class PythonCommand(Mbase_cmd.DebuggerCommand):
     """**python** [**-d**]
 
 Run Python as a command subshell. The *sys.ps1* prompt will be set to
-`Pydbgr >>> `.
+`trepan3 >>> `.
 
 If *-d* is passed, you can access debugger state via local variable *debugger*.
 
@@ -61,12 +61,12 @@ To issue a debugger command use function *dbgr()*. For example:
                 pass
             pass
 
-        banner_tmpl='''Pydbgr python shell%s
+        banner_tmpl='''trepan3 python shell%s
 Use dbgr(*string*) to issue debugger command: *string*'''
 
         debug = len(args) > 1 and args[1] == '-d'
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a pydbgr" +
+            banner_tmpl += ("\nVariable 'debugger' contains a trepan" +
                             "debugger object.")
             pass
 
@@ -83,8 +83,16 @@ Use dbgr(*string*) to issue debugger command: *string*'''
         if debug: my_locals['debugger'] = self.debugger
         my_locals['dbgr'] = self.dbgr
 
-        sys.ps1 = 'trepan3k >>> '
+        # Change from debugger completion to python completion
+        try:
+            import readline
+        except ImportError:
+            pass
+        else:
+            import rlcompleter
+            readline.parse_and_bind("tab: complete")
 
+        sys.ps1 = 'trepan3k >>> '
         if len(my_locals):
             interact(banner=(banner_tmpl % ' with locals'),
                      my_locals=my_locals, my_globals=my_globals)
@@ -126,7 +134,7 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     local -- passed to InteractiveInterpreter.__init__()
 
     """
-    console = code.InteractiveConsole(my_locals, filename='<pydbgr>')
+    console = code.InteractiveConsole(my_locals, filename='<trepan>')
     console.runcode = lambda code_obj: runcode(console, code_obj)
     setattr(console, 'globals', my_globals)
     if readfunc is not None:
