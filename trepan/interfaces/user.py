@@ -48,10 +48,10 @@ class UserInterface(Minterface.TrepanInterface):
         self.output      = out or Moutput.DebuggerUserOutput()
 
         if self.input.use_history():
-            complete = get_option('complete')
-            if complete:
+            self.complete = get_option('complete')
+            if self.complete:
                 parse_and_bind("tab: complete")
-                set_completer(complete)
+                set_completer(self.complete)
                 pass
             self.histfile = get_option('histfile')
             if self.histfile:
