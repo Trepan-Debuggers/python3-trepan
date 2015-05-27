@@ -316,6 +316,18 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return filename
 
+    def set_prompt(self, prompt='trepan3k'):
+        if self.thread_name != 'MainThread':
+            prompt += ':' + self.thread_name
+            pass
+        self.prompt_str = '%s%s%s' % ('(' * self.debug_nest,
+                                       prompt,
+                                       ')' * self.debug_nest)
+        highlight = self.debugger.settings['highlight']
+        if highlight and highlight in ('light', 'dark'):
+            self.prompt_str =  colorize('underline', self.prompt_str)
+        self.prompt_str += ' '
+
     def event_processor(self, frame, event, event_arg, prompt='trepan3k'):
         'command event processor: reading a commands do something with them.'
         self.frame     = frame
@@ -339,15 +351,7 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         self.thread_name = Mthread.current_thread_name()
         self.frame_thread_name = self.thread_name
-        if self.thread_name != 'MainThread':
-            prompt += ':' + self.thread_name
-            pass
-        self.prompt_str = '%s%s%s' % ('(' * self.debug_nest,
-                                       prompt,
-                                       ')' * self.debug_nest)
-        if self.debugger.settings['highlight']:
-            self.prompt_str =  colorize('underline', self.prompt_str)
-        self.prompt_str += ' '
+        self.set_prompt(prompt)
         self.process_commands()
         if filename == '<string>': pyficache.remove_remap_file('<string>')
         return True
