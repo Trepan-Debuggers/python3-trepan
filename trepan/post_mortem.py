@@ -51,7 +51,7 @@ def pm(frameno=1, dbg=None):
     return
 
 
-def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn):
+def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn=None):
     if str(exc_type) == str(DebuggerQuit): return
     if str(exc_type) == str(DebuggerRestart):
         if ( exc_value and exc_value.sys_argv and

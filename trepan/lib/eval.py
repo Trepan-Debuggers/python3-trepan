@@ -18,6 +18,8 @@
 # extract the "expression" part of a line of source code.
 #
 import re
+
+
 def extract_expression(text):
     if re.search('^\s*(?:if|elif)\s+', text):
         text = re.sub('^\s*(?:if|elif)\s+', '', text)

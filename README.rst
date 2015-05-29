@@ -107,10 +107,10 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Egg and PIP Installable
------------------------
+Egg, Wheel, and Tarballs
+------------------------
 
-Can be installed via the usual *pip* or *easy_install*. `How To Install <https://github.com/rocky/python2-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
+Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://github.com/rocky/python2-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
 
 Modularity
 ----------
