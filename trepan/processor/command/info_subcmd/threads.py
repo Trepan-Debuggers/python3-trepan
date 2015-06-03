@@ -22,7 +22,7 @@ from trepan.lib import stack as Mstack, thred as Mthread
 
 # FIXME turn into yet another subcommand thingy.
 class InfoThread(Mbase_subcmd.DebuggerSubcommand):
-    """**info threads** [*thread-name*|*thread-number*] [terse|verbose]
+    """**info threads** [*thread-name*|*thread-number*] [**terse**|**verbose**]
 
 List all currently-known thread name(s).
 

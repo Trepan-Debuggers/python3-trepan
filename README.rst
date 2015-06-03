@@ -125,11 +125,10 @@ Many of the things listed below doesn't directly effect end-users, but it does e
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of *pydb*'s integration test will eventually be added.
 
-Etc.
-----
+Documentation
+-------------
 
-Of course, I think *pydb* has a number of cool things that are not in
-the stock Python debugger, *pdb*. See this_ for those features.
+Documentation: http://python2-trepan.readthedocs.org
 
 .. _pydb:  http://bashdb.sf.net/pydb
 .. _trepan2: https://github.com/rocky/python2-trepan

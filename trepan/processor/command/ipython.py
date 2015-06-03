@@ -30,6 +30,11 @@ If *-d* is passed, you can access debugger state via local variable *debugger*.
 To issue a debugger command use function *dbgr()*. For example:
 
   dbgr('info program')
+
+See also:
+---------
+
+`python`, `bpython`
 """
 
     category      = 'support'

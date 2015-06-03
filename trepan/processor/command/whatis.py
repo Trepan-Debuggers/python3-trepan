@@ -41,8 +41,9 @@ When possible, we give information about:
 
 We get this most of this information via the *inspect* module.
 
-See Also:
+See also:
 --------
+
 `pydocx`, the *inspect* module.'''
 
     aliases       = ()

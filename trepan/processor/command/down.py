@@ -31,7 +31,10 @@ class DownCommand(Mupcmd.UpCommand):
 Move the current frame down in the stack trace (to a newer frame). 0
 is the most recent frame. If no count is given, move down 1.
 
-See also `up` and `frame`."""
+See also:
+---------
+
+`up` and `frame`."""
 
         Mframe.adjust_relative(self.proc, self.name, args, self.signum)
         return False

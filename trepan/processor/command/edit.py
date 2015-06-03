@@ -25,6 +25,11 @@ class EditCommand(Mbase_cmd.DebuggerCommand):
 
 Edit specified file or module.
 With no argument, edits file containing most recent line listed.
+
+See also:
+---------
+
+`list`
 """
 
     aliases       = ('ed',)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,10 @@ class UpCommand(Mbase_cmd.DebuggerCommand):
 Move the current frame up in the stack trace (to an older frame). 0 is
 the most recent frame. If no count is given, move up 1.
 
-See also `down` and `frame`."""
+See also:
+---------
+
+`down` and `frame`."""
         Mframe.adjust_relative(self.proc, self.name, args, self.signum)
         return False
 

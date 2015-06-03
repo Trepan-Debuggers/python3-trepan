@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2013 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,10 @@ the command they run are printed. Alternatively one can list specific
 alias names for the commands those specific aliases are attached to.
 If instead of an alias `*` appears anywhere as an alias then just a list
 of aliases is printed, not what commands they are attached to.
+
+See also:
+---------
+`alias`
 '''
 
     min_abbrev = len('al')

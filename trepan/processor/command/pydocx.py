@@ -41,8 +41,9 @@ package.  If *name* contains a '/', it is used as the path to a Python
 source file to document. If name is *keywords*, *topics*, or
 *modules*, a listing of these things is displayed.
 
-See Also:
+See also:
 ---------
+
 `whatis`
 """
 

@@ -24,7 +24,15 @@ class RunCommand(Mbase_cmd.DebuggerCommand):
     """**run**
 
 Soft restart debugger and program via a *DebuggerRestart*
-exception."""
+exception.
+
+See also:
+---------
+
+`restart` for another way to restart the debugged program.
+
+See `quit`, `exit` or `kill` for termination commands.
+"""
 
     aliases       = ('R',)
     category      = 'support'

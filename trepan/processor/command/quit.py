@@ -37,13 +37,14 @@ with a traceback showing that exception.
 
 If the debugged program is threaded or worse threaded and deadlocked,
 raising an exception in one thread isn't going to quit the
-program. For this see `exit` or `kill` for more forceful termination
-commands.
+program.
 
 See also:
 ---------
 
-`run` and `restart` for other ways to restart the debugged program.
+See `exit` or `kill` for more forceful termination commands.
+
+`run` and `restart` are other ways to restart the debugged program.
 """
 
     aliases       = ('q',)

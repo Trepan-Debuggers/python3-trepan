@@ -32,7 +32,7 @@ If the object is a class, print the constructor information.
 See also:
 ---------
 
- `pydocX`.
+`pydocX`.
 """
 
     category     = 'data'

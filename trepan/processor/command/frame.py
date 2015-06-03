@@ -53,7 +53,10 @@ while `(5 * 3) - 1)` isn't.
    frame MainThread   # Same as above
    frame -2434343 0   # Use a thread number instead of name
 
-See also `up`, `down`, `backtrace`, and `info thread`.
+See also:
+---------
+
+`up`, `down`, `backtrace`, and `info threads`.
 """
 
     category      = 'stack'

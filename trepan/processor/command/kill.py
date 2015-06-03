@@ -22,6 +22,24 @@ from trepan.lib import complete as Mcomplete
 
 
 class KillCommand(Mbase_cmd.DebuggerCommand):
+    """**kill** [ *signal-number* ]
+
+Send this process a POSIX signal ('9' for 'kill -9')
+
+9 is a non-maskable interrupt that terminates the program. If program
+is threaded or worse, threaded and deadlocked, you may need to use
+this command to terminate the program.
+
+However other signals, such as those that allow for the debugged to
+handle them can be sent.
+
+See also:
+---------
+
+See `quit` for less a forceful termination command.
+
+`run` and `restart` are ways to restart the debugged program.
+"""
 
     aliases       = ('kill!',)
     category      = 'running'

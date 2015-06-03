@@ -25,7 +25,14 @@ class SkipCommand(Mbase_cmd.DebuggerCommand):
     """**skip** [*count*]
 
 Set the next line that will be executed. The line must be within the
-stopped or bottom-most execution frame."""
+stopped or bottom-most execution frame.
+
+See also:
+---------
+
+`next`, `step`, `jump`, `continue`, `return` and
+`finish` for other ways to progress execution.
+"""
 
     aliases       = ('sk',)
     category      = 'running'

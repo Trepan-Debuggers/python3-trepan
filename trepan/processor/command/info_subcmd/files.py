@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import columnize, inspect, pyficache, sys
+import columnize, inspect, pyficache, sys, os
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
@@ -23,7 +23,7 @@ from trepan.lib.file import file_list
 
 
 class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
-    '''**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
+    """**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
 
 Show information about the current file. If no filename is given and
 the program is running then the current file associated with the
@@ -32,13 +32,13 @@ current stack entry is used. Sub options which can be shown about a file are:
  * **brkpts** Line numbers where there are statement boundaries. These
  lines can be used in breakpoint commands.
 
- * **sha1**	A SHA1 hash of the source text. ''' + \
-'''This may be useful in comparing source code.
+ * **sha1**	A SHA1 hash of the source text. """ + \
+"""This may be useful in comparing source code.
 
  * **size**	The number of lines in the file.
 
  * **all** All of the above information.
- '''
+"""
 
     min_abbrev = 2
     need_stack = False

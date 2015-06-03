@@ -55,7 +55,10 @@ additional subcommand to give help just about that particular
 subcommand. For example `help info line` give help about the
 info line command.
 
-See also `examine` and `whatis`.
+See also:
+---------
+
+`examine` and `whatis`.
 """
     aliases       = ('?',)
     category      = 'support'

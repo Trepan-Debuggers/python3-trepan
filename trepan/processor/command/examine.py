@@ -29,12 +29,16 @@ Examine value, type and object attributes of an expression.
 In contrast to normal Python expressions, expressions should not have
 blanks which would cause shlex to see them as different tokens.
 
-**Examples:**
+Examples:
+---------
 
     examine x+1   # ok
     examine x + 1 # not ok
 
-See also `pr`, `pp`, and `whatis`.
+See also:
+---------
+
+`pr`, `pp`, and `whatis`.
 """
 
     aliases       = ('x',)
