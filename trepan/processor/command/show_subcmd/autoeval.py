@@ -19,14 +19,12 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowAutoEval(Mbase_subcmd.DebuggerShowBoolSubcommand):
-    """Show Python evaluation of unrecognized debugger commands
-
-**show autoeval**
+    """**show autoeval**
 
 Show Python evaluation of unrecognized debugger commands.
 
 See also:
-+++++++++
+---------
 
 `set autoeval`
 """

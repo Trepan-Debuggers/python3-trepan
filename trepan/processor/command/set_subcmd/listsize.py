@@ -20,7 +20,14 @@ from trepan.processor import cmdfns as Mcmdfns
 
 
 class SetListSize(Mbase_subcmd.DebuggerSubcommand):
-    "Set the number lines printed in a *list* command by default"
+    """**set listsize** *number-of-lines*
+
+Set the number lines printed in a *list* command by default
+
+See also:
+---------
+
+`show listsize`"""
 
     in_list    = True
     min_abbrev = len('lis')  # Need at least "set lis"

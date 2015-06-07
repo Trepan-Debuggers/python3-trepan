@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013 Rocky Bernstein rocky@gnu.org
+#   Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein rocky@gnu.org
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,14 +20,19 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 class SetTrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
 
-    """Set event tracing.
+    """**set trace** [ **on** | **off** ]
 
-See also "set events","set trace", and "show trace".
+Set event tracing.
+
+See also:
+---------
+
+`set events`, and `show trace`.
 """
 
     in_list    = True
     min_abbrev = len('trace')  # Must use at least "set trace"
-    short_help = "Set execution tracing"
+    short_help = "Set event tracing"
     pass
 
 if __name__ == '__main__':

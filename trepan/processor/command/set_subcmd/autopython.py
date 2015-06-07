@@ -20,7 +20,7 @@ from trepan.processor import cmdfns as Mcmdfns, cmdproc as Mcmdproc
 
 
 class SetAutoPython(Mbase_subcmd.DebuggerSetBoolSubcommand):
-    """**set** **autopython** [**on**|**off**]
+    """**set** **autopython** [ **on** | **off** ]
 
 Go into a Python shell on debugger entry.
 

@@ -23,7 +23,12 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class ShowHighlight(Mbase_subcmd.DebuggerSubcommand):
     """**show highlight**
 
-Show whether we use terminal highlighting."""
+Show whether we use terminal highlighting.
+
+See also:
+--------
+
+`set highlight`"""
     short_help = 'Show if we use terminal highlight'
 
     def run(self, args):

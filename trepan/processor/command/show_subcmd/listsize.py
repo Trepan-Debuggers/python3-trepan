@@ -20,7 +20,14 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowListSize(Mbase_subcmd.DebuggerShowIntSubcommand):
-    "Show the number lines printed in a 'list' command by default"
+    """**show maxstring***
+
+Show the number lines printed in a 'list' command by default
+
+See also:
+--------
+
+`set listsize`"""
     min_abbrev = len('lis')
     short_help = 'Show number of lines in `list`'
     pass

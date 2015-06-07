@@ -22,7 +22,7 @@ from trepan.lib import complete as Mcomplete
 
 
 class SetHighlight(Mbase_subcmd.DebuggerSubcommand):
-    """**set highlight** [**reset**] {**plain**|**light**|**dark**|**off**}
+    """**set highlight** [ **reset** ] {**plain** | **light** | **dark** | **off**}
 
 Set whether we use terminal highlighting. Permissable values are:
 

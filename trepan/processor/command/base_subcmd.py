@@ -170,7 +170,7 @@ class DebuggerShowBoolSubcommand(DebuggerSubcommand):
 
     def run(self, args):
         # Strip off ReStructuredText tags
-        doc = re.sub('[*]', '', self.__doc__)
+        doc = re.sub('[*]', '', self.short_help)
         doc = doc[5:].capitalize().split('\n')[0].rstrip('.')
         Mcmdfns.run_show_bool(self, doc)
         return

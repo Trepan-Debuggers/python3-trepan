@@ -19,7 +19,7 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class SetDifferent(Mbase_subcmd.DebuggerSetBoolSubcommand):
-    """**set** **different** [**on**|**off**]
+    """**set different** [ **on** | **off** ]
 
 Set consecutive stops must be on different file/line positions.
 

@@ -19,7 +19,14 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
-    """Show confirmation of potentially dangerous operations"""
+    """**show confirm**
+
+Show confirmation of potentially dangerous operations
+
+See also:
+---------
+
+`set confirm`"""
     min_abbrev = 3    # Need at least "show con"
     pass
 

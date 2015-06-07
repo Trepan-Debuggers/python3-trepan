@@ -28,8 +28,9 @@ def pyc2py(filename):
     return filename
 
 class ListCommand(Mbase_cmd.DebuggerCommand):
-    """**list** [*module] [*first* [*num*]]
-**list** *location* [*num*]
+    """**list** [ *module* ] [ *first* [ *num* ]]
+
+**list** *location* [ *num* ]
 
 List source code.
 
