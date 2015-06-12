@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
-import os, re
+import glob, os, re
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -31,7 +31,8 @@ categories = {
     'running'     : 'Running the program',
     'status'      : 'Status inquiries',
     'support'     : 'Support facilities',
-    'stack'       : 'Examining the call stack'
+    'stack'       : 'Examining the call stack',
+    'syntax'      : 'Debugger command syntax'
     }
 
 class HelpCommand(Mbase_cmd.DebuggerCommand):
@@ -67,6 +68,8 @@ See also:
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = False
     short_help    = 'Print commands or give help for command(s)'
+    HELP_DIR      = os.path.join(os.path.dirname(__file__), 'help')
+    RST_EXTENSION = '.rst'
 
     def complete(self, prefix):
         proc_obj = self.proc
@@ -90,6 +93,15 @@ See also:
                 self.section("List of all debugger commands:")
                 m = self.columnize_commands(list(self.proc.commands.keys()))
                 self.msg_nocr(m)
+                return
+            elif cmd_name == 'aliases':
+                self.show_aliases()
+                return
+            elif cmd_name == 'macros':
+                self.show_macros()
+                return
+            elif cmd_name == 'syntax':
+                self.show_command_syntax(args)
                 return
             elif cmd_name in list(categories.keys()):
                 self.show_category(cmd_name, args[2:])
@@ -146,6 +158,9 @@ See also:
             pass
         final_msg = """
 Type `help` followed by a class name for a list of commands in that class.
+Type `help aliases` for a list of current aliases.
+Type `help macros` for a list of current macros.
+Type `help syntax *item*` for help on syntax *item*
 Type `help *` for the list of all commands.
 Type `help` *regexp* for the list of commands matching /^#{*regexp*}/
 Type `help` *category* `*` for the list of all commands in category *category*
@@ -176,24 +191,75 @@ Type `help` followed by command name for full documentation.
             pass
         return
 
+    def syntax_files(self):
+        path = os.path.join(self.HELP_DIR, ("*%s" % self.RST_EXTENSION))
+        files = glob.glob(path)
+        return [os.path.basename(name).split('.')[0] for
+                name in files]
+
+    def show_aliases(self):
+        self.section('All alias names:')
+        m = self.columnize_commands(list(sorted(self.proc.aliases.keys())))
+        self.msg_nocr(m)
+
+    def show_macros(self):
+        self.section('All macro names:')
+        m = self.columnize_commands(list(sorted(self.proc.macros.keys())))
+        self.msg_nocr(m)
+
+    def init_syntax_summary_help(self):
+        self.syntax_summary_help = {}
+        self.syntax_help = {}
+        for name in self.syntax_files():
+            path = os.path.join(self.HELP_DIR, "%s%s" %
+                                (name, self.RST_EXTENSION))
+            self.syntax_help[name] = ''.join(open(path).
+                                             readlines())
+            self.syntax_summary_help[name] = open(path).\
+                                             readline().strip()
+            pass
+        return
+
+    def show_command_syntax(self, args):
+        if not hasattr(self, 'syntax_summary_help'):
+            self.init_syntax_summary_help()
+            pass
+        if len(args) == 2 or len(args) == 3 and args[2] == '*':
+            self.section("List of syntax help")
+            for name, help in self.syntax_summary_help.items():
+                self.msg("  %-8s -- %s" % (name, help))
+                pass
+        else:
+            for name in args[2:]:
+                if name in self.syntax_files():
+                    self.rst_msg(self.syntax_help[name])
+                else:
+                    self.errmsg("No syntax help for %s" % name)
+                pass
+            pass
+        return
     pass
+
 
 if __name__ == '__main__':
     from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     command = HelpCommand(cp)
-    print('-' * 20)
-    command.run(['help'])
-    print('-' * 20)
-    command.run(['help', '*'])
-    print('-' * 20)
-    command.run(['help', 'quit'])
-    print('-' * 20)
-    command.run(['help', 'stack'])
-    print('-' * 20)
-    command.run(['help', 'breakpoints'])
-    print('-' * 20)
-    command.run(['help', 'breakpoints', '*'])
-    print('-' * 20)
-    command.run(['help', 'c.*'])
+    # print('-' * 20)
+    # command.run(['help'])
+    # print('-' * 20)
+    # command.run(['help', '*'])
+    # print('-' * 20)
+    # command.run(['help', 'quit'])
+    # print('-' * 20)
+    # command.run(['help', 'stack'])
+    # print('-' * 20)
+    # command.run(['help', 'breakpoints'])
+    # print('-' * 20)
+    # command.run(['help', 'breakpoints', '*'])
+    # print('-' * 20)
+    # command.run(['help', 'c.*'])
+    # print('-' * 20)
+    command.show_command_syntax(['help', 'syntax'])
+    command.show_command_syntax(['help', 'syntax', 'command'])
     pass

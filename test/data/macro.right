@@ -1,7 +1,7 @@
 (gcd.py:10):
 -> 10 """
 Set basename is off.
-Set trace is on.
+Set event is on.
 Set stopping is off.
 No macros defined.
 Macro "foo" defined.

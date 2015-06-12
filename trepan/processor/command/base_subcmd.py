@@ -100,7 +100,7 @@ class DebuggerSubcommand:
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
         return(self.debugger.intf[-1].msg_nocr(msg))
 
-    aliases = ('alias1', 'alias2..',)
+    aliases = ()
     name    = 'YourCommandName'
 
     def rst_msg(self, text):
@@ -135,7 +135,7 @@ class DebuggerSetBoolSubcommand(DebuggerSubcommand):
 
     def run(self, args):
         # Strip off ReStructuredText tags
-        doc = re.sub('[*]', '', self.__doc__).lstrip()
+        doc = re.sub('[*]', '', self.short_help).lstrip()
         # Take only the first two tokens
         i = doc.find(' ')
         if i > 0:

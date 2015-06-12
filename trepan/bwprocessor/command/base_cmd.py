@@ -47,7 +47,7 @@ class DebuggerCommand:
         self.settings = self.debugger.settings
         return
 
-    aliases = ('alias1', 'alias2..',)
+    aliases = ()
     name    = 'YourCommandName'
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make

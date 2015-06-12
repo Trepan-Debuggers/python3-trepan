@@ -52,7 +52,7 @@ class DebuggerCommand:
         self.settings = self.debugger.settings
         return
 
-    aliases = ('alias1', 'alias2..',)
+    aliases = ()
     name    = 'YourCommandName'
 
     def columnize_commands(self, commands):
