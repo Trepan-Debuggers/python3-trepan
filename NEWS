@@ -1,3 +1,13 @@
+trepan 0.4.9 2015-06-12 Fleetwood
+
+- add bpython shell.
+- eval? of "for VAR in EXPR:" is "EXPR"
+- set default completion (not debugger completion) in python shell
+- Save/restore ipython completion if we can do so
+- don't highlight prompt when highlight is plain/off
+- add line completion on tbreak and break
+- Add syntax help and go over docs, add links to readthedocs
+
 trepan 0.4.8 2015-05-16
 
 - Include instruction number in location

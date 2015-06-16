@@ -163,7 +163,6 @@ Type `help macros` for a list of current macros.
 Type `help syntax *item*` for help on syntax *item*
 Type `help *` for the list of all commands.
 Type `help` *regexp* for the list of commands matching /^#{*regexp*}/
-Type `help` *category* `*` for the list of all commands in category *category*
 Type `help` followed by command name for full documentation.
 """
         for line in re.compile('\n').split(final_msg.rstrip('\n')):
