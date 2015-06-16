@@ -31,6 +31,9 @@ Set whether we use terminal highlighting. Permissable values are:
        light:  terminal background is light (the default)
        dark:   terminal background is dark
 
+If the first argument is *reset*, we clear any existing color formatting
+and recolor all source code output.
+
 Examples:
 --------
 
@@ -42,9 +45,6 @@ Examples:
     set highlight reset light # clear source-code cache and
                               # set for light background
     set highlight reset # clear source-code cache
-
-If the first argument is *reset*, we clear any existing color formatting
-and recolor all source code output.
 
 See also:
 ---------

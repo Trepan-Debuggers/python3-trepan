@@ -13,3 +13,4 @@ set highlight dark
 set highlight light
 set highlight light reset
 quit
+quit
