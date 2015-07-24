@@ -183,7 +183,7 @@ dictionary that gets fed to trepan.Debugger.core.start().
 Parameter "step_ignore" specifies how many line events to ignore after the
 debug() call. 0 means don't even wait for the debug() call to finish.
 """
-    if isinstance(Mdebugger.debugger_obj, Mdebugger.Trepan):
+    if not isinstance(Mdebugger.debugger_obj, Mdebugger.Trepan):
         Mdebugger.debugger_obj = Mdebugger.Trepan(dbg_opts)
         Mdebugger.debugger_obj.core.add_ignore(debug, stop)
         pass

@@ -899,22 +899,12 @@ class CommandProcessor(Mprocessor.Processor):
             if mod_name in ('info_sub', 'set_sub', 'show_sub',):
                 pass
             import_name = "command." + mod_name
-            if False:
-                # Sometimes we want this
+            try:
                 command_mod = getattr(__import__(import_name), mod_name)
-            else:
-                # FIXME give more info like the above when desired
-                # For debugging:
-                # command_mod = getattr(__import__(import_name), mod_name)
-                try:
-                    command_mod = getattr(__import__(import_name), mod_name)
-                except ImportError:
-                    pass
-                except:
-                    print('Error importing %s: %s' %
-                          (mod_name, sys.exc_info()[0]))
-                    continue
-                pass
+            except:
+                print('Error importing %s: %s' %
+                      (mod_name, sys.exc_info()[0]))
+                continue
 
             classnames = [ tup[0] for tup in
                            inspect.getmembers(command_mod, inspect.isclass)
