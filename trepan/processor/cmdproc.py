@@ -863,8 +863,9 @@ class CommandProcessor(Mprocessor.Processor):
                 except ImportError:
                     pass
                 except:
-                    print('Error importing %s: %s' %
-                          (mod_name, sys.exc_info()[0]))
+                    if mod_name not in ('bpy', 'ipython'):
+                        print('Error importing %s: %s' %
+                              (mod_name, sys.exc_info()[0]))
                     continue
                 pass
 
@@ -902,8 +903,9 @@ class CommandProcessor(Mprocessor.Processor):
             try:
                 command_mod = getattr(__import__(import_name), mod_name)
             except:
-                print('Error importing %s: %s' %
-                      (mod_name, sys.exc_info()[0]))
+                if mod_name not in ('bpy', 'ipython'):
+                    print('Error importing %s: %s' %
+                          (mod_name, sys.exc_info()[0]))
                 continue
 
             classnames = [ tup[0] for tup in
