@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.break'
 
-import os, sys, unittest
+import os, unittest
 
 from trepan import debugger
 from trepan.processor import cmdbreak as Mcmdbreak
@@ -24,7 +24,7 @@ class TestBreakCommand(unittest.TestCase):
         return
 
     def test_parse_break_cmd(self):
-        import inspect, types
+        import inspect
         d               = debugger.Trepan()
         cp              = d.core.processor
         cp.curframe     = inspect.currentframe()
