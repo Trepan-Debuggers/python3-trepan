@@ -1,4 +1,9 @@
-trepan 0.5.0 2015-08-02 Fleetwood
+trepan 0.5.1 2015-08-15
+
+- pytest support improvement: Add debug(level=...)
+  The causes the debugger to skip recent frames used in setup.
+
+trepan 0.5.0 2015-08-02
 
 - Don't show an error if we can't import bpy or ipython - they are optional
 - bug fixes

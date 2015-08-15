@@ -161,8 +161,8 @@ if __name__=='__main__':
     for val in ['DEBUGGER_SETTINGS',
                 'START_OPTS',
                 'STOP_OPTS']:
-        print("%s:" % val), print(eval(val))
-        print()
-        # print("%s:\n" % val), pprint.pformat(eval(val))
+        print("%s:" % val)
+        print(pprint.pformat(eval(val)))
+        print('-' * 10)
         pass
     pass
