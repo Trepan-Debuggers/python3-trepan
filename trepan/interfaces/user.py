@@ -98,16 +98,18 @@ class UserInterface(Minterface.TrepanInterface):
 
     def errmsg(self, msg, prefix="** "):
         """Common routine for reporting debugger error messages.
-           """
+        """
         return self.msg("%s%s" %(prefix, msg))
 
     def finalize(self, last_wishes=None):
+        # This routine gets called multiple times.
+        # We hard-code the close() function here.
         try:
             self.msg("trepan3k: That's all, folks...")
+            self.close()
         except IOError:
             pass
         # save history
-        self.close()
         return
 
     def read_command(self, prompt=''):
