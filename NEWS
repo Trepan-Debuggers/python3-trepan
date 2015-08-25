@@ -1,3 +1,6 @@
+trepan 0.5.2 2015-08-24
+- redo to correct wheel build
+
 trepan 0.5.1 2015-08-15
 
 - pytest support improvement: Add debug(level=...)
