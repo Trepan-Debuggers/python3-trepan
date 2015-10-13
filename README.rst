@@ -1,4 +1,4 @@
-|Downloads| |Build Status| |Latest Version| |Supported Python versions|
+|Downloads| |Build Status| |Latest Version|
 
 .. contents:: :local:
 

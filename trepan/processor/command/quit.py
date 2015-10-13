@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, threading
-import ctypes # Calm down, this has become standard library since 2.5
+import ctypes  # Calm down, this has become standard library since 2.5
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -40,7 +40,7 @@ def ctype_async_raise(thread_obj, exception):
         # Huh? Why would we notify more than one threads?
         # Because we punch a hole into C level interpreter.
         # So it is better to clean up the mess.
-        ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, NULL)
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, 0)
         raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
