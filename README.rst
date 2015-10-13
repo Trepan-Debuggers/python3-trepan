@@ -22,7 +22,7 @@ Since this debugger is similar to other_ trepanning_ debuggers_ and *gdb*
 in general, knowledge gained by learning this is transferable to those
 debuggers and vice versa.
 
-There's a lot of cool stuff here that's not in *pydb* or the stock
+There's a lot of cool stuff here that's not in the stock
 Python debugger *pdb*.
 
 
@@ -108,10 +108,10 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Egg, Wheel, and Tarballs
+Egg, Pip, and Tarballs
 ------------------------
 
-Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://github.com/rocky/python2-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
+Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://github.com/rocky/python3-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
 
 Modularity
 ----------
@@ -132,7 +132,7 @@ Documentation
 Documentation: http://python2-trepan.readthedocs.org
 
 .. _pydb:  http://bashdb.sf.net/pydb
-.. _trepan2: https://github.com/rocky/python2-trepan
+.. _trepan2: https://pypi.python.org/pypi/trepan
 .. _trepan3: https://github.com/rocky/python3-trepan
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning
