@@ -1,3 +1,7 @@
+trepan 0.5.3 2015-10-12
+
+- Revise quit to handle threads
+
 trepan 0.5.2 2015-08-24
 - redo to correct wheel build
 

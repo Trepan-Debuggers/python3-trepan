@@ -27,8 +27,7 @@ class KillCommand(Mbase_cmd.DebuggerCommand):
 Send this process a POSIX signal ('9' for 'kill -9')
 
 9 is a non-maskable interrupt that terminates the program. If program
-is threaded or worse, threaded and deadlocked, you may need to use
-this command to terminate the program.
+is threaded it may be expedient to use this command to terminate the program.
 
 However other signals, such as those that allow for the debugged to
 handle them can be sent.
@@ -36,7 +35,7 @@ handle them can be sent.
 See also:
 ---------
 
-See `quit` for less a forceful termination command.
+`quit` for less a forceful termination command; `exit` for another way to force termination.
 
 `run` and `restart` are ways to restart the debugged program.
 """
@@ -58,23 +57,6 @@ See `quit` for less a forceful termination command.
         return Mcomplete.complete_token(completions, prefix.lower())
 
     def run(self, args):
-        """**kill** [**unconditionally**]
-
-Kill execution of program being debugged.
-
-Equivalent of `kill -KILL` *pid* where *pid* is *os.getpid()*, the current
-debugged process. This is an unmaskable signal. When all else fails, e.g. in
-thread code, use this.
-
-If `unconditionally` is given, no questions are asked. Otherwise, if
-we are in interactive mode, we'll prompt to make sure.
-
-See also:
----------
-
-`quit`, `restart`
-"""
-
         signo =  signal.SIGKILL
         confirmed = False
         if len(args) <= 1:

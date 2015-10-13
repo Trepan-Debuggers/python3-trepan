@@ -14,10 +14,34 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, threading
+import ctypes # Calm down, this has become standard library since 2.5
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan import exception as Mexcept
+
+def ctype_async_raise(thread_obj, exception):
+    found = False
+    target_tid = 0
+    for tid, tobj in threading._active.items():
+        if tobj is thread_obj:
+            found = True
+            target_tid = tid
+            break
+
+    if not found:
+        raise ValueError("Invalid thread object")
+
+    ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, ctypes.py_object(exception))
+    # ref: http://docs.python.org/c-api/init.html#PyThreadState_SetAsyncExc
+    if ret == 0:
+        raise Mexcept.DebuggerQuit
+    elif ret > 1:
+        # Huh? Why would we notify more than one threads?
+        # Because we punch a hole into C level interpreter.
+        # So it is better to clean up the mess.
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(target_tid, NULL)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
 class QuitCommand(Mbase_cmd.DebuggerCommand):
@@ -35,8 +59,8 @@ started in the middle of a program, there might not be such an
 exception handler; the debugged program still terminates but generally
 with a traceback showing that exception.
 
-If the debugged program is threaded or worse threaded and deadlocked,
-raising an exception in one thread isn't going to quit the
+If the debugged program is threaded, we raise an exception in each of
+the threads ending with our own. However this might not quit the
 program.
 
 See also:
@@ -65,11 +89,13 @@ See `exit` or `kill` for more forceful termination commands.
     def threaded_quit(self, arg):
         """ quit command when several threads are involved. """
         threading_list = threading.enumerate()
-        if threading_list[0].getName() == 'MainThread' :
-            self.nothread_quit(arg)
-            return False
-        self.msg("Quit for threading not fully done yet. Try 'kill'.")
-        return False
+        mythread =  threading.currentThread()
+        for t in threading_list:
+            if t != mythread:
+                ctype_async_raise(t, Mexcept.DebuggerQuit)
+                pass
+            pass
+        raise Mexcept.DebuggerQuit
 
     def run(self, args):
         threading_list = threading.enumerate()

@@ -1,18 +1,19 @@
-|Downloads| |Build Status|
+|Downloads| |Build Status| |Latest Version| |Supported Python versions|
 
 .. contents:: :local:
 
 Abstract
 ========
 
-This is a gdb-like debugger for Python. It is a rewrite of pydb_ or
-*pdb* from the ground up.
+This is a gdb-like debugger for Python. It is a rewrite of *pdb* from the ground up.
 
 A command-line interface (CLI) is provided as well as an remote access
 interface over TCP/IP.
 
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
+
+This package is for Python 3.3 and 3.4. See trepan2_ for the same code modified to work with Python 2.
 
 Features
 ========
@@ -139,7 +140,8 @@ Documentation: http://python2-trepan.readthedocs.org
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
-   :target: https://pypi.python.org/pypi/trepan/
+   :target: https://pypi.python.org/pypi/trepan3k/
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
+.. |Latest Version| image:: https://pypip.in/version/trepan3k/badge.svg?text=version
    :target: https://travis-ci.org/rocky/python3-trepan/
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan

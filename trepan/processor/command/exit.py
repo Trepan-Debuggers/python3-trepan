@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,13 @@ Hard exit of the debugged program.
 
 The program being debugged is exited via *sys.exit()*. If a return code
 is given, that is the return code passed to *sys.exit()*, the
-return code that will be passed back to the OS."""
+return code that will be passed back to the OS.
+
+See also:
+---------
+
+See `quit` and `kill`.
+"""
 
     category      = 'support'
     min_args      = 0

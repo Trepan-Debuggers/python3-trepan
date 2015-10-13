@@ -98,6 +98,7 @@ class MockDebuggerCore:
         self.last_lineno    = None
         self.last_filename  = None
         self.different_line = None
+        self.from_ipython   = False
         return
 
     def set_next(self, frame, step_events=None):
