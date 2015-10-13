@@ -13,7 +13,7 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 3.3 and 3.4. See trepan2_ for the same code modified to work with Python 2.
+This package is for Python 3.3 and 3.4. See trepan_ for the same code modified to work with Python 2.
 
 Features
 ========
@@ -132,7 +132,7 @@ Documentation
 Documentation: http://python2-trepan.readthedocs.org
 
 .. _pydb:  http://bashdb.sf.net/pydb
-.. _trepan2: https://pypi.python.org/pypi/trepan
+.. _trepan: https://pypi.python.org/pypi/trepan
 .. _trepan3: https://github.com/rocky/python3-trepan
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning
