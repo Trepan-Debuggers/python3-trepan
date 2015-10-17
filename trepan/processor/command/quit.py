@@ -71,7 +71,7 @@ See `exit` or `kill` for more forceful termination commands.
 `run` and `restart` are other ways to restart the debugged program.
 """
 
-    aliases       = ('q','quit!')
+    aliases       = ('q', 'quit!')
     category      = 'support'
     min_args      = 0
     max_args      = 0

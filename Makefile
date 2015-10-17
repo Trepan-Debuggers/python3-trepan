@@ -10,7 +10,7 @@ RM      ?= rm
 LINT    = flake8
 
 #EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
-PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests
+PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests flake8
 
 #: Default target - same as "check"
 all: check
@@ -21,8 +21,12 @@ test: check
 #: Run all tests: unit, functional and integration
 check-short: test-unit-short test-functional-short test-integration-short
 
+#: Lint program
+flake8:
+	flake8 trepan
+
 #: Run all tests: unit, functional and integration verbosely
-check: test-unit test-functional test-integration
+check: test-unit test-functional test-integration flake8
 
 #: Run unit (white-box) tests
 test-unit:
