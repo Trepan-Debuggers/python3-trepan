@@ -71,7 +71,7 @@ See `exit` or `kill` for more forceful termination commands.
 `run` and `restart` are other ways to restart the debugged program.
 """
 
-    aliases       = ('q',)
+    aliases       = ('q','quit!')
     category      = 'support'
     min_args      = 0
     max_args      = 0
@@ -98,15 +98,24 @@ See `exit` or `kill` for more forceful termination commands.
         raise Mexcept.DebuggerQuit
 
     def run(self, args):
-        threading_list = threading.enumerate()
-        if ((len(threading_list) == 1 or self.debugger.from_ipython) and
-            threading_list[0].getName() == 'MainThread') :
-            # We are in a main thread and either there is one thread or we
-            # or are in ipython, so that's safe to quit.
-            return self.nothread_quit(args)
-        else:
-            return self.threaded_quit(args)
-        pass
+        confirmed = False
+        if len(args) <= 1:
+            if '!' != args[0][-1]:
+                confirmed = self.confirm('Really quit', False)
+            else:
+                confirmed = True
+            pass
+        if confirmed:
+            threading_list = threading.enumerate()
+            if ((len(threading_list) == 1 or self.debugger.from_ipython) and
+                threading_list[0].getName() == 'MainThread') :
+                # We are in a main thread and either there is one thread or
+                # we or are in ipython, so that's safe to quit.
+                return self.nothread_quit(args)
+            else:
+                return self.threaded_quit(args)
+            pass
+        return
 
 if __name__ == '__main__':
     from trepan.processor.command import mock

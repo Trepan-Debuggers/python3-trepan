@@ -1,4 +1,4 @@
-# 
+#
 # Test of the debugger 'macro' command
 #
 set basename off
@@ -14,4 +14,4 @@ bar 1
 # macro baz 'list 5'
 info macro
 info macro *
-quit
+quit!

@@ -3,6 +3,7 @@
 Set basename is on.
 Set event is on.
 Set stopping is off.
+Set confirmation is off.
 line - gcd.py:10
 line - gcd.py:11
 (gcd.py:11):

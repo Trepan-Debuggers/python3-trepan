@@ -58,7 +58,12 @@ class DebuggerSubcommand:
         self.settings = cmd.debugger.settings
 
         if not hasattr(self, 'short_help'):
-            self.short_help = self.__doc__.split("\n")[0]
+            help = self.__doc__.split("\n")
+            if len(help) > 0:
+                if help[0][0] == '*' and len(help) > 2:
+                    self.short_help = help[2]
+                else:
+                    self.short_help = help[0]
             pass
 
         # By default the name of the subcommand will be the name of the

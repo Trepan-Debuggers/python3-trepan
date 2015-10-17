@@ -10,5 +10,5 @@ set highlight off
 set highlight plain
 set highlight dark
 set highlight light
-quit
-quit
+quit!
+quit!
