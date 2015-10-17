@@ -22,15 +22,29 @@ from trepan.lib import complete as Mcomplete
 
 
 class KillCommand(Mbase_cmd.DebuggerCommand):
-    """**kill** [ *signal-number* ]
+    """**kill** [ *signal-number* ] [unconditional]
 
-Send this process a POSIX signal ('9' for 'kill -9')
+Send this process a POSIX signal ('9' for 'SIGKILL' or 'kill -SIGKILL')
 
 9 is a non-maskable interrupt that terminates the program. If program
 is threaded it may be expedient to use this command to terminate the program.
 
 However other signals, such as those that allow for the debugged to
 handle them can be sent.
+
+Giving a negative number is the same as using its
+positive value.
+
+Examples:
+--------
+
+    kill                # non-interuptable, nonmaskable kill
+    kill 9              # same as above
+    kill -9             # same as above
+    kill!               # same as above, but no confirmation
+    kill unconditional  # same as above
+    kill 15             # nicer, maskable TERM signal
+    kill! 15            # same as above, but no confirmation
 
 See also:
 ---------
@@ -53,7 +67,7 @@ See also:
                  sig.startswith('SIG')]
         nums  = [str(eval("signal."+name)) for name in names]
         lnames = [sig.lower() for sig in names]
-        completions = lnames + nums + ['unconditionally']
+        completions = lnames + nums + ['unconditional']
         return Mcomplete.complete_token(completions, prefix.lower())
 
     def run(self, args):
@@ -64,11 +78,11 @@ See also:
                 confirmed = self.confirm('Really do a hard kill', False)
             else:
                 confirmed = True
-        elif 'unconditionally'.startswith(args[1]):
+        elif 'unconditional'.startswith(args[1]):
             confirmed = True
         else:
             try:
-                signo = int(args[1])
+                signo = abs(int(args[1]))
                 confirmed = True
             except ValueError:
                 pass
