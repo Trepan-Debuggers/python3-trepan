@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, shlex, tempfile, traceback
+import inspect, linecache, os, sys, shlex, tempfile, traceback, re
 import pyficache
 from reprlib import Repr
 from pygments.console import colorize
@@ -136,9 +136,10 @@ def print_source_location_info(print_fn, filename, lineno, fn_name=None,
         L -- 2 import sys,os
         (trepan3k)
     """
-    mess = '(%s:%s' % (filename, lineno)
     if remapped_file:
-        mess += ' remapped %s' % remapped_file
+        mess = '(%s:%s remapped %s' % (remapped_file, lineno, filename)
+    else:
+        mess = '(%s:%s' % (filename, lineno)
     if f_lasti and f_lasti != -1:
         mess += ' @%d' % f_lasti
         pass
@@ -194,6 +195,10 @@ def print_location(proc_obj):
                 filename = fd.name
                 pass
             pass
+        else:
+            m = re.search('^<frozen (.*)>', filename)
+            if m and m.group(1) in pyficache.file2file_remap:
+                remapped_file = pyficache.file2file_remap[m.group(1)]
 
         fn_name = frame.f_code.co_name
         last_i  = frame.f_lasti
@@ -341,6 +346,9 @@ class CommandProcessor(Mprocessor.Processor):
             opts = {'output': 'plain',
                     'reload_on_change': self.settings('reload'),
                     'strip_nl': False}
+            m = re.search('^<frozen (.*)>', filename)
+            if m and m.group(1):
+                filename = pyficache.unmap_file(m.group(1))
             line = pyficache.getline(filename, lineno, opts)
         self.current_source_text = line
         if self.settings('skip') is not None:

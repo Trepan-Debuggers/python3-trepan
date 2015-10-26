@@ -200,7 +200,7 @@ class Trepan:
 
         # Start with fresh empty copy of globals and locals and tell the script
         # that it's being run as __main__ to avoid scripts being able to access
-        # the pydb.py namespace.
+        # the debugger namespace.
         if globals_ is None:
             import __main__  # NOQA
             globals_ = {"__name__" : "__main__",
