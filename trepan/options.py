@@ -15,12 +15,25 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, sys
+import os, sys, codecs
 
 from optparse import OptionParser
 from trepan import debugger as Mdebugger, api as Mapi, clifns as Mclifns
 from trepan.lib import file as Mfile
 from trepan.inout import output as Moutput
+
+def default_configfile(base_filename):
+    '''Return fully expanded configuration filename location for
+    base_filename. python2 and  python3 debuggers share the smae
+    directory: ~/.config/trepan.py
+    '''
+    file_dir = os.path.join(os.environ.get('HOME', '~'), '.config', 'trepanpy')
+    file_dir = Mclifns.path_expanduser_abs(file_dir)
+
+    if not os.path.isdir(file_dir):
+        os.makedirs(file_dir, mode=0o755)
+    return os.path.join(file_dir, base_filename)
+
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -171,19 +184,17 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []
     if not opts.noexecute:
-        # Read debugger startup file(s), e.g. $HOME/.trepan3rc and ~/.trepan3rc
-        startup_file = ".%s3krc" % debugger_name
-        if Mfile.readable(os.path.join('.' , startup_file)):
-            dbg_initfiles.append(startup_file)
-        else:
-            startup_home_file = os.path.join(os.environ.get('HOME', '~'),
-                                             startup_file)
-            expanded_startup_home = \
-              Mclifns.path_expanduser_abs(startup_home_file)
-            if Mfile.readable(expanded_startup_home):
-                dbg_initfiles.append(startup_home_file)
-                pass
-            pass
+        # Read debugger startup file(s): both python code and
+        # debugger profile.
+        startup_python_file = default_configfile('profile.py')
+
+        if Mfile.readable(startup_python_file):
+            with codecs.open(startup_python_file, 'r', encoding='utf8') as fp:
+                exec(fp.read())
+
+        startup_trepan_file = default_configfile('profile')
+        if Mfile.readable(startup_trepan_file):
+            dbg_initfiles.append(startup_trepan_file)
 
     # As per gdb, first we execute user initialization files and then
     # we execute any file specified via --command.
@@ -214,7 +225,6 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         pass
 
     return opts, dbg_opts, sys.argv
-
 
 def _postprocess_options(dbg, opts):
     ''' Handle options (`opts') that feed into the debugger (`dbg')'''

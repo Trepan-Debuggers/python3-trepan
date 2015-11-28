@@ -28,14 +28,32 @@ from pygments.token               import Comment, Generic, Keyword, Name, \
 from pygments.util                import get_choice_opt
 
 
-def format_token(ttype, token, colorscheme=TERMINAL_COLORS,
+# Set up my own color scheme with some addtional definitions
+color_scheme = TERMINAL_COLORS.copy()
+color_scheme[Generic.Strong] = ('*black*', '*white*')
+color_scheme[Name.Variable]  = ('_black_', '_white_')
+
+color_scheme[Generic.Strong] = ('*black*', '*white*')
+color_scheme[Name.Variable]  = ('_black_', '_white_')
+color_scheme[Generic.Emph]   = color_scheme[Comment.Preproc]
+
+# FIXME: change some horrible colors under atom dark
+# this is a hack until I get general way to do colorstyle setting
+color_scheme[Token.Comment]  = ('darkgray', 'white')
+color_scheme[Token.Keyword]  = ('darkblue', 'turquoise')
+color_scheme[Token.Number]  = ('darkblue', 'turquoise')
+color_scheme[Keyword]  = ('darkblue', 'turquoise')
+color_scheme[Number]  = ('darkblue', 'turquoise')
+
+def format_token(ttype, token, colorscheme=color_scheme,
                  highlight='light' ):
     if 'plain' == highlight: return token
-    light_bg = 'light' == highlight
+    dark_bg = 'dark' == highlight
 
     color = colorscheme.get(ttype)
     if color:
-        color = color[light_bg]
+        color = color[dark_bg]
+        # print("XXX10", ttype, color)
         return ansiformat(color, token)
         pass
     return token
@@ -52,11 +70,6 @@ Opcode     = Name.Function
 Return     = Operator.Word
 Var        = Keyword
 Verbatim   = String
-
-color_scheme = TERMINAL_COLORS.copy()
-color_scheme[Generic.Strong] = ('*black*', '*white*')
-color_scheme[Name.Variable]  = ('_black_', '_white_')
-color_scheme[Generic.Emph]   = TERMINAL_COLORS[Comment.Preproc]
 
 # Should come last since "Name" is used above
 Name = Comment.Preproc
@@ -133,7 +146,7 @@ class RSTTerminalFormatter(Formatter):
         Formatter.__init__(self, **options)
         self.darkbg = get_choice_opt(options, 'bg',
                                      ['light', 'dark'], 'light') == 'dark'
-        self.colorscheme = options.get('colorscheme', None) or TERMINAL_COLORS
+        self.colorscheme = options.get('colorscheme', None) or color_scheme
         self.width = options.get('width', 80)
         self.verbatim = False
         self.in_list  = False

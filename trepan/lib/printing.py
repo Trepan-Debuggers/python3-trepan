@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #  Copyright (C) 2007-2010, 2015 Rocky Bernstein
-#
+
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +23,7 @@ def print_dict(s, obj, title):
         pass
     if isinstance(obj, dict):
         s += "\n%s:\n" % title
-        keys = obj.keys()
+        keys = list(obj.keys())
         keys.sort()
         for key in keys:
             s+="  %s:\t%s\n" % (repr(key), obj[key])
