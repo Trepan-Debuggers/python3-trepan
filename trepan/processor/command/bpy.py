@@ -51,6 +51,13 @@ To issue a debugger command use function *dbgr()*. For example:
         return
 
     def run(self, args):
+
+        try:
+            from bpython.curtsies import main as main_bpython
+        except ImportError:
+            self.errmsg("bpython needs to be installed to run this command")
+            return
+
         # bpython does it's own history thing.
         # Make sure it doesn't damage ours.
         have_line_edit = self.debugger.intf[-1].input.line_edit
@@ -91,11 +98,6 @@ Use dbgr(*string*) to issue debugger command: *string*'''
         sys.ps1 = 'trepan2 >>> '
         print(banner)
         try:
-            from bpython.curtsies import main as main_bpython
-        except ImportError:
-            return
-
-        try:
             main_bpython([], my_locals)
         except SystemExit:
             pass
@@ -116,19 +118,19 @@ Use dbgr(*string*) to issue debugger command: *string*'''
         return
     pass
 
-if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Debugger()
-    command = PythonCommand(d.core.processor)
-    command.proc.frame = sys._getframe()
-    command.proc.setup()
-    if len(sys.argv) > 1:
-        print("Type Python commands and exit to quit.")
-        print(sys.argv[1])
-        if sys.argv[1] == '-d':
-            print(command.run(['bpy', '-d']))
-        else:
-            print(command.run(['bpy']))
-            pass
-        pass
-    pass
+# if __name__ == '__main__':
+#     from trepan import debugger as Mdebugger
+#     d = Mdebugger.Debugger()
+#     command = PythonCommand(d.core.processor)
+#     command.proc.frame = sys._getframe()
+#     command.proc.setup()
+#     if len(sys.argv) > 1:
+#         print("Type Python commands and exit to quit.")
+#         print(sys.argv[1])
+#         if sys.argv[1] == '-d':
+#             print(command.run(['bpy', '-d']))
+#         else:
+#             print(command.run(['bpy']))
+#             pass
+#         pass
+#     pass
