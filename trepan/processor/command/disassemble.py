@@ -123,7 +123,7 @@ disassemble that.
                     pass
                 Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg,
                          obj, start_line=start_line, end_line=end_line,
-                         relative_pos=relative_pos)
+                         relative_pos=relative_pos, highlight=self.settings['highlight'])
                 return False
             else:
                 if len(args) == 3:
@@ -146,7 +146,8 @@ disassemble that.
         Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg,
                  self.proc.curframe,
                  start_line=start_line, end_line=end_line,
-                 relative_pos=relative_pos)
+                 relative_pos=relative_pos,
+                 highlight=self.settings['highlight'])
         return False
 
 # Demo it
