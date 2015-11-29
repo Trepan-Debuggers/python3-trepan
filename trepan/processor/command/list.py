@@ -200,8 +200,11 @@ See also:
         opts = {
             'reload_on_change' : self.settings['reload'],
             'output'           : self.settings['highlight'],
-            'strip_nl'         : False
+            'strip_nl'         : False,
             }
+
+        if 'style' in self.settings:
+            opts['style'] = self.settings['style']
 
         try:
             for lineno in range(first, last+1):

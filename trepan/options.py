@@ -245,6 +245,12 @@ def _postprocess_options(dbg, opts):
     else:
         dbg.settings['highlight'] = 'plain'
 
+    # if getattr(opts, 'style'):
+    #     dbg.settings['style'] = opts.style
+    # else:
+    #     dbg.settings['style'] = None
+    dbg.settings['style'] = None
+
     # Normally we want to set Mdebugger.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
     # than one debugger running. More than one debugger may confuse

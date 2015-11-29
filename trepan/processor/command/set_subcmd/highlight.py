@@ -75,7 +75,7 @@ See also:
             if len(args) >= 2:
                 highlight_type = self.get_highlight_type(args[1])
             else:
-                highlight_type = self.debugger.settings['highlight']
+                highlight_type = self.debugger.settings[self.name]
             if not highlight_type: return
             clear_file_format_cache()
         elif len(args) == 0:
@@ -85,10 +85,10 @@ See also:
             if not highlight_type: return
             if 'off' == highlight_type: highlight_type = 'plain'
             pass
-        self.debugger.settings['highlight'] = highlight_type
+        self.debugger.settings[self.name] = highlight_type
         self.proc.set_prompt()
         show_cmd = self.proc.commands['show']
-        show_cmd.run(['show', 'highlight'])
+        show_cmd.run(['show', self.name])
         return
     pass
 
