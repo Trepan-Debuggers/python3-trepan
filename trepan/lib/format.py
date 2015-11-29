@@ -16,6 +16,7 @@
 '''Pygments-related terminal formatting'''
 
 import re, sys
+import pyficache
 from pygments                     import highlight, lex
 from pygments.console             import ansiformat
 from pygments.filter              import Filter
@@ -45,6 +46,9 @@ color_scheme[Token.Number]  = ('darkblue', 'turquoise')
 color_scheme[Keyword]  = ('darkblue', 'turquoise')
 color_scheme[Number]  = ('darkblue', 'turquoise')
 
+pyficache.dark_terminal_formatter.colorscheme = color_scheme
+pyficache.light_terminal_formatter.colorscheme = color_scheme
+
 def format_token(ttype, token, colorscheme=color_scheme,
                  highlight='light' ):
     if 'plain' == highlight: return token
@@ -53,7 +57,6 @@ def format_token(ttype, token, colorscheme=color_scheme,
     color = colorscheme.get(ttype)
     if color:
         color = color[dark_bg]
-        # print("XXX10", ttype, color)
         return ansiformat(color, token)
         pass
     return token
@@ -145,7 +148,7 @@ class RSTTerminalFormatter(Formatter):
     def __init__(self, **options):
         Formatter.__init__(self, **options)
         self.darkbg = get_choice_opt(options, 'bg',
-                                     ['light', 'dark'], 'light') == 'dark'
+                                     ['light', 'dark'], 'light') != 'dark'
         self.colorscheme = options.get('colorscheme', None) or color_scheme
         self.width = options.get('width', 80)
         self.verbatim = False

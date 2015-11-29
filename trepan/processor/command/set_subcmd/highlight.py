@@ -19,6 +19,7 @@ from pyficache import clear_file_format_cache
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
+from trepan.lib.format import color_tf
 
 
 class SetHighlight(Mbase_subcmd.DebuggerSubcommand):
@@ -86,13 +87,15 @@ See also:
             if 'off' == highlight_type: highlight_type = 'plain'
             pass
         self.debugger.settings[self.name] = highlight_type
+        if highlight_type in ('dark', 'light'):
+            color_tf.bg = highlight_type
         self.proc.set_prompt()
         show_cmd = self.proc.commands['show']
         show_cmd.run(['show', self.name])
         return
     pass
 
-if __name__ == '__main__':
-    from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
-    Mhelper.demo_run(SetHighlight)
-    pass
+# if __name__ == '__main__':
+#     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+#     Mhelper.demo_run(SetHighlight)
+#     pass
