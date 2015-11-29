@@ -209,6 +209,10 @@ def print_location(proc_obj):
             'reload_on_change' : proc_obj.settings('reload'),
             'output'           : proc_obj.settings('highlight')
             }
+
+        if 'style' in proc_obj.debugger.settings:
+            opts['style'] = proc_obj.settings('style')
+
         line = pyficache.getline(filename, lineno, opts)
         if not line:
             line = linecache.getline(filename, lineno,

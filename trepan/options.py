@@ -40,7 +40,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     another main program and want to extend the existing set of debugger
     options.
 
-    The options dicionary from opt_parser is return. sys_argv is
+    The options dicionary from optparser is returned. sys_argv is
     also updated."""
     usage_str="""%prog [debugger-options] [python-script [script-options...]]
 
@@ -53,15 +53,15 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     optparser.add_option("-X", "--trace", dest="linetrace",
                          action="store_true", default=False,
-                         help="Show lines before executing them. " +
+                         help="Show lines before executing them. "
                          "This option also sets --batch")
     optparser.add_option("-F", "--fntrace", dest="fntrace",
                          action="store_true", default=False,
-                         help="Show functions before executing them. " +
+                         help="Show functions before executing them. "
                          "This option also sets --batch")
     optparser.add_option("--basename", dest="basename",
                          action="store_true", default=False,
-                         help="Filenames strip off basename, " +
+                         help="Filenames strip off basename, "
                          "(e.g. for regression tests)"
                          )
     #     optparser.add_option("--batch", dest="noninteractive",
@@ -70,8 +70,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     #                          "stops.")
     optparser.add_option("--client", dest="client",
                          action='store_true',
-                         help="Connect to an existing debugger process " +
-                         "started with the --server option. " +
+                         help="Connect to an existing debugger process "
+                         "started with the --server option. "
                          "See options for client.")
     optparser.add_option("-x", "--command", dest="command",
                          action="store", type='string', metavar='FILE',
@@ -108,6 +108,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          default='light',
                          help="Use syntax and terminal highlight output. "
                          "'plain' is no highlight")
+
     optparser.add_option("--private", dest="private",
                          action='store_true', default=False,
                          help="Don't register this as a global debugger")
@@ -122,35 +123,45 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
                          )
     optparser.add_option("--post-mortem", dest="post_mortem",
                          action='store_true', default=True,
-                         help="Enter debugger on an uncaught (fatal) "
-                         "exception")
+                         help=("Enter debugger on an uncaught (fatal) "
+                               "exception"))
 
     optparser.add_option("--no-post-mortem", dest="post_mortem",
                          action='store_false', default=True,
-                         help="Don't enter debugger on an uncaught (fatal) "
-                         "exception")
+                         help=("Don't enter debugger on an uncaught (fatal) "
+                               "exception"))
 
     optparser.add_option("-n", "--nx", dest="noexecute",
                          action="store_true", default=False,
-                         help="Don't execute commands found in any " +
-                         "initialization files")
+                         help=("Don't execute commands found in any "
+                               "initialization files"))
+
     optparser.add_option("-o", "--output", dest="output", metavar='FILE',
                          action="store", type='string',
-                         help="Write debugger's output (stdout) "
-                         + "to FILE")
+                         help=("Write debugger's output (stdout) "
+                               "to FILE"))
     optparser.add_option("-P", "--port", dest="port", default=1027,
                          action="store", type='int',
                          help="Use TCP port number NUMBER for "
                          "out-of-process connections.")
+
     optparser.add_option("--server", dest="server",
                          action='store_true',
                          help="Out-of-process server connection mode")
+
+    # optparser.add_option("--style", dest="style",
+    #                      action="store", type='string',
+    #                      metavar='*pygments-style*',
+    #                      default=None,
+    #                      help=("Pygments style; 'none' "
+    #                            "uses 8-color rather than 256-color terminal"))
+
     optparser.add_option("--sigcheck", dest="sigcheck",
                          action="store_true", default=False,
                          help="Set to watch for signal handler changes")
     optparser.add_option("-t", "--target", dest="target",
-                         help="Specify a target to connect to. Arguments"
-                         + " should be of form, 'protocol address'."),
+                         help=("Specify a target to connect to. Arguments"
+                               " should be of form, 'protocol address'.")),
     optparser.add_option("--from_ipython", dest='from_ipython', action='store_true',
                          default=False, help="Called from inside ipython")
 
@@ -178,6 +189,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
+    # FIXME: why does this mess up integration tests?
+    # (opts, sys.argv) = optparser.parse_args(sys_argv)
     (opts, sys.argv) = optparser.parse_args()
     dbg_opts = {'from_ipython': opts.from_ipython}
 
@@ -245,7 +258,7 @@ def _postprocess_options(dbg, opts):
     else:
         dbg.settings['highlight'] = 'plain'
 
-    # if getattr(opts, 'style'):
+    # if getattr(opts, 'style') and opts.style != 'none':
     #     dbg.settings['style'] = opts.style
     # else:
     #     dbg.settings['style'] = None
@@ -289,7 +302,7 @@ if __name__=='__main__':
     def doit(prog, version, arg_str):
         print("options '%s'" % arg_str)
         args = arg_str.split()
-        opts, dbg_opts, sys_argv = process_options('testing', '1.0', args)
+        opts, dbg_opts, sys_argv = process_options('testing', version, args)
         pp.pprint(vars(opts))
         print('')
         return
@@ -300,5 +313,6 @@ if __name__=='__main__':
     doit('testing', '1.3', '--server')
     doit('testing', '1.3', '--command %s bar baz' % __file__)
     doit('testing', '1.4', '--server --client')
-    doit('testing', '1.5', '--help')
+    doit('testing', '1.5', '--style=emacs')
+    doit('testing', '1.6', '--help')  # exits, so must be last
     pass

@@ -14,16 +14,20 @@ from trepan.lib import complete as Mcomplete
 class SetStyle(Mbase_subcmd.DebuggerSubcommand):
     """**set style* *name*
 
-Set the pygments style in to use in formatting text
+Set the pygments style in to use in formatting text for a 256-color terminal.
+Note: if your terminal doesn't support 256 colors, you may be better off
+using --highlght=plain or --highlight=dark instead.
+
+Giving an invalid name will list all available pygments styles.
 
 See also:
 --------
 
-`show style`
+`show style`, `set highlight`
 """
 
     def complete(self, prefix):
-        return Mcomplete.complete_token(style_names)
+        return Mcomplete.complete_token(style_names, prefix)
 
     in_list    = True
     min_abbrev = len('sty')

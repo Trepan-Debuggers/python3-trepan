@@ -73,6 +73,10 @@ class TestCompletion(unittest.TestCase):
                 ['help sta', ['stack', 'status']],
                 [' unalias c',  ['c', 'chdir', 'cond']],
 
+
+                # Any set style completion
+                ['set style def', ['default']],
+
                 # ['set auto eval ', '', ['off', 'on']],
                                           # Many 3-word completions
                 # ['set auto ', ['eval', 'irb', 'list']],

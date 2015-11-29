@@ -33,14 +33,10 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
     os.system(cmd)
     fromfile  = rightfile
     fromdate  = time.ctime(os.stat(fromfile).st_mtime)
-    fromlines = open(fromfile, 'U').readlines()
     tofile    = outfile
     todate    = time.ctime(os.stat(tofile).st_mtime)
-    tolines   = open(tofile, 'U').readlines()
-
-    # Filter out <module> for Python 2.4 and before
-    module_re = re.compile('[)]: <module>')
-    tolines = [re.sub(module_re, '):', line) for line in tolines]
+    with open(fromfile) as f: fromlines = f.readlines()
+    with open(tofile) as f: tolines = f.readlines()
 
     # Filter out last instruction. For example:
     # (gcd.py:11 @6): -> (gcd.py:11)
@@ -50,6 +46,11 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
                                      tofile, fromdate, todate))
     if len(diff) == 0:
         os.unlink(outfile)
+        pass
+    else:
+        with open(tofile, 'w') as out:
+            out.writelines(tolines)
+            pass
         pass
     for line in diff:
         print(line.rstrip())
