@@ -91,7 +91,7 @@ We do more in the way of looking at the byte codes to give better information. T
 Source-code Syntax Colorization
 -------------------------------
 
-Starting with release 0.2.0, terminal source code is colorized via `pygments <http://pygments.org>`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off.
+Starting with release 0.2.0, terminal source code is colorized via `pygments <http://pygments.org>`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off.  Starting with release 0.6.0, you can use your own `pygments style <http://pygments.org/docs/styles/>`_, provided you have a terminal that supports 256 colors. If your terminal supports the basic ANSI color sequences only, we support that too in both dark and light themes.
 
 Debugger Command Arguments can be Variables and Expressions
 -----------------------------------------------------------
