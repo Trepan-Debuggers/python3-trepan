@@ -17,12 +17,12 @@ def complete(self, prefix):
 class ShowStyle(Mbase_subcmd.DebuggerSubcommand):
     """**show style* *name*
 
-Show the pygments style used in formatting text
+Show the pygments style used in formatting 256-color terminal text.
 
 See also:
 --------
 
-`set style`
+`set style`, `show highlight`
 """
 
     in_list    = True

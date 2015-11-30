@@ -12,11 +12,11 @@ from trepan.lib import complete as Mcomplete
 
 
 class SetStyle(Mbase_subcmd.DebuggerSubcommand):
-    """**set style* *name*
+    """**set style* *pygments-style*
 
 Set the pygments style in to use in formatting text for a 256-color terminal.
 Note: if your terminal doesn't support 256 colors, you may be better off
-using --highlght=plain or --highlight=dark instead.
+using `--highlght=plain` or `--highlight=dark` instead.
 
 Giving an invalid name will list all available pygments styles.
 

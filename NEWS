@@ -1,3 +1,12 @@
+trepan 0.6.0 2015-11-30
+
+- Profile startup moved from .trepanrc2 to ./config/trepany/profile
+- Add ability to pygments style via "set style". Add "show style"
+- Add ability to remap a source file to another file name: "set substitute"
+- Add gdb's "set confirm"
+- Fix highlight bugs and improve colors for dark backgrounds, e.g. emacs atom dark.
+- Miscellaneous bug and doc fixes
+
 trepan 0.5.3 2015-10-12
 
 - Revise quit to handle threads
