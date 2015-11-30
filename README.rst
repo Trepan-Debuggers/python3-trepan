@@ -111,7 +111,7 @@ You can now debug your program in a different process or even a different comput
 Egg, Pip, and Tarballs
 ------------------------
 
-Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://github.com/rocky/python3-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
+Can be installed via the usual *pip* or *easy_install*. There is a source tarball. howtoinstall for full instructions and installing from git.
 
 Modularity
 ----------
@@ -131,6 +131,7 @@ Documentation
 
 Documentation: http://python2-trepan.readthedocs.org
 
+.. _howtoinstall: https://github.com/rocky/python3-trepan/wiki/How-to-Install
 .. _pydb:  http://bashdb.sf.net/pydb
 .. _trepan: https://pypi.python.org/pypi/trepan
 .. _trepan3: https://github.com/rocky/python3-trepan
@@ -139,7 +140,7 @@ Documentation: http://python2-trepan.readthedocs.org
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
-.. |downloads| image:: https://pypip.in/download/trepan3k/badge.svg
+.. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
 .. |Latest Version| image:: https://pypip.in/version/trepan3k/badge.svg?text=version
