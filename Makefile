@@ -95,6 +95,10 @@ verbose-install:
 install:
 	$(PYTHON) ./setup.py install >/dev/null
 
+#: Install setup.py requirements
+install-requirements:
+	pip install -e .
+
 rmChangeLog:
 	rm ChangeLog || true
 
