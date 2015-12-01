@@ -121,9 +121,8 @@ class BreakpointManager:
         if (filename, lineno) not in self.bplist:
             return []
         breakpoints = self.bplist[(filename, lineno)]
-        print(breakpoints)
         bpnums = [bp.number for bp in breakpoints]
-        for bp in breakpoints.copy():
+        for bp in list(breakpoints):
             self.delete_breakpoint(bp)
         return bpnums
 
