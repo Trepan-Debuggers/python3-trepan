@@ -25,7 +25,7 @@ from trepan.lib.format import color_tf
 class SetHighlight(Mbase_subcmd.DebuggerSubcommand):
     """**set highlight** [ **reset** ] {**plain** | **light** | **dark** | **off**}
 
-Set whether we use terminal highlighting. Permissable values are:
+Set whether we use terminal highlighting. Permissible values are:
 
        plain:  no terminal highlighting
        off:    same as plain
@@ -34,6 +34,11 @@ Set whether we use terminal highlighting. Permissable values are:
 
 If the first argument is *reset*, we clear any existing color formatting
 and recolor all source code output.
+
+A related setting is *style* which sets the Pygments style for terminal
+that support, 256 colors. But even here, it is useful to set
+the highlight to tell the debugger for bold and emphasized text what
+values to use.
 
 Examples:
 --------
@@ -49,7 +54,7 @@ Examples:
 
 See also:
 ---------
-`show highlight`"""
+`show highlight` and `set style`"""
 
     in_list    = True
     min_abbrev = len('hi')

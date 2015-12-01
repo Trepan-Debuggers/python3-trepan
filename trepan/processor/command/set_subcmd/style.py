@@ -16,9 +16,16 @@ class SetStyle(Mbase_subcmd.DebuggerSubcommand):
 
 Set the pygments style in to use in formatting text for a 256-color terminal.
 Note: if your terminal doesn't support 256 colors, you may be better off
-using `--highlght=plain` or `--highlight=dark` instead.
+using `--highlght=plain` or `--highlight=dark` instead. To turn off styles
+use `set style none`.
 
 Giving an invalid name will list all available pygments styles.
+
+Examples:
+---------
+    set style colorful   # Pygments 'colorful' style
+    set style fdasfda    # Probably display available styles
+    set style none       # Turn off style, still use highlight though
 
 See also:
 --------
@@ -36,6 +43,10 @@ See also:
     def run(self, args):
         if len(args) != 1:
             self.errmsg("Expecting exactly one arg")
+            return
+
+        if args[0] == 'none':
+            self.debugger.settings[self.name] = None
             return
 
         if args[0] not in style_names:
