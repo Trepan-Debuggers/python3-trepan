@@ -50,7 +50,7 @@ Examples:
 See also:
 ---------
 
- `tbreak`.
+ `tbreak` and `condition`.
 """
 
     aliases       = ('b',)
