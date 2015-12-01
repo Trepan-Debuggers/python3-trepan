@@ -114,7 +114,20 @@ class BreakpointManager:
         bp.enabled = do_enable
         return (True, '')
 
-    def find_bp(self, filename, line, frame):
+    def delete_breakpoints_by_lineno(self, filename, lineno):
+        """Removes all breakpoints at a give filename and line number.
+        Returns a list of breakpoints numbers deleted.
+        """
+        if (filename, lineno) not in self.bplist:
+            return []
+        breakpoints = self.bplist[(filename, lineno)]
+        print(breakpoints)
+        bpnums = [bp.number for bp in breakpoints]
+        for bp in breakpoints.copy():
+            self.delete_breakpoint(bp)
+        return bpnums
+
+    def find_bp(self, filename, lineno, frame):
         """Determine which breakpoint for this file:line is to be acted upon.
 
         Called only if we know there is a bpt at this
@@ -122,7 +135,7 @@ class BreakpointManager:
         that indicates if it is ok to delete a temporary breakpoint.
 
         """
-        possibles = self.bplist[filename, line]
+        possibles = self.bplist[filename, lineno]
         for i in range(0, len(possibles)):
             b = possibles[i]
             if not b.enabled:
@@ -315,4 +328,12 @@ if __name__=='__main__':
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint('foo', 5, temporary=True)
     print(bp3.icon_char())
+    print(bpmgr.bpnumbers())
+
+    bp = bpmgr.add_breakpoint('bar', 3)
+    filename = bp.filename
+    for i in range(3):
+        bp = bpmgr.add_breakpoint('bar', 6)
+    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
+    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
     print(bpmgr.bpnumbers())
