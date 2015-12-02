@@ -26,10 +26,21 @@ There's a lot of cool stuff here that's not in the stock
 Python debugger *pdb*.
 
 
+Source-code Syntax Colorization
+-------------------------------
+
+Starting with release 0.2.0, terminal source code is colorized via `pygments <http://pygments.org>`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off. Starting with release 0.6.0, you can use your own `pygments style <http://pygments.org/docs/styles/>`_, provided you have a terminal that supports 256 colors. If your terminal supports the basic ANSI color sequences only, we support that too in both dark and light themes.
+
+
 Command Completion
 ------------------
 
 Starting with release 2.8, readline command completion has been added. Command completion is not just a simple static list, but varies depending on the context. For example, for frame-changing commands which take optional numbers, on the list of *valid numbers* is considered.
+
+Terminal Handling
+-----------------
+
+We can adjust debugger output depending on the line width of your terminal. If it changes, or you want to adjust it, see `set width <https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html>`_.
 
 Smart Eval
 ----------
@@ -88,10 +99,8 @@ We do more in the way of looking at the byte codes to give better information. T
 * Check that breakpoints are set only where they make sense.
 * A more accurate determination of if you are at a function-defining *def* statement (because the caller instruction contains ``MAKE_FUNCTION``.)
 
-Source-code Syntax Colorization
--------------------------------
 
-Starting with release 0.2.0, terminal source code is colorized via `pygments <http://pygments.org>`_ and we make use of terminal bold and emphasized text in debugger output and help text. Of course, you can also turn this off.  Starting with release 0.6.0, you can use your own `pygments style <http://pygments.org/docs/styles/>`_, provided you have a terminal that supports 256 colors. If your terminal supports the basic ANSI color sequences only, we support that too in both dark and light themes.
+In the future we may add the ablity to deparse Python code at the instruction you are stopped at, thereby giving you a way to see *exactly* where you are. (Python reports location only at the level of granularity of a line.) But even without this feature, using the instruction offset and disassembly you can determine exactly where you are. See `this article <http://blogs.perl.org/users/rockyb/2015/11/exact-perl-location-with-bdeparse-and-develcallsite.html>`_.
 
 Debugger Command Arguments can be Variables and Expressions
 -----------------------------------------------------------
@@ -108,10 +117,10 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Egg, Pip, and Tarballs
+Egg, and Tarballs
 ------------------------
 
-Can be installed via the usual *pip* or *easy_install*. There is a source tarball. howtoinstall for full instructions and installing from git.
+Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://github.com/rocky/python3-trepan/wiki/How-to-Install>`_ has full instructions and installing from git.
 
 Modularity
 ----------

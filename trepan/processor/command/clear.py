@@ -25,13 +25,18 @@ class ClearCommand(Mbase_cmd.DebuggerCommand):
     """**clear** [*linenumber*]
 
 Clear some breakpoints by line number.
+
+See also:
+---------
+`delete`
+
 """
     category      = 'breakpoints'
     min_args      = 0
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
-    short_help    = 'Delete some breakpoints or auto-display expressions'
+    short_help    = 'Delete some breakpoints on a line'
 
     complete = Mcomplete.complete_bpnumber
 
@@ -54,7 +59,7 @@ Clear some breakpoints by line number.
         elif len(linenos) == 1:
             self.msg("Deleted breakpoint %d" % linenos[0])
         elif len(linenos) > 1:
-            self.msg("Deleted breakpoints %sd" % ' '.join(linenos))
+            self.msg("Deleted breakpoints %s" % ' '.join([str(i) for i in linenos]))
         return
 
 
