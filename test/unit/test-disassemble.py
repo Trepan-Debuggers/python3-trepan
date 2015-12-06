@@ -58,6 +58,7 @@ class TestDisassemble(unittest.TestCase):
                      ['disassemble', 'unittest'],
                      ['disassemble', '1'],
                      ['disassemble', '10', '100'],
+                     ['disassemble', '@10', '@30'],
                      ['disassemble', '+', '1'],
                      ['disassemble', '-', '1'],
                      ['disassemble', '+1', '2'],

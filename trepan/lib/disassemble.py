@@ -60,7 +60,7 @@ def _try_compile(source, name):
 
 
 def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
-        relative_pos = False, highlight='light'):
+        relative_pos = False, highlight='light', start_offset=0, end_offset=None):
     """Disassemble classes, methods, functions, or code.
 
     With no argument, disassemble the last traceback.
@@ -70,6 +70,17 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     if x is None:
         distb()
         return
+    mess = ''
+    if start_line > 1:
+        mess += " from line %d" % start_line
+    if end_line:
+        mess += " to line %d" % end_line
+    if start_offset > 1:
+        mess = " from offset %d" % start_offset
+    if end_offset:
+        mess += " to offset %d" % end_offset
+
+    sectioned = False
     if type(x) is object:
         x = x.__class__
     if hasattr(x, 'f_code'):
@@ -77,11 +88,14 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
             lasti = x.f_lasti
             pass
         x = x.f_code
-        section("Disassembly of %s: " % x)
+        section("Disassembly of %s: %s" % (x, mess))
+        sectioned = True
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
                     relative_pos = relative_pos,
-                    highlight = highlight)
+                    highlight = highlight,
+                    start_offset = start_offset,
+                    end_offset = end_offset)
         return
     elif hasattr(x, '__func__'):  # Method
         x = x.__func__
@@ -92,7 +106,8 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
         items = sorted(x.__dict__.items())
         for name, x1 in items:
             if isinstance(x1, _have_code):
-                section("Disassembly of %s: " % x)
+                if not sectioned:
+                    section("Disassembly of %s: " % x)
                 try:
                     dis(msg, msg_nocr, section, errmsg, x1,
                         start_line=start_line, end_line=end_line,
@@ -105,7 +120,8 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
             pass
         pass
     elif hasattr(x, 'co_code'):  # Code object
-        section("Disassembly of %s: " % x)
+        if not sectioned:
+            section("Disassembly of %s: " % x)
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
                     relative_pos = relative_pos)
@@ -120,13 +136,15 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
 
 
 def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1,
-                end_line=None, relative_pos=False, highlight='light'):
+                end_line=None, relative_pos=False, highlight='light',
+                start_offset=0, end_offset=None):
     """Disassemble a code object."""
     disassemble_bytes(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
                       start_line, end_line, relative_pos,
                       co.co_varnames, co.co_names, co.co_consts,
                       co.co_cellvars, co.co_freevars,
-                      dict(findlinestarts(co)), highlight)
+                      dict(findlinestarts(co)), highlight,
+                      start_offset=start_offset, end_offset=end_offset)
     return
 
 
@@ -139,7 +157,8 @@ def disassemble_string(source):
 def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                       start_line=-1, end_line=None, relative_pos=False,
                       varnames=(), names=(), consts=(), cellvars=(),
-                      freevars=(), linestarts={}, highlight='light'):
+                      freevars=(), linestarts={}, highlight='light',
+                      start_offset=0, end_offset=None):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""
     statement_count = 10000
@@ -163,11 +182,21 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
         pass
     while i < n and statement_count >= 0:
         op = code[i]
+        if end_offset and i > end_offset:
+            break
+        if start_offset > i :
+            msg_nocr = null_print
+            msg = null_print
+        else:
+            msg_nocr = orig_msg_nocr
+            msg = orig_msg
+            pass
         if i in linestarts:
             if i > 0:
                 msg("")
             cur_line = linestarts[i]
-            if start_line and start_line > cur_line:
+            if ((start_line and start_line > cur_line) or
+                start_offset > i) :
                 msg_nocr = null_print
                 msg = null_print
             else:
@@ -175,7 +204,9 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                 msg_nocr = orig_msg_nocr
                 msg = orig_msg
                 pass
-            if cur_line > end_line: break
+            if ((cur_line > end_line) or
+                (end_offset and i > end_offset)):
+                break
             msg_nocr(format_token(Mformat.LineNumber,
                                   "%3d" % cur_line,
                                   highlight=highlight))
@@ -281,11 +312,15 @@ if __name__ == '__main__':
         msg('=== ' + msg_str + ' ===')
         return
     curframe = inspect.currentframe()
+    # dis(msg, msg_nocr, errmsg, section, curframe,
+    #    start_line=10, end_line=40, highlight='dark')
     dis(msg, msg_nocr, errmsg, section, curframe,
-        start_line=10, end_line=40, highlight='dark')
-    print('-' * 40)
-    dis(msg, msg_nocr, section, errmsg, disassemble)
-    print('-' * 40)
+        start_offset=10, end_offset=20, highlight='dark')
+    # print('-' * 40)
+    # dis(msg, msg_nocr, section, errmsg, disassemble)
+    # print('-' * 40)
+    # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
+    # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
     # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
     # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
     pass

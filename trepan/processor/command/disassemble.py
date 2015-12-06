@@ -23,15 +23,16 @@ from trepan.processor import cmdfns as Mcmdfns
 
 
 class DisassembleCommand(Mbase_cmd.DebuggerCommand):
-    """**disassemble** [*thing*] [[**+**|**-**]*start-line*|**.** [[**+**|**-**]*end-line*|**.**]]
+    """**disassemble** [*thing*] [[**+**|**-**|**.**|**@**]*start* [[**+**|**-***|**.**|**@**]*end]]
 
 With no argument, disassemble the current frame.  With an integer
-start-line, the disassembly is narrowed to show lines starting
-at that line number or later; with an end-line number, disassembly
+start, the disassembly is narrowed to show lines starting
+at that line number or later; with an end number, disassembly
 stops when the next line would be greater than that or the end of the
-code is hit.
+code is hit. Additionally if you prefice the number with an @, the value
+is take to be a bytecode offset rather than a line number.
 
-If *start-line* or *end-line is* `.`, `+`, or `-`, the current line number
+If *start* or *end is* `.`, `+`, or `-`, the current line number
 is used.  If instead it starts with a plus or minus prefix to a
 number, then the line number is relative to the current frame number.
 
@@ -50,6 +51,7 @@ disassemble that.
    disassemble +3  # Disassemble adding 3 from the current line number
    disassemble 3                  # Disassemble starting from line 3
    disassemble 3 10               # Disassemble lines 3 to 10
+   disassemble @0 @10             # Disassemble offset
    disassemble myprog.pyc         # Disassemble file myprog.pyc
 """
 
@@ -62,24 +64,27 @@ disassemble that.
     short_help    = 'Disassemble Python bytecode'
 
     def parse_arg(self, arg):
+        is_offset = False
         if arg in ['+', '-', '.']:
-            return self.proc.curframe.f_lineno, True
+            return self.proc.curframe.f_lineno, True, is_offset
+        if arg[0:1] == '@':
+            is_offset = True
+            arg = arg[1:]
         lineno = self.proc.get_int_noerr(arg)
         if lineno is not None:
             if arg[0:1] in ['+', '-']:
-                return lineno + self.proc.curframe.f_lineno, True
+                return lineno + self.proc.curframe.f_lineno, True, is_offset
             else:
-                return lineno, False
+                return lineno, False, is_offset
             pass
-        return None, None
+        return None, None, is_offset
 
     def run(self, args):
-        start_line = -1
-        end_line = None
         relative_pos = False
+        opts = {'highlight': self.settings['highlight']}
         if len(args) > 1:
-            start_line, relative_pos = self.parse_arg(args[1])
-            if start_line is None:
+            start, opts['relative_pos'], is_offset = self.parse_arg(args[1])
+            if start is None:
                 # First argument should be an evaluatable object
                 # or a filename
                 if args[1].endswith('.pyc') and Mfile.readable(args[1]):
@@ -90,24 +95,30 @@ disassemble that.
                 else:
                     try:
                         obj=self.proc.eval(args[1])
-                        start_line = -1
+                        opts['start_line'] = -1
                     except:
                         self.errmsg(("Object '%s' is not something we can"
                                      + " disassemble.") % args[1])
                         return
                     pass
                 if len(args) > 2:
-                    start_line, relative_pos = self.parse_arg(args[2])
-                    if start_line is None:
-                        self.errmsg = ('Start line should be a number. Got %s.'
-                                       % args[2])
+                    start, opts['relative_pos'], is_offset = self.parse_arg(args[2])
+                    if start is None:
+                        ilk = 'line' if is_offset else 'offset'
+
+                        self.errmsg = ('Start %s should be a number. Got %s.'
+                                       % (ilk, args[2]))
                         return
+                    else:
+                        opts['start_offset' if is_offset else 'start_line'] = start
                     if len(args) == 4:
-                        end_line, relative_pos = self.parse_arg(args[3])
-                        if end_line is None:
-                            self.errmsg = ('End line should be a number. ' +
-                                           ' Got %s.' % args[3])
+                        finish, relative_pos, is_offset = self.parse_arg(args[3])
+                        if finish is None:
+                            self.errmsg = ('End %s should be a number. ' +
+                                           ' Got %s.' % (ilk, args[3]))
                             return
+                        else:
+                            opts['end_offset' if is_offset else 'end_line'] = finish
                         pass
                     elif len(args) > 4:
                         self.errmsg("Expecting 0-3 parameters. Got %d" %
@@ -122,16 +133,18 @@ disassemble that.
                         return
                     pass
                 Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg,
-                         obj, start_line=start_line, end_line=end_line,
-                         relative_pos=relative_pos, highlight=self.settings['highlight'])
+                         obj, **opts)
                 return False
             else:
+                opts['start_offset' if is_offset else 'start_line'] = start
                 if len(args) == 3:
-                    end_line, not_used = self.parse_arg(args[2])
-                    if end_line is None:
+                    finish, not_used, is_offset = self.parse_arg(args[2])
+                    if finish is None:
                         self.errmsg = ('End line should be a number. ' +
                                        ' Got %s.' % args[2])
                         return
+                    else:
+                        opts['end_offset' if is_offset else 'end_line'] = finish
                     pass
                 elif len(args) > 3:
                     self.errmsg("Expecting 1-2 line parameters. Got %d." %
@@ -144,10 +157,7 @@ disassemble that.
             return
 
         Mdis.dis(self.msg, self.msg_nocr, self.section, self.errmsg,
-                 self.proc.curframe,
-                 start_line=start_line, end_line=end_line,
-                 relative_pos=relative_pos,
-                 highlight=self.settings['highlight'])
+                 self.proc.curframe,  **opts)
         return False
 
 # Demo it
