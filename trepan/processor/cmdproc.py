@@ -336,7 +336,7 @@ class CommandProcessor(Mprocessor.Processor):
         return filename
 
     def set_prompt(self, prompt='trepan3k'):
-        if self.thread_name != 'MainThread':
+        if self.thread_name and self.thread_name != 'MainThread':
             prompt += ':' + self.thread_name
             pass
         self.prompt_str = '%s%s%s' % ('(' * self.debug_nest,
