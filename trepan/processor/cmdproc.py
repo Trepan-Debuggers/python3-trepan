@@ -179,7 +179,7 @@ def print_location(proc_obj):
 #             if self.run == frame.f_locals['breadcrumb']:
 #                 break
 
-        filename = Mstack.frame2file(core_obj, frame)
+        filename = Mstack.frame2file(core_obj, frame, canonic=False)
         if '<string>' == filename and dbgr_obj.eval_string:
             remapped_file = filename
             filename = pyficache.unmap_file(filename)
@@ -199,6 +199,15 @@ def print_location(proc_obj):
             m = re.search('^<frozen (.*)>', filename)
             if m and m.group(1) in pyficache.file2file_remap:
                 remapped_file = pyficache.file2file_remap[m.group(1)]
+                pass
+            elif filename in pyficache.file2file_remap:
+                remapped_file = pyficache.unmap_file(filename)
+                # FIXME: a remapped_file shouldn't be the same as its unmapped version
+                if remapped_file == filename:
+                    remapped_file = None
+                    pass
+                pass
+            pass
 
         fn_name = frame.f_code.co_name
         last_i  = frame.f_lasti
@@ -236,7 +245,7 @@ def print_location(proc_obj):
 # Default settings for command processor method call
 DEFAULT_PROC_OPTS = {
     # A list of debugger initialization files to read on first command
-    # loop entry.  Often this something like [~/.trepan3krc] which the
+    # loop entry.  Often this something like [~/.config/trepanpy/profile] which the
     # front-end sets.
     'initfile_list' : []
 }
@@ -253,6 +262,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.event2short['signal'] = '?!'
         self.event2short['brkpt']  = 'xx'
 
+        self.optional_modules = ('ipython', 'bpy')
         self.cmd_instances    = self._populate_commands()
 
         # command argument string. Is like current_command, but the part
@@ -686,10 +696,12 @@ class CommandProcessor(Mprocessor.Processor):
                     macro_cmd_name = args[0]
                     if macro_cmd_name not in self.macros: break
                     try:
-                        current_command = self.macros[macro_cmd_name][0](*args[1:])
+                        current_command = \
+                          self.macros[macro_cmd_name][0](*args[1:])
                     except TypeError:
                         t, v = sys.exc_info()[:2]
-                        self.errmsg("Error expanding macro %s" % macro_cmd_name)
+                        self.errmsg("Error expanding macro %s" %
+                                    macro_cmd_name)
                         return False
                     if self.settings('debugmacro'):
                         print(current_command)
@@ -872,12 +884,12 @@ class CommandProcessor(Mprocessor.Processor):
                     pass
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
-                except ImportError:
-                    pass
                 except:
-                    if mod_name not in ('bpy', 'ipython'):
+                    # Don't need to warn about optional modules
+                    if mod_name not in self.optional_modules:
                         print('Error importing %s: %s' %
                               (mod_name, sys.exc_info()[0]))
+                        pass
                     continue
                 pass
 
@@ -915,9 +927,10 @@ class CommandProcessor(Mprocessor.Processor):
             try:
                 command_mod = getattr(__import__(import_name), mod_name)
             except:
-                if mod_name not in ('bpy', 'ipython'):
+                if mod_name not in self.optional_modules:
                     print('Error importing %s: %s' %
                           (mod_name, sys.exc_info()[0]))
+                    pass
                 continue
 
             classnames = [ tup[0] for tup in

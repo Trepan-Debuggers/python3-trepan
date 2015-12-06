@@ -118,8 +118,11 @@ def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
     return s
 
 
-def frame2file(core_obj, frame):
-    return core_obj.filename(core_obj.canonic_filename(frame))
+def frame2file(core_obj, frame, canonic=True):
+    if canonic:
+        return core_obj.filename(core_obj.canonic_filename(frame))
+    else:
+        return core_obj.filename(frame.f_code.co_filename)
 
 
 def is_exec_stmt(frame):
