@@ -1,3 +1,12 @@
+trepan 0.6.1 2015-12-10 - Dr Gecko
+
+- add gdb-like "clear" command
+- fallback to getlines for getting non-filename positions, e.g. inside compressed egg
+- Remove spurious remap positions in showing location
+- Allow diassembly by offset using @ prefix.
+- disassembly secition header contains limit info
+- bug fixes
+
 trepan 0.6.0 2015-11-30
 
 - Profile startup moved from .trepanrc2 to ./config/trepany/profile
