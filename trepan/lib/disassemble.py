@@ -124,7 +124,10 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
             section("Disassembly of %s: " % x)
         disassemble(msg, msg_nocr, section, x, lasti=lasti,
                     start_line=start_line, end_line=end_line,
-                    relative_pos = relative_pos)
+                    relative_pos = relative_pos,
+                    highlight = highlight,
+                    start_offset = start_offset,
+                    end_offset = end_offset)
     elif isinstance(x, (bytes, bytearray)):  # Raw bytecode
         disassemble_bytes(x)
     elif isinstance(x, str):    # Source code

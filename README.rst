@@ -13,7 +13,7 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 3.3 and 3.4. See trepan_ for the same code modified to work with Python 2.
+This package is for Python 3.3, 3.4 and 3.5. See trepan_ for the same code modified to work with Python 2.
 
 Features
 ========
@@ -100,7 +100,7 @@ We do more in the way of looking at the byte codes to give better information. T
 * A more accurate determination of if you are at a function-defining *def* statement (because the caller instruction contains ``MAKE_FUNCTION``.)
 
 
-In the future we may add the ablity to deparse Python code at the instruction you are stopped at, thereby giving you a way to see *exactly* where you are. (Python reports location only at the level of granularity of a line.) But even without this feature, using the instruction offset and disassembly you can determine exactly where you are. See `this article <http://blogs.perl.org/users/rockyb/2015/11/exact-perl-location-with-bdeparse-and-develcallsite.html>`_.
+In the future we may add the ablity to deparse Python code at the instruction you are stopped at, thereby giving you a way to see *exactly* where you are. (Python reports location only at the level of granularity of a line.) But even without this feature, using the instruction offset and disassembly you can determine exactly where you are. See `this <https://github.com/rocky/python2-trepan/wiki/Exact-location-through-deparsing-bytecodes>`_ for more information.
 
 Debugger Command Arguments can be Variables and Expressions
 -----------------------------------------------------------
