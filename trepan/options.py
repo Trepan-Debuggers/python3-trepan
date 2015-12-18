@@ -34,6 +34,21 @@ def default_configfile(base_filename):
         os.makedirs(file_dir, mode=0o755)
     return os.path.join(file_dir, base_filename)
 
+def add_startup_file(dbg_initfiles):
+    """ Read debugger startup file(s): both python code and
+    debugger profile to dbg_initfiles."""
+
+    startup_python_file = default_configfile('profile.py')
+
+    if Mfile.readable(startup_python_file):
+        with codecs.open(startup_python_file, 'r', encoding='utf8') as fp:
+                exec(fp.read())
+
+    startup_trepan_file = default_configfile('profile')
+    if Mfile.readable(startup_trepan_file):
+        dbg_initfiles.append(startup_trepan_file)
+        pass
+    return
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -197,17 +212,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []
     if not opts.noexecute:
-        # Read debugger startup file(s): both python code and
-        # debugger profile.
-        startup_python_file = default_configfile('profile.py')
-
-        if Mfile.readable(startup_python_file):
-            with codecs.open(startup_python_file, 'r', encoding='utf8') as fp:
-                exec(fp.read())
-
-        startup_trepan_file = default_configfile('profile')
-        if Mfile.readable(startup_trepan_file):
-            dbg_initfiles.append(startup_trepan_file)
+        add_startup_file(dbg_initfiles)
 
     # As per gdb, first we execute user initialization files and then
     # we execute any file specified via --command.

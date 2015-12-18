@@ -38,9 +38,7 @@ import trepan.lib
 import trepan.interfaces
 import trepan.inout
 import trepan.processor.command
-from trepan import debugger as Mdebugger
-from trepan import post_mortem as Mpost_mortem
-
+from trepan import debugger as Mdebugger, post_mortem as Mpost_mortem
 
 def debugger_on_post_mortem():
     '''Call debugger on an exeception that terminates a program'''
@@ -193,6 +191,13 @@ dictionary that gets fed to trepan.Debugger.core.start().
     core = Mdebugger.debugger_obj.core
     frame = sys._getframe(0+level)
     core.set_next(frame)
+    if 'startup-profile' in start_opts and start_opts['startup-profile']:
+        dbg_initfiles = []
+        from trepan import options
+        options.add_startup_file(dbg_initfiles)
+        for init_cmdfile in dbg_initfiles:
+            core.processor.queue_startfile(init_cmdfile)
+
     if not core.is_started():
         core.start(start_opts)
         pass
