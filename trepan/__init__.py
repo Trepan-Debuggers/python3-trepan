@@ -175,3 +175,5 @@ Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
 """
 __docformat__ = 'restructuredtext'
+
+__import__('pkg_resources').declare_namespace(__name__)
