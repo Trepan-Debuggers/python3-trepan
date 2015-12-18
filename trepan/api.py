@@ -191,7 +191,7 @@ dictionary that gets fed to trepan.Debugger.core.start().
     core = Mdebugger.debugger_obj.core
     frame = sys._getframe(0+level)
     core.set_next(frame)
-    if 'startup-profile' in start_opts and start_opts['startup-profile']:
+    if start_opts and 'startup-profile' in start_opts and start_opts['startup-profile']:
         dbg_initfiles = []
         from trepan import options
         options.add_startup_file(dbg_initfiles)
