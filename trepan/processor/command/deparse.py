@@ -53,7 +53,6 @@ See also:
     need_stack    = True
     short_help    = 'Deparse source via uncompyle'
 
-
     def print_text(self, text):
         if self.settings['highlight'] == 'plain':
             self.msg(text)
@@ -62,7 +61,6 @@ See also:
         if 'style' in self.settings:
             opts['style'] = self.settings['style']
         self.msg(highlight_string(text, opts).strip("\n"))
-
 
     def run(self, args):
         # Can't do anything if we don't have python deparse
