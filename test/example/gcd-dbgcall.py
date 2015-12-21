@@ -9,7 +9,7 @@ of parameters.
 
 """
 import sys
-import trepan.api;
+from trepan.api import debug
 
 def check_args():
     if len(sys.argv) != 3:
@@ -30,10 +30,10 @@ def gcd(a,b):
        (a, b) = (b, a)
 
     if a <= 0:
-        trepan.api.debug()
+        debug(step_ignore=0)
         return None
     if a == 1 or b-a == 0:
-        trepan.api.debug(step_ignore=0, start_opts={'startup-profile': True})
+        debug(start_opts={'startup-profile': True})
         return a
     return gcd(b-a, a)
 
