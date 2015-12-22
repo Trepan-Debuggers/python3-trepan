@@ -152,6 +152,7 @@ Documentation: http://python2-trepan.readthedocs.org
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
+		 :target: https://travis-ci.org/rocky/python3-trepan
 .. |Latest Version| image:: https://pypip.in/version/trepan3k/badge.svg?text=version
    :target: https://travis-ci.org/rocky/python3-trepan/
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
