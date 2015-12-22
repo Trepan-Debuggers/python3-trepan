@@ -24,6 +24,9 @@ def extract_expression(text):
     if re.search('^\s*(?:if|elif)\s+', text):
         text = re.sub('^\s*(?:if|elif)\s+', '', text)
         text = re.sub(':(?:\s+.*$|$)', '', text)
+    elif re.search('^\s*assert\s+.*', text):
+        # EXPR in : assert EXPRESSION:
+        text = re.sub('^\s*assert\s+', '', text)
     elif re.search('^\s*(?:while)\s+', text):
         text = re.sub('^\s*(?:while)\s+', '', text)
         text = re.sub(':(?:\s+.*$|$)', '', text)
