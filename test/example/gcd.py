@@ -21,6 +21,7 @@ def check_args():
             print("** Expecting an integer, got: %s" % repr(sys.argv[i]))
             sys.exit(2)
             pass
+        pass
 
 def gcd(a,b):
     """ GCD. We assume positive numbers"""
