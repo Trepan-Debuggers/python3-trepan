@@ -22,7 +22,7 @@ from trepan.processor import frame as Mframe
 
 
 class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
-    """**info frame** [ *frame-number* | *frame-object* ]
+    """**info frame** [-v] [ *frame-number* | *frame-object* ]
 
 Show the detailed information for *frame-number* or the current frame if
 *frame-number* is not specified. You can also give a frame object instead of
@@ -40,6 +40,8 @@ instruction
 * a function that tracing this frame or `None`
 
 * Whether the frame is in restricted execution
+
+If `-v` is given we show builtin and global names the frame sees.
 
 See also:
 ---------
@@ -66,6 +68,11 @@ See also:
         if not frame:
             self.errmsg("No frame selected.")
             return False
+
+        show_lists = False
+        if len(args) >= 1 and args[0] == '-v':
+            args.pop(0)
+            show_lists = True
 
         frame_num = None
         if len(args) == 1:
@@ -95,9 +102,21 @@ See also:
         self.section(mess)
         if hasattr(frame, 'f_restricted'):
             self.msg('  restricted execution: %s' % frame.f_restricted)
-        self.msg('  line number: %d' % frame.f_lineno)
+        self.msg('  current line number: %d' % frame.f_lineno)
         self.msg('  last instruction: %d' % frame.f_lasti)
+        self.msg('  code: %s' % frame.f_code)
+        self.msg('  previous frame: %s' % frame.f_back)
         self.msg('  tracing function: %s' % frame.f_trace)
+
+        if show_lists:
+            for name, field in [('Globals', 'f_globals'),
+                                ('Builtins', 'f_builtins'),
+                                ]:
+                vals = getattr(frame, field).keys()
+                if vals:
+                    self.section(name)
+                    m = self.columnize_commands(vals)
+                    self.msg_nocr(m)
 
         return False
     pass
