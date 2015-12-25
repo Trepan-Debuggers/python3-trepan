@@ -7,7 +7,7 @@
 GIT2CL ?= git2cl
 PYTHON ?= python3
 RM      ?= rm
-LINT    = flake8
+LINT    =o flake8
 
 #EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
 PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests flake8
@@ -20,6 +20,10 @@ test: check
 
 #: Run all tests: unit, functional and integration
 check-short: test-unit-short test-functional-short test-integration-short
+
+# Check StructuredText long description formatting
+check-rst:
+	$(PYTHON) setup.py --long-description | rst2html.py > python3-trepan.html
 
 #: Lint program
 flake8:
@@ -60,11 +64,11 @@ clean:
 	$(PYTHON) ./setup.py $@
 
 #: Create source (tarball) and binary (egg) distribution
-dist:
+dist: check-rst
 	$(PYTHON) ./setup.py sdist bdist_egg
 
 #: Create source tarball
-sdist:
+sdist: check-rst
 	$(PYTHON) ./setup.py sdist
 
 #: Style check. Set env var LINT to pyflakes, flake, or flake8
