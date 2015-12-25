@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import inspect
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
@@ -22,9 +22,32 @@ from trepan.processor import frame as Mframe
 
 
 class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
-    '''Show the detailed information about the current frame'''
+    """**info frame** [ *frame-number* | *frame-object* ]
+
+Show the detailed information for *frame-number* or the current frame if
+*frame-number* is not specified. You can also give a frame object instead of
+a frame number
+
+Specific information includes:
+
+* the frame number (if not an object)
+
+* the source-code line number that this frame is stopped in
+
+* the last instruction executed; -1 if the program are before the first
+instruction
+
+* a function that tracing this frame or `None`
+
+* Whether the frame is in restricted execution
+
+See also:
+---------
+
+`info locals`, `info globals`, `info args`"""
+
     min_abbrev = 2
-    max_args = 1
+    max_args = 2
     need_stack = True
     short_help = '''Show detailed info about the current frame'''
 
@@ -36,43 +59,55 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         return Mcomplete.complete_token(ary, prefix)
 
     def run(self, args):
+
+        # FIXME: should DRY this with code.py
         proc = self.proc
         frame = proc.curframe
         if not frame:
             self.errmsg("No frame selected.")
             return False
 
+        frame_num = None
         if len(args) == 1:
-            frame_num = self.proc.get_an_int(args[0],
-                                         ("The 'frame' command requires a" +
-                                          " frame number. Got: %s") %
-                                         args[0])
-            if frame_num is None: return False
-
-            i_stack = len(proc.stack)
-            if frame_num < -i_stack or frame_num > i_stack-1:
-                self.errmsg(('Frame number has to be in the range %d to %d.' +
-                             ' Got: %d (%s).') % (-i_stack, i_stack-1,
-                                                  frame_num, args[0]))
-                return False
-            frame = proc.stack[frame_num][0]
+            try:
+                frame_num = int(args[0])
+                i_stack = len(proc.stack)
+                if frame_num < -i_stack or frame_num > i_stack-1:
+                    self.errmsg(('a frame number number has to be in the range %d to %d.' +
+                                 ' Got: %d (%s).') % (-i_stack, i_stack-1,
+                                                      frame_num, args[0]))
+                    return False
+                frame = proc.stack[frame_num][0]
+            except:
+                try:
+                    frame = eval(args[0], frame.f_globals, frame.f_locals)
+                except:
+                    self.errmsg('%s is not a evaluable as a frame object or frame number.' %
+                                 args[0])
+                    return False
+                if not inspect.isframe(frame):
+                    self.errmsg('%s is not a frame object' % frame)
+                pass
         else:
-            frame_num = len(proc.stack)-1-proc.curindex
+            frame_num = proc.curindex
 
-        self.section('Frame %d' % frame_num)
+        mess = 'Frame %d' % frame_num if frame_num is not None else 'Frame Info'
+        self.section(mess)
         if hasattr(frame, 'f_restricted'):
             self.msg('  restricted execution: %s' % frame.f_restricted)
-        self.msg('  tracing function: %s' % frame.f_trace)
         self.msg('  line number: %d' % frame.f_lineno)
         self.msg('  last instruction: %d' % frame.f_lasti)
+        self.msg('  tracing function: %s' % frame.f_trace)
+
         return False
     pass
 
 if __name__ == '__main__':
     from trepan.processor.command import mock, info as Minfo
     d, cp = mock.dbg_setup()
+    cp.setup()
     i = Minfo.InfoCommand(cp)
+
     sub = InfoFrame(i)
-    import inspect
     cp.curframe = inspect.currentframe()
     sub.run([])
