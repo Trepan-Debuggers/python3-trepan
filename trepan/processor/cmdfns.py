@@ -17,8 +17,53 @@
 counts, to parse a string for an integer, or check a string for an
 on/off setting value.
 '''
-import sys, types
+import io, os, sys, tempfile
+import pyficache
 
+def source_tempfile_remap(prefix, text):
+    fd = tempfile.NamedTemporaryFile(suffix='.py',
+                                     prefix=prefix,
+                                     delete=False)
+    with fd:
+        fd.write(bytes(text, 'UTF-8'))
+        fd.close()
+        pass
+    return fd.name
+
+
+def deparse_fn(code):
+    try:
+        from uncompyle6.semantics.pysource import deparse_code
+    except ImportError:
+        return None
+    sys_version = sys.version_info.major + (sys.version_info.minor / 10.0)
+    try:
+        out = io.StringIO()
+        deparsed = deparse_code(sys_version, code, out)
+        return deparsed.text
+    except:
+        raise
+    return None
+
+def deparse_getline(code, filename, line_number, opts):
+    # Would love to figure out how to deparse the entire module
+    # but with all many-time rewritten import stuff, I still
+    # can't figure out how to get from "<frozen importlib>" to
+    # the module's code.
+    # So for now, we'll have to do this on a function by function
+    # bases. Fortunately pyficache has the ability to remap line
+    # numbers
+    text = deparse_fn(code)
+    if text:
+        prefix = os.path.basename(filename)
+        remapped_filename = source_tempfile_remap(prefix, text)
+        lines = text.split("\n")
+        first_line = code.co_firstlineno
+        pyficache.remap_file_lines(filename, remapped_filename,
+                                   range(first_line, first_line+len(lines)),
+                                   1)
+        return remapped_filename, pyficache.getline(filename, line_number, opts)
+    return None, None
 
 def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
     """Another get_int() routine, this one simpler and less stylized

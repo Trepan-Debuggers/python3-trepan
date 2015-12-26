@@ -102,11 +102,12 @@ See also:
         self.msg("  new local namespace? %s" % ("yes" if (code.co_flags & 2) == 1 else " no"))
         self.msg("  has%s *args" % ("" if (code.co_flags & 4) == 1 else " no"))
         self.msg("  has%s **args" % ("" if (code.co_flags & 8) == 1 else " no"))
+        maxwidth = self.settings['width'] // 2
         for name, field in [('Constants', 'co_consts'),
                             ('Variable names', 'co_varnames'),
                             ('Local Variables', 'co_names')
                             ]:
-            vals = [str(x) for x in getattr(code, field)]
+            vals = [proc._saferepr(x, maxwidth) for x in getattr(code, field)]
             if vals:
                 self.section(name)
                 m = self.columnize_commands(vals)

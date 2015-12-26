@@ -176,13 +176,17 @@ See also:
         if filename is None: return
         m = re.search('^<frozen (.*)>', filename)
         if m and m.group(1):
-            canonic_filename = filename = pyficache.unmap_file(m.group(1))
+            filename = m.group(1)
+            canonic_filename = pyficache.unmap_file(filename)
         else:
             filename = pyc2py(filename)
             canonic_filename = os.path.realpath(os.path.normcase(filename))
 
-        # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
+        # FIXME: Should use the below:
+        # max_line = pyficache.maxline(filename)
+
+        # We now have range information. Do the listing.
         if max_line is None:
             self.errmsg('No file %s found' % filename)
             return

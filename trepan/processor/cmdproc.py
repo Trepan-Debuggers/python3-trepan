@@ -13,8 +13,9 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, shlex, tempfile, traceback, re
+import inspect, linecache, os, sys, shlex, traceback, re
 import pyficache
+import trepan.processor.cmdfns as cmdfns
 from reprlib import Repr
 from pygments.console import colorize
 
@@ -184,15 +185,10 @@ def print_location(proc_obj):
             remapped_file = filename
             filename = pyficache.unmap_file(filename)
             if '<string>' == filename:
-                fd = tempfile.NamedTemporaryFile(suffix='.py',
-                                                 prefix='eval_string',
-                                                 delete=False)
-                with fd:
-                    fd.write(bytes(dbgr_obj.eval_string, 'UTF-8'))
-                    fd.close()
-                    pass
-                pyficache.remap_file(fd.name, '<string>')
-                filename = fd.name
+                remapped = cmdfns.source_tempfile_remap('eval_string',
+                                                        dbgr_obj.eval_string)
+                pyficache.remap_file(filename, remapped)
+                filename = remapped
                 pass
             pass
         else:
@@ -209,11 +205,10 @@ def print_location(proc_obj):
                 pass
             pass
 
-        fn_name = frame.f_code.co_name
+        code = frame.f_code
+        fn_name = code.co_name
         last_i  = frame.f_lasti
-        print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
-                                   remapped_file = remapped_file,
-                                   f_lasti = last_i)
+
         opts = {
             'reload_on_change' : proc_obj.settings('reload'),
             'output'           : proc_obj.settings('highlight')
@@ -226,7 +221,18 @@ def print_location(proc_obj):
         if not line:
             line = linecache.getline(filename, lineno,
                                      proc_obj.curframe.f_globals)
+            if not line:
+                m = re.search('^<frozen (.*)>', filename)
+                if m and m.group(1):
+                    remapped_file = m.group(1)
+                    filename, line = cmdfns.deparse_getline(code, remapped_file,
+                                                            lineno, opts)
+                    pass
             pass
+
+        print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
+                                   remapped_file = remapped_file,
+                                   f_lasti = last_i)
 
         if line and len(line.strip()) != 0:
             if proc_obj.event:
@@ -310,7 +316,6 @@ class CommandProcessor(Mprocessor.Processor):
         self._repr.maxset      = 10
         self._repr.maxfrozen   = 10
         self._repr.array       = 10
-        self._saferepr         = self._repr.repr
         self.stack             = []
         self.thread_name       = None
         self.frame_thread_name = None
@@ -318,6 +323,11 @@ class CommandProcessor(Mprocessor.Processor):
         for init_cmdfile in initfile_list:
             self.queue_startfile(init_cmdfile)
         return
+
+    def _saferepr(self, str, maxwidth=None):
+        if maxwidth is None:
+            maxwidth = self.debugger.settings['width']
+        return self._repr.repr(str)[:maxwidth]
 
     def add_preloop_hook(self, hook, position=-1, nodups = True):
         if hook in self.preloop_hooks: return False
