@@ -63,12 +63,15 @@ See also:
 
     def run(self, args):
         if 1 == len(args):
-            text = self.proc.current_source_text.rstrip('\n')
-            if '?' == args[0][-1]:
-                text = Meval.extract_expression(text)
-                self.msg("eval: %s" % text)
-                pass
-
+            if self.proc.current_source_text:
+                text = self.proc.current_source_text.rstrip('\n')
+                if '?' == args[0][-1]:
+                    text = Meval.extract_expression(text)
+                    self.msg("eval: %s" % text)
+                    pass
+            else:
+                self.errmsg("Don't have find program source text")
+                return
         else:
             text = self.proc.current_command[len(self.proc.cmd_name):]
             pass

@@ -88,6 +88,7 @@ See also:
                     text = out.getvalue()
                     pass
             except:
+                raise
                 self.errmsg("error in deparsing code")
 
                 return
