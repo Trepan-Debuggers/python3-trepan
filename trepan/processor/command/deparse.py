@@ -15,6 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from sys import version_info
+from io import StringIO
 from pyficache import highlight_string
 
 # Our local modules
@@ -23,14 +24,15 @@ from trepan.processor.command import base_cmd as Mbase_cmd
 class PythonCommand(Mbase_cmd.DebuggerCommand):
     """**deparse** [offset] [-p]
 
-**deparse** .
+**deparse** . [-u]
 
-deparse around where the program is currently stopped. If no offset is given
+deparse around where the program is currently stopped. If no offset is given,
 we use the current frame offset. If `-p` is given, include parent information.
 
 In the second form, deparse the entire function or main program you are in.
-Output is colorized the same as source listing. Use `set highlight plain` to turn
-that off.
+The `-u` parameter determines whether to show the prettified as you would
+find in source code, or in a form that more closely matches a literal reading
+of the bytecode with hidden (often extraneous) instructions added.
 
 Examples:
 --------
@@ -48,7 +50,7 @@ See also:
 
     category      = 'data'
     min_args      = 0
-    max_args      = 1
+    max_args      = 2
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help    = 'Deparse source via uncompyle'
@@ -66,6 +68,7 @@ See also:
         # Can't do anything if we don't have python deparse
         try:
             from uncompyle6.semantics.fragments import deparse_code
+            from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
         except ImportError:
             self.errmsg("deparse needs to be installed to run this command")
             return
@@ -74,14 +77,21 @@ See also:
         name = co.co_name
 
         sys_version = version_info.major + (version_info.minor / 10.0)
-        if len(args) == 2 and args[1] == '.':
+        if len(args) >= 2 and args[1] == '.':
             try:
-                walk = deparse_code(sys_version, co)
+                if args[-1] == '-u':
+                    walk = deparse_code(sys_version, co)
+                    text = walk.text
+                else:
+                    out = StringIO()
+                    walk = deparse_code_pretty(sys_version, co, out)
+                    text = out.getvalue()
+                    pass
             except:
                 self.errmsg("error in deparsing code")
-                return
 
-            self.print_text(walk.text)
+                return
+            self.print_text(text)
             return
 
         elif ( (len(args) == 2 and args[1] != '-p')
