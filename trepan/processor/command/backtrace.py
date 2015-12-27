@@ -18,7 +18,6 @@ import os
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import stack as Mstack
-from trepan.processor import frame as Mframe
 
 
 class BacktraceCommand(Mbase_cmd.DebuggerCommand):

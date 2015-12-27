@@ -37,10 +37,11 @@ of the bytecode with hidden (often extraneous) instructions added.
 Examples:
 --------
 
-    deparse  # deparse current location
-    deparse -p # deparse current location enclosing context
-    deparse .  # deparse current function or main
-
+    deparse      # deparse current location
+    deparse -p   # deparse current location enclosing context
+    deparse .    # deparse current function or main
+    deparse . -u # " but give a more literal translation
+    deparse 6    # deparse starting at offset 6
 
 See also:
 ---------

@@ -98,7 +98,8 @@ See also:
         else:
             frame_num = proc.curindex
 
-        mess = 'Frame %d' % frame_num if frame_num is not None else 'Frame Info'
+        mess = 'Frame %d' % Mframe.frame_num(proc, frame_num) \
+          if frame_num is not None else 'Frame Info'
         self.section(mess)
         if hasattr(frame, 'f_restricted'):
             self.msg('  restricted execution: %s' % frame.f_restricted)

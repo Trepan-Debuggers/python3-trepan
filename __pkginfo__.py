@@ -40,6 +40,7 @@ ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
                       'pyficache >= 0.3.0',
                       'pygments',
+                      'uncompyle6 >= 2.1.0',
                       'tracer >= 0.3.2']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
@@ -65,8 +66,6 @@ py_modules         = None
 short_desc         = 'GDB-like Python Debugger in the Trepan family'
 
 import os
-import os.path, sys
-
 
 def get_srcdir():
     filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
