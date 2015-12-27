@@ -39,6 +39,8 @@ def frame_complete(proc_obj, prefix, direction):
     ary = [str(low+i) for i in range(high-low+1)]
     return Mcomplete.complete_token(ary, prefix)
 
+def frame_num(proc_obj, pos):
+    return len(proc_obj.stack) - pos - 1
 
 def adjust_frame(proc_obj, name, pos, absolute_pos):
     """Adjust stack frame by pos positions. If absolute_pos then
@@ -53,9 +55,9 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
     # the new value of proc_obj.curindex.
     if absolute_pos:
         if pos >= 0:
-            pos = len(proc_obj.stack)-pos-1
+            pos = frame_num(proc_obj, pos)
         else:
-            pos = -pos+1
+            pos = -pos-1
             pass
     else:
         pos += proc_obj.curindex

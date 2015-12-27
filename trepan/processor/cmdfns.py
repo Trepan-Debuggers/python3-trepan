@@ -55,7 +55,7 @@ def deparse_getline(code, filename, line_number, opts):
     # numbers
     text = deparse_fn(code)
     if text:
-        prefix = os.path.basename(filename)
+        prefix = os.path.basename(filename) + "_"
         remapped_filename = source_tempfile_remap(prefix, text)
         lines = text.split("\n")
         first_line = code.co_firstlineno
