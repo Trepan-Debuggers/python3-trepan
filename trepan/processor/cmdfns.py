@@ -55,7 +55,6 @@ def deparse_getline(code, filename, line_number, opts):
     # numbers
     text = deparse_fn(code)
     if text:
-        import traceback; traceback.print_stack()
         prefix = os.path.basename(filename) + "_"
         remapped_filename = source_tempfile_remap(prefix, text)
         lines = text.split("\n")
