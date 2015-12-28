@@ -203,6 +203,9 @@ def print_location(proc_obj):
                     remapped_file = None
                     pass
                 pass
+            elif m and m.group(1) in sys.modules:
+                remapped_file = m.group(1)
+                pyficache.remap_file(filename, remapped_file)
             pass
 
         code = frame.f_code
@@ -225,8 +228,17 @@ def print_location(proc_obj):
                 m = re.search('^<frozen (.*)>', filename)
                 if m and m.group(1):
                     remapped_file = m.group(1)
-                    filename, line = cmdfns.deparse_getline(code, remapped_file,
-                                                            lineno, opts)
+                    try_module = sys.modules.get(remapped_file)
+                    if (try_module and inspect.ismodule(try_module) and
+                        hasattr(try_module, '__file__')):
+                        remapped_file = sys.modules[remapped_file].__file__
+                        pyficache.remap_file(filename, remapped_file)
+                        line = linecache.getline(remapped_file, lineno,
+                                                 proc_obj.curframe.f_globals)
+                    else:
+                        remapped_file = m.group(1)
+                        filename, line = cmdfns.deparse_getline(code, remapped_file,
+                                                                lineno, opts)
                     pass
             pass
 
