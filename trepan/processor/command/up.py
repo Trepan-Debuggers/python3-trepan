@@ -23,7 +23,7 @@ from trepan.processor import frame as Mframe
 
 class UpCommand(Mbase_cmd.DebuggerCommand):
 
-    signum        = 1
+    signum        = -1
     category      = 'stack'
     min_args      = 0
     max_args      = 1

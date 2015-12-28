@@ -21,7 +21,7 @@ from trepan.processor.command import up as Mupcmd
 
 class DownCommand(Mupcmd.UpCommand):
 
-    signum        = -1
+    signum        = 1
     name          = os.path.basename(__file__).split('.')[0]
     short_help    = 'Move stack frame to a more recent selected frame'
 
