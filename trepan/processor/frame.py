@@ -57,7 +57,7 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
         if pos >= 0:
             pos = frame_num(proc_obj, pos)
         else:
-            pos = -pos-1
+            pos = -pos - 1
             pass
     else:
         pos += proc_obj.curindex
