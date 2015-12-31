@@ -1,3 +1,8 @@
+trepan 0.6.4 2015-12-31 - End of Year
+
+- follow gdb up/down conventions
+- Bump min package version requirements
+
 trepan 0.6.3 2015-12-27 - Late Christmas
 
 - deparses (e.g. importlib._bootstrap) via uncompyle6 package
