@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2012-2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2012-2013, 2015-2016 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -33,8 +33,11 @@ class DebuggerSubcommand:
     functions for command from module cmdfns."""
 
     in_list     = True  # Show item in help list of commands
-    run_cmd     = True  # Run subcommand for those subcommands like "show"
-                        # which append current settings to list output.
+
+    # Run subcommand for those subcommands like "show"
+    # which append current settings to list output.
+    run_cmd     = True
+
     run_in_help = True  # Run to get value in 'show' command?
     min_abbrev  = 1
     min_args    = 0
