@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015-2016 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
         pass
     if not pprint_simple_array(val, display_width, msg_nocr, msg,
                                '  '):
+        print("Can't print_simple_array")
         msg('  ' + pprint.pformat(val))
         pass
     return
@@ -51,28 +52,12 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=''):
                 return False
             pass
         pass
-    lines = columnize([repr(v) for v in val],
-                      displaywidth = int(displaywidth)-2,
-                      arrange_vertical = False,
-                      ljust = not numeric,
-                      lineprefix=lineprefix + ' ',
-                      colsep = ', ').split('\n')
-    if '' == lines[-1]: del lines[-1]
-    if 0 == len(lines):
-        msg(lineprefix + '[]')
-        return
-
-    msg_nocr(lineprefix + "[")
-    msg_nocr(lines[0][1:])
-    if 1 == len(lines):
-        msg(lineprefix + ']')
-    else:
-        msg('')
-        for line in lines[1:-1]:
-            msg(lineprefix + line)
-            pass
-        msg(lineprefix + lines[-1] + ']')
-        pass
+    mess = columnize([repr(v) for v in val],
+                     opts={"arrange_array": True,
+                           "lineprefix": lineprefix,
+                           "displaywidth": int(displaywidth)-3,
+                           'ljust': not numeric})
+    msg_nocr(mess)
     return True
 
 if __name__ == '__main__':
