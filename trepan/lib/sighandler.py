@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014, 2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -287,7 +287,7 @@ class SignalManager:
             self.dbgr.intf[-1].errmsg(("%s is not a signal number" +
                                        " I know about.")  % name_num)
             return False
-        elif False == signame:
+        elif not signame:
             self.dbgr.intf[-1].errmsg(("%s is not a signal name I " +
                                        "know about.") % name_num)
             return False

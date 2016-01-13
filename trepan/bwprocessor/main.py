@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, sys, traceback, types
+import inspect, linecache, sys, traceback
 import pyficache
 from reprlib import Repr
 
@@ -88,9 +88,13 @@ class BWProcessor(Mprocessor.Processor):
         self.continue_running = False   # True if we should leave command loop
 
         self.cmd_instances    = self._populate_commands()
-        self.cmd_name         = ''      # command name before alias or
-                                        # macro resolution
-        self.current_command  = ''      # Current command getting run
+
+        # command name before alias or macro resolution
+        self.cmd_name         = ''
+
+        # Current command getting run
+        self.current_command  = ''
+
         self.debug_nest       = 1
         self.display_mgr      = Mdisplay.DisplayMgr()
         self.intf             = core_obj.debugger.intf
