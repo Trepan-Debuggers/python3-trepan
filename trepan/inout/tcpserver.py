@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014,2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -33,13 +33,13 @@ class TCPServer(DebuggerInOutBase):
         get_option = lambda key: Mmisc.option_set(opts, key,
                                                   self.DEFAULT_INIT_OPTS)
 
-        self.inout  = None
-        self.conn   = None
-        self.addr   = None
-        self.buf    = ''    # Read buffer
+        self.inout = None
+        self.conn = None
+        self.addr = None
+        self.buf = ''    # Read buffer
         self.state = 'disconnected'
-        self.PORT  = None
-        self.HOST  = None
+        self.PORT = None
+        self.HOST = None
         if inout:
             self.inout = inout
         elif get_option('open'):

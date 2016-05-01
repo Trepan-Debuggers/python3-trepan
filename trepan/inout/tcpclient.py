@@ -31,11 +31,11 @@ class TCPClient(DebuggerInOutBase):
     def __init__(self, inout=None, opts=None):
         get_option = lambda key: option_set(opts, key,
                                             Mdefault.CLIENT_SOCKET_OPTS)
-        self.inout     = None
-        self.addr      = None
-        self.buf       = ''
+        self.inout = None
+        self.addr = None
+        self.buf = ''
         self.line_edit = False  # Our name for GNU readline capability
-        self.state     = 'disconnected'
+        self.state = 'disconnected'
         if inout:
             self.inout = inout
         elif get_option('open'):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2015,2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 """Subsidiary routines used to "pack" and "unpack" TCP messages. """
 
 TCP_MAX_PACKET = 8192  # Largest size for a recv
-LOG_MAX_MSG    = 4     # int(log(TCP_MAX_PACKET)
+LOG_MAX_MSG = 4     # int(log(TCP_MAX_PACKET)
 
 
 def pack_msg(msg):
@@ -25,8 +25,8 @@ def pack_msg(msg):
 
 def unpack_msg(buf):
     length  = int(buf[0:LOG_MAX_MSG])
-    data    = buf[LOG_MAX_MSG:LOG_MAX_MSG+length]
-    buf     = buf[LOG_MAX_MSG+length:]
+    data = buf[LOG_MAX_MSG:LOG_MAX_MSG+length]
+    buf = buf[LOG_MAX_MSG+length:]
     return buf, data
 
 # Demo

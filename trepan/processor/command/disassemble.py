@@ -16,39 +16,34 @@
 
 import os, sys
 import uncompyle6
-import importlib.util
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import disassemble as Mdis, file as Mfile
 from trepan.processor import cmdfns as Mcmdfns
 
-PYTHON_VERSION = sys.version_info[0]+ (sys.version_info[1] / 10.0)
-print(PYTHON_VERSION)
-if PYTHON_VERSION <= 3.4:
-    import sys
-    DEBUG_BYTECODE_SUFFIXES = ['.pyc']
-    OPTIMIZED_BYTECODE_SUFFIXES = ['.pyo']
-    _PYCACHE = '__pycache__'
+# From importlib.util
+DEBUG_BYTECODE_SUFFIXES = ['.pyc']
+OPTIMIZED_BYTECODE_SUFFIXES = ['.pyo']
+_PYCACHE = '__pycache__'
+def cache_from_source(path, debug_override=None):
+    """Given the path to a .py file, return the path to its .pyc/.pyo file.
 
-    def cache_from_source(path, debug_override=None):
-        """Given the path to a .py file, return the path to its .pyc/.pyo file.
+    The .py file does not need to exist; this simply returns the path to the
+    .pyc/.pyo file calculated as if the .py file were imported.  The extension
+    will be .pyc unless sys.flags.optimize is non-zero, then it will be .pyo.
 
-        The .py file does not need to exist; this simply returns the path to the
-        .pyc/.pyo file calculated as if the .py file were imported.  The extension
-        will be .pyc unless sys.flags.optimize is non-zero, then it will be .pyo.
+    If debug_override is not None, then it must be a boolean and is used in
+    place of sys.flags.optimize.
 
-        If debug_override is not None, then it must be a boolean and is used in
-        place of sys.flags.optimize.
+    If sys.implementation.cache_tag is None then NotImplementedError is raised.
 
-        If sys.implementation.cache_tag is None then NotImplementedError is raised.
-
-        """
-        debug = not sys.flags.optimize if debug_override is None else debug_override
-        if debug:
-            suffixes = DEBUG_BYTECODE_SUFFIXES
-        else:
-            suffixes = OPTIMIZED_BYTECODE_SUFFIXES
+    """
+    debug = not sys.flags.optimize if debug_override is None else debug_override
+    if debug:
+        suffixes = DEBUG_BYTECODE_SUFFIXES
+    else:
+        suffixes = OPTIMIZED_BYTECODE_SUFFIXES
         head, tail = os.path.split(path)
         base_filename, sep, _ = tail.partition('.')
         tag = sys.implementation.cache_tag
@@ -56,8 +51,6 @@ if PYTHON_VERSION <= 3.4:
             raise NotImplementedError('sys.implementation.cache_tag is None')
         filename = ''.join([base_filename, sep, tag, suffixes[0]])
         return os.path.join(head, _PYCACHE, filename)
-else:
-    from importlib.util.cache_from_source import cache_from_source
 
 class DisassembleCommand(Mbase_cmd.DebuggerCommand):
     """**disassemble** [*thing*] [[**+**|**-**|**.**|**@**]*start* [[**+**|**-***|**.**|**@**]*end]]
@@ -135,7 +128,7 @@ disassemble that.
                 if not (bytecode_file.endswith('.pyo') or
                         bytecode_file.endswith('pyc')):
                     bytecode_file = cache_from_source(bytecode_file)
-                if Mfile.readable(bytecode_file):
+                if bytecode_file and Mfile.readable(bytecode_file):
                     print("Reading %s ..." % bytecode_file)
                     version, timestamp, magic_int, obj = uncompyle6.load.load_module(bytecode_file)
                     have_code = True
@@ -235,8 +228,9 @@ if __name__ == '__main__':
     __file__ = './disassemble.py'
     print(prefix + __file__ + ' 30 40')
     command.run(['disassemble', __file__, '30', '40'])
-    bytecode_file = importlib.util.cache_from_source(__file__)
-    print(prefix + bytecode_file + ' 30 40')
-    command.run(['disassemble', bytecode_file, '30', '40'])
+    bytecode_file = cache_from_source(__file__)
+    if bytecode_file:
+        print(prefix + bytecode_file + ' 30 40')
+        command.run(['disassemble', bytecode_file, '30', '40'])
     command.run(['disassemble', '@15', '@25'])
     pass
