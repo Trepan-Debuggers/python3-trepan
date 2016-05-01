@@ -1,4 +1,4 @@
-|downloads| |buildstatus| |license|
+|buildstatus| |license|
 
 .. contents:: :local:
 
