@@ -30,6 +30,7 @@ if PYTHON_VERSION <= 3.4:
     DEBUG_BYTECODE_SUFFIXES = ['.pyc']
     OPTIMIZED_BYTECODE_SUFFIXES = ['.pyo']
     _PYCACHE = '__pycache__'
+
     def cache_from_source(path, debug_override=None):
         """Given the path to a .py file, return the path to its .pyc/.pyo file.
 
