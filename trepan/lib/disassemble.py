@@ -3,7 +3,7 @@
 # FIXME: see if we can use more of Lib/dis in Python3
 '''Disassembly Routines'''
 
-import inspect, sys, struct, time, types, marshal
+import inspect, sys, types
 from dis import distb, findlabels, findlinestarts
 from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
      hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
@@ -285,18 +285,6 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
         msg("")
     return
 
-# Inspired by show_file from:
-# http://nedbatchelder.com/blog/200804/the_structure_of_pyc_files.html
-# def pyc2code(fname):
-#     '''Return a code object from a Python compiled file'''
-#     f = open(fname, "rb")
-#     magic = f.read(4)
-#     moddate = f.read(4)
-#     modtime = time.localtime(struct.unpack('L', moddate)[0])
-#     code = marshal.load(f)
-#     f.close()
-#     return magic, moddate, modtime, code
-
 # Demo it
 if __name__ == '__main__':
     def msg(msg_str):
@@ -319,11 +307,3 @@ if __name__ == '__main__':
     #    start_line=10, end_line=40, highlight='dark')
     dis(msg, msg_nocr, errmsg, section, curframe,
         start_offset=10, end_offset=20, highlight='dark')
-    # print('-' * 40)
-    # dis(msg, msg_nocr, section, errmsg, disassemble)
-    # print('-' * 40)
-    # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
-    # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
-    # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
-    # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
-    pass

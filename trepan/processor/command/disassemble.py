@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2015 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2016 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import uncompyle6
+import importlib.util
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -60,11 +62,13 @@ disassemble that.
     min_args      = 0
     max_args      = 2
     name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
+    need_stack    = False
     short_help    = 'Disassemble Python bytecode'
 
     def parse_arg(self, arg):
         is_offset = False
+        if not self.proc.curframe:
+            return None, None, False
         if arg in ['+', '-', '.']:
             return self.proc.curframe.f_lineno, True, is_offset
         if arg[0:1] == '@':
@@ -91,8 +95,15 @@ disassemble that.
             if start is None:
                 # First argument should be an evaluatable object
                 # or a filename
-                if args[1].endswith('.pyc') and Mfile.readable(args[1]):
-                    magic, moddate, modtime, obj = Mdis.pyc2code(args[1])
+                bytecode_file = args[1]
+                have_code = False
+                if not (bytecode_file.endswith('.pyo') or
+                        bytecode_file.endswith('pyc')):
+                    bytecode_file = importlib.util.cache_from_source(bytecode_file)
+                if Mfile.readable(bytecode_file):
+                    print("Reading %s ..." % bytecode_file)
+                    version, timestamp, magic_int, obj = uncompyle6.load.load_module(bytecode_file)
+                    have_code = True
                 elif not self.proc.curframe:
                         self.errmsg("No frame selected.")
                         return
@@ -129,7 +140,7 @@ disassemble that.
                                     len(args)-1)
                         return
                     pass
-                else:
+                elif not have_code:
                     try:
                         obj=Mcmdfns.get_val(self.proc.curframe,
                                             self.errmsg, args[1])
@@ -174,19 +185,23 @@ if __name__ == '__main__':
     prefix = '-' * 20 + ' disassemble '
     print(prefix + 'cp.errmsg')
     command.run(['dissassemble', 'cp.errmsg'])
-    print(prefix)
-    command.run(['disassemble'])
-    print(prefix + 'me')
-    command.run(['disassemble', 'me'])
-    print(prefix + '+0 2')
-    command.run(['disassemble', '+0', '2'])
-    print(prefix + '+ 2-1')
-    command.run(['disassemble', '+', '2-1'])
-    print(prefix + '- 1')
-    command.run(['disassemble', '-', '1'])
-    print(prefix + '.')
-    command.run(['disassemble', '.'])
-    print(prefix + 'disassemble.pyc 30 70')
-    command.run(['disassemble', './disassemble.pyc', '10', '100'])
+    # print(prefix)
+    # command.run(['disassemble'])
+    # print(prefix + 'me')
+    # command.run(['disassemble', 'me'])
+    # print(prefix + '+0 2')
+    # command.run(['disassemble', '+0', '2'])
+    # print(prefix + '+ 2-1')
+    # command.run(['disassemble', '+', '2-1'])
+    # print(prefix + '- 1')
+    # command.run(['disassemble', '-', '1'])
+    # print(prefix + '.')
+    # command.run(['disassemble', '.'])
+    __file__ = './disassemble.py'
+    print(prefix + __file__ + ' 30 40')
+    command.run(['disassemble', __file__, '30', '40'])
+    bytecode_file = importlib.util.cache_from_source(__file__)
+    print(prefix + bytecode_file + ' 30 40')
+    command.run(['disassemble', bytecode_file, '30', '40'])
     command.run(['disassemble', '@15', '@25'])
     pass
