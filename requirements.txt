@@ -3,3 +3,4 @@ columnize >= 0.3.4
 pyficache >= 0.2.3
 pygments
 tracer >= 0.3.2
+uncompyle6 >= 3.2.1
