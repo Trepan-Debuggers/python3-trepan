@@ -44,13 +44,14 @@ def cache_from_source(path, debug_override=None):
         suffixes = DEBUG_BYTECODE_SUFFIXES
     else:
         suffixes = OPTIMIZED_BYTECODE_SUFFIXES
-        head, tail = os.path.split(path)
-        base_filename, sep, _ = tail.partition('.')
-        tag = sys.implementation.cache_tag
-        if tag is None:
-            raise NotImplementedError('sys.implementation.cache_tag is None')
-        filename = ''.join([base_filename, sep, tag, suffixes[0]])
-        return os.path.join(head, _PYCACHE, filename)
+        pass
+    head, tail = os.path.split(path)
+    base_filename, sep, _ = tail.partition('.')
+    tag = sys.implementation.cache_tag
+    if tag is None:
+        raise NotImplementedError('sys.implementation.cache_tag is None')
+    filename = ''.join([base_filename, sep, tag, suffixes[0]])
+    return os.path.join(head, _PYCACHE, filename)
 
 class DisassembleCommand(Mbase_cmd.DebuggerCommand):
     """**disassemble** [*thing*] [[**+**|**-**|**.**|**@**]*start* [[**+**|**-***|**.**|**@**]*end]]
