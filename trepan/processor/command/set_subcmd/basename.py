@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2016 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,9 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class SetBasename(Mbase_subcmd.DebuggerSetBoolSubcommand):
-    """Set basename (short filenames) in debugger output.
+    """**set basename** [ **on** | **off** ]
+
+Set basename (short filenames) in debugger output.
 
 Setting this causes the debugger output to give just the basename for
 filenames. This is useful in debugger testing or possibly showing

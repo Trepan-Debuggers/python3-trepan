@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015-2016 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class SetDifferent(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set different** [ **on** | **off** ]
 
-Set consecutive stops must be on different file/line positions.
+Set different line location between consecutive debugger stops.
 
 By default, the debugger traces all events possible including line,
 exceptions, call and return events. Just this alone may mean that for
@@ -45,7 +45,6 @@ See also:
 """
     in_list    = True
     min_abbrev = len('dif')    # Min is "set dif"
-    short_help = "Set whether consecutive stops are different"
     pass
 
 if __name__ == '__main__':
