@@ -23,7 +23,12 @@ from trepan.lib import stack as Mstack
 class SetAutoList(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set autolist** [ **on** | **off** ]
 
-Run a *list* command every time we enter the debugger.
+Run the `list` command every time we enter the debugger.
+
+See also:
+---------
+
+`show autolist`
 """
 
     in_list    = True
