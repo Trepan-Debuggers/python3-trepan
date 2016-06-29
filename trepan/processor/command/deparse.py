@@ -116,7 +116,7 @@ See also:
         pass
 
         sys_version = version_info.major + (version_info.minor / 10.0)
-        if len(args) >= 1 and args[1] == '.':
+        if len(args) >= 1 and args[0] == '.':
             try:
                 if pretty:
                     deparsed = deparse_code(sys_version, co)
