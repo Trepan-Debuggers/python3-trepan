@@ -1,3 +1,10 @@
+trepan 0.6.5 2016-07-26
+
+- PyPy tolerance
+- Add deparse options --parent --AST, --offset
+- Use deparse bytecode to get source if we can't find it
+- Some flake8 linting
+
 trepan 0.6.4 2015-12-31 - End of Year
 
 - follow gdb up/down conventions

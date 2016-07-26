@@ -3,5 +3,6 @@ columnize >= 0.3.4
 pyficache >= 0.2.3
 pygments
 tracer >= 0.3.2
-uncompyle6 >= 2.3.1
-spark_parser >= 1.1.0
+uncompyle6 >= 2.7.1
+xdis >= 2.0.3
+spark_parser >= 1.4.0
