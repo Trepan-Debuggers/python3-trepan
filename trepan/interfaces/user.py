@@ -15,12 +15,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Interface when communicating with the user in the same process as
     the debugged program."""
-import atexit, os
+import atexit, os, sys
 
 # Our local modules
 from trepan import interface as Minterface, misc as Mmisc
 
 histfile = os.path.expanduser('~/.trepan3k_hist')
+# is_pypy = '__pypy__' in sys.builtin_module_names
 
 DEFAULT_USER_SETTINGS = {
     'histfile'     : histfile,  # Where do we save the history?
@@ -59,6 +60,9 @@ class UserInterface(Minterface.TrepanInterface):
                     read_history_file(histfile)
                 except IOError:
                     pass
+                except:
+                    # PyPy read_history_file may fail
+                    return
                 set_history_length(50)
                 atexit.register(write_history_file, self.histfile)
                 pass
