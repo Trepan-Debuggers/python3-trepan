@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2012-2013, 2015 Rocky Bernstein
+#   Copyright (C) 2012-2013, 2015-2016 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -89,7 +89,10 @@ See also:
         else:
             highlight_type = self.get_highlight_type(args[0])
             if not highlight_type: return
-            if 'off' == highlight_type: highlight_type = 'plain'
+            if 'off' == highlight_type:
+                highlight_type = 'plain'
+            else:
+                clear_file_format_cache()
             pass
         self.debugger.settings[self.name] = highlight_type
         if highlight_type in ('dark', 'light'):

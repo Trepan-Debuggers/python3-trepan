@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2013, 2015-2016 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ requests previously made."""
                 return
             self.msg(dp.format(show_enabled=False))
             self.proc.add_preloop_hook(self.run_eval_display)
+            self.msg(dp.to_s(self.proc.curframe))
         return False
     pass
 
