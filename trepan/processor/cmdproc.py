@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect, linecache, os, sys, shlex, traceback, re
 import pyficache
-import trepan.processor.cmdfns as cmdfns
+from . import cmdfns
 from reprlib import Repr
 from pygments.console import colorize
 
@@ -886,7 +886,7 @@ class CommandProcessor(Mprocessor.Processor):
         name, we will create an instance of that class. The set of
         DebuggerCommand class instances form set of possible debugger
         commands."""
-        import trepan.processor.command as Mcommand
+        from . import command as Mcommand
         if hasattr(Mcommand, '__modules__'):
             return self.populate_commands_easy_install(Mcommand)
         else:
