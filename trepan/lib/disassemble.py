@@ -5,8 +5,13 @@
 
 import inspect, sys, types
 from dis import distb, findlabels, findlinestarts
-from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
-     hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
+try:
+    from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
+        hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
+except:
+    from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
+        hasjrel, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
+    hasnargs = []
 
 from trepan.lib import format as Mformat
 format_token = Mformat.format_token
