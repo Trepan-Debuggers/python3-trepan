@@ -1,3 +1,12 @@
+trepan 0.7.0 2016-10-6
+
+- Remove namespaces packages which don't work on Python 3
+- display expression and highlight changes...
+   * show display expression after setting it
+   * clear source-code cache after setting highlight
+- disassemble.py: tolerate of Python 3.1 somewhat
+
+
 trepan 0.6.5 2016-07-26
 
 - PyPy tolerance
