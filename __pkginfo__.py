@@ -22,7 +22,7 @@
 # still is some room for improvement.
 
 # Things that change more often go here.
-copyright   = '''Copyright (C) 2013, 215 Rocky Bernstein <rocky@gnu.org>.'''
+copyright   = '''Copyright (C) 2013, 2015-2016 Rocky Bernstein <rocky@gnu.org>.'''
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
@@ -71,11 +71,7 @@ def get_srcdir():
     filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
     return os.path.realpath(filename)
 
-# VERSION.py sets variable VERSION.
-ns = {}
-exec(open(os.path.join(get_srcdir(), 'trepan', 'VERSION.py')).read(), ns)
-version            = ns['VERSION']
-web                = 'http://github.com/rocky/python3-trepan/'
+web = 'http://github.com/rocky/python3-trepan/'
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False

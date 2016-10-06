@@ -34,7 +34,7 @@ from trepan import misc as Mmisc
 __title__ = package
 
 # VERSION.py sets variable VERSION.
-from trepan.VERSION import VERSION as __version__
+from trepan.version import VERSION
 
 
 def main(dbg=None, sys_argv=list(sys.argv)):
@@ -44,7 +44,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
     opts, dbg_opts, sys_argv  = Moptions.process_options(__title__,
-                                                         __version__,
+                                                         VERSION,
                                                          sys_argv)
 
     if opts.server is not None:

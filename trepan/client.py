@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2016 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,9 +24,7 @@ from trepan.interfaces import client as Mclient
 from trepan.interfaces import comcodes as Mcomcodes
 
 from optparse import OptionParser
-
-# VERSION.py sets variable VERSION.
-from trepan.VERSION import VERSION as __version__
+from trepan.version import VERSION
 
 
 def process_options(pkg_version, sys_argv, option_list=None):
@@ -130,6 +128,6 @@ def main(opts, sys_argv):
     return
 
 if __name__ == '__main__':
-    opts, sys_argv  = process_options(__version__, sys.argv)
+    opts, sys_argv  = process_options(VERSION, sys.argv)
     main(opts, sys_argv)
     pass
