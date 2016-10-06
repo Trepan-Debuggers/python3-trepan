@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+from trepan.version import VERSION
 
-copyright   = '''Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>.'''
+copyright   = '''Copyright (C) 2013, 2015-2016 Rocky Bernstein <rocky@gnu.org>.'''
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
@@ -29,10 +30,6 @@ short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 import os
 import os.path, sys
 
-# VERSION.py sets variable VERSION.
-me = os.path.join(os.path.dirname(__file__), 'trepan', 'VERSION.py')
-exec(compile(open(me).read(), me, 'exec'))
-version            = VERSION
 web                = 'http://github.com/rocky/python3-trepan/'
 
 # tracebacks in zip files are funky and not debuggable
@@ -61,5 +58,5 @@ setup(
        test_suite         = 'nose.collector',
        url                = web,
        setup_requires     = ['nose>=1.0'],
-       version            = version,
+       version            = VERSION,
        zip_safe           = zip_safe)

@@ -16,4 +16,4 @@ install:
 - pip install .
 
 script:
-- make test
+- python ./setup.py develop && make test
