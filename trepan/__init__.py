@@ -139,11 +139,6 @@ eliminates the need in *gdb* for special \"dollar\" debugger
 variables. (Note however because of _shlex_ parsing expressions can't
 have embedded blanks.)
 
-Egg Installable
-===============
-
-Need I say more?
-
 Modularity
 ==========
 
@@ -169,11 +164,9 @@ keeping developers happy is a good thing.(TM)
 * more testable. Much more unit and functional tests. More of _pydb_'s
   integration test will eventually be added.
 
-Copyright (C) 2008-2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+Copyright (C) 2008-2009, 2013-2016 Rocky Bernstein <rocky@gnu.org>
 
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
 """
 __docformat__ = 'restructuredtext'
-
-__import__('pkg_resources').declare_namespace(__name__)

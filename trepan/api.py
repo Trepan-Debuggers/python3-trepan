@@ -37,7 +37,6 @@ import sys
 import trepan.lib
 import trepan.interfaces
 import trepan.inout
-import trepan.processor.command
 from trepan import debugger as Mdebugger, post_mortem as Mpost_mortem
 
 def debugger_on_post_mortem():

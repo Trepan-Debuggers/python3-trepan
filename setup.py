@@ -23,20 +23,6 @@ install_requires   = ['columnize >= 0.3.8',
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan3k'
-namespace_packages = [
-    'trepan',
-    'trepan.bwprocessor',
-    'trepan.interfaces',
-    'trepan.inout',
-    'trepan.lib',
-    'trepan.processor',
-    'trepan.processor.command',
-#    'trepan.processor.command.ipython_magic',
-    'trepan.processor.command.info_subcmd',
-    'trepan.processor.command.set_subcmd',
-    'trepan.processor.command.show_subcmd'
-]
-packages           = namespace_packages
 py_modules         = None
 short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
@@ -56,7 +42,6 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 long_description   = ( read("README.rst") + '\n' )
 
-__import__('pkg_resources')
 from setuptools import setup
 
 setup(
@@ -73,8 +58,6 @@ setup(
        long_description   = long_description,
        py_modules         = py_modules,
        name               = modname,
-       namespace_packages = namespace_packages,
-       packages           = packages,
        test_suite         = 'nose.collector',
        url                = web,
        setup_requires     = ['nose>=1.0'],

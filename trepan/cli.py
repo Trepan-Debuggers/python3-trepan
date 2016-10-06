@@ -19,9 +19,6 @@
 import os, os.path, sys
 
 package='trepan'
-if package not in sys.modules:
-    __import__('pkg_resources').declare_namespace(package)
-    pass
 
 # Our local modules
 from trepan import client as Mclient
