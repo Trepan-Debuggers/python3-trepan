@@ -1,3 +1,10 @@
+trepan 0.7.0 2016-10-09
+
+- Remove namespace packages. These no longer work in Python3
+- expresssion and highlight changes
+  * show display expression after setting it
+  * clear source-code cache after setting highlight
+
 trepan 0.6.5 2016-07-26
 
 - PyPy tolerance
