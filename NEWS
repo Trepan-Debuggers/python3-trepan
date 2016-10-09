@@ -1,3 +1,8 @@
+trepan 0.7.1 2016-10-09
+
+- Fixed botched release 0.7.0
+  version.py and possibly other things were not getting installed
+
 trepan 0.7.0 2016-10-09
 
 - Remove namespace packages. These no longer work in Python3
