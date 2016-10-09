@@ -76,6 +76,11 @@ Step Granularity
 There are now ``step`` *event* and ``next``  *event* commands with aliases to ``s+``, ``s>`` and so on. The plus-suffixed commands force a different line on a subsequent stop, the dash-suffixed commands don't.
 Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return`` and ``exception`` events respectively. And without a suffix you get the default; this is set by the `set different` command.
 
+Documentation
+-------------
+
+Documentation: http://python2-trepan.readthedocs.org
+
 Event Filtering and Tracing
 ...........................
 
@@ -132,7 +137,7 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Egg, and Tarballs
+Wheel, Egg, and Tarballs
 ------------------------
 
 Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html>`_ has full instructions and installing from git and by other means.
@@ -149,11 +154,6 @@ Many of the things listed below doesn't directly effect end-users, but it does e
 * An interface is it's own layer. Local debugging, remote debugging, running debugger commands from a file (`source`) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of *pydb*'s integration test will eventually be added.
-
-Documentation
--------------
-
-Documentation: http://python2-trepan.readthedocs.org
 
 .. _pygments:  http://pygments.org
 .. _pygments_style:  http://pygments.org/docs/styles/
