@@ -28,7 +28,7 @@ py_modules         = None
 short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
 
 import os
-import os.path, sys
+import os.path
 
 web                = 'http://github.com/rocky/python3-trepan/'
 
@@ -39,7 +39,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 long_description   = ( read("README.rst") + '\n' )
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
        author             = author,
@@ -53,6 +53,7 @@ setup(
        install_requires   = install_requires,
        license            = license,
        long_description   = long_description,
+       packages           = find_packages(),
        py_modules         = py_modules,
        name               = modname,
        test_suite         = 'nose.collector',

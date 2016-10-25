@@ -1,11 +1,14 @@
-trepan 0.7.0 2016-10-6
+trepan 0.7.1 2016-10-09
 
-- Remove namespaces packages which don't work on Python 3
-- display expression and highlight changes...
-   * show display expression after setting it
-   * clear source-code cache after setting highlight
-- disassemble.py: tolerate of Python 3.1 somewhat
+- Fixed botched release 0.7.0
+  version.py and possibly other things were not getting installed
 
+trepan 0.7.0 2016-10-09
+
+- Remove namespace packages. These no longer work in Python3
+- expresssion and highlight changes
+  * show display expression after setting it
+  * clear source-code cache after setting highlight
 
 trepan 0.6.5 2016-07-26
 
