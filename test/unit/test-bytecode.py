@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.bytecode'
-import inspect, unittest
+import inspect, sys, unittest
 
 from trepan.lib import bytecode as Mcode
 
@@ -13,7 +13,7 @@ class TestByteCode(unittest.TestCase):
         frame = inspect.currentframe()
         co = frame.f_code
         lineno = frame.f_lineno
-        self.assertTrue(Mcode.stmt_contains_opcode(co, lineno-4, 
+        self.assertTrue(Mcode.stmt_contains_opcode(co, lineno-4,
                                                    'MAKE_FUNCTION'))
         self.assertFalse(Mcode.stmt_contains_opcode(co, lineno,
                                                     'MAKE_FUNCTION'))
@@ -21,7 +21,11 @@ class TestByteCode(unittest.TestCase):
 
     def test_op_at_frame(self):
         frame = inspect.currentframe()
-        self.assertEqual('CALL_FUNCTION', Mcode.op_at_frame(frame))
+        IS_PYPY = '__pypy__' in sys.builtin_module_names
+        if IS_PYPY:
+            self.assertEqual('CALL_METHOD', Mcode.op_at_frame(frame))
+        else:
+            self.assertEqual('CALL_FUNCTION', Mcode.op_at_frame(frame))
         return
 
     def test_is_def_frame(self):
@@ -29,6 +33,6 @@ class TestByteCode(unittest.TestCase):
         frame = inspect.currentframe()
         self.assertFalse(Mcode.is_def_stmt('foo(): pass', frame))
         return
-        
+
 if __name__ == '__main__':
     unittest.main()
