@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect, linecache, os, sys, shlex, traceback, re
 import pyficache
-from . import cmdfns
+from trepan.processor import cmdfns
 from reprlib import Repr
 from pygments.console import colorize
 
@@ -30,6 +30,8 @@ from trepan.lib import file as Mfile
 from trepan.lib import stack as Mstack
 from trepan.lib import thred as Mthread
 from trepan.processor import complete as Mcomplete
+
+warned_file_mismatches = set()
 
 def get_srcdir():
     filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
@@ -241,6 +243,12 @@ def print_location(proc_obj):
                                                                 lineno, opts)
                     pass
             pass
+
+        # match, reason = Mstack.check_path_with_frame(frame, filename)
+        # if not match:
+        #     if filename not in warned_file_mismatches:
+        #         proc_obj.errmsg(reason)
+        #         warned_file_mismatches.add(filename)
 
         print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
                                    remapped_file = remapped_file,
@@ -886,7 +894,7 @@ class CommandProcessor(Mprocessor.Processor):
         name, we will create an instance of that class. The set of
         DebuggerCommand class instances form set of possible debugger
         commands."""
-        from . import command as Mcommand
+        from trepan.processor import command as Mcommand
         if hasattr(Mcommand, '__modules__'):
             return self.populate_commands_easy_install(Mcommand)
         else:
