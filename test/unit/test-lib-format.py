@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.lib.file'
 import unittest
-import io
+import io, sys
 from pygments.lexers import RstLexer
 
 from trepan.lib import format as Mformat
@@ -17,9 +17,12 @@ class TestLibFile(unittest.TestCase):
         rst_lex.add_filter(rst_filt)
         rst_tf = Mformat.MonoRSTTerminalFormatter()
         text = '`A` very *emphasis* **strong** `code`'
+        if sys.version_info[0:2] <= (3,2):
+            return
         got = Mformat.highlight(text, rst_lex, rst_tf)
         self.assertEqual('"A" very *emphasis* STRONG "code" ', got)
 
+        self.maxDiff  = 3000
         quit_text = """**quit** - gently terminate the debugged program.
 
 The program being debugged is aborted via a *DebuggerQuit*

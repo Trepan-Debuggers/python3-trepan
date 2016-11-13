@@ -48,7 +48,7 @@ def cache_from_source(path, debug_override=None):
     head, tail = os.path.split(path)
     base_filename, sep, _ = tail.partition('.')
     if not hasattr(sys, 'implementation'):
-        # Python < 3.2
+        # Python <= 3.2
         raise NotImplementedError('No sys.implementation')
     tag = sys.implementation.cache_tag
     if tag is None:
