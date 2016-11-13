@@ -1,3 +1,9 @@
+trepan 0.7.3 2016-11-13
+
+- Python 3.2 tolerance
+- Use pyc2py from pyficache
+- Adds source size checks
+
 trepan 0.7.2 2016-11-12
 
 - Minor tweaks
