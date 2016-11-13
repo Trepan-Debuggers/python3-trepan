@@ -211,11 +211,11 @@ See also:
         if 'style' in self.settings:
             opts['style'] = self.settings['style']
 
-        match, reason = Mstack.check_path_with_frame(curframe, filename)
-        if not match:
-            if filename not in Mcmdproc.warned_file_mismatches:
-                self.errmsg(reason)
-                Mcmdproc.warned_file_mismatches.add(filename)
+        # match, reason = Mstack.check_path_with_frame(curframe, filename)
+        # if not match:
+        #     if filename not in Mcmdproc.warned_file_mismatches:
+        #         self.errmsg(reason)
+        #         Mcmdproc.warned_file_mismatches.add(filename)
 
         try:
             for lineno in range(first, last+1):
