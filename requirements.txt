@@ -1,6 +1,7 @@
 nose
 columnize >= 0.3.4
-pyficache >= 0.2.3
+pyficache >= 0.3.1
 pygments
 tracer >= 0.3.2
-uncompyle6 >= 2.8.4
+uncompyle6 >= 2.9.4
+xdis >= 3.2.3
