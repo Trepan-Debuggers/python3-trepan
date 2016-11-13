@@ -7,6 +7,11 @@ classifiers =  ['Development Status :: 4 - Beta',
                 'Intended Audience :: Developers',
                 'License :: OSI Approved :: GNU General Public License (GPL)',
                 'Operating System :: OS Independent',
+                'Programming Language :: Python :: 3',
+                'Programming Language :: Python :: 3.3',
+                'Programming Language :: Python :: 3.4',
+                'Programming Language :: Python :: 3.5',
+                'Programming Language :: Python :: 3.6',
                 'Programming Language :: Python',
                 'Topic :: Software Development :: Debuggers',
                 'Topic :: Software Development :: Libraries :: Python Modules',
@@ -17,7 +22,6 @@ author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
-                      'import-relative >= 0.2.1',
                       'pyficache >= 0.2.2',
                       'pygments',
                       'tracer >= 0.3.1']

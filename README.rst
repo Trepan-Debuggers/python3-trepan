@@ -1,4 +1,4 @@
-|buildstatus| |license|
+|buildstatus| |license| |Supported Python Versions|
 
 .. contents:: :local:
 
@@ -180,3 +180,5 @@ Many of the things listed below doesn't directly effect end-users, but it does e
 .. _eval: https://python2-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python2-trepan.readthedocs.org/en/latest/install.html
+.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
+   :target: https://pypi.python.org/pypi/trepan3k/

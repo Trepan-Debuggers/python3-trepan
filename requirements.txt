@@ -1,5 +1,4 @@
-nose
-columnize >= 0.3.4
+columnize >= 0.3.8
 pyficache >= 0.3.1
 pygments
 tracer >= 0.3.2
