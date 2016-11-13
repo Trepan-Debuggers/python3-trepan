@@ -244,14 +244,14 @@ def print_location(proc_obj):
                     pass
             pass
 
-        # try:
-        #     match, reason = Mstack.check_path_with_frame(frame, filename)
-        #     if not match:
-        #         if filename not in warned_file_mismatches:
-        #             proc_obj.errmsg(reason)
-        #             warned_file_mismatches.add(filename)
-        # except:
-        #     pass
+        try:
+            match, reason = Mstack.check_path_with_frame(frame, filename)
+            if not match:
+                if filename not in warned_file_mismatches:
+                    proc_obj.errmsg(reason)
+                    warned_file_mismatches.add(filename)
+        except:
+            pass
 
         print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
                                    remapped_file = remapped_file,
