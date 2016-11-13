@@ -22,9 +22,9 @@ author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
-                      'pyficache >= 0.2.2',
+                      'pyficache >= 0.3.2',
                       'pygments',
-                      'tracer >= 0.3.1']
+                      'tracer >= 0.3.2']
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan3k'
