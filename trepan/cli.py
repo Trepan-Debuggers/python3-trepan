@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''The command-line interface to the debugger.
 '''
-import os, os.path, sys
+import os, os.path, pyficache, sys
 
 package='trepan'
 
@@ -97,7 +97,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         # If mainpyfile is an optimized Python script try to find and
         # use non-optimized alternative.
-        mainpyfile_noopt = Mfile.file_pyc2py(mainpyfile)
+        mainpyfile_noopt = pyficache.pyc2py(mainpyfile)
         if mainpyfile != mainpyfile_noopt \
                and Mfile.readable(mainpyfile_noopt):
             print("%s: Compiled Python script given and we can't use that."

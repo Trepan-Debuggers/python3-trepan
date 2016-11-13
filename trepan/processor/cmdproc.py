@@ -518,7 +518,7 @@ class CommandProcessor(Mprocessor.Processor):
                 if inspect.isfunction(modfunc):
                     pass
                 elif inspect.ismodule(modfunc):
-                    filename = Mfile.file_pyc2py(modfunc.__file__)
+                    filename = pyficache.pyc2py(modfunc.__file__)
                     filename = self.core.canonic(filename)
                     return(modfunc, filename, None)
                 elif hasattr(modfunc, 'im_func'):

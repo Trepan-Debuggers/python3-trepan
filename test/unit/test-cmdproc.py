@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for pydbgr.processor.cmdproc'
-import inspect, os, sys, types, unittest
+import inspect, os, sys, unittest
 
 from trepan.processor import cmdproc as Mcmdproc
 from trepan.processor.command import mock as Mmock
@@ -123,7 +123,7 @@ class TestCmdProc(unittest.TestCase):
         self.assertTrue(f.endswith('test-cmdproc.py'))
         self.assertEqual(None, modfunc)
 
-        # See that we can a module name
+        # See that we can parse a module name
         modfunc, f, l = self.cp.parse_position_one_arg('os.path')
         self.assertTrue(inspect.ismodule(modfunc),
                         'Module name, e.g. os.path bolixed')

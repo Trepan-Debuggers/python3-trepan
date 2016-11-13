@@ -22,11 +22,7 @@ from pygments.console import colorize
 from trepan.lib import stack as Mstack
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.processor import cmdproc as Mcmdproc
-
-def pyc2py(filename):
-    if '.pyc' == filename[-4:]:
-        return filename[:-1]
-    return filename
+from pyficache import pyc2py
 
 class ListCommand(Mbase_cmd.DebuggerCommand):
     """**list** [ *module* ] [ *first* [ *num* ]]

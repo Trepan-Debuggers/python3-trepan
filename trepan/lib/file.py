@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015-2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,14 +19,6 @@ import os, pyficache, stat, sys
 def file_list():
     return list(set(pyficache.cached_files() +
                     list(pyficache.file2file_remap.keys())))
-
-def file_pyc2py(filename):
-    """Given a file name, if the suffix is pyo or pyc (an optimized bytecode
-    file), change that to the py equivalent"""
-    if filename[-4:].lower() in ('.pyc', '.pyo'):
-        return filename[:-1]
-    return filename
-
 
 READABLE_MASK = (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
 def readable(path):
@@ -86,7 +78,7 @@ def parse_position(errmsg, arg):
             errmsg("'%s' not found using sys.path" % filename)
             return (None, None, None)
         else:
-            filename = file_pyc2py(f)
+            filename = pyficache.pyc2py(f)
             arg = arg[colon+1:].lstrip()
             pass
         try:
@@ -111,7 +103,4 @@ if __name__=='__main__':
     print("lookupmodule(__file__): %s" % repr(lookupmodule(__file__)))
     print("lookupmodule('fafdsadsa'): %s" % repr(lookupmodule('fafdsafdsa')))
 
-    print('file_pyc2py("foo.pyc"): %s' % file_pyc2py("foo.pyc"))
-    print(file_pyc2py("stays-the-same.py"))
-    print(file_pyc2py("stays-the-same-without-suffix"))
     pass
