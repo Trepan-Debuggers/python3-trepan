@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2015,2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@ def pack_msg(msg):
     return bytes(( fmt % len(msg)) + msg, 'UTF-8')
 
 def unpack_msg(buf):
+    if len(buf) == 0:
+        # Fake a quit
+        return '', 'q'
     length  = int(buf[0:LOG_MAX_MSG])
     data = buf[LOG_MAX_MSG:LOG_MAX_MSG+length]
     buf = buf[LOG_MAX_MSG+length:]

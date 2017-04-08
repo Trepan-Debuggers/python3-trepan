@@ -91,7 +91,7 @@ def start_client(connection_opts):
             msg = intf.read_command('(Trepan*) ').strip()
             intf.write_remote(Mcomcodes.CONFIRM_REPLY, msg)
         elif Mcomcodes.QUIT == control:
-            print('Quitting...')
+            print("trepan3kc: That's all, folks...")
             done = True
             break
         elif Mcomcodes.RESTART == control:

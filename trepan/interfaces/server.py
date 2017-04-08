@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Module for Server (i.e. program to communication-device) interaction"""
-import atexit, os
+import atexit
 
 # Our local modules
 from trepan import interface as Minterface, misc as Mmisc
@@ -91,7 +91,7 @@ class ServerInterface(Minterface.TrepanInterface):
 
     def is_connected(self):
         """ Return True if we are connected """
-        return 'connected' == self.inout.state
+        return self.inout and 'connected' == self.inout.state
 
     def msg(self, msg):
         """ used to write to a debugger that is connected to this

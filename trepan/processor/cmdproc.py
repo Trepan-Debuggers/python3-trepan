@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -50,6 +50,8 @@ def arg_split(s, posix=False):
     """
 
     args_list = [[]]
+    if isinstance(s, bytes):
+        s = s.decode("utf-8")
     lex = shlex.shlex(s, posix=posix)
 
     lex.whitespace_split = True
@@ -719,7 +721,10 @@ class CommandProcessor(Mprocessor.Processor):
         try:
             args_list = arg_split(current_command)
         except:
-            self.errmsg("bad parse %s"< sys.exc_info()[0])
+            self.errmsg("bad parse %s: %s" % sys.exc_info()[0:2])
+            import traceback
+            for s in traceback.format_tb(sys.exc_info()[2], limit=None):
+                self.errmsg(s.strip())
             return False
 
         for args in args_list:
