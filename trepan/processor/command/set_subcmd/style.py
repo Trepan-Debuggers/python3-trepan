@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein
+#   Copyright (C) 2015, 2017 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
@@ -7,7 +7,6 @@ style_names = sorted(list(STYLE_MAP.keys()))
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.processor import cmdfns as Mcmdfns
 from trepan.lib import complete as Mcomplete
 
 
@@ -23,8 +22,8 @@ Giving an invalid name will list all available pygments styles.
 
 Examples:
 ---------
+    set style            # give a list of the style names
     set style colorful   # Pygments 'colorful' style
-    set style fdasfda    # Probably display available styles
     set style none       # Turn off style, still use highlight though
 
 See also:
@@ -41,10 +40,13 @@ See also:
     short_help = 'Set the pygments style'
 
     def run(self, args):
-        if len(args) != 1:
-            self.errmsg("Expecting exactly one arg")
+        if len(args) == 0:
+            self.errmsg("style names: ")
+            self.msg(self.columnize_commands(style_names))
             return
-
+        elif len(args) > 1:
+            self.errmsg("Expecting zero one one arg")
+            return
         if args[0] == 'none':
             self.debugger.settings[self.name] = None
             return
