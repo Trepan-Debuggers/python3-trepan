@@ -27,7 +27,7 @@ class TestKill(unittest.TestCase):
         result = command.run(['kill', 'wrong', 'number', 'of', 'args'])
         self.assertFalse(result)
         self.assertFalse(self.signal_caught)
-        result = command.run(['kill', '28'])
+        result = command.run(['kill', '1'])
         self.assertFalse(result)
         self.assertTrue(self.signal_caught)
         return
