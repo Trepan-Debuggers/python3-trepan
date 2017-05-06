@@ -46,6 +46,7 @@ install_requires   = ['columnize >= 0.3.8',
                       'pygments  >= 2.0.2',
                       'uncompyle6 >= 2.9.11',
                       'tracer >= 0.3.2'
+                      'nose>=1.0',
                       'xdis >= 3.3.0',
                       ]
 icense            = 'GPL'
