@@ -140,7 +140,7 @@ You can now debug your program in a different process or even a different comput
 Wheel, Egg, and Tarballs
 ------------------------
 
-Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html>`_ has full instructions and installing from git and by other means.
+Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://python2-trepan.readthedocs.io/en/latest/install.html>`_ has full instructions and installing from git and by other means.
 
 Modularity
 ----------
