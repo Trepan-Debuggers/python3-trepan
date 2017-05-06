@@ -108,9 +108,10 @@ class TestCmdProc(unittest.TestCase):
         modfunc, f, l = self.cp.parse_position("%s:10" % filename)
         self.assertEqual(filename, f, 'file:line parsing bolixed')
 
-        # Without the line number should be a problem though
-        modfunc, f, l = self.cp.parse_position(filename)
-        self.assertEqual(None, f, 'file should not work')
+        if sys.platform != 'win32':
+            # Without the line number should be a problem though
+            modfunc, f, l = self.cp.parse_position(filename)
+            self.assertEqual(None, f, 'file should not work')
         return
 
     def test_parse_position_one_arg(self):

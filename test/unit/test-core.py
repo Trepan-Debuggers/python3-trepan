@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.cmdproc'
-import os, unittest
+import os, sys, unittest
 
 from trepan.lib import core as Mcore
 
@@ -27,10 +27,11 @@ class TestCore(unittest.TestCase):
         opts = {'processor': MockProcessor()}
         dc = Mcore.TrepanCore(None, opts=opts)
         s = '<string>'
-        self.assertEqual(s, dc.canonic(s), 
+        self.assertEqual(s, dc.canonic(s),
                          'canonic should not have changed string')
-        self.assertEqual(os.path.sep, dc.canonic(__file__)[0],
-                         'canonic should produce an absolute file')
+        if sys.platform != 'win32':
+            self.assertEqual(os.path.sep, dc.canonic(__file__)[0],
+                             'canonic should produce an absolute file')
         return
 
 if __name__ == '__main__':

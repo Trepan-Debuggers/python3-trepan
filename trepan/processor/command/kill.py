@@ -15,10 +15,77 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import signal
+import sys
+import time
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import complete as Mcomplete
+
+# This code is from StackOverflow:
+#  http://stackoverflow.com/questions/35772001/how-to-handle-the-signal-in-python-on-windows-machine
+if sys.platform != 'win32':
+    kill = os.kill
+    sleep = time.sleep
+else:
+    # adapt the conflated API on Windows.
+    import threading
+
+    sigmap = {signal.SIGINT: signal.CTRL_C_EVENT,
+              signal.SIGBREAK: signal.CTRL_BREAK_EVENT}
+
+    def kill(pid, signum):
+        if signum in sigmap and pid == os.getpid():
+            # we don't know if the current process is a
+            # process group leader, so just broadcast
+            # to all processes attached to this console.
+            pid = 0
+        thread = threading.current_thread()
+        handler = signal.getsignal(signum)
+        # work around the synchronization problem when calling
+        # kill from the main thread.
+        if (signum in sigmap and
+            thread.name == 'MainThread' and
+            callable(handler) and
+            pid == 0):
+            event = threading.Event()
+            def handler_set_event(signum, frame):
+                event.set()
+                return handler(signum, frame)
+            signal.signal(signum, handler_set_event)
+            try:
+                kill(pid, sigmap[signum])
+                # busy wait because we can't block in the main
+                # thread, else the signal handler can't execute.
+                while not event.is_set():
+                    pass
+            finally:
+                signal.signal(signum, handler)
+        else:
+            kill(pid, sigmap.get(signum, signum))
+
+    if sys.version_info[0] > 2:
+        sleep = time.sleep
+    else:
+        import errno
+
+        # If the signal handler doesn't raise an exception,
+        # time.sleep in Python 2 raises an EINTR IOError, but
+        # Python 3 just resumes the sleep.
+
+        def sleep(interval):
+            '''sleep that ignores EINTR in 2.x on Windows'''
+            while True:
+                try:
+                    t = time.time()
+                    time.sleep(interval)
+                except IOError as e:
+                    if e.errno != errno.EINTR:
+                        raise
+                interval -= time.time() - t
+                if interval <= 0:
+                    break
+
 
 
 class KillCommand(Mbase_cmd.DebuggerCommand):
@@ -71,7 +138,11 @@ See also:
         return Mcomplete.complete_token(completions, prefix.lower())
 
     def run(self, args):
-        signo =  signal.SIGKILL
+        if sys.platform != 'win32':
+            signo =  signal.SIGKILL
+        else:
+            signo =  signal.CTRL_BREAK_EVENT
+
         confirmed = False
         if len(args) <= 1:
             if '!' != args[0][-1]:
@@ -91,7 +162,7 @@ See also:
         if confirmed:
             import os
             # FIXME: check validity of signo.
-            os.kill(os.getpid(), signo)
+            kill(os.getpid(), signo)
             pass
         return False  # Possibly not reached
     pass
