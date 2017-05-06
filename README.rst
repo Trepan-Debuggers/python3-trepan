@@ -40,7 +40,7 @@ Source-code Syntax Colorization
 -------------------------------
 
 Starting with release 0.2.0, terminal source code is colorized via
-pygments_ . And with that you can set the pygements color style,
+pygments_ . And with that you can set the pygments color style,
 e.g. colorful, paraiso-dark. See set_style_ . Furthermore, we make use
 of terminal bold and emphasized text in debugger output and help
 text. Of course, you can also turn this off. Starting with release
