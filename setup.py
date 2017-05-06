@@ -25,7 +25,9 @@ install_requires   = ['columnize >= 0.3.8',
                       'pyficache >= 0.3.1',
                       'pygments  >= 2.0.2',
                       'uncompyle6 >= 2.9.8',
-                      'tracer >= 0.3.2']
+                      'tracer >= 0.3.2',
+                      'xdis >= 3.2.3',                      
+                     ]
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan3k'
