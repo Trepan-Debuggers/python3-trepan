@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.kill'
-import unittest
+import sys, unittest
 
 from trepan.processor.command import kill as Mkill
 
@@ -27,9 +27,10 @@ class TestKill(unittest.TestCase):
         result = command.run(['kill', 'wrong', 'number', 'of', 'args'])
         self.assertFalse(result)
         self.assertFalse(self.signal_caught)
-        result = command.run(['kill', '1'])
-        self.assertFalse(result)
-        self.assertTrue(self.signal_caught)
+        if sys.platform != 'win32':
+            result = command.run(['kill', '28'])
+            self.assertFalse(result)
+            self.assertTrue(self.signal_caught)
         return
 
 if __name__ == '__main__':
