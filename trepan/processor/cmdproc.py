@@ -16,7 +16,12 @@
 import inspect, linecache, os, sys, shlex, traceback, re
 import pyficache
 from trepan.processor import cmdfns
-from reprlib import Repr
+
+try:
+    from reprlib import Repr
+except:
+    from reprlib import repr as Repr
+
 from pygments.console import colorize
 
 from tracer import EVENT2SHORT
