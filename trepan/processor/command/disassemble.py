@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2016 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,12 +15,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys
-import uncompyle6
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.lib import disassemble as Mdis, file as Mfile
 from trepan.processor import cmdfns as Mcmdfns
+from xdis.load import load_module
 
 # From importlib.util
 DEBUG_BYTECODE_SUFFIXES = ['.pyc']
@@ -134,7 +134,8 @@ disassemble that.
                     bytecode_file = cache_from_source(bytecode_file)
                 if bytecode_file and Mfile.readable(bytecode_file):
                     print("Reading %s ..." % bytecode_file)
-                    version, timestamp, magic_int, obj = uncompyle6.load.load_module(bytecode_file)
+                    (version, timestamp, magic_int, obj,
+                     is_pypy, source_size) = load_module(bytecode_file)
                     have_code = True
                 elif not self.proc.curframe:
                         self.errmsg("No frame selected.")

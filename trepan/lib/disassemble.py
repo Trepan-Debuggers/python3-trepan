@@ -5,6 +5,11 @@
 
 import inspect, sys, types
 from dis import distb, findlabels, findlinestarts
+
+from xdis import IS_PYPY, PYTHON_VERSION
+from xdis.main import get_opcode
+from xdis.bytecode import get_instructions_bytes
+
 try:
     from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
         hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
@@ -28,7 +33,13 @@ def _get_const_info(const_index, const_list):
     """
     argval = const_index
     if const_list is not None:
-        argval = const_list[const_index]
+        try:
+            argval = const_list[const_index]
+        except:
+            print(const_list)
+            import pdb; pdb.set_trace()
+            print(const_index)
+
     return argval, repr(argval)
 
 def _get_name_info(name_index, name_list):
@@ -162,9 +173,11 @@ def disassemble_string(source):
     return
 
 
+opc = get_opcode(PYTHON_VERSION, IS_PYPY)
+
 def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                       start_line=-1, end_line=None, relative_pos=False,
-                      varnames=(), names=(), consts=(), cellvars=(),
+                      varnames=(), names=(), constants=(), cells=(),
                       freevars=(), linestarts={}, highlight='light',
                       start_offset=0, end_offset=None):
     """Disassemble byte string of code. If end_line is negative
@@ -175,11 +188,9 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
     elif relative_pos:
         end_line += start_line -1
         pass
+
     labels = findlabels(code)
-    n = len(code)
-    i = 0
-    extended_arg = 0
-    free = None
+
     null_print = lambda x: None
     if start_line > cur_line:
         msg_nocr = null_print
@@ -187,24 +198,20 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
     else:
         msg_nocr = orig_msg_nocr
         msg = orig_msg
-        pass
-    while i < n and statement_count >= 0:
-        op = code[i]
-        if end_offset and i > end_offset:
+
+    for instr in get_instructions_bytes(code, opc, varnames, names,
+                                        constants, cells, linestarts):
+        offset = instr.offset
+        if end_offset and offset > end_offset:
             break
-        if start_offset > i :
-            msg_nocr = null_print
-            msg = null_print
-        else:
-            msg_nocr = orig_msg_nocr
-            msg = orig_msg
-            pass
-        if i in linestarts:
-            if i > 0:
+
+        if instr.starts_line:
+            if offset:
                 msg("")
-            cur_line = linestarts[i]
+
+            cur_line = instr.starts_line
             if ((start_line and start_line > cur_line) or
-                start_offset > i) :
+                start_offset > offset) :
                 msg_nocr = null_print
                 msg = null_print
             else:
@@ -213,7 +220,7 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                 msg = orig_msg
                 pass
             if ((cur_line > end_line) or
-                (end_offset and i > end_offset)):
+                (end_offset and offset > end_offset)):
                 break
             msg_nocr(format_token(Mformat.LineNumber,
                                   "%3d" % cur_line,
@@ -221,74 +228,27 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
         else:
             msg_nocr('   ')
 
-        if i == lasti: msg_nocr(format_token(Mformat.Arrow, '-->',
-                                             highlight=highlight))
+        if offset == lasti: msg_nocr(format_token(Mformat.Arrow, '-->',
+                                                  highlight=highlight))
         else: msg_nocr('   ')
-        if i in labels: msg_nocr(format_token(Mformat.Arrow, '>>',
-                                              highlight=highlight))
+        if offset in labels: msg_nocr(format_token(Mformat.Arrow, '>>',
+                                                   highlight=highlight))
         else: msg_nocr('  ')
-        msg_nocr(repr(i).rjust(4))
+        msg_nocr(repr(offset).rjust(4))
         msg_nocr(' ')
         msg_nocr(format_token(Mformat.Opcode,
-                              opname[op].ljust(20),
+                              instr.opname.ljust(20),
                               highlight=highlight))
-        i += 1
-        if op >= HAVE_ARGUMENT:
-            arg = code[i] + code[i+1]*256 + extended_arg
-            extended_arg = 0
-            i += 2
-            if op == EXTENDED_ARG:
-                extended_arg = arg*65536
-            #  Set argval to the dereferenced value of the argument when
-            #  available, and argrepr to the string representation of argval.
-            #  _disassemble_bytes needs the string repr of the
-            #  raw name index for LOAD_GLOBAL, LOAD_CONST, etc.
-            argval = arg
-            msg_nocr(repr(arg).rjust(5))
-            msg_nocr(' ')
-            if op in hasconst:
-                argval, argrepr = _get_const_info(arg, consts)
-                msg_nocr('(' +
-                         format_token(Mformat.Const,  argrepr,
-                                      highlight=highlight)
-                         + ')')
-                pass
-            elif op in hasname:
-                argval, argrepr = _get_name_info(arg, names)
-                msg_nocr('(' +
-                         format_token(Mformat.Name, argrepr,
-                                      highlight=highlight)
-                         + ')')
-            elif op in hasjrel:
-                argval = i + arg
-                msg_nocr(format_token(Mformat.Label,
-                                      '(to ' + repr(argval) + ')',
-                                      highlight=highlight))
-            elif op in haslocal:
-                argval, argrepr = _get_name_info(arg, varnames)
-                msg_nocr('(' +
-                         format_token(Mformat.Var, argrepr,
-                                      highlight=highlight) + ')')
-            elif op in hascompare:
-                msg_nocr('(' +
-                         format_token(Mformat.Compare,
-                                      cmp_op[arg],
-                                      highlight=highlight) + ')')
-            elif op in hasfree:
-                if free is None:
-                    free = cellvars + freevars
-                argval, argrepr = _get_name_info(arg, free)
-                msg_nocr('(' + argrepr + ')')
-                pass
-            elif op in hasnargs:
-                argrepr = "%d positional, %d keyword pair" % (code[i-2],
-                                                              code[i-1])
-                msg_nocr('(' +
-                         format_token(Mformat.Name, argrepr,
-                                      highlight=highlight) + ')')
-            pass
-        msg("")
+        msg_nocr(repr(instr.arg).ljust(10))
+        msg_nocr(' ')
+        # Show argva?
+        msg(format_token(Mformat.Name,
+                         instr.argrepr.ljust(20),
+                         highlight=highlight))
+        pass
+
     return
+
 
 # Demo it
 if __name__ == '__main__':
