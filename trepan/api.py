@@ -218,30 +218,30 @@ def stop(opts=None):
         return Mdebugger.debugger_obj.stop(opts)
     return None
 
-# Demo it
-if __name__=='__main__':
-    import tracer
+# # Demo it
+# if __name__=='__main__':
+#     import tracer
 
-    def foo(n):
-        y = n
-        for i in range(n):
-            print(i)
-            pass
-        return y
-    from trepan.lib import default as Mdefault
-    settings = dict(Mdefault.DEBUGGER_SETTINGS)
-    settings.update({'trace': True, 'printset': tracer.ALL_EVENTS})
-    debug_opts={'step_ignore': -1, 'settings': settings}
-    print('Issuing: run_eval("1+2")')
-    print(run_eval('1+2', debug_opts=debug_opts))
-    print('Issuing: run_exec("x=1; y=2")')
-    run_exec('x=1; y=2', debug_opts=debug_opts)
-    print('Issuing: run_call(foo, debug_opts, None, 2)')
-    run_call(foo, debug_opts, None, 2)
-    # if len(sys.argv) > 1:
-    #     # FIXME: should this work better?
-    #     # print 'Issuing interactive: run_exec(x=1; y=2)'
-    #     # run_exec('x=1; y=2')
-    #     print 'Issuing interactive: run_call(foo)'
-    #     run_call(foo, debug_opts)
-    pass
+#     def foo(n):
+#         y = n
+#         for i in range(n):
+#             print(i)
+#             pass
+#         return y
+#     from trepan.lib import default as Mdefault
+#     settings = dict(Mdefault.DEBUGGER_SETTINGS)
+#     settings.update({'trace': True, 'printset': tracer.ALL_EVENTS})
+#     debug_opts={'step_ignore': -1, 'settings': settings}
+#     print('Issuing: run_eval("1+2")')
+#     print(run_eval('1+2', debug_opts=debug_opts))
+#     print('Issuing: run_exec("x=1; y=2")')
+#     run_exec('x=1; y=2', debug_opts=debug_opts)
+#     print('Issuing: run_call(foo, debug_opts, None, 2)')
+#     run_call(foo, debug_opts, None, 2)
+#     # if len(sys.argv) > 1:
+#     #     # FIXME: should this work better?
+#     #     # print 'Issuing interactive: run_exec(x=1; y=2)'
+#     #     # run_exec('x=1; y=2')
+#     #     print 'Issuing interactive: run_call(foo)'
+#     #     run_call(foo, debug_opts)
+#     pass

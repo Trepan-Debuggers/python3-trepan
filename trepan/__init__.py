@@ -170,3 +170,5 @@ Copyright (C) 2008-2009, 2013-2016 Rocky Bernstein <rocky@gnu.org>
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
 """
 __docformat__ = 'restructuredtext'
+
+from trepan.version import VERSION

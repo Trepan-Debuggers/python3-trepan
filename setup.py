@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-from trepan.version import VERSION
+import sys
+import os.path as osp
+sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
+from trepan import VERSION
 
-copyright   = '''Copyright (C) 2013, 2015-2016 Rocky Bernstein <rocky@gnu.org>.'''
+copyright   = '''Copyright (C) 2013, 2015-2017 Rocky Bernstein <rocky@gnu.org>.'''
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
