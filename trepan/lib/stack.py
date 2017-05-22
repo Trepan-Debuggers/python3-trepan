@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@ import os, re, xdis
 
 from trepan.lib import bytecode as Mbytecode, printing as Mprint
 from trepan.lib import format as Mformat
+from xdis.main import get_opcode
+from xdis import PYTHON_VERSION, IS_PYPY
+
 format_token = Mformat.format_token
 
 def count_frames(frame, count_start=0):
@@ -158,6 +161,8 @@ def is_exec_stmt(frame):
 import dis
 
 
+opc = get_opcode(PYTHON_VERSION, IS_PYPY)
+
 def get_call_function_name(frame, color='plain'):
     """If f_back is looking at a call function, return
     the name for it. Otherwise return None"""
@@ -169,16 +174,30 @@ def get_call_function_name(frame, color='plain'):
     code       = co.co_code
     # labels     = dis.findlabels(code)
     linestarts = dict(dis.findlinestarts(co))
-    inst       = f_back.f_lasti
-    while inst >= 0:
-        # c = code[inst]
-        # op = ord(c)
-        if inst in linestarts:
-            inst += 1
-            oparg = code[inst] + (code[inst+1] << 8)
-            return format_token(Mformat.Function, co.co_names[oparg],
+    offset     = f_back.f_lasti
+    while offset >= 0:
+        if offset in linestarts:
+            op = code[offset]
+            offset += 1
+            # FIXME: put this code in xdis
+            extended_arg = 0
+            while True:
+                if PYTHON_VERSION >= 3.6:
+                    if op == opc.EXTENDED_ARG:
+                        extended_arg += (arg << 8)
+                        continue
+                    arg = code[offset] + extended_arg
+                    # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
+                else:
+                    if op == opc.EXTENDED_ARG:
+                        extended_arg += (arg << 256)
+                        continue
+                    arg = code[offset] + code[offset+1]*256 + extended_arg
+                break
+
+            return format_token(Mformat.Function, co.co_names[arg],
                                 highlight=color)
-        inst -= 1
+        offset -= 1
         pass
     return None
 
