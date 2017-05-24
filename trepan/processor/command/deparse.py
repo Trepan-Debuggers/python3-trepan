@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2016 Rocky Bernstein
+#  Copyright (C) 2015-2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from getopt import getopt, GetoptError
-from uncompyle6.semantics.fragments import deparse_code
+from uncompyle6.semantics.fragments import deparse_code, deparse_code_around_offset
 from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
 from sys import version_info
 from io import StringIO
@@ -118,7 +118,7 @@ See also:
         sys_version = version_info.major + (version_info.minor / 10.0)
         if len(args) >= 1 and args[0] == '.':
             try:
-                if pretty:
+                if not pretty:
                     deparsed = deparse_code(sys_version, co)
                     text = deparsed.text
                 else:
@@ -147,6 +147,7 @@ See also:
             deparsed = deparse_code(sys_version, co)
         except:
             self.errmsg("error in deparsing code at %d" % last_i)
+            deparsed = deparse_code_around_offset(last_i, co.co_name, sys_version, co)
             return
         if (name, last_i) in deparsed.offsets.keys():
             nodeInfo =  deparsed.offsets[name, last_i]
