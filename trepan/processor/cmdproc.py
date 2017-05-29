@@ -789,6 +789,7 @@ class CommandProcessor(Mprocessor.Processor):
                             # Let these exceptions propagate through
                             raise
                         except:
+                            import traceback
                             self.errmsg("INTERNAL ERROR: " +
                                         traceback.format_exc())
                             pass

@@ -21,7 +21,7 @@ from trepan import misc as Mmisc
 class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
     'Execution status of the program.'
 
-    min_abbrev = 1  # Need at least info p
+    min_abbrev = 2  # Need at least info pr
     max_args   = 0
     need_stack = True
     short_help = 'Execution status of the program'

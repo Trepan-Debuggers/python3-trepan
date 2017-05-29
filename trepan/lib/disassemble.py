@@ -10,14 +10,6 @@ from xdis import IS_PYPY, PYTHON_VERSION
 from xdis.main import get_opcode
 from xdis.bytecode import get_instructions_bytes
 
-try:
-    from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
-        hasjrel, hasnargs, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
-except:
-    from opcode import cmp_op, hasconst, hascompare, hasfree, hasname, \
-        hasjrel, haslocal, opname, EXTENDED_ARG, HAVE_ARGUMENT
-    hasnargs = []
-
 from trepan.lib import format as Mformat
 format_token = Mformat.format_token
 
@@ -178,7 +170,7 @@ opc = get_opcode(PYTHON_VERSION, IS_PYPY)
 def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                       start_line=-1, end_line=None, relative_pos=False,
                       varnames=(), names=(), constants=(), cells=(),
-                      freevars=(), linestarts={}, highlight='light',
+                      freevars=(), linestarts=None, highlight='light',
                       start_offset=0, end_offset=None):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""

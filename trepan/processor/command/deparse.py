@@ -61,8 +61,7 @@ See also:
 ---------
 
 `disassemble`, `list`, and `set highlight`
-
-    """
+"""
 
     category      = 'data'
     min_args      = 0
@@ -146,9 +145,8 @@ See also:
         try:
             deparsed = deparse_code(sys_version, co)
         except:
-            self.errmsg("error in deparsing code at %d" % last_i)
-            deparsed = deparse_code_around_offset(last_i, co.co_name, sys_version, co)
-            return
+            self.errmsg("error in deparsing code at offset %d" % last_i)
+            deparsed = deparse_code_around_offset(co.co_name, last_i, sys_version, co),
         if (name, last_i) in deparsed.offsets.keys():
             nodeInfo =  deparsed.offsets[name, last_i]
             extractInfo = deparsed.extract_node_info(nodeInfo)
@@ -191,8 +189,9 @@ See also:
     pass
 
 # if __name__ == '__main__':
+#     import sys
 #     from trepan import debugger as Mdebugger
-#     d = Mdebugger.Debugger()
+#     d = Mdebugger.Trepan()
 #     command = PythonCommand(d.core.processor)
 #     command.proc.frame = sys._getframe()
 #     command.proc.setup()
