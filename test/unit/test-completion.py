@@ -67,7 +67,7 @@ class TestCompletion(unittest.TestCase):
                 ['info ',
                  ['args', 'break', 'builtins', 'code',
                   'display', 'files', 'frame', 'globals', 'line',
-                  'locals', 'macro', 'program', 'return', 'signals', 'source',
+                  'locals', 'macro', 'pc', 'program', 'return', 'signals', 'source',
                   'threads']],
 
                 ['help sta', ['stack', 'status']],
