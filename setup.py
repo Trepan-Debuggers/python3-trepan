@@ -71,7 +71,7 @@ setup(
        install_requires   = install_requires,
        license            = license,
        long_description   = long_description,
-       packages           = ('trepan',),
+       packages           = packages,
        py_modules         = py_modules,
        name               = modname,
        test_suite         = 'nose.collector',
