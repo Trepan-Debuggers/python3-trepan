@@ -13,7 +13,7 @@ copyright   = '''Copyright (C) 2013, 2015-2017 Rocky Bernstein <rocky@gnu.org>.'
 classifiers =  ['Development Status :: 4 - Beta',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
-                'License :: OSI Approved :: GNU General Public License (GPL)',
+                'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python :: 3',
                 'Programming Language :: Python :: 3.3',
@@ -37,7 +37,7 @@ install_requires   = ['columnize >= 0.3.8',
                       'tracer >= 0.3.2',
                       'xdis >= 3.3.1',
                      ]
-license            = 'GPL'
+license            = 'GPL3'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan3k'
 py_modules         = None
@@ -55,7 +55,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 long_description   = ( read("README.rst") + '\n' )
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
        author             = author,
@@ -69,7 +69,7 @@ setup(
        install_requires   = install_requires,
        license            = license,
        long_description   = long_description,
-       packages           = find_packages(),
+       packages           = ('trepan',),
        py_modules         = py_modules,
        name               = modname,
        test_suite         = 'nose.collector',
