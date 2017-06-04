@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2016 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -185,7 +185,9 @@ See also:
 
         # We now have range information. Do the listing.
         if max_line is None:
-            self.errmsg('No file %s found' % filename)
+            self.errmsg('No file %s found; using "deparse" command instead to show source' %
+                        filename)
+            self.proc.commands['deparse'].run(['deparse'])
             return
 
         if first > max_line:
