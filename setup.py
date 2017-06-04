@@ -2,8 +2,8 @@
 import sys
 import os.path as osp
 
-if not ((3, 3) <= sys.version_info < (3, 7)):
-    raise Exception("Python Versions 3.3 to 3.6 are supported only. See trepan2 or pydbgr for older Pythons")
+if not ((3, 2) <= sys.version_info < (3, 7)):
+    raise Exception("Python Versions 3.2 to 3.6 are supported only. See trepan2 or pydbgr for older Pythons")
 
 
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
@@ -16,6 +16,7 @@ classifiers =  ['Development Status :: 4 - Beta',
                 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python :: 3',
+                'Programming Language :: Python :: 3.2',
                 'Programming Language :: Python :: 3.3',
                 'Programming Language :: Python :: 3.4',
                 'Programming Language :: Python :: 3.5',
