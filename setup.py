@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import sys
 import os.path as osp
+
+if not ((3, 3) <= sys.version_info < (3, 7)):
+    raise Exception("Python Versions 3.3 to 3.6 are supported only. See trepan2 or pydbgr for older Pythons")
+
+
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
 from trepan import VERSION
 
@@ -28,9 +33,9 @@ install_requires   = ['columnize >= 0.3.8',
                       'nose>=1.0',
                       'pyficache >= 0.3.1',
                       'pygments  >= 2.0.2',
-                      'uncompyle6 >= 2.9.8',
+                      'uncompyle6 >= 2.10.1',
                       'tracer >= 0.3.2',
-                      'xdis >= 3.2.3',
+                      'xdis >= 3.3.1',
                      ]
 license            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'

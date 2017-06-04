@@ -55,6 +55,7 @@ Examples:
     deparse --parent    # deparse current location enclosing context
     deparse .           # deparse current function or main
     deparse --offset 6  # deparse starting at offset 6
+    deparse --offsets   # show all exect deparsing offsets
     deparse --AST       # deparse and show AST
 
 See also:

@@ -13,7 +13,8 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 3.3, 3.4 and 3.5. See trepan_ for the same code modified to work with Python 2.
+This package is for Python 3.3 to 3.y. See trepan2_ for the same code
+modified to work with Python 2 and pydbgr_ for pre Python 2.6.
 
 Features
 ========
@@ -161,7 +162,8 @@ Many of the things listed below doesn't directly effect end-users, but it does e
 .. _pygments_style:  http://pygments.org/docs/styles/
 .. _howtoinstall: https://github.com/rocky/python3-trepan/wiki/How-to-Install
 .. _pydb:  http://bashdb.sf.net/pydb
-.. _trepan: https://pypi.python.org/pypi/trepan
+.. _pydbgr: https://pypi.python.org/pypi/pydbgr
+.. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _trepan3: https://github.com/rocky/python3-trepan
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning

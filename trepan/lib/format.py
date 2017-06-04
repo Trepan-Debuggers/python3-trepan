@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ from pygments.formatter           import Formatter
 from pygments.formatters          import TerminalFormatter
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.lexers              import RstLexer
-from pygments.token               import Comment, Generic, Keyword, Name, \
-     Number, Operator, String, Token
+from pygments.token               import (Comment, Generic, Keyword, Name,
+                                          Number, Operator, String, Token)
 from pygments.util                import get_choice_opt
 
 

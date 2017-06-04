@@ -2,9 +2,9 @@ include README.rst
 include ChangeLog
 include COPYING
 include Makefile
-include requirements.txt
 include requirements-dev.txt
 include __pkginfo__.py
+recursive-include trepan/processor/command/help *
 recursive-include trepan *.py
 include test/Makefile
 recursive-include test/data *.cmd *.right

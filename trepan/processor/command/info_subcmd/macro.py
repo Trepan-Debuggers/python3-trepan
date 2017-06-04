@@ -22,11 +22,9 @@ from trepan.lib import complete as Mcomplete
 
 
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
-    """**macro**
+    """**info macro * ***
 
-**macro** *
-
-**macro** *macro1* [*macro2* ..]
+**info macro** *macro1* [*macro2* ..]
 
 In the first form a list of the existing macro names are shown
 in column format.

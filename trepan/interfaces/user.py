@@ -135,7 +135,6 @@ class UserInterface(Minterface.TrepanInterface):
 if __name__=='__main__':
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
-    import sys
     if len(sys.argv) > 1:
         try:
             line = intf.readline("Type something: ")

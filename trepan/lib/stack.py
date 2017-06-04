@@ -179,6 +179,7 @@ def get_call_function_name(frame, color='plain'):
         if offset in linestarts:
             op = code[offset]
             offset += 1
+            arg = code[offset]
             # FIXME: put this code in xdis
             extended_arg = 0
             while True:

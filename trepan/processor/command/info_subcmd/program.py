@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,20 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan import misc as Mmisc
 
 class InfoProgram(Mbase_subcmd.DebuggerSubcommand):
-    'Execution status of the program.'
+    """**info program**
+
+Execution status of the program. Listed are:
+
+* Program name
+
+* Instruction PC
+
+* Reason the program is stopped.
+
+See also:
+---------
+
+`info line`, `info args`, `info frame`, `info pc`"""
 
     min_abbrev = 2  # Need at least info pr
     max_args   = 0

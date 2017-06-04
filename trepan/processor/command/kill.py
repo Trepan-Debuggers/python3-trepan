@@ -49,6 +49,7 @@ else:
             callable(handler) and
             pid == 0):
             event = threading.Event()
+
             def handler_set_event(signum, frame):
                 event.set()
                 return handler(signum, frame)
@@ -85,7 +86,6 @@ else:
                 interval -= time.time() - t
                 if interval <= 0:
                     break
-
 
 
 class KillCommand(Mbase_cmd.DebuggerCommand):
