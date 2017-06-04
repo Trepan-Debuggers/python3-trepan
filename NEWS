@@ -1,3 +1,9 @@
+trepan 0.7.5 2017-06-03
+
+- Fix botched release via pip?
+  Go back to adding packages via setuptools find_package and
+  and include trepan.api
+
 trepan 0.7.4 2017-06-03 Marilyn Frankel
 - go over docs
   - Add "set style" no arg doc
