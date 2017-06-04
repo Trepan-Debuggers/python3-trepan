@@ -57,7 +57,7 @@ def read(*rnames):
 long_description   = ( read("README.rst") + '\n' )
 
 from setuptools import setup, find_packages
-packages = find_packages() + ['trepan.api']
+packages = find_packages()
 
 setup(
        author             = author,
