@@ -3,7 +3,8 @@ import sys
 import os.path as osp
 
 if not ((3, 2) <= sys.version_info < (3, 7)):
-    raise Exception("Python Versions 3.2 to 3.6 are supported only. See trepan2 or pydbgr for older Pythons")
+    raise Exception("Python Versions 3.2 to 3.6 are supported only.\n"
+                    "For older Python versions, See trepan2.")
 
 
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
