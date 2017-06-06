@@ -86,9 +86,9 @@ See also:
         name = co.co_name
 
         try:
-            opts, args = getopt(args[1:], "hpAPo:",
-                                ["help", "parent", "pretty", "tree", "AST",
-                                 "offset"])
+            opts, args = getopt(args[1:], "hpPAto:",
+                                ["help", "parent", "pretty", "AST",
+                                 'tree', "offset="])
         except GetoptError as err:
             # print help information and exit:
             print(str(err))  # will print something like "option -a not recognized"
@@ -111,7 +111,7 @@ See also:
             elif o in ("-o", '--offset'):
                 offset = a
             else:
-                self.errmsg("unhandled option %s" % o)
+                self.errmsg("unhandled option '%s'" % o)
             pass
         pass
 
@@ -133,12 +133,13 @@ See also:
             self.print_text(text)
             return
 
-        elif offset:
+        elif offset is not None:
             mess = ("The 'deparse' command when given an argument requires an"
-                    " instruction offset. Got: %s" % offset)
+                    " instruction offset. Got: '%s'" % offset)
             last_i = self.proc.get_an_int(offset, mess)
             if last_i is None:
                 return
+            print(last_i)
         else:
             last_i = self.proc.curframe.f_lasti
             if last_i == -1: last_i = 0
