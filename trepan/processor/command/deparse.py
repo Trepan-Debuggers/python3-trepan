@@ -86,9 +86,9 @@ See also:
         name = co.co_name
 
         try:
-            opts, args = getopt(args[1:], "hpPAto:",
+            opts, args = getopt(args[1:], "hpPAto:O",
                                 ["help", "parent", "pretty", "AST",
-                                 'tree', "offset="])
+                                 'tree', "offset=", "offsets"])
         except GetoptError as err:
             # print help information and exit:
             print(str(err))  # will print something like "option -a not recognized"
@@ -98,10 +98,13 @@ See also:
         show_parent = False
         show_ast = False
         offset = None
+        show_offsets = False
         for o, a in opts:
             if o in ("-h", "--help"):
                 self.proc.commands['help'].run(['help', 'deparse'])
                 return
+            elif o in ("-O", "--offsets"):
+                show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
             elif o in ("-P", "--pretty"):
@@ -133,13 +136,19 @@ See also:
             self.print_text(text)
             return
 
+        elif show_offsets:
+            self.section("Offsets known:")
+            deparsed = deparse_code(sys_version, co)
+            offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
+            m = self.columnize_commands(offsets)
+            self.msg_nocr(m)
+            return
         elif offset is not None:
             mess = ("The 'deparse' command when given an argument requires an"
                     " instruction offset. Got: '%s'" % offset)
             last_i = self.proc.get_an_int(offset, mess)
             if last_i is None:
                 return
-            print(last_i)
         else:
             last_i = self.proc.curframe.f_lasti
             if last_i == -1: last_i = 0
