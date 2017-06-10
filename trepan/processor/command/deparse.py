@@ -41,8 +41,7 @@ def deparsed_find(tup, deparsed, code):
 
     return nodeInfo
 
-
-class PythonCommand(Mbase_cmd.DebuggerCommand):
+class DeparseCommand(Mbase_cmd.DebuggerCommand):
     """**deparse** [options] [ . ]
 
 Options are:
@@ -153,7 +152,6 @@ See also:
                 return
             self.print_text(text)
             return
-
         elif show_offsets:
             self.section("Offsets known:")
             deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
@@ -175,7 +173,7 @@ See also:
             deparsed = deparse_code(sys_version, co)
         except:
             self.errmsg("error in deparsing code at offset %d" % last_i)
-            deparsed = deparse_code_around_offset(co.co_name, last_i, sys_version, co),
+            return
         nodeInfo = deparsed_find((name, last_i), deparsed, co)
         if nodeInfo:
             extractInfo = deparsed.extract_node_info(nodeInfo)
