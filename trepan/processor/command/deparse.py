@@ -169,7 +169,7 @@ See also:
                     parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                 self.msg(p)
             if extractInfo:
-                self.msg("opcode: %s @%d" % (nodeInfo.node.type, last_i))
+                self.msg("opcode: %s" % (nodeInfo.node))
                 self.print_text(extractInfo.selectedLine)
                 self.msg(extractInfo.markerLine)
                 if show_parent:
