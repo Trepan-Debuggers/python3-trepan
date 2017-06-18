@@ -169,17 +169,17 @@ See also:
                     parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                 self.msg(p)
             if extractInfo:
-                self.msg("opcode: %s @%d" % (nodeInfo.node.type, last_i))
+                self.rst_msg("*instruction:* %s" % (nodeInfo.node))
                 self.print_text(extractInfo.selectedLine)
                 self.msg(extractInfo.markerLine)
                 if show_parent:
                     if not parentInfo:
                         parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                     if parentInfo:
-                        self.msg("Contained in...")
+                        self.section("Contained in...")
+                        self.rst_msg("\t*Grammar Symbol:* %s" % p.type)
                         self.print_text(parentInfo.selectedLine)
                         self.msg(parentInfo.markerLine)
-                        self.msg("parsed type: %s" % p.type)
                     pass
                 pass
             pass
