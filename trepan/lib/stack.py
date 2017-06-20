@@ -14,14 +14,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
-import os, re, xdis
+import re, types
 
 from trepan.lib import bytecode as Mbytecode, printing as Mprint
 from trepan.lib import format as Mformat
+from trepan.processor.cmdfns import deparse_fn
 from xdis.main import get_opcode
 from xdis import PYTHON_VERSION, IS_PYPY
 
 format_token = Mformat.format_token
+
 
 def count_frames(frame, count_start=0):
     "Return a count of the number of frames"
@@ -35,6 +37,22 @@ import reprlib as Mrepr
 import inspect
 
 _re_pseudo_file = re.compile(r'^<.+>')
+
+def deparse_source_from_code(code):
+    source_text = ''
+    try:
+        source_lines = deparse_fn(code).split("\n")
+        source_text = ''
+        for i, source_text in enumerate(source_lines):
+            if len(source_text) > 0:
+                break
+        if len(source_lines) > 1:
+            source_text += '...'
+        source_text = '"%s"' % source_text
+    except:
+        pass
+    return source_text
+
 
 
 def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
@@ -58,12 +76,15 @@ def format_stack_entry(dbg_obj, frame_lineno, lprefix=': ',
         is_module = True
         if is_exec_stmt(frame):
             fn_name = format_token(Mformat.Function, 'exec', highlight=color)
-            s += ' %s()' % format_token(Mformat.Function, fn_name,
-                                        highlight=color)
+            source_text = deparse_source_from_code(frame.f_code)
+            s += ' %s(%s)' % (format_token(Mformat.Function, fn_name,
+                                           highlight=color), source_text)
         else:
-            fn_name = get_call_function_name(frame, color=color)
-            if fn_name: s += ' %s()' % format_token(Mformat.Function, fn_name,
-                                                    highlight=color)
+            fn_name = get_call_function_name(frame)
+            if fn_name:
+                source_text = deparse_source_from_code(frame.f_code)
+                if fn_name: s += ' %s(%s)' % (format_token(Mformat.Function, fn_name,
+                                                           highlight=color), source_text)
             pass
     else:
         is_module = False
@@ -160,10 +181,9 @@ def is_exec_stmt(frame):
 
 import dis
 
-
 opc = get_opcode(PYTHON_VERSION, IS_PYPY)
 
-def get_call_function_name(frame, color='plain'):
+def get_call_function_name(frame):
     """If f_back is looking at a call function, return
     the name for it. Otherwise return None"""
     f_back = frame.f_back
@@ -196,8 +216,7 @@ def get_call_function_name(frame, color='plain'):
                     arg = code[offset] + code[offset+1]*256 + extended_arg
                 break
 
-            return format_token(Mformat.Function, co.co_names[arg],
-                                highlight=color)
+            return co.co_names[arg]
         offset -= 1
         pass
     return None
@@ -233,7 +252,8 @@ def print_stack_trace(proc_obj, count=None, color='plain'):
 def print_dict(s, obj, title):
     if hasattr(obj, "__dict__"):
         d=obj.__dict__
-        if isinstance(d, dict):
+        if (isinstance(d, types.DictType) or
+            isinstance(d, types.DictProxyType)):
             keys = list(d.keys())
             if len(keys) == 0:
                 s += "\n  No %s" % title
@@ -283,6 +303,7 @@ def print_obj(arg, val, format=None, short=False):
             pass
         pass
     return s
+
 
 # Demo stuff above
 if __name__=='__main__':

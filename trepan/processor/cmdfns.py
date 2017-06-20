@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
 counts, to parse a string for an integer, or check a string for an
 on/off setting value.
 '''
-import io, os, sys, tempfile
+import os, sys, tempfile
 import pyficache
+from xdis import IS_PYPY
 
 def source_tempfile_remap(prefix, text):
     fd = tempfile.NamedTemporaryFile(suffix='.py',
@@ -33,14 +34,13 @@ def source_tempfile_remap(prefix, text):
 
 def deparse_fn(code):
     try:
-        from uncompyle6.semantics.pysource import deparse_code
+        from uncompyle6.semantics.fragments import deparse_code
     except ImportError:
         return None
     sys_version = sys.version_info.major + (sys.version_info.minor / 10.0)
     try:
-        out = io.StringIO()
-        deparsed = deparse_code(sys_version, code, out)
-        return deparsed.text
+        deparsed = deparse_code(sys_version, code, is_pypy=IS_PYPY)
+        return deparsed.text.strip()
     except:
         raise
     return None
@@ -154,6 +154,7 @@ def run_set_bool(obj, args):
         pass
     return
 
+
 def run_set_int(obj, arg, msg_on_error, min_value=None, max_value=None):
     """set an Integer-valued debugger setting. 'obj' is a generally a
     subcommand that has 'name' and 'debugger.settings' attributes"""
@@ -163,6 +164,7 @@ def run_set_int(obj, arg, msg_on_error, min_value=None, max_value=None):
     obj.debugger.settings[obj.name] = \
         get_an_int(obj.errmsg, arg, msg_on_error, min_value, max_value)
     return obj.debugger.settings[obj.name]
+
 
 def run_show_bool(obj, what=None):
     """Generic subcommand showing a boolean-valued debugger setting.

@@ -35,6 +35,7 @@ from trepan.lib import file as Mfile
 from trepan.lib import stack as Mstack
 from trepan.lib import thred as Mthread
 from trepan.processor import complete as Mcomplete
+from trepan.processor.cmdfns import deparse_fn
 
 warned_file_mismatches = set()
 
@@ -199,6 +200,10 @@ def print_location(proc_obj):
                 pyficache.remap_file(filename, remapped)
                 filename = remapped
                 pass
+            pass
+        elif '<string>' == filename:
+            source_text = deparse_fn(frame.f_code)
+            filename = "<string: '%s'>" % source_text
             pass
         else:
             m = re.search('^<frozen (.*)>', filename)

@@ -112,7 +112,16 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     elif hasattr(x, '__func__'):  # Method
         x = x.__func__
     if hasattr(x, '__code__'):  # Function
+        section("Disassembly of %s: %s" % (x, mess))
+        sectioned = True
+        if hasattr(x, 'f_lasti'):
+            lasti = x.f_lasti
+            pass
+        opc = get_opcode(PYTHON_VERSION, IS_PYPY)
         x = x.__code__
+        header_lines = Bytecode(x, opc).info().split("\n")
+        header = '\n'.join([format_token(Mformat.Comment, h) for h in header_lines])
+        msg(header)
         pass
     if hasattr(x, '__dict__'):  # Class or module
         items = sorted(x.__dict__.items())
