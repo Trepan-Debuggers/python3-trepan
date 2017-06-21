@@ -2,9 +2,14 @@
 import sys
 import os.path as osp
 
-if not ((3, 2) <= sys.version_info < (3, 7)):
-    raise Exception("Python Versions 3.2 to 3.6 are supported only.\n"
-                    "For older Python versions, See trepan2.")
+if not ((3, 2) <= sys.version_info[0:2] < (3, 7)):
+    mess = "Python Versions 3.2 to 3.6 are supported only in this package."
+    if ((2, 6) <= sys.version_info[0:2] <= (2, 7)):
+        mess += ("\nFor your Python, version %s, See trepan2" % sys.version[0:3])
+    elif sys.version_info[0:2] < (2, 6):
+        mess += ("\nFor your Python, version %s, see pydbgr" % sys.version[0:3])
+    print(mess)
+    raise Exception(mess)
 
 
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
