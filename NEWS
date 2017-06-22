@@ -1,3 +1,15 @@
+trepan 0.7.6 2017-06-03
+- Fix botched release
+- Corrected setup.py code, cheking and better error messaging
+`- better stack trace position in the presense of eval() and exec()
+- position in the presence of eval() and exec() via uncompyle6; this needs
+  uncompyle6 0.11.0 or greater now
+- better deparse command output shows grammar symbol on parent,
+  and full disassembly line for instruction
+- add deparse -o | --offset
+- deparse offset fuzzing
+- in disassembly of functions show function header
+
 trepan 0.7.5 2017-06-03
 
 - Fix botched release via pip?
