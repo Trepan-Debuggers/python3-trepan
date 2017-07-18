@@ -137,19 +137,14 @@ See also:
 
         sys_version = version_info.major + (version_info.minor / 10.0)
         if len(args) >= 1 and args[0] == '.':
-            try:
-                if not pretty:
-                    deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
-                    text = deparsed.text
-                else:
-                    out = StringIO()
-                    deparsed = deparse_code_pretty(sys_version, co, out, is_pypy=IS_PYPY)
-                    text = out.getvalue()
-                    pass
-            except:
-                self.errmsg("error in deparsing code")
-
-                return
+            if not pretty:
+                deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+                text = deparsed.text
+            else:
+                out = StringIO()
+                deparsed = deparse_code_pretty(sys_version, co, out, is_pypy=IS_PYPY)
+                text = out.getvalue()
+                pass
             self.print_text(text)
             return
         elif show_offsets:
@@ -170,7 +165,7 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-            deparsed = deparse_code(sys_version, co)
+            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
         except:
             self.errmsg("error in deparsing code at offset %d" % last_i)
             return

@@ -64,19 +64,20 @@ def search_file(filename, directories, cdir):
     return None
 
 
-def whence_file(py_script):
+def whence_file(py_script, dirnames=None):
     """Do a shell-like path lookup for py_script and return the results.
     If we can't find anything return py_script"""
     if py_script.find(os.sep) != -1:
         # Don't search since this name has path separator components
         return py_script
-    for dirname in os.environ['PATH'].split(os.pathsep):
+    if dirnames is None:
+        dirnames = os.environ['PATH'].split(os.pathsep)
+    for dirname in dirnames:
         py_script_try = os.path.join(dirname, py_script)
         if os.path.exists(py_script_try):
             return py_script_try
     # Failure
     return py_script
-
 
 def path_expanduser_abs(filename):
     return os.path.abspath(os.path.expanduser(filename))

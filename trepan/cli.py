@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''The command-line interface to the debugger.
 '''
-import os, os.path, pyficache, sys
+import os, pyficache, sys, tempfile
+import os.path as osp
 
 package='trepan'
 
@@ -82,7 +83,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         mainpyfile = None
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
-        if not os.path.isfile(mainpyfile):
+        if not osp.isfile(mainpyfile):
             mainpyfile=Mclifns.whence_file(mainpyfile)
             is_readable = Mfile.readable(mainpyfile)
             if is_readable is None:
@@ -94,6 +95,58 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                       % (__title__, mainpyfile, ))
                 sys.exit(1)
                 return
+
+        if Mfile.is_compiled_py(mainpyfile):
+            try:
+                from xdis import load_module, PYTHON_VERSION, IS_PYPY
+                (python_version, timestamp, magic_int, co, is_pypy,
+                 source_size) = load_module(mainpyfile, code_objects=None,
+                                            fast_load=True)
+                assert is_pypy == IS_PYPY
+                assert python_version == PYTHON_VERSION, \
+                    "bytecode is for version %s but we are version %s" % (
+                        python_version, PYTHON_VERSION)
+                # We should we check version magic_int
+
+                py_file = co.co_filename
+                if osp.isabs(py_file):
+                    try_file = py_file
+                else:
+                    mainpydir = osp.dirname(mainpyfile)
+                    tag = sys.implementation.cache_tag
+                    dirnames = [osp.join(mainpydir, tag),
+                                mainpydir] + os.environ['PATH'].split(osp.pathsep) + ['.']
+                    try_file = Mclifns.whence_file(py_file, dirnames)
+
+                if osp.isfile(try_file):
+                    mainpyfile = try_file
+                    pass
+                else:
+                    # Move onto the except branch
+                    raise IOError("Python file name embedded in code %s not found" % try_file)
+            except:
+                try:
+                    from uncompyle6 import uncompyle_file
+                except ImportError:
+                    print("%s: Compiled python file '%s', but uncompyle6 not found"
+                        % (__title__, mainpyfile), file=sys.stderr)
+                    sys.exit(1)
+                    return
+
+                short_name = osp.basename(mainpyfile).strip('.pyc')
+                fd = tempfile.NamedTemporaryFile(suffix='.py',
+                                                 prefix=short_name + "_",
+                                                 delete=False)
+                try:
+                    uncompyle_file(mainpyfile, fd)
+                except:
+                    print("%s: error uncompyling '%s'"
+                          % (__title__, mainpyfile), file=sys.stderr)
+                    sys.exit(1)
+                    return
+                mainpyfile = fd.name
+                fd.close()
+                pass
 
         # If mainpyfile is an optimized Python script try to find and
         # use non-optimized alternative.
@@ -109,7 +162,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         # Replace trepan's dir with script's dir in front of
         # module search path.
-        sys.path[0] = dbg.main_dirname = os.path.dirname(mainpyfile)
+        sys.path[0] = dbg.main_dirname = osp.dirname(mainpyfile)
 
     # XXX If a signal has been received we continue in the loop, otherwise
     # the loop exits for some reason.

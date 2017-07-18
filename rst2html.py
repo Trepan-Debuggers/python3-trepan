@@ -10,8 +10,6 @@ To check for remaining errors, install ``sphinx`` and run::
 """
 
 import re
-import sys, io
-
 
 def yield_sphinx_only_markup(lines):
     """

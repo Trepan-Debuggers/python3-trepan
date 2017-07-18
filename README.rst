@@ -37,12 +37,32 @@ around a bytecode offset such as the place you are stopped at.
 So far as I know, there is no other debugger that can do this.
 
 
+Debugging Python bytecode (no source available)
+-----------------------------------------------
+
+You can pass the debugger the name of Pytnon bytecode and many times,
+the debugger will merrily proceed.  This debugger tries very hard find
+the source code. Either by using the current executable search path
+(e.g. `PATH`) or for some by looking inside the bytecode for a
+filename in the main code object (`co_filename`) and applying that
+with a search path which takes into account directory where the
+bytecode lives.
+
+Failing to find source code this way, and in other situations where
+source code can't be found, the debugger will decompile the bytecode
+and use that for showing source test.
+
+But if you happen to know where the source code is located, you can
+associate a file source code with the current name listed in the
+bytecode. See the set_substitute_ command for details here.
+
+
 Source-code Syntax Colorization
 -------------------------------
 
 Starting with release 0.2.0, terminal source code is colorized via
 pygments_ . And with that you can set the pygments color style,
-e.g. colorful, paraiso-dark. See set_style_ . Furthermore, we make use
+e.g. "colorful", "paraiso-dark". See set_style_ . Furthermore, we make use
 of terminal bold and emphasized text in debugger output and help
 text. Of course, you can also turn this off. Starting with release
 0.6.0, you can use your own pygments_style_, provided you have a
@@ -54,17 +74,26 @@ themes.
 Command Completion
 ------------------
 
-Starting with release 2.8, readline command completion has been added. Command completion is not just a simple static list, but varies depending on the context. For example, for frame-changing commands which take optional numbers, on the list of *valid numbers* is considered.
+Starting with release 2.8, readline command completion has been
+added. Command completion is not just a simple static list, but varies
+depending on the context. For example, for frame-changing commands
+which take optional numbers, on the list of *valid numbers* is
+considered.
 
 Terminal Handling
 -----------------
 
-We can adjust debugger output depending on the line width of your terminal. If it changes, or you want to adjust it, see set_width_ .
+We can adjust debugger output depending on the line width of your
+terminal. If it changes, or you want to adjust it, see set_width_ .
 
 Smart Eval
 ----------
 
-Starting with release 0.2.0, if you want to evaluate the current source line before it is run in the code, use ``eval``. To evaluate text of a common fragment of line, such as the expression part of an *if* statement, you can do that with ``eval?``. See eval_ for more information.
+Starting with release 0.2.0, if you want to evaluate the current
+source line before it is run in the code, use ``eval``. To evaluate
+text of a common fragment of line, such as the expression part of an
+*if* statement, you can do that with ``eval?``. See eval_ for more
+information.
 
 More Stepping Control
 ---------------------
@@ -76,8 +105,12 @@ This fundamental issue is handled in a couple ways:
 Step Granularity
 ................
 
-There are now ``step`` *event* and ``next``  *event* commands with aliases to ``s+``, ``s>`` and so on. The plus-suffixed commands force a different line on a subsequent stop, the dash-suffixed commands don't.
-Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return`` and ``exception`` events respectively. And without a suffix you get the default; this is set by the `set different` command.
+There are now ``step`` *event* and ``next`` *event* commands with
+aliases to ``s+``, ``s>`` and so on. The plus-suffixed commands force
+a different line on a subsequent stop, the dash-suffixed commands
+don't.  Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return``
+and ``exception`` events respectively. And without a suffix you get
+the default; this is set by the `set different` command.
 
 Documentation
 -------------
@@ -87,14 +120,22 @@ Documentation: http://python2-trepan.readthedocs.org
 Event Filtering and Tracing
 ...........................
 
-By default the debugger stops at every event: ``call``, ``return``, ``line``, ``exception``, ``c-call``, ``c-exception``. If you just want to stop at ``line`` events (which is largely what you happens in *pdb*) you can. If however you just want to stop at calls and returns, that's possible too. Or pick some combination.
++By default the debugger stops at every event: ``call``, ``return``,
++``line``, ``exception``, ``c-call``, ``c-exception``. If you just want
++to stop at ``line`` events (which is largely what you happens in
++*pdb*) you can. If however you just want to stop at calls and returns,
++that's possible too. Or pick some combination.
 
 In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via `info program`.
 
 Event Tracing of Calls and Returns
 ----------------------------------
 
-I'm not sure why this was not done before. Probably because of the lack of the ability to set and move by different granularities, tracing calls and returns lead to too many uninteresting stops (such as at the same place you just were at). Also, stopping on function definitions probably also added to this tedium.
+I'm not sure why this was not done before. Probably because of the
+lack of the ability to set and move by different granularities,
+tracing calls and returns lead to too many uninteresting stops (such
+as at the same place you just were at). Also, stopping on function
+definitions probably also added to this tedium.
 
 Because we're really handling return events, we can show you the return value. (*pdb* has an "undocumented" *retval* command that doesn't seem to work.)
 
@@ -104,13 +145,24 @@ Debugger Macros via Python Lambda expressions
 Starting with release 0.2.3, there are debugger macros.  In *gdb*,
 there is a *macro* debugger command to extend debugger commands.
 
-However Python has its own rich programming language so it seems silly to recreate the macro language that is in *gdb*. Simpler and more powerful is just to use Python here. A debugger macro here is just a lambda expression which returns a string or a list of strings. Each string returned should be a debugger command.
+However Python has its own rich programming language so it seems silly
+to recreate the macro language that is in *gdb*. Simpler and more
+powerful is just to use Python here. A debugger macro here is just a
+lambda expression which returns a string or a list of strings. Each
+string returned should be a debugger command.
 
-We also have *aliases* for the extremely simple situation where you want to give an alias to an existing debugger command. But beware: some commands, like step_ inspect command suffixes and change their behavior accordingly.
+We also have *aliases* for the extremely simple situation where you
+want to give an alias to an existing debugger command. But beware:
+some commands, like step_ inspect command suffixes and change their
+behavior accordingly.
 
-We also envision a number of other ways to allow extension of this debugger either through additional modules, or user-supplied debugger command directories.
+We also envision a number of other ways to allow extension of this
+debugger either through additional modules, or user-supplied debugger
+command directories.
 
-If what you were looking for in macros was more front-end control over the debugger, then consider using the experimental (and not finished) Bullwinkle protocol.
+If what you were looking for in macros was more front-end control over
+the debugger, then consider using the experimental (and not finished)
+Bullwinkle protocol.
 
 Byte-code Instruction Introspection
 ------------------------------------
@@ -143,14 +195,19 @@ You can now debug your program in a different process or even a different comput
 Wheel, Egg, and Tarballs
 ------------------------
 
-Can be installed via the usual *pip* or *easy_install*. There is a source tarball. `How To Install <https://python2-trepan.readthedocs.io/en/latest/install.html>`_ has full instructions and installing from git and by other means.
+Can be installed via the usual *pip* or *easy_install*. There is a
+source tarball. `How To Install
+<https://python2-trepan.readthedocs.io/en/latest/install.html>`_ has
+full instructions and installing from git and by other means.
 
 Modularity
 ----------
 
 The Debugger plays nice with other trace hooks. You can have several debugger objects.
 
-Many of the things listed below doesn't directly effect end-users, but it does eventually by way of more robust and featureful code. And keeping developers happy is a good thing.(TM)
+Many of the things listed below doesn't directly effect end-users, but
+it does eventually by way of more robust and featureful code. And
+keeping developers happy is a good thing.(TM)
 
 * Commands and subcommands are individual classes now, not methods in a class. This means they now have properties like the context in which they can be run, minimum abbreviation name or alias names. To add a new command you basically add a file in a directory.
 * I/O is it's own layer. This simplifies interactive readline behavior from reading commands over a TCP socket.
@@ -181,6 +238,7 @@ Many of the things listed below doesn't directly effect end-users, but it does e
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
 .. _set_style:  https://python2-trepan.readthedocs.org/en/latest/commands/set/style.html
+.. _set_substitute:  https://python2-trepan.readthedocs.org/en/latest/commands/set/substitute.html
 .. _set_width:  https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html
 .. _eval: https://python2-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
