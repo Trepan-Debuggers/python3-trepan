@@ -37,10 +37,10 @@ See also:
     min_abbrev = 2  # Need at least info 'pc'
     max_args   = 0
     need_stack = True
-    short_help = 'Execution status of the program'
+    short_help = 'Show Program Counter or Instruction Offset information'
 
     def run(self, args):
-        """Procgram counter."""
+        """Program counter."""
         mainfile = self.core.filename(None)
         if self.core.is_running():
             curframe = self.proc.curframe

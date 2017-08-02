@@ -14,7 +14,7 @@ See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
 This package is for Python 3.3 to 3.y. See trepan2_ for the same code
-modified to work with Python 2 and pydbgr_ for pre Python 2.6.
+modified to work with Python 2.
 
 Features
 ========
@@ -35,6 +35,26 @@ more precise information, we can (de)parse into Python the byte code
 around a bytecode offset such as the place you are stopped at.
 
 So far as I know, there is no other debugger that can do this.
+
+
+Debugging Python bytecode (no source available)
+-----------------------------------------------
+
+You can pass the debugger the name of Pytnon bytecode and many times,
+the debugger will merrily proceed.  This debugger tries very hard find
+the source code. Either by using the current executable search path
+(e.g. `PATH`) or for some by looking inside the bytecode for a
+filename in the main code object (`co_filename`) and applying that
+with a search path which takes into account directory where the
+bytecode lives.
+
+Failing to find source code this way, and in other situations where
+source code can't be found, the debugger will decompile the bytecode
+and use that for showing source test.
+
+But if you happen to know where the source code is located, you can
+associate a file source code with the current name listed in the
+bytecode. See the set_substitute_ command for details here.
 
 
 Debugging Python bytecode (no source available)
@@ -120,11 +140,11 @@ Documentation: http://python2-trepan.readthedocs.org
 Event Filtering and Tracing
 ...........................
 
-+By default the debugger stops at every event: ``call``, ``return``,
-+``line``, ``exception``, ``c-call``, ``c-exception``. If you just want
-+to stop at ``line`` events (which is largely what you happens in
-+*pdb*) you can. If however you just want to stop at calls and returns,
-+that's possible too. Or pick some combination.
+By default the debugger stops at every event: ``call``, ``return``,
+``line``, ``exception``, ``c-call``, ``c-exception``. If you just want
+to stop at ``line`` events (which is largely what you happens in
+*pdb*) you can. If however you just want to stop at calls and returns,
+that's possible too. Or pick some combination.
 
 In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via `info program`.
 
@@ -192,7 +212,7 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
-Wheel, Egg, and Tarballs
+Egg, Wheel, and Tarballs
 ------------------------
 
 Can be installed via the usual *pip* or *easy_install*. There is a

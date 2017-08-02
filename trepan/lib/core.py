@@ -228,8 +228,10 @@ class TrepanCore:
             # Has tracer been started?
             if not tracer.is_started() or get_option('force'):
                 # FIXME: should filter out opts not for tracer
-                # Also, if we ouse opts.copy we need to check for 'None'.
+
                 tracer_start_opts = default.START_OPTS.copy()
+                if opts:
+                    tracer_start_opts.update(opts.get('tracer_start', {}))
                 tracer_start_opts['trace_fn'] = self.trace_dispatch
                 tracer_start_opts['add_hook_opts'] = add_hook_opts
                 tracer.start(tracer_start_opts)

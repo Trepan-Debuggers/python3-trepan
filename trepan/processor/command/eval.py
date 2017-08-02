@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2012-2013, 2015 Rocky Bernstein
+#  Copyright (C) 2012-2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ See also:
                     self.msg("eval: %s" % text)
                     pass
             else:
-                self.errmsg("Don't have find program source text")
+                self.errmsg("Don't have program source text")
                 return
         else:
             text = self.proc.current_command[len(self.proc.cmd_name):]

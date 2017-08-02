@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 # External Egg packages
 import os, tracer
 from columnize import computed_displaywidth
+
+from trepan.lib.term_background import is_dark_background
 
 width = computed_displaywidth()
 
@@ -84,7 +86,7 @@ DEBUGGER_SETTINGS = {
     #  'plain'   : no highlighting
     #  'dark'    : terminal highlighting for a dark background
     #  'light'   : terminal highlighting for a light background
-    'highlight'     : 'light',
+    'highlight'     : is_dark_background(),
 
     # Save debugger history?
     'hist_save'     : False,
