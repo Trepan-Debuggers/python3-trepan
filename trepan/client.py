@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2016 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2017 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ def start_client(connection_opts):
         elif control in [Mcomcodes.CONFIRM_TRUE, Mcomcodes.CONFIRM_FALSE]:
             default = (Mcomcodes.CONFIRM_TRUE == control)
             if intf.confirm(remote_msg.rstrip('\n'), default):
-                    msg='Y'
+                msg='Y'
             else:
                 msg='N'
                 pass
@@ -116,7 +116,8 @@ def start_client(connection_opts):
     return
 
 
-def main(opts, sys_argv):
+def main():
+    opts, sys_argv  = process_options(VERSION, sys.argv)
     # print(opts)
     if hasattr(opts, 'pid') and opts.pid > 0:
         remote_opts = {'open': opts.pid, 'IO': 'FIFO'}
@@ -128,6 +129,5 @@ def main(opts, sys_argv):
     return
 
 if __name__ == '__main__':
-    opts, sys_argv  = process_options(VERSION, sys.argv)
-    main(opts, sys_argv)
+    main()
     pass

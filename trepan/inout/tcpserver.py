@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014,2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014, 2016-2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ from trepan.inout.base import DebuggerInOutBase
 class TCPServer(DebuggerInOutBase):
     """Debugger Server Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS = {'open': True}
+    DEFAULT_INIT_OPTS = {'open': True, 'inout': None}
 
     def __init__(self, inout=None, opts=None):
         get_option = lambda key: Mmisc.option_set(opts, key,
@@ -37,6 +37,7 @@ class TCPServer(DebuggerInOutBase):
         self.conn = None
         self.addr = None
         self.buf = ''    # Read buffer
+        self.line_edit = False  # Our name for GNU readline capability
         self.state = 'disconnected'
         self.PORT = None
         self.HOST = None
@@ -136,8 +137,11 @@ class TCPServer(DebuggerInOutBase):
         if self.state != 'connected':
             self.wait_for_connect()
             pass
-        # FIXME: do we have to check the size of msg and split output?
-        return self.conn.send(Mtcpfns.pack_msg(msg))
+        buffer = Mtcpfns.pack_msg(msg)
+        while len(buffer) > Mtcpfns.TCP_MAX_PACKET:
+            self.conn.send(buffer[:Mtcpfns.TCP_MAX_PACKET])
+            buffer = buffer[Mtcpfns.TCP_MAX_PACKET:]
+        return self.conn.send(buffer)
 
 # Demo
 if __name__=='__main__':

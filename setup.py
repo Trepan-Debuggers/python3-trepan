@@ -72,7 +72,8 @@ setup(
        description        = short_desc,
        entry_points = {
        'console_scripts': [
-           'trepan3k  = trepan.cli:main',
+           'trepan3k   = trepan.cli:main',
+           'trepan3kc  = trepan.client:main',
        ]},
        install_requires   = install_requires,
        license            = license,

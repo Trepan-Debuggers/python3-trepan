@@ -26,7 +26,7 @@ def pack_msg(msg):
 def unpack_msg(buf):
     if len(buf) == 0:
         # Fake a quit
-        return '', 'q'
+        return '', bytes('q'.encode('utf-8'))
     length  = int(buf[0:LOG_MAX_MSG])
     data = buf[LOG_MAX_MSG:LOG_MAX_MSG+length]
     buf = buf[LOG_MAX_MSG+length:]

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2010, 2013-2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
     def close(self):
         self.input.close()
+        self.closed = True
         return
 
     DEFAULT_OPEN_READ_OPTS = {
@@ -69,8 +70,9 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         """
         get_option = lambda key: Mmisc.option_set(opts, key,
                                                   self.DEFAULT_OPEN_READ_OPTS)
-        if isinstance(inp, io.TextIOWrapper) or \
-           isinstance(inp, io.StringIO):
+        if (isinstance(inp, io.TextIOWrapper) or
+            isinstance(inp, io.StringIO) or
+            hasattr(inp, 'isatty') and inp.isatty()):
             self.use_raw = get_option('use_raw')
         elif isinstance(inp, 'string'.__class__):  # FIXME
             if opts is None:
@@ -84,6 +86,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
                                                                 inp))
         self.input     = inp
         self.line_edit = get_option('try_readline') and readline_importable()
+        self.closed = False
         return
 
     def readline(self, use_raw=None, prompt=''):
@@ -102,7 +105,9 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
             pass
         if use_raw:
             try:
-                return input(prompt)
+                inp = input(prompt)
+                # import pdb; pdb.set_trace()
+                return inp
             except ValueError:
                 raise EOFError
             pass
