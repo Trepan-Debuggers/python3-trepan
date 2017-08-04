@@ -29,7 +29,7 @@ class ClientInterface(Muser.UserInterface):
     This could be on the same computer in a different process or on
     a remote computer."""
 
-    def __init__(self, inp=None, out=None, inout=None, user_opts=None,
+    def __init__(self, inp=None, out=None, inout=None, user_opts={},
                  connection_opts={}):
 
         opts = DEFAULT_INIT_CONNECTION_OPTS.copy()
