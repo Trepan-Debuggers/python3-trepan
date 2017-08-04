@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2010, 2013-2015, 2017 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,13 +18,14 @@
 import atexit, os, sys
 
 # Our local modules
-from trepan import interface as Minterface, misc as Mmisc
+from trepan import interface as Minterface
 
 histfile = os.path.expanduser('~/.trepan3k_hist')
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
 DEFAULT_USER_SETTINGS = {
     'histfile'     : histfile,  # Where do we save the history?
+    'complete'     : None,      # Function which handles tab completion, or None
 }
 
 try:
@@ -38,8 +39,9 @@ class UserInterface(Minterface.TrepanInterface):
     process as the debugged program."""
 
     def __init__(self, inp=None, out=None, opts={}):
-        get_option = lambda key: Mmisc.option_set(opts, key,
-                                                  DEFAULT_USER_SETTINGS)
+
+        user_opts = DEFAULT_USER_SETTINGS.copy()
+        user_opts.update(opts)
 
         from trepan.inout import input as Minput, output as Moutput
 
@@ -49,12 +51,12 @@ class UserInterface(Minterface.TrepanInterface):
         self.output      = out or Moutput.DebuggerUserOutput()
 
         if self.input.use_history():
-            self.complete = get_option('complete')
+            self.complete = user_opts['complete']
             if self.complete:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
                 pass
-            self.histfile = get_option('histfile')
+            self.histfile = user_opts['histfile']
             if self.histfile:
                 try:
                     read_history_file(histfile)

@@ -17,31 +17,32 @@
 import atexit
 
 # Our local modules
-from trepan import interface as Minterface, misc as Mmisc
+from trepan import interface as Minterface
 from trepan.inout import tcpserver as Mtcpserver, fifoserver as Mfifoserver
 from trepan.interfaces import comcodes as Mcomcodes
+
+DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'TCP',
+                                'PORT': 1955}
 
 class ServerInterface(Minterface.TrepanInterface):
     """Interface for debugging a program but having user control
     reside outside of the debugged process, possibly on another
     computer."""
 
-    DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'TCP'}
-
-    def __init__(self, inout=None, out=None, connection_opts=None):
-        get_option = lambda key: \
-            Mmisc.option_set(connection_opts, key,
-                             self.DEFAULT_INIT_CONNECTION_OPTS)
+    def __init__(self, inout=None, out=None, connection_opts={}):
         atexit.register(self.finalize)
+
+        opts = DEFAULT_INIT_CONNECTION_OPTS.copy()
+        opts.update(connection_opts)
         self.inout = None  # initialize in case assignment below fails
         if inout:
             self.inout = inout
         else:
-            self.server_type = get_option('IO')
+            self.server_type = opts['IO']
             if 'FIFO' == self.server_type:
                 self.inout = Mfifoserver.FIFOServer()
             else:
-                self.inout = Mtcpserver.TCPServer(opts=connection_opts)
+                self.inout = Mtcpserver.TCPServer(opts=opts)
                 pass
             pass
         # For Compatability
@@ -140,6 +141,6 @@ class ServerInterface(Minterface.TrepanInterface):
 
 # Demo
 if __name__=='__main__':
-    connection_opts={'IO': 'TCP', 'PORT': 1955}
+    connection_opts={'IO': 'TCP', 'PORT': 1954}
     intf = ServerInterface(connection_opts=connection_opts)
     pass

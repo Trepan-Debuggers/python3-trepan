@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for trepan.interfaces.user'
-import os, sys, unittest
+import unittest
 
 from trepan.interfaces import user as Muser
 
@@ -16,15 +16,15 @@ class TestInterfaceUser(unittest.TestCase):
         """Test interface.user.UserInterface.confirm()"""
         d, cp = dbg_setup()
         u = Muser.UserInterface()
-        for s in ['y', 'Y', 'Yes', '  YES  ']: 
+        for s in ['y', 'Y', 'Yes', '  YES  ']:
             u.input.readline = lambda prompt=None: self.readline(s)
             self.assertTrue(u.confirm('Testing', True))
             pass
-        for s in ['n', 'N', 'No', '  NO  ']: 
+        for s in ['n', 'N', 'No', '  NO  ']:
             u.input.readline = lambda prompt=None: self.readline(s)
             self.assertFalse(u.confirm('Testing', True))
             pass
-        # FIXME: Add checking default values. Checking looping 
+        # FIXME: Add checking default values. Checking looping
         # values
         return
     # FIXME: more thorough testing of other routines in user.
