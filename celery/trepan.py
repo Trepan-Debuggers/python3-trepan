@@ -59,6 +59,12 @@ _current = [None]
 
 _frame = getattr(sys, '_getframe')
 
+is_python3 = sys.version_info[0] == 3
+if is_python3:
+    trepan_client = 'trepan3kc'
+else:
+    trepan_client = 'trepan2c'
+
 NO_AVAILABLE_PORT = """\
 {self.ident}: Couldn't find an available port.
 
@@ -66,12 +72,12 @@ Please specify one using the CELERY_TREPAN_PORT environment variable.
 """
 
 BANNER = """\
-{self.ident}: Please telnet into {self.host} {self.port}.
+{self.ident}: Please run "%s --host {self.host} --port {self.port}".
 
 Type `exit` in session to continue.
 
 {self.ident}: Waiting for client...
-"""
+""" % trepan_client
 
 SESSION_STARTED = '{self.ident}: Now in session with {self.remote_addr}.'
 SESSION_ENDED = '{self.ident}: Session with {self.remote_addr} ended.'
@@ -89,16 +95,16 @@ class RemoteTrepan():
 
         self._prev_handles = sys.stdin, sys.stdout
 
-        # self._sock, this_port = self.get_avail_port(
-        #     host, port, port_search_limit, port_skew,
-        # )
+        self._sock, this_port = self.get_avail_port(
+            host, port, port_search_limit, port_skew,
+        )
 
         self.host = host
         self.port = port
         self.ident = '{0}:{1}'.format(self.me, port)
 
         from trepan.interfaces import server as Mserver
-        connection_opts={'IO': 'TCP', 'PORT': port}
+        connection_opts={'IO': 'TCP', 'PORT': port, 'inout': self._sock}
         self.intf = Mserver.ServerInterface(connection_opts=connection_opts)
         self.dbg_opts = {'interface': self.intf}
         self.remote_addr = '???'

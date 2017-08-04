@@ -17,6 +17,7 @@ import code, os, sys
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.interfaces.server import ServerInterface
 
 
 class PythonCommand(Mbase_cmd.DebuggerCommand):
@@ -58,6 +59,11 @@ See also:
 
         # Python does it's own history thing.
         # Make sure it doesn't damage ours.
+        intf = self.debugger.intf[-1]
+        if isinstance(intf, ServerInterface):
+            self.errmsg("Can't run an interactive shell on a remote session")
+            return
+
         have_line_edit = self.debugger.intf[-1].input.line_edit
         if have_line_edit:
             try:

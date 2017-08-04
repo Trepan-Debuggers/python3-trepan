@@ -27,7 +27,7 @@ from trepan.inout.base import DebuggerInOutBase
 class TCPServer(DebuggerInOutBase):
     """Debugger Server Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS = {'open': True, 'inout': None}
+    DEFAULT_INIT_OPTS = {'open': True, 'socket': None}
 
     def __init__(self, inout=None, opts=None):
         get_option = lambda key: Mmisc.option_set(opts, key,
@@ -43,6 +43,10 @@ class TCPServer(DebuggerInOutBase):
         self.HOST = None
         if inout:
             self.inout = inout
+        if get_option('socket'):
+            self.inout = opts['socket']
+            self.inout.listen(1)
+            self.state = 'listening'
         elif get_option('open'):
             self.open(opts)
             pass
@@ -120,7 +124,7 @@ class TCPServer(DebuggerInOutBase):
                     raise EOFError
                 pass
             self.buf, data = Mtcpfns.unpack_msg(self.buf)
-            return data
+            return data.decode('utf-8')
         else:
             raise IOError("read_msg called in state: %s." % self.state)
 
