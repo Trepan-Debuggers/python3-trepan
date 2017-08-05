@@ -95,7 +95,7 @@ class TCPClient(DebuggerInOutBase):
                     raise EOFError
                 pass
             self.buf, data = Mtcpfns.unpack_msg(self.buf)
-            return data
+            return data.decode('utf-8')
         else:
             raise IOError("read_msg called in state: %s." % self.state)
 

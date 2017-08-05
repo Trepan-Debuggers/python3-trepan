@@ -8,13 +8,17 @@ class TestTCP(unittest.TestCase):
     """Tests TCPServer and TCPClient"""
 
     def test_client_server(self):
+        client = None
+        server = None
         try:
-            server = Mserver.TCPServer(opts={'open': True})
-        except:
-            print("Skipping because of server open failure")
-            return
-        try:
-            client = Mclient.TCPClient(opts={'open': True})
+            try:
+                server = Mserver.TCPServer(opts={'open': True})
+            except:
+                print("Skipping because of server open failure")
+                return
+            print("Server port is %s" % server.PORT)
+            client = Mclient.TCPClient(opts={'open': True,
+                                             'PORT': server.PORT})
             for line in ['one', 'two', 'three']:
                 server.writeline(line)
                 self.assertEqual(line, client.read_msg().rstrip('\n'))
@@ -23,11 +27,11 @@ class TestTCP(unittest.TestCase):
                 client.writeline(line)
                 self.assertEqual(line, server.read_msg().rstrip('\n'))
                 pass
-        except:
-            print("Skipping because of client open failure")
-            pass
-        client.close()
-        server.close()
+        finally:
+            if client:
+                client.close()
+            if server:
+                server.close()
         return
 
 if __name__ == '__main__':

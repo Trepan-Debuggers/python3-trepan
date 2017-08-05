@@ -138,9 +138,11 @@ CLIENT_SOCKET_OPTS = {
 
 
 SERVER_SOCKET_OPTS = {
-    'HOST':  None,   # Symbolic name meaning all available interfaces
-    'PORT':  1027,   # Arbitrary non-privileged port
-    'reuse': 'posix' == os.name  # Allow port to be resued on close?
+    'HOST':  None,                # Symbolic name meaning all available interfaces
+    'PORT':  1027,                # Arbitrary non-privileged port
+    'reuse': 'posix' == os.name,  # Allow port to be resued on close?
+    'skew':  +0 ,                 # additional increment on socket tries
+    'search_limit': 100           # max number of ports to try
     }
 
 # Default settings on the Debugger#start() method call
