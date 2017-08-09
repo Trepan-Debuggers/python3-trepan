@@ -14,6 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, linecache
+import os.path as osp
 
 
 # FIXME: do a better job of this. Live parsing?
@@ -38,7 +39,7 @@ def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
 
 def file2module(filename):
     """Given a file name, extract the most likely module name. """
-    basename = os.path.basename(filename)
+    basename = osp.basename(filename)
     if '.' in basename:
         pos = basename.rfind('.')
         return basename[:pos]
@@ -58,8 +59,8 @@ def search_file(filename, directories, cdir):
         if trydir =='$cwd': trydir='.'
         elif trydir == '$cdir': trydir = cdir
 
-        tryfile = os.path.abspath(os.path.join(trydir, filename))
-        if os.path.isfile(tryfile):
+        tryfile = osp.realpath(osp.join(trydir, filename))
+        if osp.isfile(tryfile):
             return tryfile
     return None
 
@@ -73,8 +74,8 @@ def whence_file(py_script, dirnames=None):
     if dirnames is None:
         dirnames = os.environ['PATH'].split(os.pathsep)
     for dirname in dirnames:
-        py_script_try = os.path.join(dirname, py_script)
-        if os.path.exists(py_script_try):
+        py_script_try = osp.join(dirname, py_script)
+        if osp.exists(py_script_try):
             return py_script_try
     # Failure
     return py_script

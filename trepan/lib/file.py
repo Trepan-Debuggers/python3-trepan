@@ -21,8 +21,10 @@ def file_list():
                     list(pyficache.file2file_remap.keys())))
 
 def is_compiled_py(filename):
-    """Given a file name, if the suffix is pyo or pyc (an optimized bytecode
-    file), change that to the py equivalent"""
+    """
+    Given a file name, return True if the suffix is pyo or pyc (an
+    optimized bytecode file).
+    """
     return True if filename[-4:].lower() in ('.pyc', '.pyo') else False
 
 READABLE_MASK = (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
