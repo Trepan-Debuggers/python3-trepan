@@ -1,3 +1,19 @@
+trepan 0.7.7 2017-07-10
+
+- improve remote debugging:
+  * scans for open ports
+  * allow a socket to be passed in
+  * start Celery remote debugging
+- add deval, deval? commands: deparsed eval and eval?
+- in python/shell don't go into post-mortem debugger on exception
+- find source or decompile when bytecode is given
+- Handle position in the presence of eval() and exec()
+- show code via xdis when disassembling an entire function.
+- deparse improvements:
+  * do deparse offset fuzzing
+  * show asm listing for opcode
+  * add -o | --offset to indicate where to start deparsing from
+
 trepan 0.7.6 2017-06-03
 - Fix botched release
 - Corrected setup.py code, cheking and better error messaging

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 "General integration tests"
-import unittest, os, sys
+import unittest
 
 import helper as Mhelper
 
