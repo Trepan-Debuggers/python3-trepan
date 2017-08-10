@@ -56,7 +56,9 @@ class ClientInterface(Muser.UserInterface):
     def read_remote(self):
         '''Send a message back to the server (in contrast to
         the local user output channel).'''
-        coded_line = self.inout.read_msg().decode("utf-8")
+        coded_line = self.inout.read_msg()
+        if isinstance(coded_line, bytes):
+            coded_line = coded_line.decode("utf-8")
         control = coded_line[0]
         remote_line = coded_line[1:]
         return (control, remote_line)

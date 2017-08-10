@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ Use dbgr(*string*) to issue debugger command: *string*'''
 
         debug = len(args) > 1 and args[1] == '-d'
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a trepan" +
+            banner_tmpl += ("\nVariable 'debugger' contains a trepan"
                             "debugger object.")
             pass
 
@@ -96,19 +96,24 @@ Use dbgr(*string*) to issue debugger command: *string*'''
 
         # Change from debugger completion to python completion
         try:
-            import rlcompleter, readline
+            import readline
         except ImportError:
             pass
         else:
             readline.parse_and_bind("tab: complete")
 
         sys.ps1 = 'trepan3k >>> '
-        if len(my_locals):
-            interact(banner=(banner_tmpl % ' with locals'),
-                     my_locals=my_locals, my_globals=my_globals)
-        else:
-            interact(banner=(banner_tmpl % ''))
-            pass
+        old_sys_excepthook = sys.excepthook
+        try:
+            sys.excepthook = None
+            if len(my_locals):
+                interact(banner=(banner_tmpl % ' with locals'),
+                         my_locals=my_locals, my_globals=my_globals)
+            else:
+                interact(banner=(banner_tmpl % ''))
+                pass
+        finally:
+            sys.excepthook = old_sys_excepthook
 
         # restore completion and our history if we can do so.
         if hasattr(self.proc.intf[-1], 'complete'):
@@ -144,8 +149,11 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     local -- passed to InteractiveInterpreter.__init__()
 
     """
+    def console_runcode(code_obj):
+        runcode(console, code_obj)
+
     console = code.InteractiveConsole(my_locals, filename='<trepan>')
-    console.runcode = lambda code_obj: runcode(console, code_obj)
+    console.runcode = console_runcode
     setattr(console, 'globals', my_globals)
     if readfunc is not None:
         console.raw_input = readfunc
@@ -176,7 +184,8 @@ def runcode(obj, code_obj):
     except SystemExit:
         raise
     except:
-        obj.showtraceback()
+        info = sys.exc_info()
+        print("%s; %s" % (info[0], info[1]))
     else:
         pass
     return

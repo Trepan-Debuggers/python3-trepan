@@ -36,18 +36,12 @@ Inspired by celery.contrib.rdb
 """
 from __future__ import absolute_import, print_function
 
-import errno
 import os
-import socket
 import sys
-import trepan
-
-from billiard import current_process
-
-from celery.five import range
+import trepan.api
 
 __all__ = ['CELERY_TREPAN_HOST', 'CELERY_TREPAN_PORT', 'default_port',
-           'RemoteTrepan', 'debugger', 'debug']
+           'RemoteCeleryTrepan', 'debugger', 'debug']
 
 default_port = 6898
 
@@ -83,98 +77,36 @@ SESSION_STARTED = '{self.ident}: Now in session with {self.remote_addr}.'
 SESSION_ENDED = '{self.ident}: Session with {self.remote_addr} ended.'
 
 
-class RemoteTrepan():
+class RemoteCeleryTrepan():
     me = 'Remote Trepan Debugger'
     _prev_outs = None
-    _sock = None
 
     def __init__(self, host=CELERY_TREPAN_HOST, port=CELERY_TREPAN_PORT,
-                 port_search_limit=100, port_skew=+0, out=sys.stdout):
+                 out=sys.stdout):
         self.active = True
         self.out = out
 
-        self._prev_handles = sys.stdin, sys.stdout
-
-        self._sock, this_port = self.get_avail_port(
-            host, port, port_search_limit, port_skew,
-        )
-
-        self.host = host
-        self.port = port
         self.ident = '{0}:{1}'.format(self.me, port)
 
         from trepan.interfaces import server as Mserver
-        connection_opts={'IO': 'TCP', 'PORT': port, 'inout': self._sock}
+        connection_opts={'IO': 'TCP', 'PORT': port}
         self.intf = Mserver.ServerInterface(connection_opts=connection_opts)
+        host = self.intf.inout.HOST
+        self.host = host if host else '<hostname>'
+        from trepan.api import debug; debug()
+        self.port = self.intf.inout.PORT
         self.dbg_opts = {'interface': self.intf}
-        self.remote_addr = '???'
         return
-
-    def get_avail_port(self, host, port, search_limit=100, skew=+0):
-        try:
-            _, skew = current_process().name.split('-')
-            skew = int(skew)
-        except ValueError:
-            pass
-        this_port = None
-        for i in range(search_limit):
-            _sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            this_port = port + skew + i
-            try:
-                _sock.bind((host, this_port))
-            except socket.error as exc:
-                if exc.errno in [errno.EADDRINUSE, errno.EINVAL]:
-                    continue
-                raise
-            else:
-                return _sock, this_port
-        else:
-            raise Exception(NO_AVAILABLE_PORT.format(self=self))
 
     def say(self, m):
         print(m, file=self.out)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *exc_info):
-        self._close_session()
-
-    def _close_session(self):
-        self.stdin, self.stdout = sys.stdin, sys.stdout = self._prev_handles
-        if self.active:
-            if self._handle is not None:
-                self._handle.close()
-            if self._client is not None:
-                self._client.close()
-            if self._sock is not None:
-                self._sock.close()
-            self.active = False
-            self.say(SESSION_ENDED.format(self=self))
-
-    # def do_continue(self, arg):
-    #     self._close_session()
-    #     self.set_continue()
-    #     return 1
-    # do_c = do_cont = do_continue
-
-    # def do_quit(self, arg):
-    #     self._close_session()
-    #     self.set_quit()
-    #     return 1
-    # do_q = do_exit = do_quit
-
-    # def set_quit(self):
-    #     # this raises a BdbQuit exception that we are unable to catch.
-    #     sys.settrace(None)
-
 
 def debugger():
     """Return the current debugger instance (if any),
     or creates a new one."""
     dbg = _current[0]
     if dbg is None or not dbg.active:
-        dbg = _current[0] = RemoteTrepan()
+        dbg = _current[0] = RemoteCeleryTrepan()
     return dbg
 
 
@@ -184,9 +116,8 @@ def debug(frame=None):
     if frame is None:
         frame = _frame().f_back
 
-    dbg = RemoteTrepan()
+    dbg = RemoteCeleryTrepan()
     dbg.say(BANNER.format(self=dbg))
-    dbg.say(SESSION_STARTED.format(self=dbg))
+    # dbg.say(SESSION_STARTED.format(self=dbg))
     trepan.api.debug(dbg_opts=dbg.dbg_opts)
-    dbg._handle = sys.stdin = sys.stdout = dbg._client.makefile('rw')
     # return debugger().set_trace(frame)
