@@ -5,7 +5,8 @@
 Abstract
 ========
 
-This is a gdb-like debugger for Python. It is a rewrite of *pdb* from the ground up.
+This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
+the ground up.
 
 A command-line interface (CLI) is provided as well as an remote access
 interface over TCP/IP.
@@ -13,7 +14,7 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 3.3 to 3.y. See trepan2_ for the same code
+This package is for Python 3.3 and above. See trepan2_ for the same code
 modified to work with Python 2.
 
 Features
@@ -40,7 +41,7 @@ So far as I know, there is no other debugger that can do this.
 Debugging Python bytecode (no source available)
 -----------------------------------------------
 
-You can pass the debugger the name of Pytnon bytecode and many times,
+You can pass the debugger the name of Python bytecode and many times,
 the debugger will merrily proceed.  This debugger tries very hard find
 the source code. Either by using the current executable search path
 (e.g. `PATH`) or for some by looking inside the bytecode for a
@@ -50,27 +51,8 @@ bytecode lives.
 
 Failing to find source code this way, and in other situations where
 source code can't be found, the debugger will decompile the bytecode
-and use that for showing source test.
-
-But if you happen to know where the source code is located, you can
-associate a file source code with the current name listed in the
-bytecode. See the set_substitute_ command for details here.
-
-
-Debugging Python bytecode (no source available)
------------------------------------------------
-
-You can pass the debugger the name of Pytnon bytecode and many times,
-the debugger will merrily proceed.  This debugger tries very hard find
-the source code. Either by using the current executable search path
-(e.g. `PATH`) or for some by looking inside the bytecode for a
-filename in the main code object (`co_filename`) and applying that
-with a search path which takes into account directory where the
-bytecode lives.
-
-Failing to find source code this way, and in other situations where
-source code can't be found, the debugger will decompile the bytecode
-and use that for showing source test.
+and use that for showing source test. *This allows us to debug `eval`'d
+or `exec''d code.*
 
 But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
@@ -110,10 +92,10 @@ Smart Eval
 ----------
 
 Starting with release 0.2.0, if you want to evaluate the current
-source line before it is run in the code, use ``eval``. To evaluate
-text of a common fragment of line, such as the expression part of an
-*if* statement, you can do that with ``eval?``. See eval_ for more
-information.
+source line before it is run in the code, use ``eval`` or
+``deval``. To evaluate text of a common fragment of line, such as the
+expression part of an *if* statement, you can do that with
+``eval?`` or ``deval?``. See eval_ for more information.
 
 More Stepping Control
 ---------------------
@@ -234,6 +216,17 @@ keeping developers happy is a good thing.(TM)
 * An interface is it's own layer. Local debugging, remote debugging, running debugger commands from a file (`source`) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of *pydb*'s integration test will eventually be added.
+
+See Also
+--------
+
+* trepan2_ : trepan debugger for Python 2
+* pydbgr_  : previous incarnation of debugger
+* pydb_ : even older incarnation of debugger (for very old Python 2)
+* Tutorial_: Tutorial for how to use
+* https://pypi.python.org/pypi/uncompyle6 : Python decompiler
+* https://pypi.python.org/pypi/xdis : cross-platform disassembler
+
 
 .. _pygments:  http://pygments.org
 .. _pygments_style:  http://pygments.org/docs/styles/
