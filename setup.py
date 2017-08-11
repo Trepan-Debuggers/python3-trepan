@@ -2,14 +2,18 @@
 import sys
 import os.path as osp
 
-if not ((3, 2) <= sys.version_info[0:2] < (3, 7)):
+pygments_version = '>= 2.0.2'
+SYS_VERSION = sys.version_info[0:2]
+if not ((3, 2) <= SYS_VERSION  < (3, 7)):
     mess = "Python Versions 3.2 to 3.6 are supported only in this package."
-    if ((2, 6) <= sys.version_info[0:2] <= (2, 7)):
+    if ((2, 4) <= SYS_VERSION <= (2, 7)):
         mess += ("\nFor your Python, version %s, See trepan2" % sys.version[0:3])
-    elif sys.version_info[0:2] < (2, 6):
-        mess += ("\nFor your Python, version %s, see pydbgr" % sys.version[0:3])
+    elif SYS_VERSION < (2, 4):
+        mess += ("\nFor your Python, version %s, see pydb" % sys.version[0:3])
     print(mess)
     raise Exception(mess)
+if SYS_VERSION == (3, 2):
+    pygments_version = '<= 1.6'
 
 
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
@@ -39,7 +43,7 @@ ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
                       'nose>=1.0',
                       'pyficache >= 0.3.1',
-                      'pygments  >= 2.0.2',
+                      'pygments  ' + pygments_version,
                       'uncompyle6 >= 2.10.1',
                       'tracer >= 0.3.2',
                       'xdis >= 3.3.1',

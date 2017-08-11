@@ -9,6 +9,8 @@ trepan 0.7.7 2017-07-10
 - find source or decompile when bytecode is given
 - Handle position in the presence of eval() and exec()
 - show code via xdis when disassembling an entire function.
+- improved terminal background detection respecting
+  environment variables: DARK_BG, COLORFGBG
 - deparse improvements:
   * do deparse offset fuzzing
   * show asm listing for opcode
