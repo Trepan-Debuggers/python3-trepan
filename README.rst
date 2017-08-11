@@ -14,7 +14,7 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 3.3 and above. See trepan2_ for the same code
+This package is for Python 3.2 and above. See trepan2_ for the same code
 modified to work with Python 2.
 
 Features
