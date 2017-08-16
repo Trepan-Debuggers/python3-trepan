@@ -1,3 +1,9 @@
+trepan 0.7.8 2017-07-10
+
+- Release for updated xdis and botched Rst
+- PyPy 2.x tolerance
+- Small error message improvements
+
 trepan 0.7.7 2017-07-10
 
 - improve remote debugging:

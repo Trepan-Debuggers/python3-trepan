@@ -1,3 +1,4 @@
+from xdis import IS_PYPY
 import difflib, os, re, sys, time
 srcdir = os.path.abspath(os.path.dirname(__file__))
 
@@ -10,7 +11,10 @@ def run_debugger(testname, python_file, dbgr_opts='', args='',
     dbgr_short= "cli.py"
     dbgr_path = os.path.join(dbgrdir, dbgr_short)
 
-    rightfile = os.path.join(datadir, "%s.right" % testname)
+    if IS_PYPY:
+        rightfile = os.path.join(datadir, "%s-pypy.right" % testname)
+    else:
+        rightfile = os.path.join(datadir, "%s.right" % testname)
 
     sys.path.insert(0, os.path.join(srcdir, '..', '..'))
     os.environ['PYTHONPATH'] = os.pathsep.join(sys.path)

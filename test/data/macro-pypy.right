@@ -1,0 +1,39 @@
+(gcd.py:2): <module>
+-> 2 """Greatest Common Divisor
+Set basename is off.
+Set event is on.
+Set stopping is off.
+No macros defined.
+Macro "foo" defined.
+  1    	#!/usr/bin/env python3
+  2  ->	"""Greatest Common Divisor
+  3    	
+  4    	Some characterstics of this program used for testing check_args() does
+  5    	not have a 'return' statement.
+  6    	
+  7    	check_args() raises an uncaught exception when given the wrong number
+  8    	of parameters.
+  9    	
+ 10    	"""
+foo
+
+Macro "bar" defined.
+  1    	#!/usr/bin/env python3
+  2  ->	"""Greatest Common Divisor
+  3    	
+  4    	Some characterstics of this program used for testing check_args() does
+  5    	not have a 'return' statement.
+  6    	
+  7    	check_args() raises an uncaught exception when given the wrong number
+  8    	of parameters.
+  9    	
+ 10    	"""
+    bar  foo
+
+bar:
+----
+  lambda count: 'list %s' % count
+foo:
+----
+  lambda: 'list'
+trepan3k: That's all, folks...

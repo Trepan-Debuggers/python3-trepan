@@ -1,0 +1,32 @@
+(gcd.py:2): <module>
+-> 2 """Greatest Common Divisor
+Set basename is on.
+Set event is on.
+Set stopping is off.
+Set confirmation is off.
+line - gcd.py:2
+line - gcd.py:11
+(gcd.py:11): <module>
+-- 11 import sys
+ 11  ->	import sys
+Set stopping is on.
+call - <frozen importlib._bootstrap>:1044
+(/home/rocky/.pyenv/versions/pypy3.5-5.8.0/lib-python/3/importlib/_bootstrap.py:1044 remapped <frozen importlib._bootstrap>): __import__
+-> 1044 def __import__(name, globals=None, locals=None, fromlist=(), level=0):
+
+** /src/external-vcs/github/rocky/python3-trepan/test/integration/../data/step.cmd:13: Error in source command file:
+** No file importlib._bootstrap found; using "deparse" command instead to show source
+*instruction:*  1055 0 LOAD_FAST 'level' 
+if level == 0:
+   -----
+Set stopping is off.
+line - <frozen importlib._bootstrap>:1055
+(/home/rocky/.pyenv/versions/pypy3.5-5.8.0/lib-python/3/importlib/_bootstrap.py:1055 remapped <frozen importlib._bootstrap>): __import__
+-- 1055     if level == 0:
+
+** /src/external-vcs/github/rocky/python3-trepan/test/integration/../data/step.cmd:16: Error in source command file:
+** No file importlib._bootstrap found; using "deparse" command instead to show source
+*instruction:*  1055 0 LOAD_FAST 'level' 
+if level == 0:
+   -----
+trepan3k: That's all, folks...
