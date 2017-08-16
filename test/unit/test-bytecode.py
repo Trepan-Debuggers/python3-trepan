@@ -24,7 +24,7 @@ class TestByteCode(unittest.TestCase):
         frame = inspect.currentframe()
         if IS_PYPY or PYTHON_VERSION >= 3.7:
             call_opcode = 'CALL_METHOD'
-        elif PYTHON_VERSION >= 3.7:
+        else:
             call_opcode = 'CALL_FUNCTION'
 
         self.assertEqual(call_opcode, Mcode.op_at_frame(frame))
