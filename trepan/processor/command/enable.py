@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2017 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ class EnableCommand(Mbase_cmd.DebuggerCommand):
     """**enable** *bpnumber* [*bpnumber* ...]
 
 Enables the breakpoints given as a space separated list of breakpoint
-numbers. See also `info break` to get a list.
+numbers. To enable all breakpoints, give no argument. See also `info break` to get a list.
 
 See also:
 ---------
@@ -46,14 +46,14 @@ See also:
 
     def run(self, args):
         if len(args) == 1:
-            self.errmsg('No breakpoint number given.')
+            self.msg(self.core.bpmgr.en_disable_all_breakpoints(do_enable=True))
             return
 #         if args[1] == 'display':
 #             self.display_enable(args[2:], 0)
 #             return
         for i in args[1:]:
             success, msg = \
-              self.core.bpmgr.en_disable_breakpoint_by_number(i, True)
+              self.core.bpmgr.en_disable_breakpoint_by_number(i, do_enable=True)
             if not success:
                 self.errmsg(msg)
             else:

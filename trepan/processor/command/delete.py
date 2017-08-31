@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ See also:
 `clear`
 """
     category      = 'breakpoints'
+    aliases       = ('delete!',)
     min_args      = 0
     max_args      = None
     name          = os.path.basename(__file__).split('.')[0]
@@ -45,8 +46,13 @@ See also:
 
     def run(self, args):
         if len(args) <= 1:
-            if self.confirm('Delete all breakpoints', False):
-                self.core.bpmgr.delete_all_breakpoints()
+            if '!' != args[0][-1]:
+                confirmed = self.confirm('Delete all breakpoints', False)
+            else:
+                confirmed = True
+
+            if confirmed:
+                self.msg(self.core.bpmgr.delete_all_breakpoints())
             return
 
         for arg in args[1:]:

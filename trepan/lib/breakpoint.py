@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -68,14 +68,16 @@ class BreakpointManager:
         return brkpt
 
     def delete_all_breakpoints(self):
-        count = 0
+        bp_list = []
         for bp in self.bpbynumber:
-            count += 1
-            if bp: self.delete_breakpoint(bp)
-        if 0 == count:
+            if bp:
+                bp_list.append(str(bp.number))
+                self.delete_breakpoint(bp)
+                pass
+        if not bp_list:
             return 'There are no breakpoints'
         else:
-            return '%d breakpoints deleted' % count
+            return 'Deleted breakpoints %s' % ', '.join(bp_list)
         return
 
     def delete_breakpoint(self, bp):
@@ -97,6 +99,23 @@ class BreakpointManager:
             return False, msg
         self.delete_breakpoint(bp)
         return (True, '')
+
+    def en_disable_all_breakpoints(self,  do_enable=True):
+        "Enable or disable all breakpoints."
+        bp_list = [bp for bp in self.bpbynumber if bp]
+        bp_nums = []
+        if do_enable:
+            endis = 'en'
+        else:
+            endis = 'dis'
+            pass
+        if not bp_list:
+            return "No breakpoints to %sable" % endis
+        for bp in bp_list:
+            bp.enabled = do_enable
+            bp_nums.append(str(bp.number))
+            pass
+        return ("Breakpoints %sabled: %s" % (endis, ", ".join(bp_nums)))
 
     def en_disable_breakpoint_by_number(self, bpnum, do_enable=True):
         "Enable or disable a breakpoint given its breakpoint number."
