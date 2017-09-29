@@ -26,7 +26,7 @@ copyright   = '''Copyright (C) 2013, 2015-2017 Rocky Bernstein <rocky@gnu.org>.'
 classifiers =  ['Development Status :: 5 - Production/Stable',
                 'Environment :: Console',
                 'Intended Audience :: Developers',
-                'License :: OSI Approved :: GNU General Public License (GPL)',
+                'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                 'Operating System :: OS Independent',
                 'Programming Language :: Python',
                 'Topic :: Software Development :: Debuggers',
@@ -45,12 +45,12 @@ ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
                       'pyficache >= 0.3.2',
                       'pygments  >= 2.0.2',
-                      'uncompyle6 >= 2.11.5',
-                      'tracer >= 0.3.2'
+                      'uncompyle6 >= 2.12.0',
+                      'tracer >= 0.3.2',
                       'nose>=1.0',
-                      'xdis >= 3.5.5, < 3.6.0',
+                      'xdis >= 3.6.0, < 3.7.0',
                       ]
-icense            = 'GPL'
+license            = 'GPL3'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
 py_modules         = None
