@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-trepan2 - a gdb-like debugger for Python 2
-==========================================
+trepan3k - a gdb-like debugger for Python 3
+===========================================
 
-trepan2 is a gdb-like debugger for Python. It is a rewrite of *pdb*
+trepan3k is a gdb-like debugger for Python. It is a rewrite of *pdb*
 from the ground up.
 
 A command-line interface (CLI) is provided as well as an remote access
@@ -15,9 +15,8 @@ interface over TCP/IP.
 See the Tutorial_ for how to use. See ipython-trepan_ for using this
 in *ipython* or an *ipython notebook*.
 
-This package is for Python 2.6 and 2.7. See trepan3k_ for the same
-code modified to work with Python 3.  For Python before 2.6, use
-pydbgr_ .
+This package is for Python 3. See trepan2_ for the same
+code modified to work with Python 2.
 
 An Emacs interface is available via realgud_.
 
@@ -39,6 +38,6 @@ Indices and tables
 
 .. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
-.. _trepan3k: https://pypi.python.org/pypi/trepan3k
+.. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _pydbgr: https://pypi.python.org/pypi/pydbgr
 .. _realgud: https://github.com/realgud/realgud
