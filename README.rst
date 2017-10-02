@@ -117,7 +117,7 @@ the default; this is set by the `set different` command.
 Documentation
 -------------
 
-Documentation: http://python2-trepan.readthedocs.org
+Documentation: http://python3-trepan.readthedocs.org
 
 Event Filtering and Tracing
 ...........................
@@ -199,7 +199,7 @@ Egg, Wheel, and Tarballs
 
 Can be installed via the usual *pip* or *easy_install*. There is a
 source tarball. `How To Install
-<https://python2-trepan.readthedocs.io/en/latest/install.html>`_ has
+<https://python3-trepan.readthedocs.io/en/latest/install.html>`_ has
 full instructions and installing from git and by other means.
 
 Modularity
@@ -250,11 +250,11 @@ See Also
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
-.. _set_style:  https://python2-trepan.readthedocs.org/en/latest/commands/set/style.html
-.. _set_substitute:  https://python2-trepan.readthedocs.org/en/latest/commands/set/substitute.html
-.. _set_width:  https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html
-.. _eval: https://python2-trepan.readthedocs.org/en/latest/commands/data/eval.html
-.. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
-.. _install: http://python2-trepan.readthedocs.org/en/latest/install.html
+.. _set_style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
+.. _set_substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
+.. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
+.. _eval: https://python3-trepan.readthedocs.org/en/latest/commands/data/eval.html
+.. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
+.. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
