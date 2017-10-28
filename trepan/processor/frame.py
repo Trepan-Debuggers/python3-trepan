@@ -74,6 +74,8 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
     proc_obj.curframe = proc_obj.stack[proc_obj.curindex][0]
     proc_obj.location()
     proc_obj.list_lineno   = None
+    proc_obj.list_offset   = proc_obj.curframe.f_lasti
+    proc_obj.list_object   = proc_obj.curframe
     proc_obj.list_filename = proc_obj.curframe.f_code.co_filename
 
     return

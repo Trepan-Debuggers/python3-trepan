@@ -196,10 +196,21 @@ class RSTTerminalFormatter(Formatter):
         self.column = 0
         return self.column
 
-    def reflow_text(self, text, color):
+    def reflow_text(self, text, ttype, color):
         # print '%r' % text
         # from trepan.api import debug
         # if u' or ' == text: debug()
+        if text == '::' and ttype == Token.Literal.String.Escape:
+            self.verbatim = 'colon-verbatim'
+            return
+        elif self.verbatim == 'colon-verbatim' and ttype == Token.Text and text == '\n\n':
+            self.write_nl()
+            self.last_was_nl = True
+            return
+        elif self.verbatim == 'colon-verbatim' and ttype == Token.Text and text == '\n':
+            self.write_nl()
+            self.last_was_nl = False
+            return
         last_last_nl = self.last_was_nl
         if text == '':
             pass
@@ -211,7 +222,7 @@ class RSTTerminalFormatter(Formatter):
             elif self.verbatim:
                 self.write_verbatim(text)
                 self.column = 0
-                self.verbatim = False
+                self.verbatim = len(text) >=2 and text[-2] == '\n'
                 self.last_was_nl = True
                 return
             else:
@@ -232,7 +243,7 @@ class RSTTerminalFormatter(Formatter):
         self.in_list = False
         if last_last_nl:
             if ' * ' == text[0:3]: self.in_list = True
-            elif '  ' == text[0:2]: self.verbatim = True
+            elif '  ' == text[0:2]: self.verbatim = self.verbatim or True
             pass
 
         # FIXME: there may be nested lists, tables and so on.
@@ -264,13 +275,15 @@ class RSTTerminalFormatter(Formatter):
 
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
+            # print("ttype: ", ttype, "text: ", text)
             color = self.colorscheme.get(ttype)
+            resolved_type = ttype
             while color is None:
-                ttype = ttype[:-1]
-                color = self.colorscheme.get(ttype)
+                resolved_type = resolved_type[:-1]
+                color = self.colorscheme.get(resolved_type)
                 pass
             if color: color = color[self.darkbg]
-            self.reflow_text(text, color)
+            self.reflow_text(text, ttype, color)
             pass
         return
     pass
@@ -288,7 +301,7 @@ class MonoRSTTerminalFormatter(RSTTerminalFormatter):
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
                 pass
-            self.reflow_text(text, None)
+            self.reflow_text(text, ttype, None)
             pass
         return
     pass
@@ -398,4 +411,12 @@ Examples:
     show_it(text, rst_tf)
     rst_tf = RSTTerminalFormatter(colorscheme=color_scheme)
     show_it(text, rst_tf)
-    pass
+
+    text =     """Examples:
+---------
+::
+
+    disasm
+    disasm *10, *20
+    """
+    show_it(text, rst_tf)

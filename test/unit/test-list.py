@@ -43,6 +43,7 @@ class TestListCommand(unittest.TestCase):
 
     def clear_run(self, args):
         self.msgs = []
+        self.cmd.proc.current_command = ' '.join(args)
         self.cmd.run(args)
 
     def clear_run_check(self, args, nums):
@@ -52,7 +53,7 @@ class TestListCommand(unittest.TestCase):
 
     def clear_run_checksize(self, args):
         self.clear_run(args)
-        self.assertEqual(self.listsize, len(self.msgs))
+        self.assertEqual(self.listsize, len(self.msgs)-1)
         return
 
     def test_list_command(self):
@@ -73,36 +74,36 @@ class TestListCommand(unittest.TestCase):
         self.clear_run_check(['list'],
                              list(range(self.listsize+1, (2*self.listsize)+1)))
         # Try going backwards.
-        self.clear_run_check(['list', '-'], list(range(1, self.listsize+1)))
+        self.clear_run_check(['list', '-'], list(range(1, 1 + self.listsize)))
         # And again. Since we hit the beginning it's the same as before
-        self.clear_run_check(['list', '-'], list(range(1, self.listsize+1)))
+        self.clear_run_check(['list', '-'], list(range(1, 1 + self.listsize)))
 
         # BUG Simple arithmetic expression
         # self.clear_run_check(['list', '4+1'], range(4+1, 4+1+listsize))
 
         # List first last
-        self.clear_run_check(['list', '10', '20'], list(range(10, 21)))
+        self.clear_run_check(['list', '10', ',', '20'], list(range(10, 21)))
         # List first count
-        self.clear_run_check(['list', '10', '5'], list(range(10, 15)))
+        self.clear_run_check(['list', '10', ',',  '5'], list(range(10, 16)))
 
         # Module
         # BUG? without '1' below the default starts with self.listsize+1
-        self.clear_run_check(['os.path', '1'], list(range(1, self.listsize+1)))
+        self.clear_run_check(['os.path', '1'], list(range(1, self.listsize+2)))
 
-        # Function
-        self.clear_run_checksize(['list', 'os.path.join'])
-
-        ## FIXME: reinstate
-        ## self.clear_run_checksize(['list', 'self.setUp'])
+        # # Function
+        # self.clear_run_checksize(['list', 'os.path.join()'])
+        # self.clear_run_checksize(['list', 'self.setUp()'])
 
         def foo(): pass
-        self.clear_run_checksize(['list', 'foo'])
+        self.clear_run_checksize(['list', 'foo()'])
 
         # BUG
         # self.clear_run_check(['os.path:1'], range(1, self.listsize+1))
-        self.clear_run_check(['os.path', '10', '5'], list(range(10, 15)))
+        self.clear_run_check(['os.path', '10', ',5'], list(range(10, 16)))
         # Use a file name
-        self.clear_run_check(['list', __file__+':3', '4'], list(range(3, 5)))
+
+        if 'APPVEYOR' not in os.environ:
+            self.clear_run_check(['list', __file__+':3', ',4'], list(range(3, 5)))
 
         # BUGS - but possibly the windowing thing is happening?
         # self.clear_run_check(['list', __file__, '3'], list(range(3, 5)))

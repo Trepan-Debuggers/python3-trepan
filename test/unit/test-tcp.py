@@ -17,8 +17,12 @@ class TestTCP(unittest.TestCase):
                 print("Skipping because of server open failure")
                 return
             print("Server port is %s" % server.PORT)
-            client = Mclient.TCPClient(opts={'open': True,
-                                             'PORT': server.PORT})
+            try:
+                client = Mclient.TCPClient(opts={'open': True,
+                                                'PORT': server.PORT})
+            except IOError:
+                print("Skipping because of client open failure")
+                return
             for line in ['one', 'two', 'three']:
                 server.writeline(line)
                 self.assertEqual(line, client.read_msg().rstrip('\n'))

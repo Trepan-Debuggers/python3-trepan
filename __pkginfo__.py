@@ -43,14 +43,15 @@ author             = "Rocky Bernstein"
 author_email       = "rocky@gnu.org"
 ftp_url            = None
 install_requires   = ['columnize >= 0.3.8',
+                      'nose>=1.0',
                       'pyficache >= 0.3.2',
                       'pygments  >= 2.0.2',
-                      'uncompyle6 >= 2.12.0',
-                      'tracer >= 0.3.2',
-                      'nose>=1.0',
+                      'spark_parser >= 1.7.0, <1.8.0',
+                      'tracer >= 0.3.2'
+                      'uncompyle6 >= 2.13.2',
                       'xdis >= 3.6.0, < 3.7.0',
                       ]
-license            = 'GPL3'
+icense            = 'GPL'
 mailing_list       = 'python-debugger@googlegroups.com'
 modname            = 'trepan'
 py_modules         = None

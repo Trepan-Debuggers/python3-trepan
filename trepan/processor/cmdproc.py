@@ -222,10 +222,6 @@ def print_location(proc_obj):
                 pyficache.remap_file(filename, remapped_file)
             pass
 
-        code = frame.f_code
-        fn_name = code.co_name
-        last_i  = frame.f_lasti
-
         opts = {
             'reload_on_change' : proc_obj.settings('reload'),
             'output'           : proc_obj.settings('highlight')
@@ -234,8 +230,24 @@ def print_location(proc_obj):
         if 'style' in proc_obj.debugger.settings:
             opts['style'] = proc_obj.settings('style')
 
+        pyficache.update_cache(filename)
         line = pyficache.getline(filename, lineno, opts)
         if not line:
+            # FIXME:
+            # try with good ol linecache and consider fixing pyficache
+            lines = linecache.getlines(filename)
+            if lines:
+                # FIXME: DRY code with version in cmdproc.py print_location
+                prefix = os.path.basename(filename).split('.')[0]
+                fd = tempfile.NamedTemporaryFile(suffix='.py',
+                                                 prefix=prefix,
+                                                 delete=False)
+                with fd:
+                    fd.write(''.join(lines))
+                    remapped_file = fd.name
+                    pyficache.remap_file(remapped_file, filename)
+                fd.close()
+                pass
             line = linecache.getline(filename, lineno,
                                      proc_obj.curframe.f_globals)
             if not line:
@@ -265,10 +277,11 @@ def print_location(proc_obj):
         except:
             pass
 
+        fn_name = frame.f_code.co_name
+        last_i  = frame.f_lasti
         print_source_location_info(intf_obj.msg, filename, lineno, fn_name,
                                    remapped_file = remapped_file,
                                    f_lasti = last_i)
-
         if line and len(line.strip()) != 0:
             if proc_obj.event:
                 print_source_line(intf_obj.msg, lineno, line,
@@ -328,6 +341,10 @@ class CommandProcessor(Mprocessor.Processor):
         self.postcmd_hooks    = []
 
         self._populate_cmd_lists()
+
+        # Note: prompt_str's value set below isn't used. It is
+        # computed dynamically. The value is suggestive of what it
+        # looks like.
         self.prompt_str     = '(trepan3k) '
 
         # Stop only if line/file is different from last time
@@ -470,84 +487,6 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return
 
-    def parse_position(self, arg, old_mod=None):
-        """parse_position(self, arg)->(fn, name, lineno)
-
-        Parse arg as [filename:]lineno | function | module
-        Make sure it works for C:\foo\bar.py:12
-        """
-        colon = arg.rfind(':')
-        if colon >= 0:
-            # First handle part before the colon
-            arg1 = arg[:colon].rstrip()
-            lineno_str = arg[colon+1:].lstrip()
-            (mf, filename, lineno) = self.parse_position_one_arg(arg1, old_mod,
-                                                                 False)
-            if filename is None: filename = self.core.canonic(arg1)
-            # Next handle part after the colon
-            val = self.get_an_int(lineno_str, "Bad line number: %s" %
-                                  lineno_str)
-            if val is not None: lineno = val
-        else:
-            (mf, filename, lineno) = self.parse_position_one_arg(arg, old_mod)
-            pass
-
-        return mf, filename, lineno
-
-    def parse_position_one_arg(self, arg, old_mod=None, show_errmsg=True):
-        """parse_position_one_arg(self, arg, show_errmsg) ->
-              (module/function, file, lineno)
-
-        See if arg is a line number, function name, or module name.
-        Return what we've found. None can be returned as a value in
-        the triple.
-        """
-        modfunc, filename, lineno = (None, None, None)
-        if self.curframe:
-            g = self.curframe.f_globals
-            l = self.curframe.f_locals
-        else:
-            g = globals()
-            l = locals()
-            pass
-        try:
-            # First see if argument is an integer
-            lineno   = int(eval(arg, g, l))
-            if old_mod is None:
-                filename = self.curframe.f_code.co_filename
-                pass
-        except:
-            try:
-                modfunc = eval(arg, g, l)
-            except:
-                modfunc = arg
-                pass
-            msg = ('Object %s is not known yet as a function, module, '
-                   'or is not found along sys.path, '
-                   'and not a line number.') % str(repr(arg))
-            try:
-                # See if argument is a module or function
-                if inspect.isfunction(modfunc):
-                    pass
-                elif inspect.ismodule(modfunc):
-                    filename = pyficache.pyc2py(modfunc.__file__)
-                    filename = self.core.canonic(filename)
-                    return(modfunc, filename, None)
-                elif hasattr(modfunc, 'im_func'):
-                    modfunc = modfunc.__func__
-                    pass
-                else:
-                    if show_errmsg: self.errmsg(msg)
-                    return(None, None, None)
-                code     = modfunc.__code__
-                lineno   = code.co_firstlineno
-                filename = code.co_filename
-            except:
-                if show_errmsg: self.errmsg(msg)
-                return (None, None, None)
-            pass
-        return (modfunc, self.core.canonic(filename), lineno)
-
     def get_an_int(self, arg, msg_on_error, min_value=None, max_value=None):
         """Like cmdfns.get_an_int(), but if there's a stack frame use that
         in evaluation."""
@@ -640,10 +579,10 @@ class CommandProcessor(Mprocessor.Processor):
         return
 
     def ok_for_running(self, cmd_obj, name, nargs):
-        '''We separate some of the common debugger command checks here:
+        """We separate some of the common debugger command checks here:
         whether it makes sense to run the command in this execution state,
         if the command has the right number of arguments and so on.
-        '''
+        """
         if hasattr(cmd_obj, 'execution_set'):
             if not (self.core.execution_status in cmd_obj.execution_set):
                 part1 = ("Command '%s' is not available for execution status:"
@@ -754,7 +693,7 @@ class CommandProcessor(Mprocessor.Processor):
                     if self.settings('debugmacro'):
                         print(current_command)
                         pass
-                    if type(current_command) == list:
+                    if isinstance(types.ListType, type(current_command)):
                         for x in current_command:
                             if str != type(x):
                                 self.errmsg(("macro %s should return a List " +
@@ -840,7 +779,8 @@ class CommandProcessor(Mprocessor.Processor):
             self.thread_name = Mthread.current_thread_name()
             if exc_traceback:
                 self.list_lineno = traceback.extract_tb(exc_traceback, 1)[0][1]
-
+                self.list_offset = self.curframe.f_lasti
+                self.list_object = self.curframe
         else:
             self.stack = self.curframe = \
                 self.botframe = None
@@ -849,16 +789,21 @@ class CommandProcessor(Mprocessor.Processor):
             self.list_lineno = \
                 max(1, inspect.getlineno(self.curframe)
                     - int(self.settings('listsize') / 2)) - 1
+            self.list_offset   = self.curframe.f_lasti
             self.list_filename = self.curframe.f_code.co_filename
+            self.list_object   = self.curframe
         else:
             if not exc_traceback: self.list_lineno = None
             pass
         # if self.execRcLines()==1: return True
+
+        # FIXME:  do we want to save self.list_lineno a second place
+        # so that we can do 'list .' and go back to the first place we listed?
         return False
 
     def queue_startfile(self, cmdfile):
-        '''Arrange for file of debugger commands to get read in the
-        process-command loop.'''
+        """Arrange for file of debugger commands to get read in the
+        process-command loop."""
         expanded_cmdfile = os.path.expanduser(cmdfile)
         is_readable = Mfile.readable(expanded_cmdfile)
         if is_readable:
@@ -1072,13 +1017,6 @@ if __name__=='__main__':
     print(arg_split("Now is 'the time'"))
     print(arg_split("Now is the time ;; for all good men"))
     print(arg_split("Now is the time ';;' for all good men"))
-
-    print(cmdproc.parse_position_one_arg('4+1'))
-    print(cmdproc.parse_position_one_arg('os.path'))
-    print(cmdproc.parse_position_one_arg('os.path.join'))
-    print(cmdproc.parse_position_one_arg('/bin/bash', show_errmsg=False))
-    print(cmdproc.parse_position('/bin/bash'))
-    print(cmdproc.parse_position('/bin/bash:4'))
 
     print(cmdproc.commands)
     fn = cmdproc.commands['quit']

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 'Unit test for trepan.processor.command.break'
 
-import os, unittest
+import platform, os, unittest
 
 from trepan import debugger
 from trepan.processor import cmdbreak as Mcmdbreak
@@ -23,6 +23,11 @@ class TestBreakCommand(unittest.TestCase):
         self.msgs.append(msg)
         return
 
+    def parse_break_cmd(self, proc, cmd):
+        proc.current_command = cmd
+        args = cmd.split(' ')
+        return Mcmdbreak.parse_break_cmd(proc, args)
+
     def test_parse_break_cmd(self):
         import inspect
         d               = debugger.Trepan()
@@ -31,55 +36,63 @@ class TestBreakCommand(unittest.TestCase):
         self.cmd        = Mbreak.BreakCommand(cp)
         self.cmd.msg    = self.msg
         self.cmd.errmsg = self.errmsg
+        proc = self.cmd.proc
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, [])
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'break')
         self.assertEqual((None, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, ['11-1'])
-        self.assertEqual((None, True, 10),
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'break 11')
+        self.assertEqual((None, True, 11),
                          (fn, fi.endswith('test-break.py'), li))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd,
-                                                     [__file__ + ':10'])
-        self.assertEqual((None, 10), (fn, li))
+        if 'APPVEYOR' not in os.environ:
+            if platform.system() == 'Windows':
+                brk_cmd = 'b """%s""":8' % __file__
+            else:
+                brk_cmd = 'b %s:8' % __file__
+
+                fn, fi, li, cond = self.parse_break_cmd(proc, brk_cmd)
+                self.assertEqual((None, True, 8),
+                                 (fn, isinstance(fi, str), li))
 
         def foo():
             return 'bar'
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, ['foo'])
+
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'break foo()')
         self.assertEqual((foo, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, ['food'])
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'break food()')
         self.assertEqual((None, None, None, None), (fn, fi, li, cond))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, ['os.path'])
-        self.assertEqual((None, None), (fn, li))
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'b os.path:5')
+        self.assertEqual((os.path, True, 5),
+                         (fn, isinstance(fi, str), li))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd,
-                                                     ['os.path', '5+1'])
-        self.assertEqual((None, 6), (fn, li))
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'b os.path.join()')
+        self.assertEqual((os.path.join, True, True),
+                         (fn, isinstance(fi, str), li > 1))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd,
-                                                     ['os.path.join'])
-        self.assertEqual((os.path.join, True), (fn, li > 1))
-
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd, ['if', 'True'])
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'break if True')
         self.assertEqual((None, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd,
-                                                  ['foo', 'if', 'True'])
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'b foo() if True')
         self.assertEqual((foo, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = Mcmdbreak.parse_break_cmd(self.cmd,
-                                                     ['os.path:10', 'if',
-                                                      'True'])
-        self.assertEqual(10, li)
+        fn, fi, li, cond = self.parse_break_cmd(proc, 'br os.path:10 if True')
+        self.assertEqual((True, 10),
+                         (isinstance(fi, str), li))
 
         # FIXME:
-        # Try a breakpoint with a symlink in the filename.
+        # Try:
+        #  a breakpoint with a symlink in the filename.
+        #  breakpoint with a single quotes and embedded black
+        #  breakpoint with a double quotes and embedded \,
+        #  Triple quote things
+        #
         # Also, add a unit test for canonic.
 
         return

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,30 +24,37 @@ from trepan.processor import complete as Mcomplete
 class TempBreakCommand(Mbase_cmd.DebuggerCommand):
     """**tbreak** [*location*] [**if** *condition*]
 
-With a line number argument, set a break there in the current file.
-With a function name, set a break at first executable line of that
-function.  Without argument, set a breakpoint at current location.  If
-a second argument is `if`, subequent arguments given an expression
-which must evaluate to true before the breakpoint is honored.
+Sets a temporary breakpoint, i.e. one that is removed the after
+the first time it is encountered.
 
-The location line number may be prefixed with a filename or module
-name and a colon. Files is searched for using *sys.path*, and the `.py`
-suffix may be omitted in the file name.
+See the help for location for what can be specified there.
+
+Without arguments or an empty *location*, the temporary breakpoint is
+set at the current stopped location.
+
+If the word `if` is given after *location*, subsequent arguments given
+a boolean condition which must evaluate to True before the breakpoint
+is honored.
 
 Examples:
 ---------
 
-   tbreak     # Break where we are current stopped at
-   tbreak 10  # Break on line 10 of the file we are currently stopped at
-   tbreak os.path.join # Break in function os.path.join
-   tbreak os.path:45   # Break on line 45 of os.path
-   tbreak myfile.py:45 # Break on line 45 of myfile.py
-   tbreak myfile:45    # Same as above.
+   tbreak                # Break where we are current stopped at
+   tbreak if i < j       # Break at current line if i < j
+   tbreak 10             # Break on line 10 of the file we are
+                         # currently stopped at
+   tbreak os.path.join() # Break in function os.path.join
+   tbreak x[i].fn() if x # break in function specified by x[i].fn
+                         # if x is set
+   tbreak os.path:45     # Break on line 45 file holding module os.path
+   tbreak myfile.py:45   # Break on line 45 of myfile.py
+   break '''c:\\foo.bat''':1"  # One way to specify a Windows file name,
+   break '''/My Docs/foo.py''':1"  # One way to specify path with blanks in it
 
 See also:
 ---------
 
-`break`.
+`break`, `condition` and `help syntax location`.
 """
 
     category      = 'breakpoints'
@@ -60,10 +67,10 @@ See also:
     complete = Mcomplete.complete_break_linenumber
 
     def run(self, args):
-        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self,
-                                                                   args[1:])
-        Mcmdbreak.set_break(self, func, filename, lineno, condition,
-                            True, args)
+        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self.proc, args)
+        if not (func == None and filename == None):
+            Mcmdbreak.set_break(self, func, filename, lineno, condition,
+                                True, args)
         return
 
 if __name__ == '__main__':

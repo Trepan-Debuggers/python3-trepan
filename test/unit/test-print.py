@@ -3,11 +3,11 @@
 import unittest
 
 from trepan import debugger
-from trepan.processor.command import pr as Mp
+from trepan.processor.command.p import PCommand
 
 
 class TestP(unittest.TestCase):
-    """Tests PCommand class"""
+    """Tests PrintCommand class"""
 
     def setUp(self):
         self.errors = []
@@ -22,12 +22,12 @@ class TestP(unittest.TestCase):
         self.msgs.append(msg)
         return
 
-    def test_pr(self):
+    def test_p(self):
         import inspect
         d           = debugger.Trepan()
         cp          = d.core.processor
         cp.curframe = inspect.currentframe()
-        cmd         = Mp.PrCommand(cp)
+        cmd         = PCommand(cp)
         cmd.msg     = self.msg
         cmd.errmsg  = self.errmsg
         me = 10  # NOQA

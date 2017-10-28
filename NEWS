@@ -1,3 +1,57 @@
+trepan 0.8.0
+
+User incompatibilty alert!
+
+We have redone location, breakpoint, and list-range parsing.
+
+This release needs an explanation.
+
+Code to parse commands like "list" and "breakpoint" were ugly and hard
+to maintain. I hit a the tipping point in adding flexibility to the
+"disassemble" command which allows address in addition to the usual
+other kinds of locations.
+
+Since version 0.6.3 when the "deparse" command was added, there has
+been a hidden dependency of the the Earley parser.
+
+That is now used to simplify parsing concepts like location,
+list range, or breakpoint position.
+
+In the process, I've gone over the syntax to make things more gdb
+compatible. But of course gdb is also a moving target, so its syntax
+has been extended and gotten more complicated as well.
+
+In the olden days, I was sad that debuggers didn't follow someone
+else's syntax but instead invented their own, sometimes incompatible
+with gdb. Nowadays though it is a Herculean feat to come close to
+matching gdb's syntax. Sigh.
+
+The other problem with matching gdb's syntax is that debugging Python
+is enherently different from debugging a compiled language with object
+files. Python's language model just isn't the same as C's.
+
+So there are deviations. The biggest change that I suspect will impact
+users is that function names in locations in this debugger needs a
+trailing "()" to mark it as a function. This was not needed in
+previous versions and it isn't needed in gdb.
+
+Not implimented in our notion of location are things that feel
+compiled-language object-file-ish. Specifying the function name inside
+an object file, isn't the way Python (or most dynamic languages)
+do things.  Instead you list the method/function inside a class or
+module. And we allow this to be done off of variables and variables
+holding instance methods.
+
+Some things like ending at an address is not implemented as going
+backwards in variable-length bytecode is a bit of work. Other things
+of dubious merit I've omitted. The flexibility that is there
+is probably overkill.
+
+Speaking of reduced flexibility. Now with parser in place we no longer
+support expressions as numbers in list commands. It's not in gdb and
+I have a feeling  that too is overkill.
+
+
 trepan 0.7.8 2017-07-10
 
 - Release for updated xdis and botched Rst
