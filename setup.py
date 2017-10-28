@@ -73,6 +73,15 @@ setup(
        author             = author,
        author_email       = author_email,
        classifiers        = classifiers,
+       data_files=[('trepan/processor/command/help',
+                    ['trepan/processor/command/help/arange.rst',
+                     'trepan/processor/command/help/command.rst',
+                     'trepan/processor/command/help/examples.rst',
+                     'trepan/processor/command/help/filename.rst',
+                     'trepan/processor/command/help/location.rst',
+                     'trepan/processor/command/help/range.rst',
+                     'trepan/processor/command/help/suffixes.rst',
+                     ])],
        description        = short_desc,
        entry_points = {
        'console_scripts': [
