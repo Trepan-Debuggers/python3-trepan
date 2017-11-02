@@ -41,7 +41,6 @@ Examples:
        deparse --offsets   # show all exect deparsing offsets
        deparse --AST       # deparse and show AST
 
-See also:
-+++++++++
+.. seealso::
 
 :ref:`disassemble <disassemble>`, :ref:`list <list>`, and :ref:`set highlight <set_highlight>`

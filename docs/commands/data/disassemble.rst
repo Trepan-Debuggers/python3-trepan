@@ -34,3 +34,7 @@ Examples:
        disassemble 3                  # Disassemble starting from line 3
        disassemble 3 10               # Disassemble lines 3 to 10
        disassemble myprog.pyc         # Disassemble file myprog.pyc
+
+.. seealso::
+
+:ref:`help syntax arange <syntax_arange>` for the specification of a address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`

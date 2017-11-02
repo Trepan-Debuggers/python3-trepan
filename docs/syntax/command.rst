@@ -50,7 +50,6 @@ command-processing, it's possible to go into an python shell with the
 corresponding command. It is also possible to arrange going into an
 python shell every time you enter the debugger.
 
-See also:
----------
+.. seealso::
 
 :ref:`help syntax suffixes <syntax_suffixes>`
