@@ -96,6 +96,7 @@ class MockDebuggerCore:
         self.step_ignore    = -1
         self.stop_frame     = None
         self.last_lineno    = None
+        self.last_offset    = None
         self.last_filename  = None
         self.different_line = None
         self.from_ipython   = False

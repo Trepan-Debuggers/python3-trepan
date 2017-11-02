@@ -179,15 +179,14 @@ We do more in the way of looking at the byte codes to give better information. T
 
 Even without "deparsing" mentioned above, the abilty to disassemble by line number range or byte-offset range lets you tell exactly where you are and code is getting run.
 
-Debugger Command Arguments can be Variables and Expressions
+Some Debugger Command Arguments can be Variables and Expressions
 -----------------------------------------------------------
 
-Commands that take integer arguments like *up*, *list* or
-*disassemble* allow you to use a Python expression which may include
-local or global variables that evaluates to an integer. This
-eliminates the need in *gdb* for special "dollar" debugger
-variables. (Note however because of *shlex* parsing ,expressions can't
-have embedded blanks.)
+Commands that take integer arguments like frame-moving commands like
+*up*, allow you to use a Python expression which may include local or
+global variables that evaluates to an integer. This eliminates the
+need in *gdb* for special "dollar" debugger variables. (Note however
+because of *shlex* parsing, expressions can't have embedded blanks.)
 
 Out-of-Process Debugging
 ------------------------

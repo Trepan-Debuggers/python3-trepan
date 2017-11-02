@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@ from trepan.processor import cmdbreak as Mcmdbreak
 
 
 class ContinueCommand(Mbase_cmd.DebuggerCommand):
-    """**continue** [[*file*:]*lineno* | *function*]
+    """**continue** [*location*]
 
 Leave the debugger read-eval print loop and continue
 execution. Subsequent entry to the debugger however may occur via
 breakpoints or explicit calls, or exceptions.
 
-If a line position or function is given, a temporary breakpoint is set at that
+If *location* is given, a temporary breakpoint is set at that
 position before continuing.
 
 Examples:
@@ -42,7 +42,7 @@ Examples:
 See also:
 ---------
 
-`step` `jump`, `next`, and `finish`
+`step` `jump`, `next`, `finish` and `help syntax location`
 """
 
     category      = 'running'
@@ -58,7 +58,7 @@ See also:
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
             func, filename, lineno, condition = \
-              Mcmdbreak.parse_break_cmd(self, args[1:])
+              Mcmdbreak.parse_break_cmd(self.proc, args)
             if not Mcmdbreak.set_break(self, func, filename, lineno, condition,
                                        True, args):
                 return False
@@ -75,6 +75,7 @@ if __name__ == '__main__':
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()
     cmd.proc.setup()
+
     for c in (['continue', 'wrong', 'number', 'of', 'args'],
               ['c', '5'],
               ['continue', '1+2'],

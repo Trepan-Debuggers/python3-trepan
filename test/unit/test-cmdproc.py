@@ -99,47 +99,6 @@ class TestCmdProc(unittest.TestCase):
             pass
         return
 
-    def test_parse_position(self):
-        self.cp.frame = sys._getframe()
-        self.cp.setup()
-
-        # See that we can parse a file/line combo: e.g. filename.py:10
-        filename = os.path.realpath(os.path.abspath(__file__))
-        modfunc, f, l = self.cp.parse_position("%s:10" % filename)
-        self.assertEqual(filename, f, 'file:line parsing bolixed')
-
-        if sys.platform != 'win32':
-            # Without the line number should be a problem though
-            modfunc, f, l = self.cp.parse_position(filename)
-            self.assertEqual(None, f, 'file should not work')
-        return
-
-    def test_parse_position_one_arg(self):
-        self.assertEqual((None, None, None),
-                         self.cp.parse_position_one_arg('4+1'))
-        self.cp.frame = sys._getframe()
-        self.cp.setup()
-        modfunc, f, l = self.cp.parse_position_one_arg('4+1')
-        self.assertEqual(5, l)
-        self.assertTrue(f.endswith('test-cmdproc.py'))
-        self.assertEqual(None, modfunc)
-
-        # See that we can parse a module name
-        modfunc, f, l = self.cp.parse_position_one_arg('os.path')
-        self.assertTrue(inspect.ismodule(modfunc),
-                        'Module name, e.g. os.path bolixed')
-
-        def foo(): pass
-        # FIXME: reininstate:
-        # for name in ('os.path.join', 'foo',
-            # 'self.test_parse_position_one_arg'):
-        for name in ('os.path.join', 'foo'):
-            modfunc, f, l = self.cp.parse_position_one_arg(name)
-            self.assertTrue(inspect.isfunction(modfunc),
-                            'function name %s bolixed' % name)
-            pass
-        return
-
     def test_preloop_hooks(self):
         fn = self.cp.commands['list']
         self.assertEqual(0, len(self.cp.preloop_hooks),

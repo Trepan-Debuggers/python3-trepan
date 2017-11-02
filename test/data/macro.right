@@ -28,6 +28,7 @@ Macro "bar" defined.
   8    	of parameters.
   9    	
  10  ->	"""
+ 11    	import sys
     bar  foo
 
 bar:

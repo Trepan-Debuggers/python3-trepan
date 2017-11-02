@@ -53,24 +53,27 @@ def pm(frameno=1, dbg=None):
 
 def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn=None):
     if str(exc_type) == str(DebuggerQuit): return
-    if str(exc_type) == str(DebuggerRestart):
-        if ( exc_value and exc_value.sys_argv and
-             len(exc_value.sys_argv) > 0 ):
-            print("No restart handler - trying restart via execv(%s)" %
-                   repr(exc_value.sys_argv))
-            os.execvp(exc_value.sys_argv[0], exc_value.sys_argv)
+    try:
+        if str(exc_type) == str(DebuggerRestart):
+            if ( exc_value and exc_value.sys_argv and
+                 len(exc_value.sys_argv) > 0 ):
+                print("No restart handler - trying restart via execv(%s)" %
+                       repr(exc_value.sys_argv))
+                os.execvp(exc_value.sys_argv[0], exc_value.sys_argv)
+            else:
+                print("No restart handler, no params registered")
+                print("Entering post-mortem debugger...")
         else:
-            print("No restart handler, no params registered")
-            print("Entering post-mortem debugger...")
-    else:
-        if tb_fn:
-            tb_fn(exc_type, exc_value, exc_tb)
-        else:
-            traceback.print_exception(exc_type, exc_value, exc_tb)
-        print("Uncaught exception. Entering post-mortem debugger...")
+            if tb_fn:
+                tb_fn(exc_type, exc_value, exc_tb)
+            else:
+                traceback.print_exception(exc_type, exc_value, exc_tb)
+            print("Uncaught exception. Entering post-mortem debugger...")
+            pass
+        post_mortem((exc_type, exc_value, exc_tb))
+        print("Post-mortem debugger finished.")
+    except:
         pass
-    post_mortem((exc_type, exc_value, exc_tb))
-    print("Post-mortem debugger finished.")
     return
 
 

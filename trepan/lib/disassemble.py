@@ -68,7 +68,8 @@ def _try_compile(source, name):
 
 
 def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
-        relative_pos = False, highlight='light', start_offset=0, end_offset=None):
+        relative_pos = False, highlight='light', start_offset=0, end_offset=None,
+        include_header=False):
     """Disassemble classes, methods, functions, or code.
 
     With no argument, disassemble the last traceback.
@@ -77,52 +78,54 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     lasti = -1
     if x is None:
         distb()
-        return
+        return None, None
     mess = ''
     if start_line > 1:
-        mess += " from line %d" % start_line
+        mess += "from line %d " % start_line
     if end_line:
-        mess += " to line %d" % end_line
+        mess += "to line %d" % end_line
     if start_offset > 1:
-        mess = " from offset %d" % start_offset
+        mess = "from offset %d " % start_offset
     if end_offset:
-        mess += " to offset %d" % end_offset
+        mess += "to offset %d" % end_offset
 
     sectioned = False
-    if type(x) is object:
+
+
+    # Try to dogpaddle to the code object for the type setting x
+    if isinstance(x, types.InstanceType):
         x = x.__class__
-    if hasattr(x, 'f_code'):
+    if inspect.ismethod(x):
+        section("Disassembly of %s: %s" % (x, mess))
+        sectioned = True
+        x = x.im_func
+    elif inspect.isfunction(x) or inspect.isgeneratorfunction(x):
+        section("Disassembly of %s: %s" % (x, mess))
+        x = x.func_code
+        sectioned = True
+    elif inspect.isgenerator(x):
+        section("Disassembly of %s: %s" % (x, mess))
+        frame = x.gi_frame
+        lasti = frame.f_last_i
+        x = x.gi_code
+        sectioned = True
+    elif inspect.isframe(x):
+        section("Disassembly of %s: %s" % (x, mess))
+        sectioned = True
         if hasattr(x, 'f_lasti'):
             lasti = x.f_lasti
+            if lasti == -1: lasti = 0
             pass
         opc = get_opcode(PYTHON_VERSION, IS_PYPY)
         x = x.f_code
-        header_lines = Bytecode(x, opc).info().split("\n")
-        header = '\n'.join([format_token(Mformat.Comment, h) for h in header_lines])
-        msg(header)
-        section("Disassembly of %s: %s" % (x, mess))
-        sectioned = True
-        disassemble(msg, msg_nocr, section, x, lasti=lasti,
-                    start_line=start_line, end_line=end_line,
-                    relative_pos = relative_pos,
-                    highlight = highlight,
-                    start_offset = start_offset,
-                    end_offset = end_offset)
-        return
-    elif hasattr(x, '__func__'):  # Method
-        x = x.__func__
-    if hasattr(x, '__code__'):  # Function
-        section("Disassembly of %s: %s" % (x, mess))
-        sectioned = True
-        if hasattr(x, 'f_lasti'):
-            lasti = x.f_lasti
-            pass
-        opc = get_opcode(PYTHON_VERSION, IS_PYPY)
-        x = x.__code__
-        header_lines = Bytecode(x, opc).info().split("\n")
-        header = '\n'.join([format_token(Mformat.Comment, h) for h in header_lines])
-        msg(header)
+        if include_header:
+            header_lines = Bytecode(x, opc).info().split("\n")
+            header = '\n'.join([format_token(Mformat.Comment, h) for h in header_lines])
+            msg(header)
         pass
+    elif inspect.iscode(x):
+        pass
+
     if hasattr(x, '__dict__'):  # Class or module
         items = sorted(x.__dict__.items())
         for name, x1 in items:
@@ -134,7 +137,8 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
                         start_line=start_line, end_line=end_line,
                         relative_pos = relative_pos)
                     msg("")
-                except TypeError as msg:
+                except TypeError:
+                    _, msg, _ = sys.exc_info()
                     errmsg("Sorry:", msg)
                     pass
                 pass
@@ -143,39 +147,35 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     elif hasattr(x, 'co_code'):  # Code object
         if not sectioned:
             section("Disassembly of %s: " % x)
-        disassemble(msg, msg_nocr, section, x, lasti=lasti,
-                    start_line=start_line, end_line=end_line,
-                    relative_pos = relative_pos,
-                    highlight = highlight,
-                    start_offset = start_offset,
-                    end_offset = end_offset)
-    elif isinstance(x, (bytes, bytearray)):  # Raw bytecode
-        disassemble_bytes(x)
+        return disassemble(msg, msg_nocr, section, x, lasti=lasti,
+                           start_line=start_line, end_line=end_line,
+                           relative_pos = relative_pos,
+                           highlight = highlight,
+                           start_offset = start_offset,
+                           end_offset = end_offset)
     elif isinstance(x, str):    # Source code
-        disassemble_string(msg, msg_nocr, x,)
+        return disassemble_string(msg, msg_nocr, x,)
     else:
         errmsg("Don't know how to disassemble %s objects." %
                type(x).__name__)
-    return
+    return None, None
 
 
 def disassemble(msg, msg_nocr, section, co, lasti=-1, start_line=-1,
                 end_line=None, relative_pos=False, highlight='light',
                 start_offset=0, end_offset=None):
     """Disassemble a code object."""
-    disassemble_bytes(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
-                      start_line, end_line, relative_pos,
-                      co.co_varnames, co.co_names, co.co_consts,
-                      co.co_cellvars, co.co_freevars,
-                      dict(findlinestarts(co)), highlight,
-                      start_offset=start_offset, end_offset=end_offset)
-    return
+    return disassemble_bytes(msg, msg_nocr, co.co_code, lasti, co.co_firstlineno,
+                             start_line, end_line, relative_pos,
+                        co.co_varnames, co.co_names, co.co_consts,
+                        co.co_cellvars, co.co_freevars,
+                        dict(findlinestarts(co)), highlight,
+                        start_offset=start_offset, end_offset=end_offset)
 
 
-def disassemble_string(source):
+def disassemble_string(msg, msg_nocr, source):
     """Compile the source string, then disassemble the code object."""
-    disassemble(_try_compile(source, '<dis>'))
-    return
+    return disassemble_bytes(msg, msg_nocr, _try_compile(source, '<dis>'))
 
 
 opc = get_opcode(PYTHON_VERSION, IS_PYPY)
@@ -183,7 +183,7 @@ opc = get_opcode(PYTHON_VERSION, IS_PYPY)
 def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                       start_line=-1, end_line=None, relative_pos=False,
                       varnames=(), names=(), constants=(), cells=(),
-                      freevars=(), linestarts=None, highlight='light',
+                      freevars=(), linestarts={}, highlight='light',
                       start_offset=0, end_offset=None):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""
@@ -231,6 +231,10 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                                   "%3d" % cur_line,
                                   highlight=highlight))
         else:
+            if start_offset <= offset:
+                msg_nocr = orig_msg_nocr
+                msg = orig_msg
+                pass
             msg_nocr('   ')
 
         if offset == lasti: msg_nocr(format_token(Mformat.Arrow, '-->',
@@ -246,14 +250,13 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                               highlight=highlight))
         msg_nocr(repr(instr.arg).ljust(10))
         msg_nocr(' ')
-        # Show argva?
+        # Show argval?
         msg(format_token(Mformat.Name,
                          instr.argrepr.ljust(20),
                          highlight=highlight))
         pass
 
-    return
-
+    return code, offset
 
 # Demo it
 if __name__ == '__main__':
@@ -274,6 +277,14 @@ if __name__ == '__main__':
         return
     curframe = inspect.currentframe()
     # dis(msg, msg_nocr, errmsg, section, curframe,
-    #    start_line=10, end_line=40, highlight='dark')
-    dis(msg, msg_nocr, errmsg, section, curframe,
-        start_offset=10, end_offset=20, highlight='dark')
+    #     start_line=10, end_line=40, highlight='dark')
+    # print('-' * 40)
+    # does nothing because start_offset is too high:
+    # dis(msg, msg_nocr, errmsg, section, curframe,
+    #     start_offset=10, end_offset=20, highlight='dark')
+    print('-' * 40)
+    dis(msg, msg_nocr, section, errmsg, disassemble)
+    # print('-' * 40)
+    # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)
+    # disassemble(msg, msg_nocr, section, co, -1, 1, 70)
+    pass

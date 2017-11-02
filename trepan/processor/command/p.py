@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ from trepan.lib import printing as Mprint
 from trepan.processor import complete as Mcomplete
 
 
-class PrCommand(Mbase_cmd.DebuggerCommand):
-    """**pr** *expression*
+class PCommand(Mbase_cmd.DebuggerCommand):
+    """**print** *expression*
 
 Print the value of the expression. Variables accessible are those of the
 environment of the selected stack frame, plus globals.
@@ -40,6 +40,7 @@ See also:
 
  `pp` and `examine` for commands which do more in the way of formatting.
 """
+    aliases       = ('print',)
     category      = 'data'
     min_args      = 1
     max_args      = None
@@ -71,7 +72,7 @@ if __name__ == '__main__':
     from trepan.processor.command import mock
     d, cp = mock.dbg_setup()
     cp.curframe = inspect.currentframe()
-    command = PrCommand(cp)
+    command = PCommand(cp)
     me = 10
 
     command.run([command.name, 'me'])
