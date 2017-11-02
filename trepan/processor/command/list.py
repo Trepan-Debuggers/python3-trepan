@@ -25,38 +25,21 @@ from trepan.processor.cmdlist import parse_list_cmd
 from pyficache import pyc2py
 
 class ListCommand(Mbase_cmd.DebuggerCommand):
-    """**list** [ *module* ] [ *first* [ *num* ]]
+    """**list** [ *range* ]
 
-**list** *location* [ *num* ]
+**list**  **+** | **-** | **.**
 
-List source code.
+List source code. See `help syntax range` for what can go in a list range.
 
-Without arguments, print lines centered around the current line. If
-*num* is given that number of lines is shown.
+Without arguments, print lines starting from where the last list left off
+since the last entry to the debugger. We start off at the location indicated
+by the current stack.
 
-If this is the first `list` command issued since the debugger command
-loop was entered, then the current line is the current frame. If a
-subsequent list command was issued with no intervening frame changing,
-then that is start the line after we last one previously shown.
+in addition you can also use:
 
-A *location* is either:
-
-  - a number, e.g. 5,
-  - a function, e.g. join or os.path.join
-  - a module, e.g. os or os.path
-  - a filename, colon, and a number, e.g. foo.py:5,
-  - or a module name and a number, e.g,. os.path:5.
-  - a '.' for the current line number
-  - a '-' for the lines before the current linenumber
-
-If the location form is used with a subsequent parameter, the
-parameter is the starting line number is used. When there two numbers
-are given, the last number value is treated as a stopping line unless
-it is less than the start line, in which case it is taken to mean the
-number of lines to list instead.
-
-Wherever a number is expected, it does not need to be a constant --
-just something that evaluates to a positive integer.
+  - a '.' for the location of the current frame
+  - a '-' for the lines before the last list
+  - a '+' for the lines after the last list
 
 Examples:
 --------

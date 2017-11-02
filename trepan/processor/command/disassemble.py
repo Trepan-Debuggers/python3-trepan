@@ -90,6 +90,10 @@ Examples:
    disassemble *0, *10              # Disassemble offset 0-10
    disassemble myprog.pyc           # Disassemble file myprog.pyc
 
+See also:
+---------
+
+`help syntax arange`, `deparse`, `list`, `info pc`.
 """
 
     aliases       = ('disasm',)  # Note: we will have disable
