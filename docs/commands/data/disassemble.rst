@@ -37,4 +37,4 @@ Examples:
 
 .. seealso::
 
-:ref:`help syntax arange <syntax_arange>` for the specification of a address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`
+ :ref:`help syntax arange <syntax_arange>` for the specification of a address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`
