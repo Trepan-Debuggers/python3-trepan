@@ -13,12 +13,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
+import os, sys
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import deparse_code
 from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
 from trepan.lib.bytecode import op_at_code_loc
-from sys import version_info
 from io import StringIO
 from pyficache import highlight_string
 from xdis import IS_PYPY
@@ -136,7 +135,7 @@ See also:
             pass
         pass
 
-        sys_version = version_info.major + (version_info.minor / 10.0)
+        sys_version = sys.version[:5]
         if len(args) >= 1 and args[0] == '.':
             if not pretty:
                 deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
