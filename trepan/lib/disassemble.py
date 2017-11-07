@@ -82,18 +82,18 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     mess = ''
     if start_line > 1:
         mess += "from line %d " % start_line
+    elif start_offset > 1:
+        mess = "from offset %d " % start_offset
     if end_line:
         mess += "to line %d" % end_line
-    if start_offset > 1:
-        mess = "from offset %d " % start_offset
-    if end_offset:
+    elif end_offset:
         mess += "to offset %d" % end_offset
 
     sectioned = False
 
 
     # Try to dogpaddle to the code object for the type setting x
-    if isinstance(x, types.InstanceType):
+    if hasattr(types, 'InstanceType') and isinstance(x, types.InstanceType):
         x = x.__class__
     if inspect.ismethod(x):
         section("Disassembly of %s: %s" % (x, mess))
@@ -215,8 +215,8 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                 msg("")
 
             cur_line = instr.starts_line
-            if ((start_line and start_line > cur_line) or
-                start_offset > offset) :
+            if (start_line and ((start_line > cur_line) or
+                                start_offset and start_offset > offset)) :
                 msg_nocr = null_print
                 msg = null_print
             else:
@@ -231,7 +231,7 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                                   "%3d" % cur_line,
                                   highlight=highlight))
         else:
-            if start_offset <= offset:
+            if start_offset and offset and start_offset <= offset:
                 msg_nocr = orig_msg_nocr
                 msg = orig_msg
                 pass

@@ -116,7 +116,7 @@ See also:
         if bytecode_file is None: return
 
         opts = {'highlight': self.settings['highlight'],
-                'start_line': None,
+                'start_line': 1,
                 'end_line': None,
                 'start_offset': None,
                 'end_offset': None,
