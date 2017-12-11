@@ -13,16 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, os, linecache, pyficache, sys, re
+import inspect, os, linecache, pyficache, sys
 
 # Our local modules
 from pygments.console import colorize
 
 # Our local modules
-from trepan.lib import stack as Mstack
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.processor.cmdlist import parse_list_cmd
-from pyficache import pyc2py
+
 
 class ListCommand(Mbase_cmd.DebuggerCommand):
     """**list** [ *range* ]
@@ -82,24 +81,17 @@ of a range.
         filename, first, last = parse_list_cmd(proc, args, listsize)
         curframe = proc.curframe
         if filename is None: return
-        m = re.search('^<frozen (.*)>', filename)
-        if m and m.group(1):
-            filename = m.group(1)
-            canonic_filename = pyficache.unmap_file(filename)
-        else:
-            filename = pyc2py(filename)
-            canonic_filename = os.path.realpath(os.path.normcase(filename))
-
-        max_line = pyficache.size(filename)
-        # FIXME: Should use the below:
-        # max_line = pyficache.maxline(filename)
+        filename = pyficache.unmap_file(pyficache.pyc2py(filename))
 
         # We now have range information. Do the listing.
+        max_line = pyficache.size(filename)
         if max_line is None:
             self.errmsg('No file %s found; using "deparse" command instead to show source' %
                         filename)
             proc.commands['deparse'].run(['deparse'])
             return
+
+        canonic_filename = os.path.realpath(os.path.normcase(filename))
 
         if first > max_line:
             self.errmsg('Bad start line %d - file "%s" has only %d lines'
@@ -119,15 +111,6 @@ of a range.
 
         if 'style' in self.settings:
             opts['style'] = self.settings['style']
-
-        try:
-            match, reason = Mstack.check_path_with_frame(curframe, filename)
-            if not match:
-                if filename not in Mcmdproc.warned_file_mismatches:
-                    self.errmsg(reason)
-                    Mcmdproc.warned_file_mismatches.add(filename)
-        except:
-            pass
 
         if first <= 0:
             first = 1
@@ -161,9 +144,10 @@ of a range.
                         s += a_pad
                         pass
                     self.msg(s + '\t' + line)
-                    self.proc.list_lineno = lineno
+                    proc.list_lineno = lineno
                     pass
                 pass
+            pass
         except KeyboardInterrupt:
             pass
         return False

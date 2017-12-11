@@ -248,10 +248,11 @@ def build_bp_expr(string, show_tokens=False, show_ast=False, show_grammar=False)
     return bp_expr
 
 def build_range(string, show_tokens=False, show_ast=False, show_grammar=False):
+    print("WOOT")
     parser_debug = {'rules': False, 'transition': False,
                     'reduce': show_grammar,
                     'errorstack': None,
-                    'context': True, 'dups': True
+                    'context': False, 'dups': True
                         }
     parsed = parse_range(string, show_tokens=show_tokens,
                                parser_debug=parser_debug)

@@ -188,7 +188,7 @@ See also:
                         parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                     if parentInfo:
                         self.section("Contained in...")
-                        self.rst_msg("\t*Grammar Symbol:* %s" % p.type)
+                        self.rst_msg("\t*Grammar Symbol:* %s" % p.kind)
                         self.print_text(parentInfo.selectedLine)
                         self.msg(parentInfo.markerLine)
                     pass
