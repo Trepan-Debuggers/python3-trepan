@@ -230,7 +230,7 @@ class LocationGrok(GenericASTTraversal, object):
 def build_bp_expr(string, show_tokens=False, show_ast=False, show_grammar=False):
     parser_debug = {'rules': False, 'transition': False,
                     'reduce': show_grammar,
-                    'errorstack': None,
+                    'errorstack': None, 'dups': False
                     # 'context': True, 'dups': True
                         }
     parsed = parse_bp_location(string, show_tokens=show_tokens,

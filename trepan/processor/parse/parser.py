@@ -161,7 +161,7 @@ def parse_location(start_symbol, text, out=sys.stdout,
     #                 'errorstack': 'full', 'dups': False}
 
     parser = LocationParser(start_symbol, text, parser_debug)
-    parser.check_grammar(frozenset(('bp_start', 'range_start', 'arange_start')))
+    # parser.check_grammar(frozenset(('bp_start', 'range_start', 'arange_start')))
     return parser.parse(tokens)
 
 def parse_bp_location(*args, **kwargs):

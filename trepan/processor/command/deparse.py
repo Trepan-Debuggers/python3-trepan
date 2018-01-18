@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2017 Rocky Bernstein
+#  Copyright (C) 2015-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ from trepan.lib.bytecode import op_at_code_loc
 from io import StringIO
 from pyficache import highlight_string
 from xdis import IS_PYPY
+from xdis.magics import py_str2float
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -136,20 +137,26 @@ See also:
         pass
 
         sys_version = sys.version[:5]
+        try:
+            float_version = py_str2float(sys_version)
+        except:
+            self.errmsg(sys.exc_info()[1])
+            return
         if len(args) >= 1 and args[0] == '.':
             if not pretty:
-                deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+                deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
                 text = deparsed.text
             else:
                 out = StringIO()
-                deparsed = deparse_code_pretty(sys_version, co, out, is_pypy=IS_PYPY)
+                deparsed = deparse_code_pretty(float_version, co, out,
+                                               is_pypy=IS_PYPY)
                 text = out.getvalue()
                 pass
             self.print_text(text)
             return
         elif show_offsets:
             self.section("Offsets known:")
-            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
             offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
             m = self.columnize_commands(offsets)
             self.msg_nocr(m)
@@ -165,8 +172,9 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
         except:
+            self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)
             return
         nodeInfo = deparsed_find((name, last_i), deparsed, co)
@@ -188,7 +196,7 @@ See also:
                         parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                     if parentInfo:
                         self.section("Contained in...")
-                        self.rst_msg("\t*Grammar Symbol:* %s" % p.type)
+                        self.rst_msg("\t*Grammar Symbol:* %s" % p.kind)
                         self.print_text(parentInfo.selectedLine)
                         self.msg(parentInfo.markerLine)
                     pass
