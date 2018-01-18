@@ -135,6 +135,7 @@ See also:
                 self.errmsg("unhandled option '%s'" % o)
             pass
         pass
+        nodeInfo = None
 
         sys_version = sys.version[:5]
         try:
@@ -143,15 +144,20 @@ See also:
             self.errmsg(sys.exc_info()[1])
             return
         if len(args) >= 1 and args[0] == '.':
-            if not pretty:
-                deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
-                text = deparsed.text
-            else:
-                out = StringIO()
-                deparsed = deparse_code_pretty(float_version, co, out,
-                                               is_pypy=IS_PYPY)
-                text = out.getvalue()
-                pass
+            try:
+                if not pretty:
+                    deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+                    text = deparsed.text
+                else:
+                    out = StringIO()
+                    deparsed = deparse_code_pretty(float_version, co, out,
+                                                   is_pypy=IS_PYPY)
+                    text = out.getvalue()
+                    pass
+            except:
+                self.errmsg(sys.exc_info()[0])
+                self.errmsg("error in deparsing code")
+                return
             self.print_text(text)
             return
         elif show_offsets:
@@ -177,7 +183,8 @@ See also:
             self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)
             return
-        nodeInfo = deparsed_find((name, last_i), deparsed, co)
+        if not nodeInfo:
+            nodeInfo = deparsed_find((name, last_i), deparsed, co)
         if nodeInfo:
             extractInfo = deparsed.extract_node_info(nodeInfo)
             parentInfo = None
