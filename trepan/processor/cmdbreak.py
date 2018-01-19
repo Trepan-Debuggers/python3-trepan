@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015-2017 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015-2018 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,8 @@ from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
 from trepan.processor.location import resolve_location
 
-def set_break(cmd_obj, func, filename, lineno, condition, temporary, args):
+def set_break(cmd_obj, func, filename, lineno, condition, temporary,
+              args, force=False):
     if lineno is None:
         part1 = ("I don't understand '%s' as a line number, function name,"
                  % ' '.join(args[1:]))
@@ -42,7 +43,10 @@ def set_break(cmd_obj, func, filename, lineno, condition, temporary, args):
                                       "is not stoppable at line %d." %
                                       lineno, cmd_obj.settings['width'])
             cmd_obj.errmsg(msg)
-            return False
+            if force:
+                cmd_obj.msg("Breakpoint set although it may never be reached")
+            else:
+                return False
         pass
     bp =  cmd_obj.core.bpmgr.add_breakpoint(filename, lineno, temporary,
                                          condition, func)
