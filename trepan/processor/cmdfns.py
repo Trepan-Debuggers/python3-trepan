@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017-2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -46,8 +46,9 @@ def deparse_fn(code):
     return None
 
 def deparse_getline(code, filename, line_number, opts):
-    # Would love to figure out how to deparse the entire module
-    # but with all many-time rewritten import stuff, I still
+    # I Would like to figure out how to deparse the entire module,
+    # instead doing this on a line-by-line basis.
+    # But because th Python import library routines have been rewritten many times, I
     # can't figure out how to get from "<frozen importlib>" to
     # the module's code.
     # So for now, we'll have to do this on a function by function
