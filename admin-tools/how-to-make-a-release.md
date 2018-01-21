@@ -48,7 +48,7 @@
 
 # Make packages and tag
 
-    $ . ./admin-tools/make-dist-newer.sh
+    $ . ./admin-tools/make-dist.sh
     $ git tag release-$VERSION
 
 # Upload single package and look at Rst Formating
