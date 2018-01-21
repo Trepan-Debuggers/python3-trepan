@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2017 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ See also:
 
  `pp` and `examine` for commands which do more in the way of formatting.
 """
-    aliases       = ('print',)
+    aliases       = ('print', 'pr')
     category      = 'data'
     min_args      = 1
     max_args      = None

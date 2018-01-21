@@ -1,4 +1,4 @@
-trepan 0.8.0
+trepan 0.8.3 2018-01-21
 
 User incompatibilty alert!
 
@@ -51,6 +51,7 @@ Speaking of reduced flexibility. Now with parser in place we no longer
 support expressions as numbers in list commands. It's not in gdb and
 I have a feeling  that too is overkill.
 
+- Add break! and b! aliases to force setting a breakpoint on a line
 
 trepan 0.7.8 2017-07-10
 

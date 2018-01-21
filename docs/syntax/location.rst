@@ -13,7 +13,7 @@ Linespec
 A linespec has a colon-separated pair of a source-location parameter
 and a line number.  A source location is a file path or a module name.
 
-In [*path*:]*linenum* , the line *linenum* in the source file *path*
+In [*path*:] *linenum* , the line *linenum* in the source file *path*
 is indicated. When *path* is omitted, some default value is given,
 usually it is the *path* associated with the current frame. Or in
 list-like commands it is the *path* what was most-recently set; the
