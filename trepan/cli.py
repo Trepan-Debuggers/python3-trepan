@@ -124,9 +124,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 else:
                     # Move onto the except branch
                     raise IOError("Python file name embedded in code %s not found" % try_file)
-            except:
+            except IOError:
                 try:
-                    from uncompyle6 import uncompyle_file
+                    from uncompyle6 import decompile_file
                 except ImportError:
                     print("%s: Compiled python file '%s', but uncompyle6 not found"
                         % (__title__, mainpyfile), file=sys.stderr)
@@ -137,15 +137,44 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 fd = tempfile.NamedTemporaryFile(suffix='.py',
                                                  prefix=short_name + "_",
                                                  delete=False)
+                old_write = fd.file.write
+
+                def write_wrapper(*args, **kwargs):
+                    if isinstance(args[0], str):
+                        new_args = list(args)
+                        new_args[0] = args[0].encode('utf-8')
+                        old_write(*new_args, *kwargs)
+                    else:
+                        old_write(*args, *kwargs)
+                fd.file.write = write_wrapper
+
+                # from io import StringIO
+                # linemap_io = StringIO()
                 try:
-                    uncompyle_file(mainpyfile, fd)
+                   decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except:
-                    print("%s: error uncompyling '%s'"
+                    print("%s: error decompiling '%s'"
                           % (__title__, mainpyfile), file=sys.stderr)
                     sys.exit(1)
                     return
+
+                # # Get the line associations between the original and
+                # # decompiled program
+                # mapline = linemap_io.getvalue()
+                # fd.write(mapline + "\n\n")
+                # linemap = eval(mapline[3:])
                 mainpyfile = fd.name
                 fd.close()
+
+                # Since we are actually running the recreated source,
+                # there is little no need to remap line numbers.
+                # The mapping is given at the end of the file.
+                # However we should consider adding this information
+                # and original file name.
+
+                print("%s: couldn't find Python source so we recreated it at '%s'"
+                      % (__title__, mainpyfile), file=sys.stderr)
+
                 pass
 
         # If mainpyfile is an optimized Python script try to find and
