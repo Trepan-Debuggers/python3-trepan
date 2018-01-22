@@ -21,7 +21,7 @@
 
 # Change version in uncompyle6/version.py:
 
-	$ emacs uncompyle6/version.py
+	$ emacs trepan/version.py
     $ source trepan/version.py
     $ echo $VERSION
     $ git commit -m"Get ready for release $VERSION" .

@@ -255,5 +255,5 @@ See Also
 .. _eval: https://python3-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
-.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
-   :target: https://pypi.python.org/pypi/trepan3k/
+.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan2.svg
+   :target: https://pypi.python.org/pypi/trepan2/
