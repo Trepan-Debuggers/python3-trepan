@@ -256,4 +256,4 @@ See Also
 .. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan2.svg
-   :target: https://pypi.python.org/pypi/trepan2/
+   :target: https://pypi.python.org/pypi/trepan3k/
