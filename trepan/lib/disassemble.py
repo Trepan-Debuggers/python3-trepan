@@ -16,40 +16,6 @@ format_token = Mformat.format_token
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
 
 
-def _get_const_info(const_index, const_list):
-    """Helper to get optional details about const references
-
-       Returns the dereferenced constant and its repr if the constant
-       list is defined.
-       Otherwise returns the constant index and its repr().
-    """
-    argval = const_index
-    if const_list is not None:
-        try:
-            argval = const_list[const_index]
-        except:
-            print(const_list)
-            import pdb; pdb.set_trace()
-            print(const_index)
-
-    return argval, repr(argval)
-
-def _get_name_info(name_index, name_list):
-    """Helper to get optional details about named references
-
-       Returns the dereferenced name as both value and repr if the name
-       list is defined.
-       Otherwise returns the name index and its repr().
-    """
-    argval = name_index
-    if name_list is not None:
-        argval = name_list[name_index]
-        argrepr = argval
-    else:
-        argrepr = repr(argval)
-    return argval, argrepr
-
-
 def _try_compile(source, name):
     """Attempts to compile the given source, first as an expression and
        then as a statement if the first approach fails.
@@ -65,7 +31,6 @@ def _try_compile(source, name):
 
 # Modified from dis. Changed output to use msg, msg_nocr, section, and
 # pygments.  Added first_line and last_line parameters
-
 
 def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
         relative_pos = False, highlight='light', start_offset=0, end_offset=None,

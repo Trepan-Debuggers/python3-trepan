@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, shlex, traceback, re
+import inspect, linecache, os, sys, shlex, tempfile, traceback, re
 import pyficache
 from trepan.processor import cmdfns
 
@@ -233,6 +233,40 @@ def print_location(proc_obj):
         pyficache.update_cache(filename)
         line = pyficache.getline(filename, lineno, opts)
         if not line:
+            if filename.startswith("<string: ") and proc_obj.curframe.f_code:
+                # DRY this with deparse code.
+                from io import StringIO
+                from uncompyle6.semantics.pysource import deparse_code
+                from xdis.magics import py_str2float
+                from xdis import IS_PYPY
+                # FIXME remap filename to a short name.
+                co = proc_obj.curframe.f_code
+                out = StringIO()
+                sys_version = sys.version[:5]
+                float_version = py_str2float(sys_version)
+                try:
+                    deparsed = deparse_code(float_version, co, out,
+                                            is_pypy=IS_PYPY)
+                except:
+                    self.errmsg(sys.exc_info()[0])
+                    self.errmsg("error in deparsing code")
+                    break
+
+                text = out.getvalue()
+                # FIXME: DRY code with version in cmdproc.py print_location
+                prefix = os.path.basename(filename).split('.')[0]
+                fd = tempfile.NamedTemporaryFile(suffix='.py',
+                                                 prefix=prefix,
+                                                 delete=False)
+                with fd:
+                    fd.write(text.encode('utf-8'))
+                    remapped_file = fd.name
+                    # FIXME remap filename to a short name.
+                    pyficache.remap_file(remapped_file, filename)
+                fd.close()
+                pass
+
+
             # FIXME:
             # try with good ol linecache and consider fixing pyficache
             lines = linecache.getlines(filename)

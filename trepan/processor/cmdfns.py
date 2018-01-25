@@ -34,13 +34,15 @@ def source_tempfile_remap(prefix, text):
 
 def deparse_fn(code):
     try:
-        from uncompyle6.semantics.fragments import deparse_code
+        from uncompyle6.semanitcs.linemap import (
+            deparse_code_with_fragments_and_map as deparse_code)
     except ImportError:
         return None
-    sys_version = sys.version_info.major + (sys.version_info.minor / 10.0)
+    sys_version = sys.version[:5]
     try:
-        deparsed = deparse_code(sys_version, code, is_pypy=IS_PYPY)
-        return deparsed.text.strip()
+        float_version = py_str2float(sys_version)
+        deparsed = deparse_code(float_version, code, is_pypy=IS_PYPY)
+        return deparsed
     except:
         raise
     return None
@@ -54,15 +56,18 @@ def deparse_getline(code, filename, line_number, opts):
     # So for now, we'll have to do this on a function by function
     # bases. Fortunately pyficache has the ability to remap line
     # numbers
-    text = deparse_fn(code)
+    deparsed = deparse_fn(code)
+    text = deparsed.text.strip()
     if text:
         prefix = os.path.basename(filename) + "_"
         remapped_filename = source_tempfile_remap(prefix, text)
         lines = text.split("\n")
         first_line = code.co_firstlineno
-        pyficache.remap_file_lines(filename, remapped_filename,
-                                   range(first_line, first_line+len(lines)),
-                                   1)
+        linemap = [(line_no, deparsed.source_linemap[line_no])
+                   for line_no in
+                   sorted(deparsed.source_linemap.keys())]
+        print("XXXX", linemap)
+        pyficache.remap_file_lines(filename, remapped_filename, linemap)
         return remapped_filename, pyficache.getline(filename, line_number, opts)
     return None, None
 
