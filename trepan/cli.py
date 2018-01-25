@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -143,9 +143,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     if isinstance(args[0], str):
                         new_args = list(args)
                         new_args[0] = args[0].encode('utf-8')
-                        old_write(*new_args, *kwargs)
+                        old_write(*new_args, **kwargs)
                     else:
-                        old_write(*args, *kwargs)
+                        old_write(*args, **kwargs)
                 fd.file.write = write_wrapper
 
                 # from io import StringIO
