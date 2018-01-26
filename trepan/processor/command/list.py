@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2017 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@ from pygments.console import colorize
 from trepan.lib import stack as Mstack
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.processor.cmdlist import parse_list_cmd
-from pyficache import pyc2py
+from trepan.processor import cmdproc as Mcmdproc
+from trepan.lib.deparse import deparse_and_cache
+from pyficache import pyc2py, unmap_file_line
 
 class ListCommand(Mbase_cmd.DebuggerCommand):
     """**list** [ *range* ]
@@ -82,6 +84,15 @@ of a range.
         filename, first, last = parse_list_cmd(proc, args, listsize)
         curframe = proc.curframe
         if filename is None: return
+        if filename == "<string>" and proc.curframe.f_code:
+            # Deparse the code object into a temp file and remap the line from code
+            # into the corresponding line of the tempfile
+            co = proc.curframe.f_code
+            temp_filename, name_for_code = deparse_and_cache(co, proc.errmsg)
+            if temp_filename:
+                filename = temp_filename
+            pass
+
         m = re.search('^<frozen (.*)>', filename)
         if m and m.group(1):
             filename = m.group(1)

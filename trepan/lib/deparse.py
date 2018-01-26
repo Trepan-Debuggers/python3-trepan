@@ -22,13 +22,12 @@ def deparse_and_cache(co, errmsg_fn):
     except:
         errmsg_fn(sys.exc_info()[0])
         errmsg_fn("error in deparsing code")
-        return
+        return None, None
 
     text = out.getvalue()
     linemap = [(line_no, deparsed.source_linemap[line_no])
                    for line_no in
                    sorted(deparsed.source_linemap.keys())]
-    print("XXX", linemap)
 
     # FIXME: DRY code with version in cmdproc.py print_location
 
@@ -42,11 +41,11 @@ def deparse_and_cache(co, errmsg_fn):
         map_line = "\n\n# %s" % linemap
         fd.write(map_line.encode('utf-8'))
         remapped_file = fd.name
-        # FIXME remap filename to a short name.
-        pyficache.remap_file_lines(name_for_code, remapped_file,
-                                   linemap)
     fd.close()
-    return name_for_code
+    # FIXME remap filename to a short name.
+    pyficache.remap_file_lines(name_for_code, remapped_file,
+                               linemap)
+    return remapped_file, name_for_code
 
 # Demo it
 if __name__ == '__main__':

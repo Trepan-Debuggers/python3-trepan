@@ -16,10 +16,9 @@
 import os, sys
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import deparse_code
-from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
+from trepan.lib.deparse import deparse_and_cache
 from trepan.lib.bytecode import op_at_code_loc
-from io import StringIO
-from pyficache import highlight_string
+from pyficache import highlight_string, getlines
 from xdis import IS_PYPY
 from xdis.magics import py_str2float
 
@@ -112,7 +111,6 @@ See also:
             print(str(err))  # will print something like "option -a not recognized"
             return
 
-        pretty = False
         show_parent = False
         show_ast = False
         offset = None
@@ -125,8 +123,6 @@ See also:
                 show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
-            elif o in ("-P", "--pretty"):
-                pretty = True
             elif o in ("-A", "--tree", '--AST'):
                 show_ast = True
             elif o in ("-o", '--offset'):
@@ -144,21 +140,10 @@ See also:
             self.errmsg(sys.exc_info()[1])
             return
         if len(args) >= 1 and args[0] == '.':
-            try:
-                if not pretty:
-                    deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
-                    text = deparsed.text
-                else:
-                    out = StringIO()
-                    deparsed = deparse_code_pretty(float_version, co, out,
-                                                   is_pypy=IS_PYPY)
-                    text = out.getvalue()
-                    pass
-            except:
-                self.errmsg(sys.exc_info()[0])
-                self.errmsg("error in deparsing code")
+            temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
+            if not temp_filename:
                 return
-            self.print_text(text)
+            self.print_text(''.join(getlines(temp_filename)))
             return
         elif show_offsets:
             self.section("Offsets known:")
