@@ -17,7 +17,7 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
 
-import os, sys, time
+import sys, time
 
 # Our local modules
 from trepan.interfaces import client as Mclient
