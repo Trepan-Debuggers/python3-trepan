@@ -240,7 +240,8 @@ def print_location(proc_obj):
                 # into the corresponding line of the tempfile
                 co = proc_obj.curframe.f_code
                 temp_filename, name_for_code = deparse_and_cache(co, proc_obj.errmsg)
-                _, lineno = pyficache.unmap_file_line(temp_filename, lineno, True)
+                lineno = 1
+                # _, lineno = pyficache.unmap_file_line(temp_filename, lineno, True)
                 if temp_filename:
                     filename = temp_filename
                 pass

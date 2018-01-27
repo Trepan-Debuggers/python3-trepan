@@ -49,7 +49,7 @@ install_requires   = ['columnize >= 0.3.9',
                       'pygments  >= 2.2.0',
                       'spark_parser >= 1.8.5, <1.9.0',
                       'tracer >= 0.3.2',
-                      'uncompyle6 >= 2.14.3',
+                      'uncompyle6 >= 2.15.0',
                       'xdis >= 3.6.7, < 3.7.0',
                       ]
 license            = 'GPL3'

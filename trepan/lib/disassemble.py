@@ -44,6 +44,8 @@ def dis(msg, msg_nocr, section, errmsg, x=None, start_line=-1, end_line=None,
     if x is None:
         distb()
         return None, None
+    if start_offset is None:
+        start_offset = 0
     mess = ''
     if start_line > 1:
         mess += "from line %d " % start_line
