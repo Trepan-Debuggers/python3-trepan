@@ -15,8 +15,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, sys
 from getopt import getopt, GetoptError
-from uncompyle6.semantics.fragments import deparse_code
-from trepan.lib.deparse import deparse_and_cache
+from uncompyle6.semantics.fragments import deparse_code, deparse_code_around_offset
+from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
 from trepan.lib.bytecode import op_at_code_loc
 from pyficache import highlight_string, getlines
 from xdis import IS_PYPY
@@ -111,6 +111,7 @@ See also:
             print(str(err))  # will print something like "option -a not recognized"
             return
 
+        pretty = False
         show_parent = False
         show_ast = False
         offset = None
@@ -123,6 +124,8 @@ See also:
                 show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
+            elif o in ("-P", "--pretty"):
+                pretty = True
             elif o in ("-A", "--tree", '--AST'):
                 show_ast = True
             elif o in ("-o", '--offset'):
@@ -139,17 +142,34 @@ See also:
         except:
             self.errmsg(sys.exc_info()[1])
             return
+
+        try:
+            float_version = py_str2float(sys_version)
+        except:
+            self.errmsg(sys.exc_info()[1])
+            return
         if len(args) >= 1 and args[0] == '.':
-            temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
-            if not temp_filename:
+            try:
+                if not pretty:
+                    deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+                    text = deparsed.text
+                else:
+                    out = StringIO()
+                    deparsed = deparse_code_pretty(float_version, co, out,
+                                                   is_pypy=IS_PYPY)
+                    text = out.getvalue()
+                    pass
+            except:
+                self.errmsg(sys.exc_info()[0])
+                self.errmsg("error in deparsing code")
                 return
-            self.print_text(''.join(getlines(temp_filename)))
+            self.print_text(text)
             return
         elif show_offsets:
-            self.section("Offsets known:")
             deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
-            offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
-            m = self.columnize_commands(offsets)
+            self.section("Offsets known:")
+            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
+                                                    key=lambda x: str(x[0]))))
             self.msg_nocr(m)
             return
         elif offset is not None:
@@ -163,7 +183,11 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+           deparsed = deparse_code(float_version, co)
+           nodeInfo = deparsed_find((name, last_i), deparsed, co)
+           if not nodeInfo:
+               self.errmsg("Can't find exact offset %d; giving inexact results" % last_i)
+               deparsed = deparse_code_around_offset(co.co_name, last_i, float_version, co)
         except:
             self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)
@@ -204,8 +228,8 @@ See also:
         else:
             self.errmsg("haven't recorded info for offset %d. Offsets I know are:"
                         % last_i)
-            offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
-            m = self.columnize_commands(offsets)
+            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
+                                                    key=lambda x: str(x[0]))))
             self.msg_nocr(m)
         return
     pass
