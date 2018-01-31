@@ -4,9 +4,14 @@
 Info Globals
 ------------
 
-**info globals**
+**info globals** [*var1 ...*]
+**info globals** **\***
 
-Show the global variables of the current stack frame.
+With no arguments, show all of the global variables of the current stack
+frame. If a list of names is provide limit display to just those
+variables.
+
+If `*` is given, just show the variable names, not the values.
 
 .. seealso::
 
