@@ -5,6 +5,7 @@ Info Locals
 -----------
 
 **info locals** [*var1 ...*]
+
 **info locals** **\***
 
 With no arguments, show all of the local variables of the current stack

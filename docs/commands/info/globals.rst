@@ -5,6 +5,7 @@ Info Globals
 ------------
 
 **info globals** [*var1 ...*]
+
 **info globals** **\***
 
 With no arguments, show all of the global variables of the current stack
