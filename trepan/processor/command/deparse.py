@@ -20,7 +20,7 @@ from trepan.lib.deparse import deparse_and_cache
 from trepan.lib.bytecode import op_at_code_loc
 from pyficache import highlight_string, getlines
 from xdis import IS_PYPY
-from xdis.magics import py_str2float
+from xdis.magics import sysinfo2float
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -133,9 +133,8 @@ See also:
         pass
         nodeInfo = None
 
-        sys_version = sys.version[:5]
         try:
-            float_version = py_str2float(sys_version)
+            float_version = sysinfo2float()
         except:
             self.errmsg(sys.exc_info()[1])
             return
