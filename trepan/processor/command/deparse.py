@@ -142,11 +142,6 @@ See also:
             self.errmsg(sys.exc_info()[1])
             return
 
-        try:
-            float_version = py_str2float(sys_version)
-        except:
-            self.errmsg(sys.exc_info()[1])
-            return
         if len(args) >= 1 and args[0] == '.':
             try:
                 if not pretty:

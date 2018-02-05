@@ -1,3 +1,14 @@
+trepan 0.8.4 2018-01-21
+
+- Add deparsing in "list" command
+- 3.4 compliance
+  there is a breakpoint
+- Cache deparse info
+- "set style" improvements
+- Handle PyPy better
+- "info locals *" and "info globals *" will list names
+   in columnar form omitting values
+
 trepan 0.8.3 2018-01-21
 
 User incompatibilty alert!
