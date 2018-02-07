@@ -19,9 +19,6 @@ if SYS_VERSION == (3, 2):
 sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
 from trepan import VERSION
 
-import os
-import os.path
-
 # Get the package information used in setup().
 from __pkginfo__ import \
     author,           author_email,       classifiers,                    \
