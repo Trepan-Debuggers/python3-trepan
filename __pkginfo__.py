@@ -54,7 +54,7 @@ install_requires   = ['columnize >= 0.3.9',
                       ]
 license            = 'GPL3'
 mailing_list       = 'python-debugger@googlegroups.com'
-modname            = 'trepan3k'
+modname            = 'trepan'
 py_modules         = None
 short_desc         = 'GDB-like Python Debugger in the Trepan family'
 
