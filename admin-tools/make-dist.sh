@@ -30,9 +30,9 @@ for pyversion in $PYVERSIONS; do
     first_two=$(echo $pyversion | cut -d'.' -f 1-2 | sed -e 's/\.//')
     rm -fr build
     python setup.py bdist_egg bdist_wheel
-    mv -v dist/${PACKAGE}-$VERSION-py${first_two_dot}.egg dist/${PACKAGE}3k-$VERSION-py${first_two_dot}.egg
-    mv -v dist/${PACKAGE}-$VERSION-py3-none-any.whl dist/${PACKAGE}3k-$VERSION-py${first_two}-none-any.whl
+    # mv -v dist/${PACKAGE}-$VERSION-py${first_two_dot}.egg dist/${PACKAGE}3k-$VERSION-py${first_two_dot}.egg
+    mv -v dist/${PACKAGE}-$VERSION-py3-none-any.whl dist/${PACKAGE}-$VERSION-py${first_two}-none-any.whl
 done
 
 python ./setup.py sdist
-mv -v dist/${PACKAGE}-$VERSION.tar.gz dist/${PACKAGE}3k-$VERSION.tar.gz
+# mv -v dist/${PACKAGE}-$VERSION.tar.gz dist/${PACKAGE}3k-$VERSION.tar.gz
