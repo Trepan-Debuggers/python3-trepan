@@ -238,7 +238,7 @@ See Also
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
-.. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
+.. _Tutorial: http://python2-trepan.readthedocs.io/en/latest/entry-exit.html
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
