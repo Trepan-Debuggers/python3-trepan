@@ -16,17 +16,12 @@ if SYS_VERSION == (3, 2):
     pygments_version = '<= 1.6'
 
 
-trepan_lib =  osp.normpath(osp.join(osp.dirname(__file__), 'trepan'))
-sys.path.insert(0, trepan_lib)
-
-from trepan.version import VERSION
-
 # Get the package information used in setup().
 from __pkginfo__ import \
     author,           author_email,       classifiers,                    \
     install_requires, license,            long_description,               \
     modname,          py_modules,                                         \
-    short_desc,       web,              zip_safe
+    short_desc,       version,            web,              zip_safe
 
 __import__('pkg_resources')
 
@@ -60,5 +55,5 @@ setup(
        py_modules         = py_modules,
        test_suite         = 'nose.collector',
        url                = web,
-       version            = VERSION,
+       version            = version,
        zip_safe           = zip_safe)
