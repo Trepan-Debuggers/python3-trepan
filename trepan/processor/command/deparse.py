@@ -16,29 +16,15 @@
 import os, sys
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import deparse_code, deparse_code_around_offset
-from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
-from trepan.lib.bytecode import op_at_code_loc
-from pyficache import highlight_string, getlines
+from uncompyle6.semantics.pysource import (
+    deparse_code as deparse_code_pretty)
+from uncompyle6.semantics.fragments import deparsed_find
+from pyficache import highlight_string
 from xdis import IS_PYPY
 from xdis.magics import sysinfo2float
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
-
-# FIXME: put this in uncompyle6 fragments
-def deparsed_find(tup, deparsed, code):
-    nodeInfo = None
-    name, last_i = tup
-    if (name, last_i) in deparsed.offsets.keys():
-        nodeInfo =  deparsed.offsets[name, last_i]
-    else:
-        co = code.co_code
-        if op_at_code_loc(co, last_i) == 'DUP_TOP':
-            offset = deparsed.scanner.next_offset(co[last_i], last_i)
-            if (name, offset) in deparsed.offsets:
-                nodeInfo =  deparsed.offsets[name, offset]
-
-    return nodeInfo
 
 class DeparseCommand(Mbase_cmd.DebuggerCommand):
     """**deparse** [options] [ . ]
@@ -148,6 +134,7 @@ See also:
                     deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
                     text = deparsed.text
                 else:
+                    from io import StringIO
                     out = StringIO()
                     deparsed = deparse_code_pretty(float_version, co, out,
                                                    is_pypy=IS_PYPY)
