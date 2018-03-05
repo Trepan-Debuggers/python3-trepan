@@ -243,7 +243,6 @@ See Also
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
 		 :target: https://travis-ci.org/rocky/python3-trepan
-.. |Latest Version| image:: https://img.shields.io/pypi/v/trepan3k.svg?label=version
    :target: https://travis-ci.org/rocky/python3-trepan/
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
