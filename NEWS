@@ -1,3 +1,13 @@
+trepan 0.8.6 2018-03-8
+
+Largely administrative changes
+
+- Bump uncompyle6 version; use new uncompyle6 API
+- Tweak disassemble doc
+- Remove depares --pretty. sync with trepan2 code
+- disassemble improvements
+- small doc changes
+
 trepan 0.8.5 2018-02-7
 
 - Fix botched packaging? (modname)
