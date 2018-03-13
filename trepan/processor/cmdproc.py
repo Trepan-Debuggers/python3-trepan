@@ -179,6 +179,7 @@ def print_location(proc_obj):
     # the stack.  Hence the looping below which in practices loops
     # once and sometimes twice.
     remapped_file = None
+    source_text = None
     while i_stack >= 0:
         frame_lineno = proc_obj.stack[i_stack]
         i_stack -= 1
@@ -235,7 +236,8 @@ def print_location(proc_obj):
         pyficache.update_cache(filename)
         line = pyficache.getline(filename, lineno, opts)
         if not line:
-            if filename.startswith("<string: ") and proc_obj.curframe.f_code:
+            if (not source_text and
+                filename.startswith("<string: ") and proc_obj.curframe.f_code):
                 # Deparse the code object into a temp file and remap the line from code
                 # into the corresponding line of the tempfile
                 co = proc_obj.curframe.f_code
@@ -248,11 +250,16 @@ def print_location(proc_obj):
 
             else:
                 # FIXME:
-                # try with good ol linecache and consider fixing pyficache
-                lines = linecache.getlines(filename)
+                if source_text:
+                    lines = source_text.split("\n")
+                    temp_name='string-'
+                else:
+                    # try with good ol linecache and consider fixing pyficache
+                    lines = linecache.getlines(filename)
+                    temp_name = filename
                 if lines:
                     # FIXME: DRY code with version in cmdproc.py print_location
-                    prefix = os.path.basename(filename).split('.')[0]
+                    prefix = os.path.basename(temp_name).split('.')[0]
                     fd = tempfile.NamedTemporaryFile(suffix='.py',
                                                      prefix=prefix,
                                                      delete=False)
@@ -371,7 +378,11 @@ class CommandProcessor(Mprocessor.Processor):
         self.event_arg      = None
         self.frame          = None
         self.list_lineno    = 0      # last list number used in "list"
+        self.list_offset    = -1     # last list number used in "disassemble"
+        self.list_obj       = None
         self.list_filename  = None   # last filename used in list
+        self.list_orig_lineno = 0    # line number of frame or exception on setup
+        self.list_filename  = None   # filename of frame or exception on setup
 
         self.macros         = {}     # Debugger Macros
 
@@ -686,9 +697,6 @@ class CommandProcessor(Mprocessor.Processor):
             args_list = arg_split(current_command)
         except:
             self.errmsg("bad parse %s: %s" % sys.exc_info()[0:2])
-            import traceback
-            for s in traceback.format_tb(sys.exc_info()[2], limit=None):
-                self.errmsg(s.strip())
             return False
 
         for args in args_list:
@@ -748,7 +756,6 @@ class CommandProcessor(Mprocessor.Processor):
                             # Let these exceptions propagate through
                             raise
                         except:
-                            import traceback
                             self.errmsg("INTERNAL ERROR: " +
                                         traceback.format_exc())
                             pass
