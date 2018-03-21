@@ -143,13 +143,13 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-           deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
-           nodeInfo = deparsed_find((name, last_i), deparsed, co)
-           if not nodeInfo:
-               self.errmsg("Can't find exact offset %d; giving inexact results" % last_i)
-               deparsed = deparse_code_around_offset(co.co_name, last_i,
-                                                     float_version, co,
-                                                     is_pypy=IS_PYPY)
+            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+            nodeInfo = deparsed_find((name, last_i), deparsed, co)
+            if not nodeInfo:
+                self.errmsg("Can't find exact offset %d; giving inexact results" % last_i)
+                deparsed = deparse_code_around_offset(co.co_name, last_i,
+                                                      float_version, co,
+                                                        is_pypy=IS_PYPY)
         except:
             self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)
