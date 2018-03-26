@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013-2015, 2017 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2015, 2017-2018 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -30,13 +30,14 @@ execution of the instruction specified by *location*.
 Without arguments or an empty *location*, the breakpoint is set at the
 current stopped location.
 
+See `help syntax location` for detailed information on a location.
+
 If the word `if` is given after *location*, subsequent arguments given
 Without arguments or an empty *location*, the breakpoint is set
 the current stopped location.
 
-
-The location line number may be prefixed with a filename or module
-name and a colon. Files is searched for using *sys.path*.
+Normally we only allow stopping at lines that we think are
+stoppable. If the command has a `!` suffix, force the breakpoint anyway.
 
 Examples:
 ---------
@@ -45,6 +46,8 @@ Examples:
    break if i < j       # Break at current line if i < j
    break 10             # Break on line 10 of the file we are
                         # currently stopped at
+   break! 10            # Break where we are current stopped at, even if
+                        # we don't think line 10 is stoppable
    break os.path.join() # Break in function os.path.join
    break x[i].fn()      # break in function specified by x[i].fn
    break x[i].fn() if x # break in function specified by x[i].fn
@@ -59,10 +62,9 @@ Examples:
 See also:
 ---------
 
-`tbreak`, `condition` and `help syntax location`.
-"""
+`tbreak`, `condition` and `help syntax location`."""
 
-    aliases       = ('b',)
+    aliases       = ('b', 'break!', 'b!')
     category      = 'breakpoints'
     min_args      = 0
     max_args      = None
@@ -73,13 +75,20 @@ See also:
     complete= Mcomplete.complete_break_linenumber
 
     def run(self, args):
-        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self.proc, args)
+        force = True if args[0][-1] == '!' else False
+
+        (func, filename, lineno,
+         condition) = Mcmdbreak.parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
             Mcmdbreak.set_break(self, func, filename, lineno, condition,
-                                False, args)
+                                False, args, force=force)
         return
 
 if __name__ == '__main__':
+    def doit(cmd, a):
+        cmd.current_command = ' '.join(a)
+        print(Mcmdbreak.parse_break_cmd(cmd.proc, a))
+
     import sys
     from trepan import debugger as Mdebugger
     d = Mdebugger.Trepan()
@@ -87,19 +96,19 @@ if __name__ == '__main__':
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    print(Mcmdbreak.parse_break_cmd(command, []))
-    print(Mcmdbreak.parse_break_cmd(command, ['10']))
-    print(Mcmdbreak.parse_break_cmd(command, [__file__ + ':10']))
+    doit(command, [' '])
+    doit(command, ['10'])
+    doit(command, [__file__ + ':10'])
 
     def foo():
         return 'bar'
-    print(Mcmdbreak.parse_break_cmd(command, ['foo']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path', '5+1']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path.join']))
-    print(Mcmdbreak.parse_break_cmd(command, ['if', 'True']))
-    print(Mcmdbreak.parse_break_cmd(command, ['foo', 'if', 'True']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path:10', 'if', 'True']))
+    doit(command, ['foo'])
+    doit(command, ['os.path'])
+    doit(command, ['os.path', '5+1'])
+    doit(command, ['os.path.join'])
+    doit(command, ['if', 'True'])
+    doit(command, ['foo', 'if', 'True'])
+    doit(command, ['os.path:10', 'if', 'True'])
     command.run(['break'])
     command.run(['break', 'command.run'])
     command.run(['break', '10'])

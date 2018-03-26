@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,9 +21,15 @@ from trepan.lib import pp as Mpp
 
 
 class InfoGlobals(Mbase_subcmd.DebuggerSubcommand):
-    """**info globals**
+    """**info globals** [*var1 ...*]
 
-Show the global variables of the current stack frame.
+**info globals** *
+
+With no arguments, show all of the global variables of the current stack
+frame. If a list of names is provide limit display to just those
+variables.
+
+If `*` is given, just show the variable names, not the values.
 
 See also:
 ---------
@@ -36,13 +42,28 @@ See also:
         if not self.proc.curframe:
             self.errmsg("No frame selected.")
             return False
-        var_names = list(self.proc.curframe.f_globals.keys())
-        var_names.sort()
-        for var_name in var_names:
-            val = self.proc.getval(var_name)
-            Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg,
-                   prefix='%s =' % var_name)
-            pass
+        names = list(self.proc.curframe.f_globals.keys())
+        if len(args) > 0 and args[0] == '*' :
+            self.section("globals")
+            self.msg(self.columnize_commands(names))
+        elif len(args) == 0:
+            names.sort()
+            for name in sorted(names):
+                val = self.proc.getval(name)
+                Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg,
+                       prefix='%s =' % name)
+                pass
+        else:
+            for name in args:
+                if name in names:
+                    val = self.proc.getval(name)
+                    Mpp.pp(val, self.settings['width'], self.msg_nocr,
+                           self.msg, prefix='%s =' % name)
+                    pass
+                else:
+                    self.errmsg("%s is not a global variable" % name)
+                    pass
+                pass
         return False
     pass
 

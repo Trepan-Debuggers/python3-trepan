@@ -16,55 +16,14 @@ if SYS_VERSION == (3, 2):
     pygments_version = '<= 1.6'
 
 
-sys.path.insert(0, osp.abspath(osp.dirname(__file__)))
-from trepan import VERSION
+# Get the package information used in setup().
+from __pkginfo__ import \
+    author,           author_email,       classifiers,                    \
+    install_requires, license,            long_description,               \
+    modname,          py_modules,                                         \
+    short_desc,       version,            web,              zip_safe
 
-copyright   = '''Copyright (C) 2013, 2015-2017 Rocky Bernstein <rocky@gnu.org>.'''
-classifiers =  ['Development Status :: 4 - Beta',
-                'Environment :: Console',
-                'Intended Audience :: Developers',
-                'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-                'Operating System :: OS Independent',
-                'Programming Language :: Python :: 3',
-                'Programming Language :: Python :: 3.2',
-                'Programming Language :: Python :: 3.3',
-                'Programming Language :: Python :: 3.4',
-                'Programming Language :: Python :: 3.5',
-                'Programming Language :: Python :: 3.6',
-                'Programming Language :: Python',
-                'Topic :: Software Development :: Debuggers',
-                'Topic :: Software Development :: Libraries :: Python Modules',
-                ]
-
-# The rest in alphabetic order
-author             = "Rocky Bernstein"
-author_email       = "rocky@gnu.org"
-ftp_url            = None
-install_requires   = ['columnize >= 0.3.8',
-                      'nose>=1.0',
-                      'pyficache >= 0.3.1',
-                      'pygments  ' + pygments_version,
-                      'uncompyle6 >= 2.10.1',
-                      'tracer >= 0.3.2',
-                      'xdis >= 3.3.1',
-                     ]
-license            = 'GPL3'
-mailing_list       = 'python-debugger@googlegroups.com'
-modname            = 'trepan3k'
-py_modules         = None
-short_desc         = 'GDB-like Python3 Debugger in the Trepan family'
-
-import os
-import os.path
-
-web                = 'http://github.com/rocky/python3-trepan/'
-
-# tracebacks in zip files are funky and not debuggable
-zip_safe = False
-
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-long_description   = ( read("README.rst") + '\n' )
+__import__('pkg_resources')
 
 from setuptools import setup, find_packages
 packages = find_packages()
@@ -96,5 +55,5 @@ setup(
        py_modules         = py_modules,
        test_suite         = 'nose.collector',
        url                = web,
-       version            = VERSION,
+       version            = version,
        zip_safe           = zip_safe)

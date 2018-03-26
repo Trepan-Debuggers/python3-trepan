@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017 Rocky Bernstein
+#   Copyright (C) 2015, 2017-2018 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
@@ -11,7 +11,7 @@ from trepan.lib import complete as Mcomplete
 
 
 class SetStyle(Mbase_subcmd.DebuggerSubcommand):
-    """**set style* [*pygments-style*]
+    """**set style** [*pygments-style*]
 
 Set the pygments style in to use in formatting text for a 256-color terminal.
 Note: if your terminal doesn't support 256 colors, you may be better off
@@ -42,7 +42,7 @@ See also:
 
     def run(self, args):
         if len(args) == 0:
-            self.errmsg("style names: ")
+            self.section("style names: ")
             self.msg(self.columnize_commands(style_names))
             return
         elif len(args) > 1:

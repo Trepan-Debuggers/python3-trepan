@@ -5,9 +5,14 @@ Info Locals
 -----------
 
 **info locals** [*var1 ...*]
+
 **info locals** **\***
 
-Show the local variables of the current stack frame.
+With no arguments, show all of the local variables of the current stack
+frame. If a list of names is provide limit display to just those
+variables.
+
+If `*` is given, just show the variable names, not the values.
 
 .. seealso::
 

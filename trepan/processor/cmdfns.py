@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017-2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -34,34 +34,40 @@ def source_tempfile_remap(prefix, text):
 
 def deparse_fn(code):
     try:
-        from uncompyle6.semantics.fragments import deparse_code
+        from uncompyle6.semanitcs.linemap import (
+            deparse_code_with_fragments_and_map as deparse_code)
     except ImportError:
         return None
-    sys_version = sys.version_info.major + (sys.version_info.minor / 10.0)
+    sys_version = sys.version[:5]
     try:
-        deparsed = deparse_code(sys_version, code, is_pypy=IS_PYPY)
-        return deparsed.text.strip()
+        float_version = py_str2float(sys_version)
+        deparsed = deparse_code(float_version, code, is_pypy=IS_PYPY)
+        return deparsed
     except:
         raise
     return None
 
 def deparse_getline(code, filename, line_number, opts):
-    # Would love to figure out how to deparse the entire module
-    # but with all many-time rewritten import stuff, I still
+    # I Would like to figure out how to deparse the entire module,
+    # instead doing this on a line-by-line basis.
+    # But because th Python import library routines have been rewritten many times, I
     # can't figure out how to get from "<frozen importlib>" to
     # the module's code.
     # So for now, we'll have to do this on a function by function
     # bases. Fortunately pyficache has the ability to remap line
     # numbers
-    text = deparse_fn(code)
+    deparsed = deparse_fn(code)
+    text = deparsed.text.strip()
     if text:
         prefix = os.path.basename(filename) + "_"
         remapped_filename = source_tempfile_remap(prefix, text)
         lines = text.split("\n")
         first_line = code.co_firstlineno
-        pyficache.remap_file_lines(filename, remapped_filename,
-                                   range(first_line, first_line+len(lines)),
-                                   1)
+        linemap = [(line_no, deparsed.source_linemap[line_no])
+                   for line_no in
+                   sorted(deparsed.source_linemap.keys())]
+        print("XXXX", linemap)
+        pyficache.remap_file_lines(filename, remapped_filename, linemap)
         return remapped_filename, pyficache.getline(filename, line_number, opts)
     return None, None
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,9 +13,10 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, os, sys, shlex, traceback, re
+import inspect, linecache, os, sys, shlex, tempfile, traceback, re
 import pyficache
 from trepan.processor import cmdfns
+from trepan.lib.deparse import deparse_and_cache
 
 try:
     from reprlib import Repr
@@ -199,6 +200,7 @@ def print_location(proc_obj):
                                                         dbgr_obj.eval_string)
                 pyficache.remap_file(filename, remapped)
                 filename = remapped
+                lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif '<string>' == filename:
@@ -233,21 +235,33 @@ def print_location(proc_obj):
         pyficache.update_cache(filename)
         line = pyficache.getline(filename, lineno, opts)
         if not line:
-            # FIXME:
-            # try with good ol linecache and consider fixing pyficache
-            lines = linecache.getlines(filename)
-            if lines:
-                # FIXME: DRY code with version in cmdproc.py print_location
-                prefix = os.path.basename(filename).split('.')[0]
-                fd = tempfile.NamedTemporaryFile(suffix='.py',
-                                                 prefix=prefix,
-                                                 delete=False)
-                with fd:
-                    fd.write(''.join(lines))
-                    remapped_file = fd.name
-                    pyficache.remap_file(remapped_file, filename)
-                fd.close()
+            if filename.startswith("<string: ") and proc_obj.curframe.f_code:
+                # Deparse the code object into a temp file and remap the line from code
+                # into the corresponding line of the tempfile
+                co = proc_obj.curframe.f_code
+                temp_filename, name_for_code = deparse_and_cache(co, proc_obj.errmsg)
+                lineno = 1
+                # _, lineno = pyficache.unmap_file_line(temp_filename, lineno, True)
+                if temp_filename:
+                    filename = temp_filename
                 pass
+
+            else:
+                # FIXME:
+                # try with good ol linecache and consider fixing pyficache
+                lines = linecache.getlines(filename)
+                if lines:
+                    # FIXME: DRY code with version in cmdproc.py print_location
+                    prefix = os.path.basename(filename).split('.')[0]
+                    fd = tempfile.NamedTemporaryFile(suffix='.py',
+                                                     prefix=prefix,
+                                                     delete=False)
+                    with fd:
+                        fd.write(''.join(lines))
+                        remapped_file = fd.name
+                        pyficache.remap_file(remapped_file, filename)
+                    fd.close()
+                    pass
             line = linecache.getline(filename, lineno,
                                      proc_obj.curframe.f_globals)
             if not line:
@@ -263,6 +277,7 @@ def print_location(proc_obj):
                                                  proc_obj.curframe.f_globals)
                     else:
                         remapped_file = m.group(1)
+                        code = proc_obj.curframe.f_code
                         filename, line = cmdfns.deparse_getline(code, remapped_file,
                                                                 lineno, opts)
                     pass

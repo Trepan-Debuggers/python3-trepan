@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2017 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, sys
+import inspect, os, sys
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -59,7 +59,7 @@ def cache_from_source(path, debug_override=None):
 class DisassembleCommand(Mbase_cmd.DebuggerCommand):
     """**disassemble** [*thing*]
 
-disassemble [*addresss-range*]
+**disassemble** [*address-range*]
 
 Disassembles bytecode. See `help syntax range` for what can go in a list range.
 
@@ -70,7 +70,9 @@ by the current stack.
 in addition you can also use:
 
   - a '.' for the location of the current frame
+
   - a '-' for the lines before the last list
+
   - a '+' for the lines after the last list
 
 With a class, method, function, pyc-file, code or string argument
@@ -80,7 +82,7 @@ Examples:
 --------
 ::
 
-   disassemble    # Possibly lots of stuff dissassembled
+   disassemble    # Possibly lots of stuff disassembled
    disassemble .  # Disassemble lines starting at current stopping point.
    disassemble +                    # Same as above
    disassemble os.path              # Disassemble all of os.path
@@ -107,13 +109,11 @@ See also:
     def run(self, args):
         proc = self.proc
         dbg_obj  = self.core.debugger
+
         # We'll use a rough estimate of 4 bytes per instruction and
         # go off listsize
         listsize = dbg_obj.settings['listsize'] * 4
-        (bytecode_file, start, is_offset, last,
-         last_is_offset, obj)  = parse_addr_list_cmd(proc, args, listsize)
         curframe = proc.curframe
-        if bytecode_file is None: return
 
         opts = {'highlight': self.settings['highlight'],
                 'start_line': 1,
@@ -122,6 +122,30 @@ See also:
                 'end_offset': None,
                 'relative_pos': False,
                 }
+
+        do_parse = True
+        if len(args) == 2:
+            try:
+                obj=self.proc.eval(args[1])
+                opts['start_offset'] = 0
+                is_offset = True
+                start = 0
+                last = dbg_obj.settings['listsize'] * 4
+                last_is_offset = False
+                if (inspect.ismethod(obj) or
+                    inspect.isfunction(obj) or
+                    inspect.isgeneratorfunction(obj) or
+                    inspect.isgenerator(obj) or
+                    inspect.isframe(obj) or
+                    inspect.iscode(obj)):
+                    do_parse = False
+            except:
+                pass
+
+        if do_parse:
+            (bytecode_file, start, is_offset, last,
+             last_is_offset, obj)  = parse_addr_list_cmd(proc, args, listsize)
+            if bytecode_file is None: return
 
         if is_offset:
             opts['start_offset'] = start
@@ -136,7 +160,7 @@ See also:
                 bytecode_file.endswith('pyc')):
             bytecode_file = cache_from_source(bytecode_file)
             if bytecode_file and Mfile.readable(bytecode_file):
-                print("Reading %s ..." % bytecode_file)
+                self.msg("Reading %s ..." % bytecode_file)
                 (version, timestamp, magic_int, obj,
                  is_pypy, source_size) = load_module(bytecode_file)
             elif not curframe:

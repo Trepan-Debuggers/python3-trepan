@@ -180,7 +180,7 @@ We do more in the way of looking at the byte codes to give better information. T
 Even without "deparsing" mentioned above, the abilty to disassemble by line number range or byte-offset range lets you tell exactly where you are and code is getting run.
 
 Some Debugger Command Arguments can be Variables and Expressions
------------------------------------------------------------
+----------------------------------------------------------------
 
 Commands that take integer arguments like frame-moving commands like
 *up*, allow you to use a Python expression which may include local or
@@ -238,12 +238,11 @@ See Also
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
-.. _Tutorial: https://github.com/rocky/python2-trepan/wiki/Tutorial
+.. _Tutorial: http://python2-trepan.readthedocs.io/en/latest/entry-exit.html
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
 		 :target: https://travis-ci.org/rocky/python3-trepan
-.. |Latest Version| image:: https://pypip.in/version/trepan3k/badge.svg?text=version
    :target: https://travis-ci.org/rocky/python3-trepan/
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
@@ -255,5 +254,5 @@ See Also
 .. _eval: https://python3-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
-.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
+.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan2.svg
    :target: https://pypi.python.org/pypi/trepan3k/

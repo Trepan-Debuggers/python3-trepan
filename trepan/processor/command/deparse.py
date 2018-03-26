@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2017 Rocky Bernstein
+#  Copyright (C) 2015-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,30 +15,16 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, sys
 from getopt import getopt, GetoptError
-from uncompyle6.semantics.fragments import deparse_code
-from uncompyle6.semantics.pysource import deparse_code as deparse_code_pretty
-from trepan.lib.bytecode import op_at_code_loc
-from io import StringIO
-from pyficache import highlight_string
+from uncompyle6.semantics.fragments import (
+    deparse_code, deparse_code_around_offset)
+from uncompyle6.semantics.fragments import deparsed_find
+from trepan.lib.deparse import deparse_and_cache
+from pyficache import highlight_string, getlines
 from xdis import IS_PYPY
+from xdis.magics import sysinfo2float
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
-
-# FIXME: put this in uncompyle6 fragments
-def deparsed_find(tup, deparsed, code):
-    nodeInfo = None
-    name, last_i = tup
-    if (name, last_i) in deparsed.offsets.keys():
-        nodeInfo =  deparsed.offsets[name, last_i]
-    else:
-        co = code.co_code
-        if op_at_code_loc(co, last_i) == 'DUP_TOP':
-            offset = deparsed.scanner.next_offset(co[last_i], last_i)
-            if (name, offset) in deparsed.offsets:
-                nodeInfo =  deparsed.offsets[name, offset]
-
-    return nodeInfo
 
 class DeparseCommand(Mbase_cmd.DebuggerCommand):
     """**deparse** [options] [ . ]
@@ -47,7 +33,6 @@ Options:
 ------
 
     -p | --parent        show parent node
-    -P | --pretty        show pretty output
     -A | --tree | --AST  show abstract syntax tree (AST)
     -o | --offset [num]  show deparse of offset NUM
     -h | --help          give this help
@@ -56,11 +41,7 @@ deparse around where the program is currently stopped. If no offset is given,
 we use the current frame offset. If `-p` is given, include parent information.
 
 If an '.' argument is given, deparse the entire function or main
-program you are in.  The `-P` parameter determines whether to show the
-prettified as you would find in source code, or in a form that more
-closely matches a literal reading of the bytecode with hidden (often
-extraneous) instructions added. In some cases this may even result in
-invalid Python code.
+program you are in.
 
 Output is colorized the same as source listing. Use `set highlight plain` to turn
 that off.
@@ -111,7 +92,6 @@ See also:
             print(str(err))  # will print something like "option -a not recognized"
             return
 
-        pretty = False
         show_parent = False
         show_ast = False
         offset = None
@@ -124,8 +104,6 @@ See also:
                 show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
-            elif o in ("-P", "--pretty"):
-                pretty = True
             elif o in ("-A", "--tree", '--AST'):
                 show_ast = True
             elif o in ("-o", '--offset'):
@@ -134,24 +112,24 @@ See also:
                 self.errmsg("unhandled option '%s'" % o)
             pass
         pass
+        nodeInfo = None
 
-        sys_version = sys.version[:5]
+        try:
+            float_version = sysinfo2float()
+        except:
+            self.errmsg(sys.exc_info()[1])
+            return
         if len(args) >= 1 and args[0] == '.':
-            if not pretty:
-                deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
-                text = deparsed.text
-            else:
-                out = StringIO()
-                deparsed = deparse_code_pretty(sys_version, co, out, is_pypy=IS_PYPY)
-                text = out.getvalue()
-                pass
-            self.print_text(text)
+            temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
+            if not temp_filename:
+                return
+            self.print_text(''.join(getlines(temp_filename)))
             return
         elif show_offsets:
+            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
             self.section("Offsets known:")
-            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
-            offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
-            m = self.columnize_commands(offsets)
+            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
+                                                    key=lambda x: str(x[0]))))
             self.msg_nocr(m)
             return
         elif offset is not None:
@@ -165,11 +143,19 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+           deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+           nodeInfo = deparsed_find((name, last_i), deparsed, co)
+           if not nodeInfo:
+               self.errmsg("Can't find exact offset %d; giving inexact results" % last_i)
+               deparsed = deparse_code_around_offset(co.co_name, last_i,
+                                                     float_version, co,
+                                                     is_pypy=IS_PYPY)
         except:
+            self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)
             return
-        nodeInfo = deparsed_find((name, last_i), deparsed, co)
+        if not nodeInfo:
+            nodeInfo = deparsed_find((name, last_i), deparsed, co)
         if nodeInfo:
             extractInfo = deparsed.extract_node_info(nodeInfo)
             parentInfo = None
@@ -204,26 +190,18 @@ See also:
         else:
             self.errmsg("haven't recorded info for offset %d. Offsets I know are:"
                         % last_i)
-            offsets = sorted([(str(x[0]), str(x[1])) for x in tuple(deparsed.offsets)])
-            m = self.columnize_commands(offsets)
+            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
+                                                    key=lambda x: str(x[0]))))
             self.msg_nocr(m)
         return
     pass
 
 # if __name__ == '__main__':
-#     import sys
-#     from trepan import debugger as Mdebugger
-#     d = Mdebugger.Trepan()
-#     command = PythonCommand(d.core.processor)
+#     from trepan import debugger
+#     d            = debugger.Trepan()
+#     cp           = d.core.processor
+#     command      = DeparseCommand(d.core.processor)
 #     command.proc.frame = sys._getframe()
 #     command.proc.setup()
-#     if len(sys.argv) > 1:
-#         print("Type Python commands and exit to quit.")
-#         print(sys.argv[1])
-#         if sys.argv[1] == '-d':
-#             print(command.run(['bpy', '-d']))
-#         else:
-#             print(command.run(['bpy']))
-#             pass
-#         pass
+#     command.run(['deparse'])
 #     pass

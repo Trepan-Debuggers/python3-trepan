@@ -1,4 +1,29 @@
-trepan 0.8.0
+trepan 0.8.6 2018-03-8
+
+Largely administrative changes
+
+- Bump uncompyle6 version; use new uncompyle6 API
+- Tweak disassemble doc
+- Remove depares --pretty. sync with trepan2 code
+- disassemble improvements
+- small doc changes
+
+trepan 0.8.5 2018-02-7
+
+- Fix botched packaging? (modname)
+
+trepan 0.8.4 2018-01-21
+
+- Add deparsing in "list" command
+- 3.4 compliance
+  there is a breakpoint
+- Cache deparse info
+- "set style" improvements
+- Handle PyPy better
+- "info locals *" and "info globals *" will list names
+   in columnar form omitting values
+
+trepan 0.8.3 2018-01-21
 
 User incompatibilty alert!
 
@@ -51,6 +76,7 @@ Speaking of reduced flexibility. Now with parser in place we no longer
 support expressions as numbers in list commands. It's not in gdb and
 I have a feeling  that too is overkill.
 
+- Add break! and b! aliases to force setting a breakpoint on a line
 
 trepan 0.7.8 2017-07-10
 
