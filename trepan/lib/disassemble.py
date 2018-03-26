@@ -195,14 +195,14 @@ def disassemble_bytes(orig_msg, orig_msg_nocr, code, lasti=-1, cur_line=0,
                 (end_offset and offset > end_offset)):
                 break
             msg_nocr(format_token(Mformat.LineNumber,
-                                  "%3d" % cur_line,
+                                  "%4d" % cur_line,
                                   highlight=highlight))
         else:
             if start_offset and offset and start_offset <= offset:
                 msg_nocr = orig_msg_nocr
                 msg = orig_msg
                 pass
-            msg_nocr('   ')
+            msg_nocr('    ')
 
         if offset == lasti: msg_nocr(format_token(Mformat.Arrow, '-->',
                                                   highlight=highlight))

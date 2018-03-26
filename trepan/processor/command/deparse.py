@@ -16,12 +16,10 @@
 import os, sys
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import (
-    deparse_code, deparse_code_around_offset)
+    code_deparse, code_deparse_around_offset)
 from uncompyle6.semantics.fragments import deparsed_find
 from trepan.lib.deparse import deparse_and_cache
 from pyficache import highlight_string, getlines
-from xdis import IS_PYPY
-from xdis.magics import sysinfo2float
 
 # Our local modules
 from trepan.processor.command import base_cmd as Mbase_cmd
@@ -114,11 +112,6 @@ See also:
         pass
         nodeInfo = None
 
-        try:
-            float_version = sysinfo2float()
-        except:
-            self.errmsg(sys.exc_info()[1])
-            return
         if len(args) >= 1 and args[0] == '.':
             temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
             if not temp_filename:
@@ -126,7 +119,7 @@ See also:
             self.print_text(''.join(getlines(temp_filename)))
             return
         elif show_offsets:
-            deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+            deparsed = code_deparse(co)
             self.section("Offsets known:")
             m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
                                                     key=lambda x: str(x[0]))))
@@ -143,13 +136,11 @@ See also:
             if last_i == -1: last_i = 0
 
         try:
-           deparsed = deparse_code(float_version, co, is_pypy=IS_PYPY)
+           deparsed = code_deparse(co)
            nodeInfo = deparsed_find((name, last_i), deparsed, co)
            if not nodeInfo:
                self.errmsg("Can't find exact offset %d; giving inexact results" % last_i)
-               deparsed = deparse_code_around_offset(co.co_name, last_i,
-                                                     float_version, co,
-                                                     is_pypy=IS_PYPY)
+               deparsed = code_deparse_around_offset(co.co_name, last_i, co)
         except:
             self.errmsg(sys.exc_info()[1])
             self.errmsg("error in deparsing code at offset %d" % last_i)

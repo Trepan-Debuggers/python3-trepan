@@ -5,23 +5,17 @@ import sys, tempfile
 from io import StringIO
 from hashlib import sha1
 from uncompyle6.semantics.linemap import deparse_code_with_map
-from xdis.magics import py_str2float
-from xdis import IS_PYPY
 import pyficache
 # FIXME remap filename to a short name.
-
-sys_version = sys.version[:5]
 
 def deparse_and_cache(co, errmsg_fn):
    # co = proc_obj.curframe.f_code
     out = StringIO()
-    float_version = py_str2float(sys_version)
     try:
-        deparsed = deparse_code_with_map(float_version, co, out,
-                                         is_pypy=IS_PYPY)
+        deparsed = deparse_code_with_map(co, out)
     except:
-        errmsg_fn(sys.exc_info()[0])
-        errmsg_fn("error in deparsing code")
+        errmsg_fn(str(sys.exc_info()[0]))
+        errmsg_fn("error in deparsing code: %s" % co.co_filename)
         return None, None
 
     text = out.getvalue()
@@ -60,5 +54,5 @@ if __name__ == '__main__':
 
     curframe = inspect.currentframe()
     # line_no = curframe.f_lineno
-    mapped_name = deparse_and_cache(curframe.f_code, errmsg)
+    mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
     print(pyficache.getline(mapped_name, 7))
