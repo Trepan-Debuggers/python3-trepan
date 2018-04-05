@@ -102,7 +102,7 @@ class LocationGrok(GenericASTTraversal, object):
         else:
             assert False, 'location_if: Something is wrong; cannot find "if"'
 
-        condition = self.text[if_node.offset:]
+        condition = self.text[if_node.offset+len(if_node.value)+1:]
 
         # Pick out condition from string and location inside "IF" token
         self.result = BPLocation(location, condition)
@@ -223,7 +223,7 @@ class LocationGrok(GenericASTTraversal, object):
                                   IF FILENAME COLON COMMA SPACE DIRECTION""".split())):
             assert False, ("Something's wrong: you missed a rule for %s" % node.kind)
 
-    def traverse(self, node, ):
+    def traverse(self, node):
         return self.preorder(node)
 
 

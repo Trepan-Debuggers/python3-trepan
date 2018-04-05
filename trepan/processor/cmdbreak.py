@@ -122,7 +122,8 @@ if __name__=='__main__':
             # "break if True",
             # "break cmdproc.py:5",
             # "break set_break()",
-            "break cmdproc.setup()",
+            "break 4 if i==5",
+            # "break cmdproc.setup()",
             ):
         args = cmd.split(' ')
         cmdproc.current_command = cmd

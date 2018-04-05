@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 'Unit test for pydbgr.processor.cmdproc'
-import inspect, os, sys, unittest
+import sys, unittest
 
 from trepan.processor import cmdproc as Mcmdproc
 from trepan.processor.command import mock as Mmock

@@ -54,14 +54,14 @@ class LocationParser(GenericASTBuilder):
     def nonterminal(self, nt, args):
         has_len = hasattr(args, '__len__')
 
-        collect = ('tokens',)
-        if nt in collect:
-            #
-            #  Collect iterated thingies together.
-            #
-            rv = args[0]
-            for arg in args[1:]:
-                rv.append(arg)
+        # collect = ('tokens',)
+        # if nt in collect and len(args) > 1:
+        #     #
+        #     #  Collect iterated thingies together.
+        #     #
+        #     rv = args[0]
+        #     for arg in args[1:]:
+        #         rv.append(arg)
 
         if (has_len and len(args) == 1 and
             hasattr(args[0], '__len__') and len(args[0]) == 1):
