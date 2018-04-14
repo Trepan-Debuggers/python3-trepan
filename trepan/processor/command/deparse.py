@@ -16,8 +16,7 @@
 import os, sys
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import (
-    code_deparse, code_deparse_around_offset)
-from uncompyle6.semantics.fragments import deparsed_find
+    code_deparse, code_deparse_around_offset, deparsed_find)
 from trepan.lib.deparse import deparse_and_cache
 from pyficache import highlight_string, getlines
 

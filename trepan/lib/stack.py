@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013, 2015, 2017-2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,10 +14,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
-import re, types
+import inspect, linecache, os, re, xdis
 
 from trepan.lib import bytecode as Mbytecode, printing as Mprint
 from trepan.lib import format as Mformat
+from trepan.lib.deparse import deparse_offset
 from trepan.processor.cmdfns import deparse_fn
 from xdis.main import get_opcode
 from xdis import PYTHON_VERSION, IS_PYPY
@@ -34,7 +35,6 @@ def count_frames(frame, count_start=0):
     return count
 
 import reprlib as Mrepr
-import inspect
 
 _re_pseudo_file = re.compile(r'^<.+>')
 
@@ -222,20 +222,37 @@ def get_call_function_name(frame):
     return None
 
 
-def print_stack_entry(proc_obj, i_stack, color='plain'):
+def print_stack_entry(proc_obj, i_stack, color='plain', opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack)-i_stack-1]
     frame, lineno = frame_lineno
+    intf = proc_obj.intf[-1]
     if frame is proc_obj.curframe:
-        proc_obj.intf[-1].msg_nocr(format_token(Mformat.Arrow, '->',
-                                                highlight=color))
+        intf.msg_nocr(format_token(Mformat.Arrow, '->',
+                                   highlight=color))
     else:
-        proc_obj.intf[-1].msg_nocr('##')
-    proc_obj.intf[-1].msg("%d %s" %
+        intf.msg_nocr('##')
+    intf.msg("%d %s" %
              (i_stack, format_stack_entry(proc_obj.debugger, frame_lineno,
                                           color=color)))
+    if opts.get('source', False):
+        filename = frame2file(proc_obj.core, frame)
+        line = linecache.getline(filename, lineno, frame.f_globals)
+        intf.msg(line)
+        pass
+
+    if opts.get('deparse', False):
+        name = frame.f_code.co_name
+        deparsed, nodeInfo = deparse_offset(frame.f_code, name, frame.f_lasti, None)
+        if name == '<module>':
+            name == 'module'
+        if nodeInfo:
+            extractInfo = deparsed.extract_node_info(nodeInfo)
+            intf.msg(extractInfo.selectedLine)
+            intf.msg(extractInfo.markerLine)
+        pass
 
 
-def print_stack_trace(proc_obj, count=None, color='plain'):
+def print_stack_trace(proc_obj, count=None, color='plain', opts={}):
     "Print count entries of the stack trace"
     if count is None:
         n=len(proc_obj.stack)
@@ -243,7 +260,7 @@ def print_stack_trace(proc_obj, count=None, color='plain'):
         n=min(len(proc_obj.stack), count)
     try:
         for i in range(n):
-            print_stack_entry(proc_obj, i, color=color)
+            print_stack_entry(proc_obj, i, color=color, opts=opts)
     except KeyboardInterrupt:
         pass
     return
@@ -252,8 +269,7 @@ def print_stack_trace(proc_obj, count=None, color='plain'):
 def print_dict(s, obj, title):
     if hasattr(obj, "__dict__"):
         d=obj.__dict__
-        if (isinstance(d, types.DictType) or
-            isinstance(d, types.DictProxyType)):
+        if isinstance(d, dict):
             keys = list(d.keys())
             if len(keys) == 0:
                 s += "\n  No %s" % title

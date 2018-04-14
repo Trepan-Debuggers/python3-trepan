@@ -5,6 +5,8 @@ import sys, tempfile
 from io import StringIO
 from hashlib import sha1
 from uncompyle6.semantics.linemap import deparse_code_with_map
+from uncompyle6.semantics.fragments import (
+    code_deparse, code_deparse_around_offset, deparsed_find)
 import pyficache
 # FIXME remap filename to a short name.
 
@@ -40,6 +42,28 @@ def deparse_and_cache(co, errmsg_fn):
     pyficache.remap_file_lines(name_for_code, remapped_file,
                                linemap)
     return remapped_file, name_for_code
+
+def deparse_offset(co, name, last_i, errmsg_fn):
+    deparsed = None
+    try:
+        # FIXME: cache co
+        deparsed = code_deparse(co)
+    except:
+        print(sys.exc_info()[1])
+        if errmsg_fn:
+            errmsg_fn(sys.exc_info()[1])
+            errmsg_fn("error in deparsing code")
+    try:
+        nodeInfo = deparsed_find((name, last_i), deparsed, co)
+    except:
+        if errmsg_fn:
+            errmsg_fn(sys.exc_info()[1])
+            errmsg_fn("error in deparsing code at offset %d" % last_i)
+
+    if not nodeInfo:
+        nodeInfo = deparsed_find((name, last_i), deparsed, co)
+    return deparsed, nodeInfo
+
 
 # Demo it
 if __name__ == '__main__':
