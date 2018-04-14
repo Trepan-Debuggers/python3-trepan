@@ -19,12 +19,14 @@ import inspect, linecache, os, re, xdis
 from trepan.lib import bytecode as Mbytecode, printing as Mprint
 from trepan.lib import format as Mformat
 from trepan.lib.deparse import deparse_offset
+from trepan.lib import pp as Mpp
 from trepan.processor.cmdfns import deparse_fn
 from xdis.main import get_opcode
 from xdis import PYTHON_VERSION, IS_PYPY
 
 format_token = Mformat.format_token
 
+_with_local_varname = re.compile(r'_\[[0-9+]\]')
 
 def count_frames(frame, count_start=0):
     "Return a count of the number of frames"
@@ -242,6 +244,27 @@ def print_stack_entry(proc_obj, i_stack, color='plain', opts={}):
 
     if opts.get('deparse', False):
         name = frame.f_code.co_name
+        deparsed, nodeInfo = deparse_offset(frame.f_code, name, frame.f_lasti, None)
+        if name == '<module>':
+            name == 'module'
+        if nodeInfo:
+            extractInfo = deparsed.extract_node_info(nodeInfo)
+            intf.msg(extractInfo.selectedLine)
+            intf.msg(extractInfo.markerLine)
+        pass
+    if opts.get('full', False):
+        names = list(frame.f_locals.keys())
+        for name in sorted(names):
+            if _with_local_varname.match(name):
+                val = frame.f_locals[name]
+            else:
+                val = proc_obj.getval(name, frame.f_locals)
+                pass
+            width = opts.get('width', 80)
+            Mpp.pp(val, width, intf.msg_nocr, intf.msg,
+                   prefix='%s =' % name)
+            pass
+
         deparsed, nodeInfo = deparse_offset(frame.f_code, name, frame.f_lasti, None)
         if name == '<module>':
             name == 'module'

@@ -20,7 +20,8 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import pp as Mpp
 from trepan.lib import complete as Mcomplete
 
-# when the "with" statement is used we seem to get variables having names
+# when the "with" statement is used, there
+# can be get variables having names
 # _[1], _[2], etc.
 _with_local_varname = re.compile(r'_\[[0-9+]\]')
 

@@ -4,22 +4,27 @@
 import sys, tempfile
 from io import StringIO
 from hashlib import sha1
-from uncompyle6.semantics.linemap import deparse_code_with_map
+from uncompyle6.semantics.linemap import code_deparse_with_map
 from uncompyle6.semantics.fragments import (
-    code_deparse, code_deparse_around_offset, deparsed_find)
+    deparsed_find, code_deparse)
 import pyficache
 # FIXME remap filename to a short name.
+
+deparse_cache = {}
 
 def deparse_and_cache(co, errmsg_fn):
    # co = proc_obj.curframe.f_code
     out = StringIO()
-    try:
-        deparsed = deparse_code_with_map(co, out)
-    except:
-        errmsg_fn(str(sys.exc_info()[0]))
-        errmsg_fn("error in deparsing code: %s" % co.co_filename)
-        return None, None
+    deparsed = deparse_cache.get(co, None)
+    if not deparsed:
+        try:
+            deparsed = code_deparse_with_map(co, out)
+        except:
+            errmsg_fn(str(sys.exc_info()[0]))
+            errmsg_fn("error in deparsing code: %s" % co.co_filename)
+            return None, None
 
+        deparse_cache[co] = deparsed
     text = out.getvalue()
     linemap = [(line_no, deparsed.source_linemap[line_no])
                    for line_no in
@@ -44,15 +49,19 @@ def deparse_and_cache(co, errmsg_fn):
     return remapped_file, name_for_code
 
 def deparse_offset(co, name, last_i, errmsg_fn):
-    deparsed = None
-    try:
-        # FIXME: cache co
-        deparsed = code_deparse(co)
-    except:
-        print(sys.exc_info()[1])
-        if errmsg_fn:
-            errmsg_fn(sys.exc_info()[1])
-            errmsg_fn("error in deparsing code")
+    deparsed = deparse_cache.get(co, None)
+    if not deparsed:
+        out = StringIO()
+        try:
+            # FIXME: cache co
+            deparsed = code_deparse(co, out)
+            from trepan.api import debug; debug()
+        except:
+            print(sys.exc_info()[1])
+            if errmsg_fn:
+                errmsg_fn(sys.exc_info()[1])
+                errmsg_fn("error in deparsing code")
+        deparse_cache[co] = deparsed
     try:
         nodeInfo = deparsed_find((name, last_i), deparsed, co)
     except:
@@ -77,6 +86,10 @@ if __name__ == '__main__':
         return
 
     curframe = inspect.currentframe()
-    # line_no = curframe.f_lineno
+    line_no = curframe.f_lineno
     mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
     print(pyficache.getline(mapped_name, 7))
+    # mapped_name, name_for_code = deparse_offset(curframe.f_code,
+    #                                             curframe.f_code.co_name,
+    #                                             curframe.f_lasti, errmsg)
+    # print(pyficache.getline(mapped_name, 7))

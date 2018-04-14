@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2017 Rocky Bernstein
+#  Copyright (C) 2017-2018 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ from sys import version_info
 from trepan.processor.command import base_cmd as Mbase_cmd
 from uncompyle6.semantics.fragments import deparse_code
 from xdis import IS_PYPY
-from trepan.processor.command.deparse import deparsed_find
+from uncompyle6.semantics.fragments import deparsed_find
 
 
 class DEvalCommand(Mbase_cmd.DebuggerCommand):
@@ -85,7 +85,7 @@ See also:
 if __name__ == '__main__':
     import inspect
     from trepan import debugger
-    d           = debugger.Debugger()
+    d           = debugger.Trepan()
     cp          = d.core.processor
     cp.curframe = inspect.currentframe()
     command = DEvalCommand(cp)

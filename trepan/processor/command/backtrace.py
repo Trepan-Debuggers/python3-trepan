@@ -22,34 +22,45 @@ from trepan.lib import stack as Mstack
 
 
 class BacktraceCommand(Mbase_cmd.DebuggerCommand):
-    """**backtrace** [opts] [*count*]
+    """**backtrace** [*opts*] [*count*]
 
-Print a stack trace, with the most recent frame at the top.  With a
-positive number, print at most many entries.  With a negative number
-print the top entries minus that number.
+Print backtrace of all stack frames, or innermost *count* frames.
+
+With a negative argument, print outermost -*count* frames.
 
 An arrow indicates the 'current frame'. The current frame determines
 the context used for many debugger commands such as expression
 evaluation or source-line listing.
 
-opts are
+*opts* are:
 
    -d | --deparse - show deparsed call position
    -s | --source  - show source code line
+   -f | --full    - locals of each frame
    -h | --help    - give this help
 
 Examples:
 ---------
 
-   backtrace    # Print a full stack trace
-   backtrace 2  # Print only the top two entries
-   backtrace -1 # Print a stack trace except the initial (least recent) call.
+   backtrace      # Print a full stack trace
+   backtrace 2    # Print only the top two entries
+   backtrace -1   # Print a stack trace except the initial (least recent) call.
+   backtrace -s   # show source lines in listing
+   backtrace -d   # show deparsed source lines in listing
+   backtrace -f   # show with locals
+   backtrace -df  # show with deparsed calls and locals
+   backtrace --deparse --full   # same as above
+
+See also:
+---------
+
+`frame`, `locals`, `global`, `deparse`, `list`.
 """
 
     aliases       = ('bt', 'where')
     category      = 'stack'
     min_args      = 0
-    max_args      = 1
+    max_args      = 4
     name          = os.path.basename(__file__).split('.')[0]
     need_stack    = True
     short_help   = 'Print backtrace of stack frames'
@@ -57,20 +68,22 @@ Examples:
     def run(self, args):
 
         try:
-            opts, args = getopt(args[1:], "hds",
-                                ["help", "deparse", 'source'])
+            opts, args = getopt(args[1:], "hfds",
+                                "help deparse full source".split())
         except GetoptError as err:
             # print help information and exit:
             print(str(err))  # will print something like "option -a not recognized"
             return
 
-        bt_opts = {}
+        bt_opts = {'width': self.settings['width']}
         for o, a in opts:
             if o in ("-h", "--help"):
                 self.proc.commands['help'].run(['help', 'backtrace'])
                 return
             elif o in ("-d", "--deparse"):
                 bt_opts['deparse'] = True
+            elif o in ("-f", "--full"):
+                bt_opts['full'] = True
             elif o in ("-s", "--source"):
                 bt_opts['source'] = True
             else:

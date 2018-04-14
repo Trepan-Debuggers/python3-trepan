@@ -591,10 +591,11 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return default
 
-    def getval(self, arg):
+    def getval(self, arg, locals=None):
+        if not locals:
+            locals = self.curframe.f_locals
         try:
-            return eval(arg, self.curframe.f_globals,
-                        self.curframe.f_locals)
+            return eval(arg, self.curframe.f_globals, locals)
         except:
             t, v = sys.exc_info()[:2]
             if isinstance(t, str):
