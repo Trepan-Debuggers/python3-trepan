@@ -13,7 +13,7 @@ import pyficache
 deparse_cache = {}
 
 def deparse_and_cache(co, errmsg_fn):
-   # co = proc_obj.curframe.f_code
+    # co = proc_obj.curframe.f_code
     out = StringIO()
     deparsed = deparse_cache.get(co, None)
     if not deparsed:
@@ -25,6 +25,7 @@ def deparse_and_cache(co, errmsg_fn):
             return None, None
 
         deparse_cache[co] = deparsed
+
     text = out.getvalue()
     linemap = [(line_no, deparsed.source_linemap[line_no])
                    for line_no in
@@ -49,6 +50,7 @@ def deparse_and_cache(co, errmsg_fn):
     return remapped_file, name_for_code
 
 def deparse_offset(co, name, last_i, errmsg_fn):
+    nodeInfo = None
     deparsed = deparse_cache.get(co, None)
     if not deparsed:
         out = StringIO()

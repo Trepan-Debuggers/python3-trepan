@@ -244,7 +244,11 @@ def print_stack_entry(proc_obj, i_stack, color='plain', opts={}):
 
     if opts.get('deparse', False):
         name = frame.f_code.co_name
-        deparsed, nodeInfo = deparse_offset(frame.f_code, name, frame.f_lasti, None)
+        if frame.f_lasti == -1:
+            last_i = 0
+        else:
+            last_i = frame.f_lasti
+        deparsed, nodeInfo = deparse_offset(frame.f_code, name, last_i, None)
         if name == '<module>':
             name == 'module'
         if nodeInfo:
