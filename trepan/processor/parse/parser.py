@@ -1,4 +1,4 @@
-#  Copyright (c) 2017 Rocky Bernstein
+#  Copyright (c) 2017-2018 Rocky Bernstein
 """
 Parsing for a trepan2/trepan3k debugger
 "breakpoint' or "list" command arguments
