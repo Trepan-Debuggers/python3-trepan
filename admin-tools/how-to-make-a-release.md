@@ -57,7 +57,7 @@ http://rst.ninjs.org
 
 # Upload rest of versions
 
-    $ twine upload dist/trepan3k-${VERSION}*d
+    $ twine upload dist/trepan3k-${VERSION}*
 
 # Push tags:
 
