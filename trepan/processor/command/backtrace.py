@@ -22,7 +22,7 @@ from trepan.lib import stack as Mstack
 
 
 class BacktraceCommand(Mbase_cmd.DebuggerCommand):
-    """**backtrace** [*opts*] [*count*]
+    """**backtrace** [*options*] [*count*]
 
 Print backtrace of all stack frames, or innermost *count* frames.
 
@@ -32,7 +32,7 @@ An arrow indicates the 'current frame'. The current frame determines
 the context used for many debugger commands such as expression
 evaluation or source-line listing.
 
-*opts* are:
+*options* are:
 
    -d | --deparse - show deparsed call position
    -s | --source  - show source code line

@@ -241,9 +241,8 @@ See Also
 .. _Tutorial: http://python2-trepan.readthedocs.io/en/latest/entry-exit.html
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
-.. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
-		 :target: https://travis-ci.org/rocky/python3-trepan
-   :target: https://travis-ci.org/rocky/python3-trepan/
+.. |buildstatus| image:: https://api.travis-ci.org/rocky/python3-trepan.svg
+   :target: https://travis-ci.org/rocky/python3-trepan
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
     :target: https://pypi.python.org/pypi/trepan3k
