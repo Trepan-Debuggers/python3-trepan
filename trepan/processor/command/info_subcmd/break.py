@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2012-2013, 2015, 2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.processor import complete as Mcomplete
@@ -24,11 +22,20 @@ from trepan.processor import complete as Mcomplete
 class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
     """**info breakpoints** [ *bp-number...* ]
 
-Show breakpoints.
+Show the status of specified breakpoints (or all user-settable
+breakpoints if no argument).
+
+The "Disp" column contains one of "keep", or "del", to indicate the
+disposition of the breakpoint after it gets hit.  "del" means that the
+breakpoint will be deleted.  The ""Enb" column indicates if the
+breakpoint is enabled. The "Where" column indicates the file/line
+number of the breakpoint.
 
 See also:
 ---------
-`break`, `delete`"""
+`break`, `delete`
+
+    """
 
     min_abbrev = 1  # Min is info b
     need_stack = False
