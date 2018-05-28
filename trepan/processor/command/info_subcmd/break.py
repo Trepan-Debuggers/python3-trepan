@@ -31,9 +31,25 @@ breakpoint will be deleted.  The ""Enb" column indicates if the
 breakpoint is enabled. The "Where" column indicates the file/line
 number of the breakpoint.
 
+Also shown are the number of times the breakpoint has been hit,
+when that count is at least one, and any conditions the breakpoint
+has.
+
+Example:
+--------
+
+
+    (trepan3k) info break
+    Num Type          Disp Enb    Where
+    1   breakpoint    del  n   at /tmp/fib.py:9
+    2   breakpoint    keep y   at /tmp/fib.py:4
+            breakpoint already hit 1 time
+    3   breakpoint    keep y   at /tmp/fib.py:6
+            stop only if x > 0
+
 See also:
 ---------
-`break`, `delete`
+`break`, `delete`, `enable`, `disable`, `condition`
 
     """
 
