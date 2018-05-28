@@ -45,4 +45,4 @@ Examples:
 
 .. seealso::
 
-   :ref:`tbreak <tbreak>`, :ref:`condition <condition>`, and :ref:`help syntax location`.
+   :ref:`info break <info_break>`, :ref:`tbreak <tbreak>`, :ref:`condition <condition>`, and :ref:`help syntax location`.

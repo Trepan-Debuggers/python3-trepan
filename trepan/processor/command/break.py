@@ -62,7 +62,7 @@ Examples:
 See also:
 ---------
 
-`tbreak`, `condition` and `help syntax location`."""
+`info break`, `tbreak`, `condition` and `help syntax location`."""
 
     aliases       = ('b', 'break!', 'b!')
     category      = 'breakpoints'
