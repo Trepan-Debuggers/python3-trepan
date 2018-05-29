@@ -22,6 +22,7 @@ has.
 Example:
 ++++++++
 
+::
 
     (trepan3k) info break
     Num Type          Disp Enb    Where
@@ -30,6 +31,7 @@ Example:
             breakpoint already hit 1 time
     3   breakpoint    keep y   at /tmp/fib.py:6
             stop only if x > 0
+
 .. seealso::
 
    :ref:`break <break>`, :ref:`delete <delete>`
