@@ -9,10 +9,10 @@ Info Break
 Show the status of specified breakpoints (or all user-settable
 breakpoints if no argument).
 
-The "Disp" column contains one of "keep", or "del", to indicate the
-disposition of the breakpoint after it gets hit.  "del" means that the
-breakpoint will be deleted.  The ""Enb" column indicates if the
-breakpoint is enabled. The "Where" column indicates the file/line
+The **Disp** column contains one of `keep`, or `del`, to indicate the
+disposition of the breakpoint after it gets hit.  `del` means that the
+breakpoint will be deleted.  The **Enb** column indicates if the
+breakpoint is enabled. The **Where** column indicates the file/line
 number of the breakpoint.
 
 Also shown are the number of times the breakpoint has been hit,
@@ -34,4 +34,4 @@ Example:
 
 .. seealso::
 
-   :ref:`break <break>`, :ref:`delete <delete>`
+   :ref:`break <break>`, :ref:`delete <delete>` :ref:`enable <enable>`, :ref:`disable`, :ref:`condition <condition>`
