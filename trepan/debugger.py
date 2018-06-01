@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015, 2018 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ import trepan.lib.default as Mdefault
 import trepan.interfaces.user as Muser
 from trepan.misc import option_set
 import trepan.lib.sighandler as Msig
-from trepan.processor import cmdproc as Mcmdproc
 
 # Common Python packages
 import sys, types
