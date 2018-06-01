@@ -206,7 +206,7 @@ session I would put the trepan debugger commands in a file, say
 
           debug(start_opts={'startup-profile': ["/home/rocky/trepan-startup"]})
 
-See :ref:`Startup Profile` for a sample profile.
+See :ref:`Startup Profile <startup_profile>` for a sample profile.
 
 
 Calling the debugger from pytest
