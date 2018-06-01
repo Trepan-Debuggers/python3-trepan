@@ -200,17 +200,17 @@ in option `start_opts`. For example, let's say I want to set the formatting
 style and automatic source code listing of a profile. So I would put they trepan
 debugger commands in a file, say `/home/rocky/trepan-startup`
 
-... code:: python
+.. code:: python
 
-    # This is a sample startup file
-    set autolist on
-    set style monokai
-    print "Rocky's trepan startup loaded"
+          # This is a sample startup file
+          set autolist on
+          set style monokai
+          print "Rocky's trepan startup loaded"
 
 and then list that file like this:
 
 
-... code:: python
+.. code:: python
 
           debug(start_opts={'startup-profile': ["/home/rocky/trepan-startup"]})
 
