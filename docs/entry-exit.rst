@@ -196,7 +196,7 @@ inside the *debug()* call:
           foo()  # Note there's no statement following foo()
 
 If you want a startup profile to get run, you can pass a list of file names
-as a list in option `start_opts`. For example, let's say I want to set the formatting
+in option `start_opts`. For example, let's say I want to set the formatting
 style and automatic source code listing of a profile. So I would put they trepan
 debugger commands in a file, say `/home/rocky/trepan-startup`
 
@@ -210,7 +210,7 @@ debugger commands in a file, say `/home/rocky/trepan-startup`
 and then list that file like this:
 
 
-.. code:: python
+... code:: python
 
           debug(start_opts={'startup-profile': ["/home/rocky/trepan-startup"]})
 
