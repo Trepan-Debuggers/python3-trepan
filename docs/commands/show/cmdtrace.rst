@@ -1,5 +1,5 @@
 .. index:: show; cmdtrace
-g.. _show_cmdtrace:
+.. _show_cmdtrace:
 
 Show Cmdtrace
 -------------

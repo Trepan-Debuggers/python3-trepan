@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein
+#   Copyright (C) 2015, 2018 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.processor import cmdfns as Mcmdfns
 from trepan.lib import complete as Mcomplete
 
 
@@ -20,7 +19,7 @@ class ShowStyle(Mbase_subcmd.DebuggerSubcommand):
 Show the pygments style used in formatting 256-color terminal text.
 
 See also:
---------
+---------
 
 `set style`, `show highlight`
 """

@@ -15,8 +15,7 @@ Specific information includes:
 * first line associated with the code
 * constants used in the bytecode
 * whether code is optimized
-* Should a new local namespace be created for this code? (This is True for functions and False
-for modules and exec code.)
+* Should a new local namespace be created for this code? (This is True for functions and False for modules and exec code.)
 * name with which this code object was defined
 
 .. seealso::

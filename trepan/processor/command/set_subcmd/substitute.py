@@ -33,7 +33,7 @@ tokenization, so we have added a hack to ignore `<frozen .. >`.
 So, for frozen files like `<frozen importlib._bootstrap>`, `use importlib._bootstrap`
 
 Examples:
---------
+---------
 
     set substitute importlib._bootstrap /usr/lib/python3.4/importlib/_bootstrap.py
     set substitute ./gcd.py /tmp/gcd.py
