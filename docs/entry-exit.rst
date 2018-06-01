@@ -378,7 +378,6 @@ example it might look like this:
 
 
 By default, the file `$HOME/.config/trepanpy/profile/profile.py` is
-loaded when the debugger through the command line and that
-a file exists. To change this default behavior and *not* have the
-default profile loaded, use the option `-n`, or `--nx` in the
-`trepan3k` invocation.
+loaded, and that a file exists `trepan3k` starts up. To change this
+default behavior and *not* have the default profile loaded, use the
+option `-n`, or `--nx` in the `trepan3k` invocation.
