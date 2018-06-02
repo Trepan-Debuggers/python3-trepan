@@ -46,7 +46,8 @@ def add_startup_file(dbg_initfiles):
 
     startup_trepan_file = default_configfile('profile')
     if Mfile.readable(startup_trepan_file):
-        dbg_initfiles.append(startup_trepan_file)
+        if startup_trepan_file not in dbg_initfiles:
+            dbg_initfiles.append(startup_trepan_file)
         pass
     return
 
