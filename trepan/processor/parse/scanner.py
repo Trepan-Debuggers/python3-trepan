@@ -1,6 +1,6 @@
 """
 Simple SPARK-style scanner
-Copyright (c) 2017 Rocky Bernstein
+Copyright (c) 2017-2018 Rocky Bernstein
 """
 
 from __future__ import print_function
@@ -52,6 +52,7 @@ x = 2y + z
     def t_whitespace(self, s):
         r'\s+'
         self.add_token('SPACE', s)
+        self.pos += len(s)
         pass
 
     def t_file_or_func(self, s):
@@ -71,12 +72,11 @@ x = 2y + z
             maybe_funcname = False
         else:
             base = s
-        pos = self.pos
         if maybe_funcname and re.match('[a-zA-Z_][[a-zA-Z_.0-9\[\]]+\(\)', s):
             self.add_token('FUNCNAME', base)
         else:
             self.add_token('FILENAME', base)
-        self.pos = pos + len(s)
+        self.pos += len(s)
 
     def t_single_quote_file(self, s):
         r"'[^'].+'"
@@ -96,16 +96,19 @@ x = 2y + z
         r':'
         # Used to separate a filename from a line number
         self.add_token('COLON', s)
+        self.pos += len(s)
 
     def t_comma(self, s):
         r','
         # Used in "list" to separate first from last
         self.add_token('COMMA', s)
+        self.pos += len(s)
 
     def t_direction(self, s):
         r'^[+-]$'
         # Used in the "list" command
         self.add_token('DIRECTION', s)
+        self.pos += len(s)
 
     # Recognize integers
     def t_number(self, s):
