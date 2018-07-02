@@ -128,7 +128,6 @@ class LocationParser(GenericASTBuilder):
 
         # If just a number is given, the the filename is implied
         location    ::= NUMBER
-        location    ::= METHOD
         location    ::= OFFSET
 
         # For tokens we accept anything. Were really just
