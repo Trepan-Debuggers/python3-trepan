@@ -122,7 +122,7 @@ class LocationParser(GenericASTBuilder):
         location_if ::= location
         location_if ::= location SPACE IF tokens
 
-        # Note no space is allowed between FILENAME and NUMBER
+        # Note no space is allowed between FILENAME COLON, and NUMBER
         location    ::= FILENAME COLON NUMBER
         location    ::= FUNCNAME
 
