@@ -32,7 +32,6 @@
 
 #  Update NEWS from ChangeLog:
 
-    $ Update NEWS from ChangeLog
     $ make check-short
     $ git commit --amend .
     $ git push # get CI testing going early

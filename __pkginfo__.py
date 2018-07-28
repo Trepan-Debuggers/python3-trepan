@@ -64,16 +64,10 @@ def get_srcdir():
     filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
     return os.path.realpath(filename)
 
-# VERSION.py sets variable VERSION.
-ns = {}
-exec(open(os.path.join(get_srcdir(), 'trepan', 'version.py')).read(), ns)
-version            = ns['VERSION']
+# version.py sets variable VERSION.
+VERSION = None
+exec(open(os.path.join(get_srcdir(), 'trepan', 'version.py')).read())
 web = 'http://github.com/rocky/python3-trepan/'
-
-# VERSION.py sets variable VERSION.
-ns = {}
-exec(open(os.path.join(get_srcdir(), 'trepan', 'version.py')).read(), ns)
-version            = ns['VERSION']
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False
