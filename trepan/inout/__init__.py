@@ -5,11 +5,9 @@
 
     Trepan Input and Output routines
 
-    :copyright: Copyright 2013
+    :copyright: Copyright 2013, 2018
     :license: GPL3, see LICENSE for details.
 """
-
-__import__('pkg_resources').declare_namespace(__name__)
 
 __docformat__ = 'restructuredtext'
 

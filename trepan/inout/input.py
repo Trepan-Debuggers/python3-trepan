@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger input possibly attached to a user or interactive. """
 
-import io, sys, types
+import io, sys
 
 from trepan import misc as Mmisc
 from trepan.inout import base as Mbase
@@ -23,7 +23,7 @@ from trepan.inout import base as Mbase
 
 def readline_importable():
     try:
-        import readline
+        import readline  # NOQA
         return True
     except ImportError:
         return False
