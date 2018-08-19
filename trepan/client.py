@@ -116,17 +116,22 @@ def start_client(connection_opts):
     return
 
 
-def main():
-    opts, sys_argv  = process_options(VERSION, sys.argv)
-    # print(opts)
+def run(opts, sys_argv):
     if hasattr(opts, 'pid') and opts.pid > 0:
         remote_opts = {'open': opts.pid, 'IO': 'FIFO'}
     else:
         remote_opts = {'open': True, 'IO': 'TCP', 'PORT': opts.port,
                        'HOST': opts.host}
-        pass
     start_client(remote_opts)
     return
+
+
+def main():
+    opts, sys_argv  = process_options(VERSION, sys.argv)
+    # print(opts)
+    run(opts, sys_argv)
+    return
+
 
 if __name__ == '__main__':
     main()
