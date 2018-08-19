@@ -62,7 +62,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                   intf.inout.PORT)
             pass
     elif opts.client:
-        Mclient.main(opts, sys_argv)
+        Mclient.run(opts, sys_argv)
         return
 
     dbg_opts['orig_sys_argv'] = orig_sys_argv
