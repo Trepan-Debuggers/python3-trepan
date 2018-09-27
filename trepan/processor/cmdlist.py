@@ -30,7 +30,8 @@ def parse_list_cmd(proc, args, listsize=10):
     if text in frozenset(('', '.', '+', '-')):
         if text == '.':
             location = resolve_location(proc, '.')
-            return location.path, location.line_number, listsize
+            filename = location.path
+            first = location.line_number - (listsize // 2)
         else:
             if proc.list_lineno is None:
                 proc.errmsg("Don't have previous list location")
