@@ -70,7 +70,7 @@ def parse_list_cmd(proc, args, listsize=10):
             if not location:
                 return INVALID_PARSE_LIST
             last     = location.line_number
-            first    = max(1, last - listsize)
+            first    = max(1, last - listsize + 1)
             return location.path, first, last
         elif isinstance(list_range.first, int):
             first    = list_range.first
@@ -81,7 +81,7 @@ def parse_list_cmd(proc, args, listsize=10):
             last     = location.line_number
             if last < first:
                 # Treat as a count rather than an absolute location
-                last = first + last
+                last = first + last - 1
             return location.path, first, last
         else:
             # First is location. Last may be empty or a number
@@ -98,10 +98,10 @@ def parse_list_cmd(proc, args, listsize=10):
                 assert last[0] == '+'
                 last = first + int(last[1:])
             elif not last:
-                last = first + listsize
+                last = first + listsize - 1
             elif last < first:
                 # Treat as a count rather than an absolute location
-                last = first + last
+                last = first + last - 1
 
             return location.path, first, last
         pass
