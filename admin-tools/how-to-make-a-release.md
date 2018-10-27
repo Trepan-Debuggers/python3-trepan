@@ -6,7 +6,6 @@
 - [Update ChangeLog:](#update-changelog)
 - [Update NEWS from ChangeLog:](#update-news-from-changelog)
 - [Make sure pyenv is running and check newer versions](#make-sure-pyenv-is-running-and-check-newer-versions)
-- [Switch to python-2.4, sync that up and build that first since it creates a tarball which we don't want.](#switch-to-python-24-sync-that-up-and-build-that-first-since-it-creates-a-tarball-which-we-dont-want)
 - [Update NEWS from master branch](#update-news-from-master-branch)
 - [Check against all versions](#check-against-all-versions)
 - [Make packages and tag](#make-packages-and-tag)
