@@ -138,6 +138,7 @@ if __name__ == "__main__":
             "'/tmp/foo.py:12'",
             "6",
             "*6",
+            "8 *6",
             # "/tmp/foo.py line 12",
             # "\"\"\"/tmp/foo.py's line 12\"\"\"",
             # "12",

@@ -170,8 +170,8 @@ See also:
         else:
             self.errmsg("haven't recorded info for offset %d. Offsets I know are:"
                         % last_i)
-            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
-                                                    key=lambda x: str(x[0]))))
+            offsets = [key[1] for key in deparsed.offsets.keys() if isinstance(key[1], int)]
+            m = self.columnize_commands(list(sorted(offsets)))
             self.msg_nocr(m)
         return
     pass
