@@ -16,7 +16,7 @@ def deparse_and_cache(co, errmsg_fn):
     # co = proc_obj.curframe.f_code
     out = StringIO()
     deparsed = deparse_cache.get(co, None)
-    if not deparsed:
+    if not deparsed or not hasattr(deparsed, "source_linemap"):
         try:
             deparsed = code_deparse_with_map(co, out)
         except:
@@ -52,12 +52,11 @@ def deparse_and_cache(co, errmsg_fn):
 def deparse_offset(co, name, last_i, errmsg_fn):
     nodeInfo = None
     deparsed = deparse_cache.get(co, None)
-    if not deparsed:
+    if not deparsed or not hasattr(deparsed, 'offsets'):
         out = StringIO()
         try:
             # FIXME: cache co
             deparsed = code_deparse(co, out)
-            from trepan.api import debug; debug()
         except:
             print(sys.exc_info()[1])
             if errmsg_fn:
