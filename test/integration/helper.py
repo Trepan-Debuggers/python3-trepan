@@ -4,17 +4,20 @@ srcdir = os.path.abspath(os.path.dirname(__file__))
 
 
 def run_debugger(testname, python_file, dbgr_opts='', args='',
-                 outfile=None):
+                 outfile=None, right_template=None):
     datadir   = os.path.join(srcdir, '..', 'data')
     progdir   = os.path.join(srcdir, '..', 'example')
     dbgrdir   = os.path.join(srcdir, '..', '..', 'trepan')
     dbgr_short= "cli.py"
     dbgr_path = os.path.join(dbgrdir, dbgr_short)
 
-    if IS_PYPY:
-        rightfile = os.path.join(datadir, "%s-pypy.right" % testname)
-    else:
-        rightfile = os.path.join(datadir, "%s.right" % testname)
+    if not right_template:
+        if IS_PYPY:
+            right_template = "%s-pypy.right"
+        else:
+            right_template = "%s.right"
+
+    rightfile = os.path.join(datadir, right_template % testname)
 
     sys.path.insert(0, os.path.join(srcdir, '..', '..'))
     os.environ['PYTHONPATH'] = os.pathsep.join(sys.path)
