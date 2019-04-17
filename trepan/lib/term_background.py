@@ -41,8 +41,19 @@ def is_dark_rgb(r, g, b):
     """Pass as parameters R G B values in hex
     On return, variable is_dark_bg is set
     """
-    # 117963 = (* .6 (+ 65535 65535 65535))
-    if ( (16*5 + 16*g + 16*b) < 117963 ):
+
+    try:
+        midpoint = int(environ.get('TERMINAL_COLOR_MIDPOINT', None))
+    except:
+        pass
+    if not midpoint:
+        term = environ.get('TERM', None)
+        # 117963 = (* .6 (+ 65535 65535 65535))
+        # 382.5 = (* .6 (+ 65535 65535 65535))
+        print("midpoint", midpoint, 'vs',  (16*5 + 16*g + 16*b))
+        midpoint = 383 if term and term == 'xterm-256color' else 117963
+
+    if ( (16*5 + 16*g + 16*b) < midpoint ):
         return True
     else:
         return False
