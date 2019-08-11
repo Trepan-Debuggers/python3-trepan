@@ -43,7 +43,7 @@ color_scheme[Generic.Emph]   = color_scheme[Comment.Preproc]
 color_scheme[Token.Comment]  = ('gray', 'white')
 color_scheme[Token.Keyword]  = ('blue', 'green')
 color_scheme[Token.Number]  = ('blue', 'blue')
-color_scheme[Keyword]  = ('blue', 'turquoise')
+color_scheme[Keyword]  = ('blue', 'brightblue')
 color_scheme[Number]  = ('blue', 'green')
 
 pyficache.dark_terminal_formatter.colorscheme = color_scheme
