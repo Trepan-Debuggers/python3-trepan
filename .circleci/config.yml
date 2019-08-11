@@ -15,6 +15,7 @@ jobs:
     - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
     - run:
         working_directory: ~/rocky/python3-trepan
+        command cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
         command: pyenv install 3.7.4 && pyenv local 3.7.4 && pyenv rehash && pip install virtualenv && pip install nose && pip install pep8 && pyenv rehash
     - restore_cache:
         keys:
