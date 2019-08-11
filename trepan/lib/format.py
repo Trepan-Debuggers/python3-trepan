@@ -40,11 +40,11 @@ color_scheme[Generic.Emph]   = color_scheme[Comment.Preproc]
 
 # FIXME: change some horrible colors under atom dark
 # this is a hack until I get general way to do colorstyle setting
-color_scheme[Token.Comment]  = ('darkgray', 'white')
-color_scheme[Token.Keyword]  = ('darkblue', 'turquoise')
-color_scheme[Token.Number]  = ('darkblue', 'turquoise')
-color_scheme[Keyword]  = ('darkblue', 'turquoise')
-color_scheme[Number]  = ('darkblue', 'turquoise')
+color_scheme[Token.Comment]  = ('gray', 'white')
+color_scheme[Token.Keyword]  = ('blue', 'green')
+color_scheme[Token.Number]  = ('blue', 'blue')
+color_scheme[Keyword]  = ('blue', 'turquoise')
+color_scheme[Number]  = ('blue', 'green')
 
 pyficache.dark_terminal_formatter.colorscheme = color_scheme
 pyficache.light_terminal_formatter.colorscheme = color_scheme
