@@ -1,10 +1,12 @@
 trepan 0.8.9 2018-08-18
+============================
 
 * Pin Pygments to 2.2.0 to fix color key problem
 * term-256color tolerance
 * Bump xdis and uncompyle6 version
 
 trepan 0.8.8 2018-10-27 9x7 release
+===========================================
 
 - help doc changes
 
@@ -16,6 +18,7 @@ trepan 0.8.7 2018-04-16
 
 
 trepan 0.8.6 2018-03-8
+===========================
 
 Largely administrative changes
 
@@ -26,6 +29,7 @@ Largely administrative changes
 - small doc changes
 
 trepan 0.8.5 2018-02-7
+===========================
 
 - Fix botched packaging? (modname)
 
@@ -41,6 +45,7 @@ trepan 0.8.4 2018-01-21
    in columnar form omitting values
 
 trepan 0.8.3 2018-01-21
+============================
 
 User incompatibilty alert!
 
@@ -96,12 +101,14 @@ I have a feeling  that too is overkill.
 - Add break! and b! aliases to force setting a breakpoint on a line
 
 trepan 0.7.8 2017-07-10
+============================
 
 - Release for updated xdis and botched Rst
 - PyPy 2.x tolerance
 - Small error message improvements
 
 trepan 0.7.7 2017-07-10
+============================
 
 - improve remote debugging:
   * scans for open ports
@@ -120,6 +127,8 @@ trepan 0.7.7 2017-07-10
   * add -o | --offset to indicate where to start deparsing from
 
 trepan 0.7.6 2017-06-03
+============================
+
 - Fix botched release
 - Corrected setup.py code, cheking and better error messaging
 `- better stack trace position in the presense of eval() and exec()
@@ -138,6 +147,8 @@ trepan 0.7.5 2017-06-03
   and include trepan.api
 
 trepan 0.7.4 2017-06-03 Marilyn Frankel
+================================================
+
 - go over docs
   - Add "set style" no arg doc
   - Add "info program" text
@@ -154,21 +165,25 @@ trepan 0.7.4 2017-06-03 Marilyn Frankel
 - force deparse improvements by bumping uncompyle6 minimum version
 
 trepan 0.7.3 2016-11-13
+============================
 
 - Python 3.2 tolerance
 - Use pyc2py from pyficache
 - Adds source size checks
 
 trepan 0.7.2 2016-11-12
+============================
 
 - Minor tweaks
 
 trepan 0.7.1 2016-10-09
+============================
 
 - Fixed botched release 0.7.0
   version.py and possibly other things were not getting installed
 
 trepan 0.7.0 2016-10-09
+============================
 
 - Remove namespace packages. These no longer work in Python3
 - expresssion and highlight changes
@@ -176,6 +191,7 @@ trepan 0.7.0 2016-10-09
   * clear source-code cache after setting highlight
 
 trepan 0.6.5 2016-07-26
+============================
 
 - PyPy tolerance
 - Add deparse options --parent --AST, --offset
@@ -188,6 +204,7 @@ trepan 0.6.4 2015-12-31 - End of Year
 - Bump min package version requirements
 
 trepan 0.6.3 2015-12-27 - Late Christmas
+=================================================
 
 - deparses (e.g. importlib._bootstrap) via uncompyle6 package
 - add "info code" command to show Python code properties
@@ -197,6 +214,7 @@ trepan 0.6.3 2015-12-27 - Late Christmas
 - Allow a frame object instead of a frame number in "frame" command
 
 trepan 0.6.1 2015-12-10 - Dr Gecko
+=========================================
 
 - add gdb-like "clear" command
 - fallback to getlines for getting non-filename positions, e.g. inside compressed egg
@@ -206,6 +224,8 @@ trepan 0.6.1 2015-12-10 - Dr Gecko
 - bug fixes
 
 trepan 0.6.0 2015-11-30
+============================
+
 
 - Profile startup moved from .trepanrc2 to ./config/trepany/profile
 - Add ability to pygments style via "set style". Add "show style"
@@ -215,23 +235,29 @@ trepan 0.6.0 2015-11-30
 - Miscellaneous bug and doc fixes
 
 trepan 0.5.3 2015-10-12
+============================
 
 - Revise quit to handle threads
 
 trepan 0.5.2 2015-08-24
+============================
+
 - redo to correct wheel build
 
 trepan 0.5.1 2015-08-15
+============================
 
 - pytest support improvement: Add debug(level=...)
   The causes the debugger to skip recent frames used in setup.
 
 trepan 0.5.0 2015-08-02
+============================
 
 - Don't show an error if we can't import bpy or ipython - they are optional
 - bug fixes
 
 trepan 0.4.9 2015-06-12 Fleetwood
+=========================================
 
 - add bpython shell.
 - eval? of "for VAR in EXPR:" is "EXPR"
@@ -242,6 +268,8 @@ trepan 0.4.9 2015-06-12 Fleetwood
 - Add syntax help and go over docs, add links to readthedocs
 
 trepan 0.4.8 2015-05-16
+============================
+
 
 - Include instruction number in location
 - whatis: more info via Python3 inspect
@@ -255,6 +283,7 @@ trepan 0.4.8 2015-05-16
 - Update online-help
 
 trepan 0.4.7 2015-05-16
+============================
 
 - Better command completion for on display numbers and identifiers
   (commands: enable, disable, info break, delete, debug, whatis, pydocx,
@@ -265,6 +294,7 @@ trepan 0.4.7 2015-05-16
 - fix misc bugs
 
 trepan 0.4.6 2015-05-15
+============================
 
 - Support for getting called from within ipython (--from_ipython)
   See also https://github.com/rocky/ipython-trepan/
@@ -274,6 +304,8 @@ trepan 0.4.6 2015-05-15
 
 
 trepan 0.4.5 2015-05-10
+============================
+
 - Fix bug in "next" command
 - Try to fix RST in pypi
 - Rename package to trepan3 since source-code can't co-exist
@@ -281,9 +313,13 @@ trepan 0.4.5 2015-05-10
 
 
 trepan 0.4.3 2015-04-06
+============================
+
 - Make sure we don't step/trace into open() when running debugger
 
 trepan 0.4.2 2015-04-06
+============================
+
 
 - Should work with pip without needing --egg. Thanks to Georg Brandl
 - Go over set/show help
@@ -296,6 +332,7 @@ trepan 0.4.2 2015-04-06
 - Fix bug in signal-name lookup. From Georg Brandl
 
 trepan 0.2.8 2013-05-12
+============================
 
 - Fill out command completion more
 - Fix bug in removing a display.
@@ -306,5 +343,6 @@ trepan 0.2.8 2013-05-12
 - Works on Python 3.3
 
 0.2.5 2013-03-23
+====================
 
 Initial release. Roughly matches pydbgr version 0.2.5
