@@ -1,3 +1,9 @@
+trepan 0.8.9 2018-08-18
+
+* Pin Pygments to 2.2.0 to fix color key problem
+* term-256color tolerance
+* Bump xdis and uncompyle6 version
+
 trepan 0.8.8 2018-10-27 9x7 release
 
 - help doc changes
