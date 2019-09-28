@@ -1,4 +1,4 @@
-|buildstatus| |license| |Supported Python Versions|
+|buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 
 .. contents:: :local:
 
@@ -255,3 +255,4 @@ See Also
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
+.. |Pypi Installs| image:: https://pepy.tech/badge/trepan3k
