@@ -38,13 +38,14 @@ color_scheme[Generic.Strong] = ('*black*', '*white*')
 color_scheme[Name.Variable]  = ('_black_', '_white_')
 color_scheme[Generic.Emph]   = color_scheme[Comment.Preproc]
 
-# FIXME: change some horrible colors under atom dark
-# this is a hack until I get general way to do colorstyle setting
-color_scheme[Token.Comment]  = ('darkgray', 'white')
-color_scheme[Token.Keyword]  = ('darkblue', 'green')
-color_scheme[Token.Number]  = ('darkblue', 'blue')
-color_scheme[Keyword]  = ('darkblue', 'turquoise')
-color_scheme[Number]  = ('darkblue', 'green')
+# Assume pygments has fixed up the horrible atom colors
+## FIXME: change some horrible colors under atom dark
+## this is a hack until I get general way to do colorstyle setting
+## color_scheme[Token.Comment]  = ('darkgray', 'white')
+## color_scheme[Token.Keyword]  = ('darkblue', 'green')
+## color_scheme[Token.Number]  = ('darkblue', 'blue')
+## color_scheme[Keyword]  = ('darkblue', 'turquoise')
+## color_scheme[Number]  = ('darkblue', 'green')
 
 pyficache.dark_terminal_formatter.colorscheme = color_scheme
 pyficache.light_terminal_formatter.colorscheme = color_scheme
