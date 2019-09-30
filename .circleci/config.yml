@@ -2,43 +2,20 @@ version: 2
 jobs:
   build:
     working_directory: ~/rocky/python3-trepan
-    parallelism: 1
-    shell: /bin/bash --login
-    environment:
-      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
-      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
     docker:
-    - image: circleci/build-image:ubuntu-14.04-XXL-upstart-1189-5614f37
-      command: /sbin/init
+    - image: circleci/python:3.7.4
     steps:
-    - checkout
-    - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
+    - checkout  # checkout source code to working directory
+    - run: sudo chown -R circleci:circleci /usr/local/
     - run:
-        working_directory: ~/rocky/python3-trepan
-        command: pyenv local 3.6.1 && pyenv rehash && pip install virtualenv && pip install nose && pip install pep8 && pyenv rehash
-    - restore_cache:
-        keys:
-        - v1-dep-{{ .Branch }}-
-        - v1-dep-master-
-        - v1-dep-
-    - run: pip install -e .
-    - run: pip install -r requirements-dev.txt
-    - save_cache:
-        key: v1-dep-{{ .Branch }}-{{ epoch }}
-        paths:
-        - vendor/bundle
-        - ~/virtualenvs
-        - ~/.m2
-        - ~/.ivy2
-        - ~/.bundle
-        - ~/.go_workspace
-        - ~/.gradle
-        - ~/.cache/bower
-    - run: pyenv local 3.5.3
+        command: |  # use pipenv to install dependencies
+        sudo pip install pipenv
+        pipenv install
+        pip install -e .
+        pip install -r requirements-dev.txt
     - run: python ./setup.py develop && make test-unit test-functional
     - store_test_results:
-        path: /tmp/circleci-test-results
+        path: test-results
     - store_artifacts:
-        path: /tmp/circleci-artifacts
-    - store_artifacts:
-        path: /tmp/circleci-test-results
+        path: test-results
+        destination: tr1
