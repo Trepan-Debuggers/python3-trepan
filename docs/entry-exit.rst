@@ -78,9 +78,6 @@ Example
 	  (/tmp/eval_stringS9ST2e.py:1 remapped <string>): <module>
 	  -> 1 (os.path.join('foo', 'bar'))
 	  (trepan3k) s
-	  (/home/rocky/.pyenv/versions/2.7.8/lib/python2.7/posixpath.py:68): join
-	  -> 68 def join(a, *p):
-	  (trepan3k) s
 	  (/usr/lib/python3.6/posixpath.py:75): join
 	  (trepan3k) n
 	  (/usr/lib/python3.6/posixpath.py:80): join
@@ -138,7 +135,7 @@ Once that code is loaded, the *debug()* function is defined. To debug some pytho
     (/tmp/eval_stringBMzXCQ.py:1 remapped <string>): <module>
     -> 1 os.path.join("a", "b")
     (trepan3k) step
-    (/home/rocky/.pyenv/versions/2.7.8/lib/python2.7/posixpath.py:68): join
+    (/usr/lib/python3.6/posixpath.py:75): join
     -> 68 def join(a, *p):
     (trepan3k) continue
     'a/b'
