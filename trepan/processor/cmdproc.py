@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2019 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -200,8 +200,7 @@ def print_location(proc_obj):
                 remapped = cmdfns.source_tempfile_remap('eval_string',
                                                         dbgr_obj.eval_string)
                 pyficache.remap_file(filename, remapped)
-                filename = remapped
-                lineno = pyficache.unmap_file_line(filename, lineno)
+                filename, lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif '<string>' == filename:
@@ -264,7 +263,7 @@ def print_location(proc_obj):
                                                      prefix=prefix,
                                                      delete=False)
                     with fd:
-                        fd.write(''.join(lines))
+                        fd.write("".join(lines).encode("utf-8"))
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()

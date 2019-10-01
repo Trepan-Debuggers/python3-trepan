@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2017, 2019 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
     return
 
 
-def run_call(func, debug_opts=None, start_opts=None, *args, **kwds):
+def run_call(func, *args, **kwds):
 
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement subsequent to
@@ -78,9 +78,9 @@ def run_call(func, debug_opts=None, start_opts=None, *args, **kwds):
     returned.  The debugger prompt appears as soon as the function is
     entered."""
 
-    dbg = Mdebugger.Trepan(opts=debug_opts)
+    dbg = Mdebugger.Trepan()
     try:
-        return dbg.run_call(func, start_opts, *args, **kwds)
+        return dbg.run_call(func, *args, **kwds)
     except:
         Mpost_mortem.uncaught_exception(dbg)
         pass

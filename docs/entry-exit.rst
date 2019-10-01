@@ -16,25 +16,25 @@ the name of your program and its options and any debugger options:
         $ cat test.py
         print('Hello, World!')
 
-        $ trepan2 test.py # or trepan3k test.py
+        $ trepan3k test.py
 
 For help on trepan2's or trepan3k's options, use the ``--help`` option.
 
 .. code:: console
 
-        $ trepan2 --help
-        Usage: trepan2 [debugger-options] [python-script [script-options...]]
+        $ trepan3k --help
+        Usage: trepan3k [debugger-options] [python-script [script-options...]]
         ...
 
-To separate options to the program you want to debug from trepan2's
+To separate options to the program you want to debug from trepan3k's
 options put `--` after the debugger's options:
 
 .. code:: console
 
-      $ trepan2 --trace -- test.py --test-option1 b c
+      $ trepan3k --trace -- test.py --test-option1 b c
 
 If you have previously set up remote debugging using
-``trepan3k --server``, you'll want to run the client version of *trepan2*
+``trepan3k --server``, you'll want to run the client version of *trepan3k*
 which is a separate program ``trepan3kc``.
 
 Calling the debugger from IPython
@@ -49,16 +49,8 @@ To install execute the the following code snippet in an IPython shell or IPython
 
 .. code:: ipython
 
-    %install_ext https://raw.github.com/rocky/ipython-trepan/master/trepanmagic.py
-    %load_ext trepanmagic
-%
+    %load https://raw.github.com/rocky/ipython-trepan/master/trepanmagic.py
 
-or put *trepanmagic.py* in `$HOME/.python/profile_default/startup`:
-
-.. code:: console
-
-    cd `$HOME/.python/profile_default/startup`:
-    wget https://raw.github.com/rocky/ipython-trepan/master/trepanmagic.py
 
 Trepan IPython Magic Functions
 ------------------------------
@@ -74,25 +66,28 @@ Example
 
 .. code:: ipython
 
-       $ ipython
-       Python 2.7.8 (default, Apr  6 2015, 16:25:30)
-       ...
+	  $ ipython
+	  Python 3.6.8 (default, Aug 20 2019, 17:12:48)
+	  Type 'copyright', 'credits' or 'license' for more information
+	  ...
 
-       In [1]: %load_ext trepanmagic
-       trepanmagic.py loaded
-       In [2]: import os.path
-       In [3]: %trepan_eval(os.path.join('foo', 'bar'))
-       (/tmp/eval_stringS9ST2e.py:1 remapped <string>): <module>
-       -> 1 (os.path.join('foo', 'bar'))
-       (trepan3k) s
-       (/home/rocky/.pyenv/versions/2.7.8/lib/python2.7/posixpath.py:68): join
-       -> 68 def join(a, *p):
-       (trepan3k) s
-       (/home/rocky/.pyenv/versions/2.7.8/lib/python2.7/posixpath.py:73): join
-       -- 73     path = a
-       (trepan3k) c
-       Out[3]: 'foo/bar'
-       In [4]:
+	  In [1]: %load https://raw.github.com/rocky/ipython-trepan/master/trepanmagic.py
+	  trepanmagic.py loaded
+	  In [2]: import os.path
+	  In [3]: %trepan_eval os.path.join('foo', 'bar')
+	  (/tmp/eval_stringS9ST2e.py:1 remapped <string>): <module>
+	  -> 1 (os.path.join('foo', 'bar'))
+	  (trepan3k) s
+	  (/home/rocky/.pyenv/versions/2.7.8/lib/python2.7/posixpath.py:68): join
+	  -> 68 def join(a, *p):
+	  (trepan3k) s
+	  (/usr/lib/python3.6/posixpath.py:75): join
+	  (trepan3k) n
+	  (/usr/lib/python3.6/posixpath.py:80): join
+	  -- 80     a = os.fspath(a)
+	  (trepan3k) c
+	  Out[3]: 'foo/bar'
+	  In [4]:
 
 See also the `examples <https://github.com/rocky/ipython-trepan/tree/master/examples>`_ directory.
 
