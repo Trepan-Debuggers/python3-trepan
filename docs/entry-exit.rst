@@ -18,7 +18,7 @@ the name of your program and its options and any debugger options:
 
         $ trepan3k test.py
 
-For help on trepan2's or trepan3k's options, use the ``--help`` option.
+For help on trepan3k's options, use the ``--help`` option.
 
 .. code:: console
 
