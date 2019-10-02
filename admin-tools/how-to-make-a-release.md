@@ -47,7 +47,8 @@ http://rst.ninjs.org
 # Make packages and tag
 
     $ . ./admin-tools/make-dist-newer.sh
-    $ git tag release-$VERSION
+
+Goto https://github.com/rocky/python3-trepan/releases
 
 # Upload single package and look at Rst Formating
 
