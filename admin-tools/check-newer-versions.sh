@@ -19,8 +19,10 @@ for version in $PYVERSIONS; do
     if ! pyenv local $version ; then
 	exit $?
     fi
+    echo ====== $version
     make clean && pip install -e .
     if ! make check; then
 	exit $?
     fi
+    echo ====== $version
 done
