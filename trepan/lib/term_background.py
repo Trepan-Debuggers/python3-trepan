@@ -23,16 +23,17 @@ that works in bash.
 """
 
 from os import environ
+
 # from subprocess import check_output, check_call
+
 
 def set_default_bg():
     """Get bacground from
     default values based on the TERM environment variable
     """
-    term = environ.get('TERM', None)
+    term = environ.get("TERM", None)
     if term:
-        if (term.startswith('xterm',) or term.startswith('eterm')
-            or term == 'dtterm'):
+        if term.startswith("xterm") or term.startswith("eterm") or term == "dtterm":
             return False
     return True
 
@@ -43,17 +44,17 @@ def is_dark_rgb(r, g, b):
     """
 
     try:
-        midpoint = int(environ.get('TERMINAL_COLOR_MIDPOINT', None))
+        midpoint = int(environ.get("TERMINAL_COLOR_MIDPOINT", None))
     except:
         pass
     if not midpoint:
-        term = environ.get('TERM', None)
+        term = environ.get("TERM", None)
         # 117963 = (* .6 (+ 65535 65535 65535))
         # 382.5 = (* .6 (+ 65535 65535 65535))
-        print("midpoint", midpoint, 'vs',  (16*5 + 16*g + 16*b))
-        midpoint = 383 if term and term == 'xterm-256color' else 117963
+        print("midpoint", midpoint, "vs", (16 * 5 + 16 * g + 16 * b))
+        midpoint = 383 if term and term == "xterm-256color" else 117963
 
-    if ( (16*5 + 16*g + 16*b) < midpoint ):
+    if (16 * 5 + 16 * g + 16 * b) < midpoint:
         return True
     else:
         return False
@@ -62,18 +63,19 @@ def is_dark_rgb(r, g, b):
 def is_dark_color_fg_bg():
     """Consult (environment) variables DARK_BG and COLORFGB
     On return, variable is_dark_bg is set"""
-    dark_bg = environ.get('DARK_BG', None)
+    dark_bg = environ.get("DARK_BG", None)
     if dark_bg is not None:
-        return dark_bg != '0'
-    color_fg_bg = environ.get('COLORFGBG', None)
+        return dark_bg != "0"
+    color_fg_bg = environ.get("COLORFGBG", None)
     if color_fg_bg:
-        if color_fg_bg in ('15;0', '15;default;0'):
+        if color_fg_bg in ("15;0", "15;default;0"):
             return True
-        elif color_fg_bg in ('0;15', '0;default;15' ):
+        elif color_fg_bg in ("0;15", "0;default;15"):
             return False
     else:
         return True
     return None
+
 
 # # From:
 # # http://unix.stackexchange.com/questions/245378/common-environment-variable-to-set-dark-or-light-terminal-background/245381#245381
@@ -104,6 +106,25 @@ def is_dark_color_fg_bg():
 #     # typeset -p RGB_fg
 #     # typeset -p RGB_bg
 #     return None, None, None
+
+# FIXME: go over and add
+# From a comment left duthen in my StackOverflow answer cited above.
+# def osx_get_terminal_fg_bg():
+#     color_fg_bg = environ.get('COLORFGBG', None)
+#     if color_fg_bg:
+# 	method="COLORFGBG"
+# 	dark_bg = is_dark_colorfgbg()
+#     else:
+# 	RGB_bg=($(osascript -e 'tell application "Terminal" to get the background color of the current settings of the selected tab of front window'))
+# 	# typeset -p RGB_bg
+# 	if ($? != 0):
+#             return None
+# 	TERMINAL_COLOR_MIDPOINT = 117963
+# 	dark_bg = is_dark_rgb ${RGB_bg[@]}
+# 	method="OSX osascript"
+# 	success=1
+#     return dark_bg
+
 
 def is_dark_background():
     dark_bg = is_dark_color_fg_bg()

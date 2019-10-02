@@ -1,4 +1,10 @@
-trepan 0.8.9 2018-08-18
+trepan 0.8.10 2019-09-02
+========================
+
+* IPython interaction fixes
+* Force newer uncompyle6 to reduce decompilation problems
+
+trepan 0.8.9 2019-08-18
 ============================
 
 * Pin Pygments to 2.2.0 to fix color key problem
