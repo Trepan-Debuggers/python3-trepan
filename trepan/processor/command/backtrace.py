@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2018 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2018-2019 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -91,13 +91,13 @@ See also:
             pass
 
 
-        if len(args) > 1:
+        if len(args) > 0:
             at_most = len(self.proc.stack)
             if at_most == 0:
                 self.errmsg("Stack is empty.")
                 return False
             min_value = - at_most + 1
-            count = self.proc.get_int(args[1], min_value = min_value,
+            count = self.proc.get_int(args[0], min_value = min_value,
                                       cmdname = 'backtrace',
                                       default=0, at_most = at_most)
             if count is None: return False
