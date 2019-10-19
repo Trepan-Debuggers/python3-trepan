@@ -52,6 +52,7 @@ Goto https://github.com/rocky/python3-trepan/releases
 
 # Upload single package and look at Rst Formating
 
+	$ twine check dist/trepan3k-${VERSION}*
     $ twine upload dist/trepan3k-${VERSION}-py3.3.egg
 
 # Upload rest of versions
