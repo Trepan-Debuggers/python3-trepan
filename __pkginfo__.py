@@ -53,7 +53,8 @@ install_requires = [
     "spark_parser >= 1.8.7, <1.9.0",
     "tracer >= 0.3.2",
     "uncompyle6 >= 3.5.0",
-    "xdis >= 4.0.4, < 4.2.0",
+    "xdis >= 4.1.0, < 4.2.0",
+>>>>>>> 47fdc12931ff2be40150f9949f62e3daf608d0bf
 ]
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
