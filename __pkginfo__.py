@@ -38,6 +38,7 @@ classifiers = [
     "Programming Language :: Python :: 3.5 ",
     "Programming Language :: Python :: 3.6 ",
     "Programming Language :: Python :: 3.7 ",
+    "Programming Language :: Python :: 3.8 ",
 ]
 
 # The rest in alphabetic order
@@ -51,8 +52,8 @@ install_requires = [
     "pygments == 2.2.0",
     "spark_parser >= 1.8.7, <1.9.0",
     "tracer >= 0.3.2",
-    "uncompyle6 >= 3.4.1",
-    "xdis >= 4.0.4, < 4.1.0",
+    "uncompyle6 >= 3.5.0",
+    "xdis >= 4.0.4, < 4.2.0",
 ]
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"

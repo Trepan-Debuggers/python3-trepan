@@ -1,7 +1,7 @@
 """
 Figure out if the terminal has a light or dark background
 
-We consult environemnt variables
+We consult environment variables:
 - DARK_BG
 - COLORFGBG
 - TERM
@@ -18,8 +18,8 @@ set based on those colors. Failing that we'll set defaults
 for spefic TERM values based on their default settings.
 
 
-See https://github.com/rocky/bash-term-background for code
-that works in bash.
+See https://github.com/rocky/shell-term-background for code
+that works in POSIX shell.
 """
 
 from os import environ
