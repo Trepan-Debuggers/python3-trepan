@@ -44,8 +44,8 @@ Debugging Python bytecode (no source available)
 You can pass the debugger the name of Python bytecode and many times,
 the debugger will merrily proceed.  This debugger tries very hard find
 the source code. Either by using the current executable search path
-(e.g. `PATH`) or for some by looking inside the bytecode for a
-filename in the main code object (`co_filename`) and applying that
+(e.g. ``PATH``) or for some by looking inside the bytecode for a
+filename in the main code object (``co_filename``) and applying that
 with a search path which takes into account directory where the
 bytecode lives.
 
@@ -112,7 +112,7 @@ aliases to ``s+``, ``s>`` and so on. The plus-suffixed commands force
 a different line on a subsequent stop, the dash-suffixed commands
 don't.  Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return``
 and ``exception`` events respectively. And without a suffix you get
-the default; this is set by the `set different` command.
+the default; this is set by the ``set different`` command.
 
 Documentation
 -------------
@@ -128,7 +128,7 @@ to stop at ``line`` events (which is largely what you happens in
 *pdb*) you can. If however you just want to stop at calls and returns,
 that's possible too. Or pick some combination.
 
-In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via `info program`.
+In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via ``info program``.
 
 Event Tracing of Calls and Returns
 ----------------------------------
@@ -212,7 +212,7 @@ keeping developers happy is a good thing.(TM)
 
 * Commands and subcommands are individual classes now, not methods in a class. This means they now have properties like the context in which they can be run, minimum abbreviation name or alias names. To add a new command you basically add a file in a directory.
 * I/O is it's own layer. This simplifies interactive readline behavior from reading commands over a TCP socket.
-* An interface is it's own layer. Local debugging, remote debugging, running debugger commands from a file (`source`) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
+* An interface is it's own layer. Local debugging, remote debugging, running debugger commands from a file (``source``) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of *pydb*'s integration test will eventually be added.
 
