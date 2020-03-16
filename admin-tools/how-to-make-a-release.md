@@ -29,7 +29,7 @@
 
     $ make ChangeLog
 
-#  Update NEWS from ChangeLog:
+#  Update NEWS.md from ChangeLog:
 
     $ make check-short
     $ git commit --amend .

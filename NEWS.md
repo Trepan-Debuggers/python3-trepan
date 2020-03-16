@@ -1,3 +1,10 @@
+trepan 0.8.11 2020-03-16 post Ides of March
+===========================================
+
+- Bump xdis version to get up to 3.7.7, 3.8.2, and 3.9
+- 3.1.5 tolerance
+
+
 trepan 0.8.10 2019-09-02
 ========================
 
