@@ -218,7 +218,10 @@ def get_call_function_name(frame):
                     arg = code[offset] + code[offset+1]*256 + extended_arg
                 break
 
-            return co.co_names[arg]
+            if arg < len(co.co_names):
+                return co.co_names[arg]
+            else:
+                return None
         offset -= 1
         pass
     return None

@@ -5,7 +5,7 @@
 - [Change version in uncompyle6/version.py](#change-version-in-uncompyle6versionpy)
 - [Update ChangeLog:](#update-changelog)
 - [Update NEWS from ChangeLog:](#update-news-from-changelog)
-- [Make sure pyenv is running and check newer versions](#make-sure-pyenv-is-running-and-check-newer-versions)
+- [Make sure pyenv is running and check versions](#make-sure-pyenv-is-running-and-check-versions)
 - [Update NEWS from master branch](#update-news-from-master-branch)
 - [Check against all versions](#check-against-all-versions)
 - [Make packages and tag](#make-packages-and-tag)
@@ -35,9 +35,9 @@
     $ git commit --amend .
     $ git push # get CI testing going early
 
-# Make sure pyenv is running and check newer versions
+# Make sure pyenv is running and check versions
 
-    $ pyenv local && source admin-tools/check-newer-versions.sh
+    $ pyenv local && source admin-tools/check-versions.sh
 
 
 # make check-rst or better check via:
@@ -46,7 +46,7 @@ http://rst.ninjs.org
 
 # Make packages and tag
 
-    $ . ./admin-tools/make-dist-newer.sh
+    $ . ./admin-tools/make-dist.sh
 
 Goto https://github.com/rocky/python3-trepan/releases
 

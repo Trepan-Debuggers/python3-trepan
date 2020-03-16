@@ -23,7 +23,7 @@
 
 import sys
 SYS_VERSION = sys.version_info[0:2]
-if SYS_VERSION <= (3, 1):
+if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
     pygments_version = '== 2.2.0'
