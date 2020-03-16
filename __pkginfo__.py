@@ -26,7 +26,7 @@ SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
-    pygments_version = '== 2.2.0'
+    pygments_version = '>= 2.2.0'
 
 # Things that change more often go here.
 copyright = """Copyright (C) 2013, 2015-2020 Rocky Bernstein <rocky@gnu.org>."""

@@ -48,7 +48,7 @@ http://rst.ninjs.org
 
     $ . ./admin-tools/make-dist.sh
 
-Goto https://github.com/rocky/python3-trepan/releases
+Goto https://github.com/rocky/python3-trepan/releases/new
 
 # Upload single package and look at Rst Formating
 
