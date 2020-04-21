@@ -162,7 +162,7 @@ See also:
             if bytecode_file and Mfile.readable(bytecode_file):
                 self.msg("Reading %s ..." % bytecode_file)
                 (version, timestamp, magic_int, obj,
-                 is_pypy, source_size) = load_module(bytecode_file)
+                 is_pypy, source_size, sip_hash) = load_module(bytecode_file)
             elif not curframe:
                 self.errmsg("No frame selected.")
                 return

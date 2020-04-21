@@ -54,14 +54,8 @@ def deparse_offset(co, name, last_i, errmsg_fn):
     deparsed = deparse_cache.get(co, None)
     if not deparsed or not hasattr(deparsed, 'offsets'):
         out = StringIO()
-        try:
-            # FIXME: cache co
-            deparsed = code_deparse(co, out)
-        except:
-            print(sys.exc_info()[1])
-            if errmsg_fn:
-                errmsg_fn(sys.exc_info()[1])
-                errmsg_fn("error in deparsing code")
+        # FIXME: cache co
+        deparsed = code_deparse(co, out)
         deparse_cache[co] = deparsed
     try:
         nodeInfo = deparsed_find((name, last_i), deparsed, co)

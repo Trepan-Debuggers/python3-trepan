@@ -176,12 +176,13 @@ See also:
         return
     pass
 
-# if __name__ == '__main__':
-#     from trepan import debugger
-#     d            = debugger.Trepan()
-#     cp           = d.core.processor
-#     command      = DeparseCommand(d.core.processor)
-#     command.proc.frame = sys._getframe()
-#     command.proc.setup()
-#     command.run(['deparse'])
-#     pass
+if __name__ == '__main__':
+    import sys
+    from trepan import debugger
+    d            = debugger.Trepan()
+    cp           = d.core.processor
+    command      = DeparseCommand(d.core.processor)
+    command.proc.frame = sys._getframe()
+    command.proc.setup()
+    command.run(['deparse'])
+    pass

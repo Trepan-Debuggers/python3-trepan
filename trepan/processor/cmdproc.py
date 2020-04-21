@@ -641,6 +641,9 @@ class CommandProcessor(Mprocessor.Processor):
             self.setup()
             self.location()
             pass
+        else:
+            self.list_object = None
+
         leave_loop = run_hooks(self, self.preloop_hooks)
         self.continue_running = False
 
@@ -804,8 +807,7 @@ class CommandProcessor(Mprocessor.Processor):
                 self.list_offset = self.curframe.f_lasti
                 self.list_object = self.curframe
         else:
-            self.stack = self.curframe = \
-                self.botframe = None
+            self.stack = self.curframe = self.botframe = None
             pass
         if self.curframe:
             self.list_lineno = \
@@ -815,6 +817,7 @@ class CommandProcessor(Mprocessor.Processor):
             self.list_filename = self.curframe.f_code.co_filename
             self.list_object   = self.curframe
         else:
+            self.list_object = None
             if not exc_traceback: self.list_lineno = None
             pass
         # if self.execRcLines()==1: return True

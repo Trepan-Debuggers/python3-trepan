@@ -1,7 +1,7 @@
 include COPYING
 include ChangeLog
 include Makefile
-include NEWS.rst
+include NEWS.md
 include README.rst
 include __pkginfo__.py
 include requirements-dev.txt

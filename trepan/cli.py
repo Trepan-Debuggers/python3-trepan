@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2018, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,12 +14,12 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''The command-line interface to the debugger.
-'''
+"""The command-line interface to the debugger.
+"""
 import os, pyficache, sys, tempfile
 import os.path as osp
 
-package='trepan'
+package = "trepan"
 
 # Our local modules
 from trepan import client as Mclient
@@ -44,28 +44,25 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv  = Moptions.process_options(__title__,
-                                                         VERSION,
-                                                         sys_argv)
+    opts, dbg_opts, sys_argv = Moptions.process_options(__title__, VERSION, sys_argv)
 
     if opts.server is not None:
-        if opts.server == 'tcp':
-            connection_opts={'IO': 'TCP', 'PORT': opts.port}
+        if opts.server == "tcp":
+            connection_opts = {"IO": "TCP", "PORT": opts.port}
         else:
-            connection_opts={'IO': 'FIFO'}
+            connection_opts = {"IO": "FIFO"}
         intf = Mserver.ServerInterface(connection_opts=connection_opts)
-        dbg_opts['interface'] = intf
-        if 'FIFO' == intf.server_type:
-            print('Starting FIFO server for process %s.' % os.getpid())
-        elif 'TCP' == intf.server_type:
-            print('Starting TCP server listening on port %s.' %
-                  intf.inout.PORT)
+        dbg_opts["interface"] = intf
+        if "FIFO" == intf.server_type:
+            print("Starting FIFO server for process %s." % os.getpid())
+        elif "TCP" == intf.server_type:
+            print("Starting TCP server listening on port %s." % intf.inout.PORT)
             pass
     elif opts.client:
         Mclient.run(opts, sys_argv)
         return
 
-    dbg_opts['orig_sys_argv'] = orig_sys_argv
+    dbg_opts["orig_sys_argv"] = orig_sys_argv
 
     if dbg is None:
         dbg = Mdebugger.Trepan(dbg_opts)
@@ -84,28 +81,39 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
         if not osp.isfile(mainpyfile):
-            mainpyfile=Mclifns.whence_file(mainpyfile)
+            mainpyfile = Mclifns.whence_file(mainpyfile)
             is_readable = Mfile.readable(mainpyfile)
             if is_readable is None:
-                print("%s: Python script file '%s' does not exist"
-                      % (__title__, mainpyfile,))
+                print(
+                    "%s: Python script file '%s' does not exist"
+                    % (__title__, mainpyfile,)
+                )
                 sys.exit(1)
             elif not is_readable:
-                print("%s: Can't read Python script file '%s'"
-                      % (__title__, mainpyfile, ))
+                print(
+                    "%s: Can't read Python script file '%s'" % (__title__, mainpyfile,)
+                )
                 sys.exit(1)
                 return
 
         if Mfile.is_compiled_py(mainpyfile):
             try:
                 from xdis import load_module, PYTHON_VERSION, IS_PYPY
-                (python_version, timestamp, magic_int, co, is_pypy,
-                 source_size) = load_module(mainpyfile, code_objects=None,
-                                            fast_load=True)
+
+                (
+                    python_version,
+                    timestamp,
+                    magic_int,
+                    co,
+                    is_pypy,
+                    source_size,
+                    sip_hash,
+                ) = load_module(mainpyfile, code_objects=None, fast_load=True)
                 assert is_pypy == IS_PYPY
-                assert python_version == PYTHON_VERSION, \
-                    "bytecode is for version %s but we are version %s" % (
-                        python_version, PYTHON_VERSION)
+                assert python_version == PYTHON_VERSION, (
+                    "bytecode is for version %s but we are version %s"
+                    % (python_version, PYTHON_VERSION)
+                )
                 # We should we check version magic_int
 
                 py_file = co.co_filename
@@ -114,8 +122,11 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 else:
                     mainpydir = osp.dirname(mainpyfile)
                     tag = sys.implementation.cache_tag
-                    dirnames = [osp.join(mainpydir, tag),
-                                mainpydir] + os.environ['PATH'].split(osp.pathsep) + ['.']
+                    dirnames = (
+                        [osp.join(mainpydir, tag), mainpydir]
+                        + os.environ["PATH"].split(osp.pathsep)
+                        + ["."]
+                    )
                     try_file = Mclifns.whence_file(py_file, dirnames)
 
                 if osp.isfile(try_file):
@@ -123,38 +134,46 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     pass
                 else:
                     # Move onto the except branch
-                    raise IOError("Python file name embedded in code %s not found" % try_file)
+                    raise IOError(
+                        "Python file name embedded in code %s not found" % try_file
+                    )
             except IOError:
                 try:
                     from uncompyle6 import decompile_file
                 except ImportError:
-                    print("%s: Compiled python file '%s', but uncompyle6 not found"
-                        % (__title__, mainpyfile), file=sys.stderr)
+                    print(
+                        "%s: Compiled python file '%s', but uncompyle6 not found"
+                        % (__title__, mainpyfile),
+                        file=sys.stderr,
+                    )
                     sys.exit(1)
                     return
 
-                short_name = osp.basename(mainpyfile).strip('.pyc')
-                fd = tempfile.NamedTemporaryFile(suffix='.py',
-                                                 prefix=short_name + "_",
-                                                 delete=False)
+                short_name = osp.basename(mainpyfile).strip(".pyc")
+                fd = tempfile.NamedTemporaryFile(
+                    suffix=".py", prefix=short_name + "_", delete=False
+                )
                 old_write = fd.file.write
 
                 def write_wrapper(*args, **kwargs):
                     if isinstance(args[0], str):
                         new_args = list(args)
-                        new_args[0] = args[0].encode('utf-8')
+                        new_args[0] = args[0].encode("utf-8")
                         old_write(*new_args, **kwargs)
                     else:
                         old_write(*args, **kwargs)
+
                 fd.file.write = write_wrapper
 
                 # from io import StringIO
                 # linemap_io = StringIO()
                 try:
-                   decompile_file(mainpyfile, fd.file, mapstream=fd)
+                    decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except:
-                    print("%s: error decompiling '%s'"
-                          % (__title__, mainpyfile), file=sys.stderr)
+                    print(
+                        "%s: error decompiling '%s'" % (__title__, mainpyfile),
+                        file=sys.stderr,
+                    )
                     sys.exit(1)
                     return
 
@@ -172,20 +191,23 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 # However we should consider adding this information
                 # and original file name.
 
-                print("%s: couldn't find Python source so we recreated it at '%s'"
-                      % (__title__, mainpyfile), file=sys.stderr)
+                print(
+                    "%s: couldn't find Python source so we recreated it at '%s'"
+                    % (__title__, mainpyfile),
+                    file=sys.stderr,
+                )
 
                 pass
 
         # If mainpyfile is an optimized Python script try to find and
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.pyc2py(mainpyfile)
-        if mainpyfile != mainpyfile_noopt \
-               and Mfile.readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that."
-                  % __title__)
-            print("%s: Substituting non-compiled name: %s" % (
-                __title__, mainpyfile_noopt,))
+        if mainpyfile != mainpyfile_noopt and Mfile.readable(mainpyfile_noopt):
+            print("%s: Compiled Python script given and we can't use that." % __title__)
+            print(
+                "%s: Substituting non-compiled name: %s"
+                % (__title__, mainpyfile_noopt,)
+            )
             mainpyfile = mainpyfile_noopt
             pass
 
@@ -210,28 +232,29 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         try:
             if dbg.program_sys_argv and mainpyfile:
                 normal_termination = dbg.run_script(mainpyfile)
-                if not normal_termination: break
+                if not normal_termination:
+                    break
             else:
-                dbg.core.execution_status = 'No program'
+                dbg.core.execution_status = "No program"
                 dbg.core.processor.process_commands()
                 pass
 
-            dbg.core.execution_status = 'Terminated'
+            dbg.core.execution_status = "Terminated"
             dbg.intf[-1].msg("The program finished - quit or restart")
             dbg.core.processor.process_commands()
         except Mexcept.DebuggerQuit:
             break
         except Mexcept.DebuggerRestart:
-            dbg.core.execution_status = 'Restart requested'
+            dbg.core.execution_status = "Restart requested"
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
-                part1 = ('Restarting %s with arguments:' %
-                         dbg.core.filename(mainpyfile))
-                args  = ' '.join(dbg.program_sys_argv[1:])
+                part1 = "Restarting %s with arguments:" % dbg.core.filename(mainpyfile)
+                args = " ".join(dbg.program_sys_argv[1:])
                 dbg.intf[-1].msg(
-                    Mmisc.wrapped_lines(part1, args,
-                                        dbg.settings['width']))
-            else: break
+                    Mmisc.wrapped_lines(part1, args, dbg.settings["width"])
+                )
+            else:
+                break
         except SystemExit:
             # In most cases SystemExit does not warrant a post-mortem session.
             break
@@ -241,7 +264,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     sys.argv = orig_sys_argv
     return
 
+
 # When invoked as main program, invoke the debugger on a script
-if __name__=='__main__':
+if __name__ == "__main__":
     main()
     pass
