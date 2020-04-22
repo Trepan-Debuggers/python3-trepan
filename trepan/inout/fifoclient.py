@@ -78,10 +78,10 @@ class FIFOClient(DebuggerInOutBase):
                 raise IOError("input FIFO %s doesn't exist" %
                               self.in_name)
             else:
-                raise IOError("output FIFO %s is not readable" %
+                raise IOError("input FIFO %s is not readable" %
                               self.out_name)
-            self.state     = 'active'
             pass
+        self.state     = 'active'
         return
 
     def read_msg(self):
