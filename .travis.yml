@@ -14,6 +14,7 @@ python:
 
 install:
 - pip install -e .
+- pip install git+git://github.com/rocky/python-uncompyle6.git#egg=uncompyle6-3.6.6
 - pip install -r requirements-dev.txt
 - pip install .
 
