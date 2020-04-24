@@ -11,7 +11,6 @@ jobs:
         command: |  # use pipenv to install dependencies
           sudo pip install pipenv
           pipenv install
-          pip install git+git://github.com/rocky/python-uncompyle6.git#egg=xdis-3.6.6
           pip install -e .
           pip install -r requirements-dev.txt
     - run: python ./setup.py develop && make test-unit test-functional
