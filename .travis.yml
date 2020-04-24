@@ -13,8 +13,8 @@ python:
 # - 'pypy3'
 
 install:
-- pip install -e .
 - pip install git+git://github.com/rocky/python-uncompyle6.git#egg=uncompyle6-3.6.7
+- pip install -e .
 - pip install -r requirements-dev.txt
 - pip install .
 
