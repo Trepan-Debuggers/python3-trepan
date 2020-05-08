@@ -68,25 +68,23 @@ modname = "trepan3k"
 py_modules = None
 short_desc = "GDB-like Python Debugger in the Trepan family"
 
-import os
-
-
+import os.path as osp
 def get_srcdir():
-    filename = os.path.normcase(os.path.dirname(os.path.abspath(__file__)))
-    return os.path.realpath(filename)
+    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
+    return osp.realpath(filename)
 
+def read(*rnames):
+    return open(osp.join(get_srcdir(), *rnames)).read()
 
 # version.py sets variable VERSION.
 VERSION = None
-exec(open(os.path.join(get_srcdir(), "trepan", "version.py")).read())
+exec(read("trepan", "version.py"))
 web = "http://github.com/rocky/python3-trepan/"
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False
 
 
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
 long_description = read("README.rst") + "\n"
