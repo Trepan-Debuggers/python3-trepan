@@ -59,28 +59,10 @@ associate a file source code with the current name listed in the
 bytecode. See the set_substitute_ command for details here.
 
 
-Source-code Syntax Colorization
--------------------------------
-
-Starting with release 0.2.0, terminal source code is colorized via
-pygments_ . And with that you can set the pygments color style,
-e.g. "colorful", "paraiso-dark". See set_style_ . Furthermore, we make use
-of terminal bold and emphasized text in debugger output and help
-text. Of course, you can also turn this off. Starting with release
-0.6.0, you can use your own pygments_style_, provided you have a
-terminal that supports 256 colors. If your terminal supports the basic
-ANSI color sequences only, we support that too in both dark and light
-themes.
-
-
-Command Completion
-------------------
-
-Starting with release 2.8, readline command completion has been
-added. Command completion is not just a simple static list, but varies
-depending on the context. For example, for frame-changing commands
-which take optional numbers, on the list of *valid numbers* is
-considered.
+GNU Readline command completion has been added. Command completion is
+not just a simple static list, but varies depending on the
+context. For example, for frame-changing commands which take optional
+numbers, on the list of *valid numbers* is considered.
 
 Terminal Handling
 -----------------
@@ -91,11 +73,11 @@ terminal. If it changes, or you want to adjust it, see set_width_ .
 Smart Eval
 ----------
 
-Starting with release 0.2.0, if you want to evaluate the current
-source line before it is run in the code, use ``eval`` or
-``deval``. To evaluate text of a common fragment of line, such as the
-expression part of an *if* statement, you can do that with
-``eval?`` or ``deval?``. See eval_ for more information.
+If you want to evaluate the current source line before it is run in
+the code, use ``eval`` or ``deval``. To evaluate text of a common
+fragment of line, such as the expression part of an *if* statement,
+you can do that with ``eval?`` or ``deval?``. See eval_ for more
+information.
 
 More Stepping Control
 ---------------------
@@ -144,8 +126,8 @@ Because we're really handling return events, we can show you the return value. (
 Debugger Macros via Python Lambda expressions
 ---------------------------------------------
 
-Starting with release 0.2.3, there are debugger macros.  In *gdb*,
-there is a *macro* debugger command to extend debugger commands.
+There are debugger macros.  In *gdb*, there is a *macro* debugger
+command to extend debugger commands.
 
 However Python has its own rich programming language so it seems silly
 to recreate the macro language that is in *gdb*. Simpler and more
@@ -161,10 +143,6 @@ behavior accordingly.
 We also envision a number of other ways to allow extension of this
 debugger either through additional modules, or user-supplied debugger
 command directories.
-
-If what you were looking for in macros was more front-end control over
-the debugger, then consider using the experimental (and not finished)
-Bullwinkle protocol.
 
 Byte-code Instruction Introspection
 ------------------------------------

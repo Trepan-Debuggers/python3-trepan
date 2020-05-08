@@ -22,11 +22,12 @@
 # still is some room for improvement.
 
 import sys
+
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
-    pygments_version = '>= 2.2.0'
+    pygments_version = ">= 2.2.0"
 
 # Things that change more often go here.
 copyright = """Copyright (C) 2013, 2015-2020 Rocky Bernstein <rocky@gnu.org>."""
@@ -51,6 +52,14 @@ classifiers = [
 # The rest in alphabetic order
 author = "Rocky Bernstein"
 author_email = "rocky@gnu.org"
+
+entry_points = {
+    "console_scripts": [
+        "trepan3k   = trepan.__main__:main",
+        "trepan3kc  = trepan.client:main",
+    ]
+}
+
 ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
@@ -69,12 +78,16 @@ py_modules = None
 short_desc = "GDB-like Python Debugger in the Trepan family"
 
 import os.path as osp
+
+
 def get_srcdir():
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
 
+
 def read(*rnames):
     return open(osp.join(get_srcdir(), *rnames)).read()
+
 
 # version.py sets variable VERSION.
 VERSION = None
@@ -83,8 +96,6 @@ web = "http://github.com/rocky/python3-trepan/"
 
 # tracebacks in zip files are funky and not debuggable
 zip_safe = False
-
-
 
 
 long_description = read("README.rst") + "\n"

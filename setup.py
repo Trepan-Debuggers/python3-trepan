@@ -16,6 +16,7 @@ from __pkginfo__ import (
     author,
     author_email,
     classifiers,
+    entry_points,
     install_requires,
     license,
     long_description,
@@ -52,12 +53,7 @@ setup(
         )
     ],
     description=short_desc,
-    entry_points={
-        "console_scripts": [
-            "trepan3k   = trepan.cli:main",
-            "trepan3kc  = trepan.client:main",
-        ]
-    },
+    entry_points=entry_points,
     install_requires=install_requires,
     license=license,
     long_description=long_description,
