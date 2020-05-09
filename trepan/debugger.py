@@ -52,7 +52,7 @@ except ImportError:
         return None
     pass
 
-class Trepan:
+class Trepan(object):
 
     # The following functions have to be defined before
     # DEFAULT_INIT_OPTS which includes references to these.

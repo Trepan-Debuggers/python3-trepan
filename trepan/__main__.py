@@ -22,19 +22,19 @@ import os.path as osp
 package = "trepan"
 
 # Our local modules
-from trepan import client as Mclient
-from trepan import clifns as Mclifns
-from trepan import debugger as Mdebugger
-from trepan import exception as Mexcept
-from trepan import options as Moptions
-from trepan.interfaces import server as Mserver
-from trepan.lib import file as Mfile
-from trepan import misc as Mmisc
+import trepan.client as Mclient
+import trepan.clifns as Mclifns
+import trepan.debugger as Mdebugger
+import trepan.exception as Mexcept
+import trepan.options as Moptions
+import trepan.interfaces.server as Mserver
+import trepan.lib.file as Mfile
+import trepan.misc as Mmisc
 
 # The name of the debugger we are currently going by.
 __title__ = package
 
-# VERSION.py sets variable VERSION.
+# version.py sets variable VERSION.
 from trepan.version import VERSION
 
 
