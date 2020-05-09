@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,8 +24,7 @@ def option_set(options, value, default_options):
 
 
 def bool2YN(b):
-    if b: return 'Y'
-    else: return 'N'
+    return "Y" if b else "N"
 
 
 def wrapped_lines(msg_part1, msg_part2, width):
@@ -34,6 +33,7 @@ def wrapped_lines(msg_part1, msg_part2, width):
     else:
         return msg_part1 + " " + msg_part2
     return  # Not reached
+
 
 import os
 from glob import glob
@@ -44,23 +44,24 @@ def pyfiles(callername, level=2):
     d = os.path.dirname(callername)
     # Get the name of our directory.
     # A glob pattern that will get all *.py files but not __init__.py
-    glob(os.path.join(d, '[a-zA-Z]*.py'))
-    py_files = glob(os.path.join(d, '[a-zA-Z]*.py'))
-    return [ os.path.basename(filename[0:-3]) for filename in py_files ]
+    glob(os.path.join(d, "[a-zA-Z]*.py"))
+    py_files = glob(os.path.join(d, "[a-zA-Z]*.py"))
+    return [os.path.basename(filename[0:-3]) for filename in py_files]
+
 
 # Demo it
-if __name__=='__main__':
-    TEST_OPTS = {'a': True, 'b': 5, 'c': None}
+if __name__ == "__main__":
+    TEST_OPTS = {"a": True, "b": 5, "c": None}
     get_option = lambda key: option_set(opts, key, TEST_OPTS)
-    opts={'d': 6, 'a': False}
-    for opt in ['a', 'b', 'c', 'd']:
+    opts = {"d": 6, "a": False}
+    for opt in ["a", "b", "c", "d"]:
         print(opt, get_option(opt))
         pass
     for b in [True, False]:
         print(bool2YN(b))
     pass
 
-    print(wrapped_lines('hi', 'there', 80))
-    print(wrapped_lines('hi', 'there', 5))
+    print(wrapped_lines("hi", "there", 80))
+    print(wrapped_lines("hi", "there", 5))
     print(pyfiles(__file__))
     pass
