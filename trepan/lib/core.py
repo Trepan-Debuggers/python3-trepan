@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2016, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -25,27 +25,26 @@ handling what to do when an event is triggered."""
 # Common Python packages
 import os, sys, threading
 
-# External Egg packages
+# External packages
 import tracer
 
 # Our local modules
 from trepan.lib import breakpoint, default, stack as Mstack
-from trepan import misc as Mmisc
-from trepan import clifns as Mclifns
+import trepan.misc as Mmisc
+import trepan.clifns as Mclifns
 from trepan.processor import trace as Mtrace, cmdproc as Mcmdproc
 
 
-class TrepanCore:
+class TrepanCore(object):
 
     DEFAULT_INIT_OPTS = {
-        'processor'   : None,
-
+        "processor": None,
         # How many step events to skip before
         # entering event processor? Zero (0) means stop at the next one.
         # A negative number indicates no eventual stopping.
-        'step_ignore' : 0,
-        'ignore_filter': None,  # But see debugger.py
-        }
+        "step_ignore": 0,
+        "ignore_filter": None,  # But see debugger.py
+    }
 
     def __init__(self, debugger, opts=None):
         """ Create a debugger object. But depending on the value of
@@ -57,76 +56,75 @@ class TrepanCore:
 
         import trepan.bwprocessor as Mbwproc
 
-        get_option       = lambda key: Mmisc.option_set(opts, key,
-                                                        self.DEFAULT_INIT_OPTS)
+        get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
-        self.bpmgr           = breakpoint.BreakpointManager()
-        self.current_bp      = None
-        self.debugger        = debugger
+        self.bpmgr = breakpoint.BreakpointManager()
+        self.current_bp = None
+        self.debugger = debugger
 
         # Threading lock ensures that we don't have other traced threads
         # running when we enter the debugger. Later we may want to have
         # a switch to control.
-        self.debugger_lock   = threading.Lock()
+        self.debugger_lock = threading.Lock()
 
-        self.filename_cache  = {}
+        self.filename_cache = {}
 
         # Initially the event parameter of the event hook.
         # We can however modify it, such as for breakpoints
-        self.event           = None
+        self.event = None
 
         # Is debugged program currently under execution?
-        self.execution_status = 'Pre-execution'
+        self.execution_status = "Pre-execution"
 
         # main_dirname is the directory where the script resides.
         # Filenames in co_filename are often relative to this.
-        self.main_dirname    = os.curdir
+        self.main_dirname = os.curdir
 
         # What event processor and processor options do we use?
-        self.processor = get_option('processor')
-        proc_opts      = get_option('proc_opts')
+        self.processor = get_option("processor")
+        proc_opts = get_option("proc_opts")
         if not self.processor:
-            self.processor   = Mcmdproc.CommandProcessor(self, opts=proc_opts)
-        elif self.processor == 'bullwinkle':
-            self.processor   = Mbwproc.BWProcessor(self, opts=proc_opts)
+            self.processor = Mcmdproc.CommandProcessor(self, opts=proc_opts)
+        elif self.processor == "bullwinkle":
+            self.processor = Mbwproc.BWProcessor(self, opts=proc_opts)
             pass
         # What events are considered in stepping. Note: 'None' means *all*.
-        self.step_events     = None
+        self.step_events = None
         # How many line events to skip before entering event processor?
         # If stop_level is None all breaks are counted otherwise just
         # those which less than or equal to stop_level.
-        self.step_ignore     = get_option('step_ignore')
+        self.step_ignore = get_option("step_ignore")
 
         # If stop_level is not None, then we are next'ing or
         # finish'ing and will ignore frames greater than stop_level.
         # We also will cache the last frame and thread number encountered
         # so we don't have to compute the current level all the time.
-        self.last_frame      = None
-        self.last_level      = 10000
-        self.last_thread     = None
-        self.stop_level      = None
-        self.stop_on_finish  = False
+        self.last_frame = None
+        self.last_level = 10000
+        self.last_thread = None
+        self.stop_level = None
+        self.stop_on_finish = False
 
-        self.last_lineno     = None
-        self.last_filename   = None
-        self.different_line  = None
+        self.last_lineno = None
+        self.last_filename = None
+        self.different_line = None
 
         # The reason we have stopped, e.g. 'breakpoint hit', 'next',
         # 'finish', 'step', or 'exception'.
-        self.stop_reason     = ''
+        self.stop_reason = ""
 
         self.trace_processor = Mtrace.PrintProcessor(self)
 
         # What routines (keyed by f_code) will we not trace into?
-        self.ignore_filter = get_option('ignore_filter')
+        self.ignore_filter = get_option("ignore_filter")
 
-        self.search_path     = sys.path  # Source filename search path
+        self.search_path = sys.path  # Source filename search path
 
         # When trace_hook_suspend is set True, we'll suspend
         # debugging.
         self.trace_hook_suspend = False
 
-        self.until_condition = get_option('until_condition')
+        self.until_condition = get_option("until_condition")
 
         return
 
@@ -161,16 +159,17 @@ class TrepanCore:
                 # other than where the program resides. filename is
                 # relative to where the program resides. So make sure
                 # to use that.
-                canonic = os.path.abspath(os.path.join(self.main_dirname,
-                                                       filename))
+                canonic = os.path.abspath(os.path.join(self.main_dirname, filename))
             else:
                 canonic = os.path.abspath(filename)
                 pass
             if not os.path.isfile(canonic):
-                canonic = Mclifns.search_file(filename, self.search_path,
-                                              self.main_dirname)
+                canonic = Mclifns.search_file(
+                    filename, self.search_path, self.main_dirname
+                )
                 # FIXME: is this is right for utter failure?
-                if not canonic: canonic = filename
+                if not canonic:
+                    canonic = filename
                 pass
             canonic = os.path.realpath(os.path.normcase(canonic))
             self.filename_cache[filename] = canonic
@@ -189,18 +188,20 @@ class TrepanCore:
                 filename = self.debugger.mainpyfile
             else:
                 return None
-        if self.debugger.settings['basename']:
-            return(os.path.basename(filename))
+        if self.debugger.settings["basename"]:
+            return os.path.basename(filename)
         return filename
 
     def is_running(self):
-        return 'Running' == self.execution_status
+        return "Running" == self.execution_status
 
     def is_started(self):
-        '''Return True if debugging is in progress.'''
-        return (tracer.is_started() and
-                not self.trace_hook_suspend
-                and tracer.find_hook(self.trace_dispatch))
+        """Return True if debugging is in progress."""
+        return (
+            tracer.is_started()
+            and not self.trace_hook_suspend
+            and tracer.find_hook(self.trace_dispatch)
+        )
 
     def remove_ignore(self, frame_or_fn):
         """Remove `frame_or_fn' to the list of functions that are not to
@@ -220,25 +221,24 @@ class TrepanCore:
         #    sys.settrace(self._trace_dispatch)
         try:
             self.trace_hook_suspend = True
-            get_option = lambda key: Mmisc.option_set(opts, key,
-                                                      default.START_OPTS)
+            get_option = lambda key: Mmisc.option_set(opts, key, default.START_OPTS)
 
-            add_hook_opts = get_option('add_hook_opts')
+            add_hook_opts = get_option("add_hook_opts")
 
             # Has tracer been started?
-            if not tracer.is_started() or get_option('force'):
+            if not tracer.is_started() or get_option("force"):
                 # FIXME: should filter out opts not for tracer
 
                 tracer_start_opts = default.START_OPTS.copy()
                 if opts:
-                    tracer_start_opts.update(opts.get('tracer_start', {}))
-                tracer_start_opts['trace_fn'] = self.trace_dispatch
-                tracer_start_opts['add_hook_opts'] = add_hook_opts
+                    tracer_start_opts.update(opts.get("tracer_start", {}))
+                tracer_start_opts["trace_fn"] = self.trace_dispatch
+                tracer_start_opts["add_hook_opts"] = add_hook_opts
                 tracer.start(tracer_start_opts)
             elif not tracer.find_hook(self.trace_dispatch):
                 tracer.add_hook(self.trace_dispatch, add_hook_opts)
                 pass
-            self.execution_status = 'Running'
+            self.execution_status = "Running"
         finally:
             self.trace_hook_suspend = False
         return
@@ -248,10 +248,9 @@ class TrepanCore:
         #    sys.settrace(None)
         try:
             self.trace_hook_suspend = True
-            get_option = lambda key: Mmisc.option_set(options, key,
-                                                      default.STOP_OPTS)
+            get_option = lambda key: Mmisc.option_set(options, key, default.STOP_OPTS)
             args = [self.trace_dispatch]
-            remove = get_option('remove')
+            remove = get_option("remove")
             if remove:
                 args.append(remove)
                 pass
@@ -267,8 +266,8 @@ class TrepanCore:
 
     def is_break_here(self, frame, arg):
         filename = self.canonic(frame.f_code.co_filename)
-        if 'call' == self.event:
-            find_name  = frame.f_code.co_name
+        if "call" == self.event:
+            find_name = frame.f_code.co_name
             # Could check code object or decide not to
             # The below could be done as a list comprehension, but
             # I'm feeling in Fortran mood right now.
@@ -276,31 +275,28 @@ class TrepanCore:
                 if fn.__name__ == find_name:
                     self.current_bp = bp = self.bpmgr.fnlist[fn][0]
                     if bp.temporary:
-                        msg = 'temporary '
+                        msg = "temporary "
                         self.bpmgr.delete_breakpoint(bp)
                     else:
-                        msg = ''
+                        msg = ""
                         pass
-                    self.stop_reason = ("at %scall breakpoint %d" %
-                                        (msg, bp.number))
-                    self.event = 'brkpt'
+                    self.stop_reason = "at %scall breakpoint %d" % (msg, bp.number)
+                    self.event = "brkpt"
                     return True
                 pass
             pass
         if (filename, frame.f_lineno) in list(self.bpmgr.bplist.keys()):
-            (bp, clear_bp) = self.bpmgr.find_bp(filename, frame.f_lineno,
-                                                frame)
+            (bp, clear_bp) = self.bpmgr.find_bp(filename, frame.f_lineno, frame)
             if bp:
                 self.current_bp = bp
-                if (clear_bp and bp.temporary):
-                    msg = 'temporary '
+                if clear_bp and bp.temporary:
+                    msg = "temporary "
                     self.bpmgr.delete_breakpoint(bp)
                 else:
-                    msg = ''
+                    msg = ""
                     pass
-                self.stop_reason = ("at %sline breakpoint %d" %
-                                    (msg, bp.number))
-                self.event = 'brkpt'
+                self.stop_reason = "at %sline breakpoint %d" % (msg, bp.number)
+                self.event = "brkpt"
                 return True
             else:
                 return False
@@ -340,11 +336,11 @@ class TrepanCore:
         # do we have one?
         lineno = frame.f_lineno
         filename = frame.f_code.co_filename
-        if self.different_line and event == 'line':
+        if self.different_line and event == "line":
             if self.last_lineno == lineno and self.last_filename == filename:
                 return False
             pass
-        self.last_lineno   = lineno
+        self.last_lineno = lineno
         self.last_filename = filename
 
         if self.stop_level is not None:
@@ -355,8 +351,11 @@ class TrepanCore:
                 pass
             if self.last_level > self.stop_level:
                 return False
-            elif self.last_level == self.stop_level and \
-                    self.stop_on_finish and event in ['return', 'c_return']:
+            elif (
+                self.last_level == self.stop_level
+                and self.stop_on_finish
+                and event in ["return", "c_return"]
+            ):
                 self.stop_level = None
                 self.stop_reason = "in return for 'finish' command"
                 return True
@@ -364,7 +363,7 @@ class TrepanCore:
 
         # Check for stepping
         if self._is_step_next_stop(event):
-            self.stop_reason = 'at a stepping statement'
+            self.stop_reason = "at a stepping statement"
             return True
 
         return False
@@ -381,20 +380,20 @@ class TrepanCore:
 
     def set_next(self, frame, step_ignore=0, step_events=None):
         "Sets to stop on the next event that happens in frame 'frame'."
-        self.step_events      = None  # Consider all events
-        self.stop_level       = Mstack.count_frames(frame)
-        self.last_level       = self.stop_level
-        self.last_frame       = frame
-        self.stop_on_finish   = False
-        self.step_ignore      = step_ignore
+        self.step_events = None  # Consider all events
+        self.stop_level = Mstack.count_frames(frame)
+        self.last_level = self.stop_level
+        self.last_frame = frame
+        self.stop_on_finish = False
+        self.step_ignore = step_ignore
         return
 
     def trace_dispatch(self, frame, event, arg):
-        '''A trace event occurred. Filter or pass the information to a
+        """A trace event occurred. Filter or pass the information to a
         specialized event processor. Note that there may be more filtering
         that goes on in the command processor (e.g. to force a
         different line). We could put that here, but since that seems
-        processor-specific I think it best to distribute the checks.'''
+        processor-specific I think it best to distribute the checks."""
 
         # For now we only allow one instance in a process
         # In Python 2.6 and beyond one can use "with threading.Lock():"
@@ -415,19 +414,19 @@ class TrepanCore:
             if self.ignore_filter and self.ignore_filter.is_included(frame):
                 return True
 
-            if self.debugger.settings['trace']:
-                print_event_set = self.debugger.settings['printset']
+            if self.debugger.settings["trace"]:
+                print_event_set = self.debugger.settings["printset"]
                 if self.event in print_event_set:
-                    self.trace_processor.event_processor(frame,
-                                                         self.event, arg)
+                    self.trace_processor.event_processor(frame, self.event, arg)
                     pass
                 pass
 
             if self.until_condition:
-                if not self.matches_condition(frame): return True
+                if not self.matches_condition(frame):
+                    return True
                 pass
 
-            trace_event_set = self.debugger.settings['events']
+            trace_event_set = self.debugger.settings["events"]
             if trace_event_set is None or self.event not in trace_event_set:
                 return True
 
@@ -437,8 +436,7 @@ class TrepanCore:
             # user's standpoint to test for breaks before steps. In
             # this case we will need to factor out the counting
             # updates.
-            if ( self.is_stop_here(frame, event, arg) or
-                 self.is_break_here(frame, arg) ):
+            if self.is_stop_here(frame, event, arg) or self.is_break_here(frame, arg):
                 # Run the event processor
                 return self.processor.event_processor(frame, self.event, arg)
             return True
@@ -449,19 +447,23 @@ class TrepanCore:
                 pass
             pass
         pass
+
     pass
 
+
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
+
     class MockProcessor:
         pass
-    opts = {'processor': MockProcessor()}
+
+    opts = {"processor": MockProcessor()}
     dc = TrepanCore(None, opts=opts)
     dc.step_ignore = 1
-    print('dc._is_step_next_stop():', dc._is_step_next_stop('line'))
-    print('dc._is_step_next_stop():', dc._is_step_next_stop('line'))
-    print('dc.step_ignore:', dc.step_ignore)
-    print('dc.is_started:', dc.is_started())
-    print(dc.canonic('<string>'))
+    print("dc._is_step_next_stop():", dc._is_step_next_stop("line"))
+    print("dc._is_step_next_stop():", dc._is_step_next_stop("line"))
+    print("dc.step_ignore:", dc.step_ignore)
+    print("dc.is_started:", dc.is_started())
+    print(dc.canonic("<string>"))
     print(dc.canonic(__file__))
     pass

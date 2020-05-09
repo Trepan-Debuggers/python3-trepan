@@ -6,9 +6,9 @@
 import inspect, sys, types
 from dis import distb, findlabels, findlinestarts
 
-from xdis import IS_PYPY, PYTHON_VERSION
+from xdis import Bytecode, IS_PYPY, PYTHON_VERSION
 from xdis.main import get_opcode
-from xdis.bytecode import get_instructions_bytes, Bytecode
+from xdis.bytecode import get_instructions_bytes
 
 from trepan.lib import format as Mformat
 format_token = Mformat.format_token

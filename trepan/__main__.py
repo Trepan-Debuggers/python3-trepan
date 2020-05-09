@@ -34,7 +34,6 @@ import trepan.misc as Mmisc
 # The name of the debugger we are currently going by.
 __title__ = package
 
-# version.py sets variable VERSION.
 from trepan.version import VERSION
 
 
