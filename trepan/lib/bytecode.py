@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Bytecode instruction routines"""
 
-import dis, re
+import xdis, re
 from opcode import opname, HAVE_ARGUMENT
 
 
@@ -51,7 +51,7 @@ def next_opcode(code, offset):
 
 
 def next_linestart(co, offset, count=1):
-    linestarts = dict(dis.findlinestarts(co))
+    linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
     # n = len(code)
     # contains_cond_jump = False
@@ -66,7 +66,7 @@ def next_linestart(co, offset, count=1):
 
 
 def stmt_contains_opcode(co, lineno, query_opcode):
-    linestarts = dict(dis.findlinestarts(co))
+    linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
     found_start = False
     for offset, start_line in list(linestarts.items()):
