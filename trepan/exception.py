@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2014, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-__package__ = 'trepan.exception'
 
 
 class DebuggerQuit(Exception):
     """An exception to signal a graceful termination of the program"""
+
     pass
 
 
@@ -26,16 +26,20 @@ class DebuggerRestart(Exception):
     You can pass in an array containing the arguments to restart, should
     we have to issue an execv-style restart.
     """
+
     def __init__(self, sys_argv=[]):
         self.sys_argv = sys_argv
         return
+
     pass
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     try:
-        raise DebuggerRestart(['a', 'b'])
+        raise DebuggerRestart(["a", "b"])
     except DebuggerRestart:
         import sys
+
         print(sys.exc_info()[1].sys_argv)
         pass
     pass

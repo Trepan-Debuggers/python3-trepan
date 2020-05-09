@@ -16,11 +16,14 @@
 """ Functions for working with Python frames"""
 import inspect, linecache, os, re, xdis
 
-from trepan.lib import bytecode as Mbytecode, printing as Mprint
-from trepan.lib import format as Mformat
+import trepan.lib.bytecode as Mbytecode
+import trepan.lib.printing as Mprint
+import trepan.lib.format as Mformat
+import trepan.lib.pp as Mpp
+
 from trepan.lib.deparse import deparse_offset
-from trepan.lib import pp as Mpp
 from trepan.processor.cmdfns import deparse_fn
+
 from xdis.main import get_opcode
 from xdis import PYTHON_VERSION, IS_PYPY
 

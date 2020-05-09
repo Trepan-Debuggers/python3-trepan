@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 "CommandProcessor completion routines"
 import pyficache, re
 
-from trepan.lib import complete as Mcomplete
+import trepan.lib.complete as Mcomplete
 
 
 def complete_token_filtered(aliases, prefix, expanded):
@@ -26,33 +26,30 @@ def complete_token_filtered(aliases, prefix, expanded):
     *expanded*."""
 
     complete_ary = list(aliases.keys())
-    results = [cmd for cmd in
-               complete_ary if cmd.startswith(prefix)] and not (
-                   cmd in aliases and expanded not in aliases[cmd])
+    results = [cmd for cmd in complete_ary if cmd.startswith(prefix)] and not (
+        cmd in aliases and expanded not in aliases[cmd]
+    )
     return sorted(results, key=lambda pair: pair[0])
 
 
-def completer(self, str, state, last_token=''):
+def completer(self, str, state, last_token=""):
     next_blank_pos, token = Mcomplete.next_token(str, 0)
     if len(token) == 0 and not 0 == len(last_token):
-        return ['', None]
+        return ["", None]
     match_pairs = Mcomplete.complete_token_with_next(self.commands, token)
     match_hash = {}
     for pair in match_pairs:
         match_hash[pair[0]] = pair[1]
         pass
 
-    alias_pairs = Mcomplete \
-      .complete_token_filtered_with_next(self.aliases,
-                                         token,
-                                         match_hash,
-                                         list(self.commands.keys()))
+    alias_pairs = Mcomplete.complete_token_filtered_with_next(
+        self.aliases, token, match_hash, list(self.commands.keys())
+    )
     match_pairs += alias_pairs
 
-    macro_pairs = Mcomplete \
-      .complete_token_filtered_with_next(self.macros,
-                                         token, match_hash,
-                                         self.commands.keys())
+    macro_pairs = Mcomplete.complete_token_filtered_with_next(
+        self.macros, token, match_hash, self.commands.keys()
+    )
     match_pairs += macro_pairs
 
     if len(str) == next_blank_pos:
@@ -76,22 +73,24 @@ def completer(self, str, state, last_token=''):
         #   ["#{name} #{args[1..-1].join(' ')}"]
 
     # len(match_pairs) == 1
-    if str[-1] == ' ' and str.rstrip().endswith(token):
-        token=''
+    if str[-1] == " " and str.rstrip().endswith(token):
+        token = ""
         pass
-    return next_complete(str, next_blank_pos, match_pairs[0][1],
-                         token) + [None]
+    return next_complete(str, next_blank_pos, match_pairs[0][1], token) + [None]
 
 
 def next_complete(str, next_blank_pos, cmd, last_token):
     next_blank_pos, token = Mcomplete.next_token(str, next_blank_pos)
 
-    if hasattr(cmd, 'complete_token_with_next'):
+    if hasattr(cmd, "complete_token_with_next"):
         match_pairs = cmd.complete_token_with_next(token)
         if len(match_pairs) == 0:
             return [None]
-        if (next_blank_pos == len(str) and 1 == len(match_pairs) and
-            match_pairs[0][0] == token):
+        if (
+            next_blank_pos == len(str)
+            and 1 == len(match_pairs)
+            and match_pairs[0][0] == token
+        ):
             # Add space to advance completion on next tab-complete
             match_pairs[0][0] += " "
             pass
@@ -99,72 +98,75 @@ def next_complete(str, next_blank_pos, cmd, last_token):
             return sorted([pair[0] for pair in match_pairs])
         else:
             if len(match_pairs) == 1:
-                return next_complete(str, next_blank_pos,  match_pairs[0][1],
-                                     token)
+                return next_complete(str, next_blank_pos, match_pairs[0][1], token)
             else:
                 return sorted([pair[0] for pair in match_pairs])
                 pass
             pass
         pass
-    elif hasattr(cmd, 'complete'):
+    elif hasattr(cmd, "complete"):
         matches = cmd.complete(token)
         if 0 == len(matches):
             return [None]
         return matches
     return [None]
 
+
 def complete_bpnumber(self, prefix):
     return Mcomplete.complete_brkpts(self.core.bpmgr, prefix)
+
 
 def complete_break_linenumber(self, prefix):
     canonic_name = self.proc.curframe.f_code.co_filename
     completions = pyficache.trace_line_numbers(canonic_name)
-    return Mcomplete.complete_token([str(i) for i in completions],
-                                    prefix)
+    return Mcomplete.complete_token([str(i) for i in completions], prefix)
+
 
 def complete_identifier(cmd, prefix):
-    '''Complete an arbitrary expression.'''
-    if not cmd.proc.curframe: return [None]
+    """Complete an arbitrary expression."""
+    if not cmd.proc.curframe:
+        return [None]
     # Collect globals and locals.  It is usually not really sensible to also
     # complete builtins, and they clutter the namespace quite heavily, so we
     # leave them out.
     ns = cmd.proc.curframe.f_globals.copy()
     ns.update(cmd.proc.curframe.f_locals)
-    if '.' in prefix:
+    if "." in prefix:
         # Walk an attribute chain up to the last part, similar to what
         # rlcompleter does.  This will bail if any of the parts are not
         # simple attribute access, which is what we want.
-        dotted = prefix.split('.')
+        dotted = prefix.split(".")
         try:
             obj = ns[dotted[0]]
             for part in dotted[1:-1]:
                 obj = getattr(obj, part)
         except (KeyError, AttributeError):
             return []
-        pre_prefix = '.'.join(dotted[:-1]) + '.'
-        return [pre_prefix + n for n in dir(obj) if
-                n.startswith(dotted[-1])]
+        pre_prefix = ".".join(dotted[:-1]) + "."
+        return [pre_prefix + n for n in dir(obj) if n.startswith(dotted[-1])]
     else:
         # Complete a simple name.
         return Mcomplete.complete_token(ns.keys(), prefix)
 
+
 def complete_id_and_builtins(cmd, prefix):
-    if not cmd.proc.curframe: return [None]
-    items = (list(cmd.proc.curframe.f_builtins.keys()) +
-             complete_identifier(cmd, prefix))
+    if not cmd.proc.curframe:
+        return [None]
+    items = list(cmd.proc.curframe.f_builtins.keys()) + complete_identifier(cmd, prefix)
     return Mcomplete.complete_token(items, prefix)
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     import inspect
     from trepan.processor import cmdproc as Mcmdproc
     from trepan.processor.command import mock as Mmock
     from trepan.processor.command import base_cmd as mBaseCmd
+
     d = Mmock.MockDebugger()
     cmdproc = Mcmdproc.CommandProcessor(d.core)
     cmdproc.curframe = inspect.currentframe()
     cmd = mBaseCmd.DebuggerCommand(cmdproc)
-    print(complete_identifier(cmd, ''))
-    print(complete_identifier(cmd, 'M'))
-    print(complete_id_and_builtins(cmd, 'M'))
+    print(complete_identifier(cmd, ""))
+    print(complete_identifier(cmd, "M"))
+    print(complete_id_and_builtins(cmd, "M"))
     pass

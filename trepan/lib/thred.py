@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2014, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ def find_debugged_frame(frame):
         f = f.f_back
         pass
     if f_prev:
-        val = f_prev.f_locals.get('tracer_func_frame')
+        val = f_prev.f_locals.get("tracer_func_frame")
         if val == f_prev:
             if f_prev.f_back:
                 f_prev = f_prev.f_back
@@ -52,7 +52,7 @@ def id2thread_name(thread_id):
 
 
 def map_thread_names():
-    '''Invert threading._active'''
+    """Invert threading._active"""
     name2id = {}
     for thread_id in list(threading._active.keys()):
         thread = threading._active[thread_id]
@@ -63,22 +63,24 @@ def map_thread_names():
         pass
     return name2id
 
+
 # Demo this masterpiece:
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
-    print('=' * 10)
+
+    print("=" * 10)
 
     def showit():
-        print('Current thread: %s' % current_thread_name())
-        print('All threads:')
+        print("Current thread: %s" % current_thread_name())
+        print("All threads:")
         for thread_id, f in list(sys._current_frames().items()):
-            print('  %s %s' % (id2thread_name(thread_id),
-                               find_debugged_frame(f)))
+            print("  %s %s" % (id2thread_name(thread_id), find_debugged_frame(f)))
             pass
-        print('-' * 10)
-        print('Thread->id map:')
+        print("-" * 10)
+        print("Thread->id map:")
         print(map_thread_names())
-        print('=' * 10)
+        print("=" * 10)
+
     showit()
 
     class BgThread(threading.Thread):
@@ -89,9 +91,10 @@ if __name__ == '__main__':
         def run(self):
             showit()
             return
+
         pass
 
     background = BgThread()
     background.start()
-    background.join()    # Wait for the background task to finish
+    background.join()  # Wait for the background task to finish
     pass

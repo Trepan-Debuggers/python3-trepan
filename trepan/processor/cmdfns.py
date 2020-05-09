@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015, 2017-2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017-2018, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,20 +13,19 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-''' Common command-parsing routines such as check command argument
+""" Common command-parsing routines such as check command argument
 counts, to parse a string for an integer, or check a string for an
 on/off setting value.
-'''
+"""
 import os, sys, tempfile
 import pyficache
 from xdis import IS_PYPY
 
+
 def source_tempfile_remap(prefix, text):
-    fd = tempfile.NamedTemporaryFile(suffix='.py',
-                                     prefix=prefix,
-                                     delete=False)
+    fd = tempfile.NamedTemporaryFile(suffix=".py", prefix=prefix, delete=False)
     with fd:
-        fd.write(bytes(text, 'UTF-8'))
+        fd.write(bytes(text, "UTF-8"))
         fd.close()
         pass
     return fd.name
@@ -35,7 +34,8 @@ def source_tempfile_remap(prefix, text):
 def deparse_fn(code):
     try:
         from uncompyle6.semanitcs.linemap import (
-            deparse_code_with_fragments_and_map as deparse_code)
+            deparse_code_with_fragments_and_map as deparse_code,
+        )
     except ImportError:
         return None
     sys_version = sys.version[:5]
@@ -46,6 +46,7 @@ def deparse_fn(code):
     except:
         raise
     return None
+
 
 def deparse_getline(code, filename, line_number, opts):
     # I Would like to figure out how to deparse the entire module,
@@ -63,13 +64,15 @@ def deparse_getline(code, filename, line_number, opts):
         remapped_filename = source_tempfile_remap(prefix, text)
         lines = text.split("\n")
         first_line = code.co_firstlineno
-        linemap = [(line_no, deparsed.source_linemap[line_no])
-                   for line_no in
-                   sorted(deparsed.source_linemap.keys())]
+        linemap = [
+            (line_no, deparsed.source_linemap[line_no])
+            for line_no in sorted(deparsed.source_linemap.keys())
+        ]
         print("XXXX", linemap)
         pyficache.remap_file_lines(filename, remapped_filename, linemap)
         return remapped_filename, pyficache.getline(filename, line_number, opts)
     return None, None
+
 
 def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
     """Another get_int() routine, this one simpler and less stylized
@@ -86,16 +89,20 @@ def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):
             if errmsg:
                 errmsg(msg_on_error)
             else:
-                errmsg('Expecting an integer, got: %s.' % str(arg))
+                errmsg("Expecting an integer, got: %s." % str(arg))
             return None
 
     if min_value and ret_value < min_value:
-        errmsg('Expecting integer value to be at least %d, got: %d.' %
-                    (min_value, ret_value))
+        errmsg(
+            "Expecting integer value to be at least %d, got: %d."
+            % (min_value, ret_value)
+        )
         return None
     elif max_value and ret_value > max_value:
-        errmsg('Expecting integer value to be at most %d, got: %d.' %
-               (max_value, ret_value))
+        errmsg(
+            "Expecting integer value to be at most %d, got: %d."
+            % (max_value, ret_value)
+        )
         return None
     return ret_value
 
@@ -109,10 +116,11 @@ def get_int(errmsg, arg, default=1, cmdname=None):
             default = int(eval(arg))
         except (SyntaxError, NameError, ValueError):
             if cmdname:
-                errmsg("Command '%s' expects an integer; got: %s." %
-                       (cmdname, str(arg)))
+                errmsg(
+                    "Command '%s' expects an integer; got: %s." % (cmdname, str(arg))
+                )
             else:
-                errmsg('Expecting an integer, got: %s.' % str(arg))
+                errmsg("Expecting an integer, got: %s." % str(arg))
                 pass
             raise ValueError
     return default
@@ -128,8 +136,10 @@ def get_onoff(errmsg, arg, default=None, print_error=True):
                 pass
             raise ValueError
         return default
-    if arg == '1' or arg == 'on': return True
-    if arg == '0' or arg =='off': return False
+    if arg == "1" or arg == "on":
+        return True
+    if arg == "0" or arg == "off":
+        return False
 
     if print_error:
         errmsg("Expecting 'on', 1, 'off', or 0. Got: %s." % str(arg))
@@ -138,13 +148,13 @@ def get_onoff(errmsg, arg, default=None, print_error=True):
 
 def get_val(curframe, errmsg, arg):
     try:
-        return eval(arg, curframe.f_globals,
-                    curframe.f_locals)
+        return eval(arg, curframe.f_globals, curframe.f_locals)
     except:
         t, v = sys.exc_info()[:2]
         if isinstance(t, str):
-                exc_type_name = t
-        else: exc_type_name = t.__name__
+            exc_type_name = t
+        else:
+            exc_type_name = t.__name__
         errmsg(str("%s: %s" % (exc_type_name, arg)))
         raise
     return  # Not reached
@@ -154,7 +164,8 @@ def run_set_bool(obj, args):
     """set a Boolean-valued debugger setting. 'obj' is a generally a
     subcommand that has 'name' and 'debugger.settings' attributes"""
     try:
-        if 0 == len(args): args = ['on']
+        if 0 == len(args):
+            args = ["on"]
         obj.debugger.settings[obj.name] = get_onoff(obj.errmsg, args[0])
     except ValueError:
         pass
@@ -164,11 +175,12 @@ def run_set_bool(obj, args):
 def run_set_int(obj, arg, msg_on_error, min_value=None, max_value=None):
     """set an Integer-valued debugger setting. 'obj' is a generally a
     subcommand that has 'name' and 'debugger.settings' attributes"""
-    if '' == arg.strip():
+    if "" == arg.strip():
         obj.errmsg("You need to supply a number.")
         return
-    obj.debugger.settings[obj.name] = \
-        get_an_int(obj.errmsg, arg, msg_on_error, min_value, max_value)
+    obj.debugger.settings[obj.name] = get_an_int(
+        obj.errmsg, arg, msg_on_error, min_value, max_value
+    )
     return obj.debugger.settings[obj.name]
 
 
@@ -177,14 +189,16 @@ def run_show_bool(obj, what=None):
     'obj' is generally a subcommand that has 'name' and
     'debugger.setting' attributes."""
     val = show_onoff(obj.debugger.settings[obj.name])
-    if not what: what = obj.name
+    if not what:
+        what = obj.name
     return obj.msg("%s is %s." % (what, val))
 
 
 def run_show_int(obj, what=None):
     """Generic subcommand integer value display"""
     val = obj.debugger.settings[obj.name]
-    if not what: what = obj.name
+    if not what:
+        what = obj.name
     return obj.msg("%s is %d." % (what, val))
 
 
@@ -206,32 +220,36 @@ def run_show_val(obj, name):
 
 
 def want_different_line(cmd, default):
-    if cmd[-1] == '-':
+    if cmd[-1] == "-":
         return False
-    elif cmd[-1] == '+':
+    elif cmd[-1] == "+":
         return True
     return default
 
+
 # Demo it
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     def errmsg(msg):
         print("** %s" % msg)
         return
 
     def msg(m):
         print(m)
-    print(get_int(errmsg, '1+2'))  # 3
+
+    print(get_int(errmsg, "1+2"))  # 3
     print(get_int(errmsg, None))  # 1
-    print(get_an_int(errmsg, '6*1', '6*1 is okay'))  # 6
-    print(get_an_int(errmsg, '0', '0 is too small', 1))  # errmsg
-    print(get_an_int(errmsg, '5+a', '5+a is no good'))   # errmsg
+    print(get_an_int(errmsg, "6*1", "6*1 is okay"))  # 6
+    print(get_an_int(errmsg, "0", "0 is too small", 1))  # errmsg
+    print(get_an_int(errmsg, "5+a", "5+a is no good"))  # errmsg
     try:
-        get_int(errmsg, 'pi')
+        get_int(errmsg, "pi")
     except ValueError:
         print("Good - 'pi' is not an integer")
         pass
 
     import inspect
+
     curframe = inspect.currentframe()
 
     print(want_different_line("s+ %s", False))

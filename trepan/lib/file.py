@@ -13,21 +13,25 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''Things related to file/module status'''
+"""Things related to file/module status"""
 import os, pyficache, stat, sys
 
+
 def file_list():
-    return list(set(pyficache.cached_files() +
-                    list(pyficache.file2file_remap.keys())))
+    return list(set(pyficache.cached_files() + list(pyficache.file2file_remap.keys())))
+
 
 def is_compiled_py(filename):
     """
     Given a file name, return True if the suffix is pyo or pyc (an
     optimized bytecode file).
     """
-    return True if filename[-4:].lower() in ('.pyc', '.pyo') else False
+    return True if filename[-4:].lower() in (".pyc", ".pyo") else False
 
-READABLE_MASK = (stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+
+READABLE_MASK = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
+
+
 def readable(path):
     """Test whether a path exists and is readable.  Returns None for
     broken symbolic links or a failing stat() and False if
@@ -55,8 +59,8 @@ def lookupmodule(name):
     if readable(f):
         return (None, f)
     root, ext = os.path.splitext(name)
-    if ext == '':
-        name = name + '.py'
+    if ext == "":
+        name = name + ".py"
         pass
     if os.path.isabs(name):
         return (None, name)
@@ -77,7 +81,7 @@ def parse_position(errmsg, arg):
     Parse arg as [filename|module:]lineno
     Make sure it works for C:\foo\bar.py:12
     """
-    colon = arg.rfind(':')
+    colon = arg.rfind(":")
     if colon >= 0:
         filename = arg[:colon].rstrip()
         m, f = lookupmodule(filename)
@@ -86,7 +90,7 @@ def parse_position(errmsg, arg):
             return (None, None, None)
         else:
             filename = pyficache.pyc2py(f)
-            arg = arg[colon+1:].lstrip()
+            arg = arg[colon + 1 :].lstrip()
             pass
         try:
             lineno = int(arg)
@@ -96,18 +100,20 @@ def parse_position(errmsg, arg):
         return (None, filename, lineno)
     return (None, None, None)
 
+
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
     import tempfile
-    print('readable("fdafsa"): %s' % readable('fdafdsa'))
+
+    print('readable("fdafsa"): %s' % readable("fdafdsa"))
     for mode, can_read in [(stat.S_IRUSR, True), (stat.S_IWUSR, False)]:
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
         print("readable('%s'): %s" % (f.name, readable(f.name)))
         f.close()
         pass
-    print("lookupmodule('os.path'): %s" % repr(lookupmodule('os.path')))
+    print("lookupmodule('os.path'): %s" % repr(lookupmodule("os.path")))
     print("lookupmodule(__file__): %s" % repr(lookupmodule(__file__)))
-    print("lookupmodule('fafdsadsa'): %s" % repr(lookupmodule('fafdsafdsa')))
+    print("lookupmodule('fafdsadsa'): %s" % repr(lookupmodule("fafdsafdsa")))
 
     pass
