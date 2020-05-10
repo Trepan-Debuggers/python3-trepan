@@ -30,6 +30,9 @@ import tracer
 
 # Our local modules
 from trepan.lib import breakpoint, default, stack as Mstack
+import trepan.lib.breakpoint as breakpoint
+import trepan.lib.default as default
+import trepan.lib.stack as Mstack
 import trepan.misc as Mmisc
 import trepan.clifns as Mclifns
 from trepan.processor import trace as Mtrace, cmdproc as Mcmdproc

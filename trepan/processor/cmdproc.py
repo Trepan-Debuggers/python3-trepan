@@ -712,7 +712,7 @@ class CommandProcessor(Mprocessor.Processor):
                 else:
                     if self.debugger.intf[-1].output:
                         self.debugger.intf[-1].output.writeline("Leaving")
-                        raise Mexcept.DebuggerQuit
+                        raise SystemExit
                         pass
                     break
                 pass
@@ -958,61 +958,11 @@ class CommandProcessor(Mprocessor.Processor):
 
     def populate_commands_pip(self, Mcommand):
         cmd_instances = []
-        eval_cmd_template = 'command_mod.%s(self)'
-        for mod_name in Mcommand.__dict__.keys():
-            if mod_name.startswith('__'): continue
-            import_name = "trepan.processor.command." + mod_name
-            imp = __import__(import_name)
-            if imp.__name__ == 'trepan':
-                command_mod = imp.processor.command
-            else:
-                if mod_name in ('info_sub', 'set_sub', 'show_sub',):
-                    pass
-                try:
-                    command_mod = getattr(__import__(import_name), mod_name)
-                except:
-                    # Don't need to warn about optional modules
-                    if mod_name not in self.optional_modules:
-                        print('Error importing %s: %s' %
-                              (mod_name, sys.exc_info()[0]))
-                        pass
-                    continue
-                pass
-
-            classnames = [ tup[0] for tup in
-                           inspect.getmembers(command_mod, inspect.isclass)
-                           if ('DebuggerCommand' != tup[0] and
-                               tup[0].endswith('Command')) ]
-            for classname in classnames:
-                eval_cmd = eval_cmd_template % classname
-                if False:
-                    instance = eval(eval_cmd)
-                    cmd_instances.append(instance)
-                else:
-                    try:
-                        instance = eval(eval_cmd)
-                        cmd_instances.append(instance)
-                    except:
-                        print('Error loading %s from %s: %s' %
-                              (classname, mod_name, sys.exc_info()[0]))
-                        pass
-                    pass
-                pass
-            pass
-        return cmd_instances
-
-    def populate_commands_pip(self, Mcommand, base_name):
-        """
-        Add files in filesystem to self.commands.
-        If running from source or from a pip_install'd package which is
-        some sort of archive file, use this.
-        """
-        cmd_instances = []
         eval_cmd_template = "command_mod.%s(self)"
         for mod_name in Mcommand.__dict__.keys():
             if mod_name.startswith("__"):
                 continue
-            import_name = "%s.processor.command.%s" %s (base_name, mod_name)
+            import_name = "trepan.processor.command." + mod_name
             imp = __import__(import_name)
             if imp.__name__ == base_name:
                 command_mod = imp.processor.command
@@ -1054,13 +1004,12 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return cmd_instances
 
-    def populate_commands_easy_install(self, Mcommand):
+    def populate_commands_easy_install(self, Mcommand, srcdir=get_srcdir()):
         """
         Add files in filesystem to self.commands.
-        If running from source or from an easy_install'd package, use this.
+        If running from source or from an easy_install'd package, this is used.
         """
         cmd_instances = []
-        srcdir = get_srcdir()
         sys.path.insert(0, srcdir)
 
         for mod_name in Mcommand.__modules__:
