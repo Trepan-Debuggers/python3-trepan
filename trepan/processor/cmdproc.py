@@ -19,10 +19,8 @@ import pyficache
 from trepan.processor import cmdfns
 from trepan.lib.deparse import deparse_and_cache
 
-try:
-    from reprlib import Repr
-except:
-    from reprlib import repr as Repr
+# Note: the module name pre 3.2 is repr
+from reprlib import Repr
 
 from pygments.console import colorize
 
@@ -192,9 +190,8 @@ def print_location(proc_obj):
     remapped_file = None
     source_text = None
     while i_stack >= 0:
-        frame_lineno = proc_obj.stack[i_stack]
+        frame, lineno = proc_obj.stack[i_stack]
         i_stack -= 1
-        frame, lineno = frame_lineno
 
         #         # Next check to see that local variable breadcrumb exists and
         #         # has the magic dynamic value.
@@ -421,9 +418,13 @@ class CommandProcessor(Mprocessor.Processor):
         self.stack = []
         self.thread_name = None
         self.frame_thread_name = None
-        initfile_list = get_option("initfile_list")
-        for init_cmdfile in initfile_list:
-            self.queue_startfile(init_cmdfile)
+
+        # FIXME: A horrible hack until we figure out what's up with
+        # trepan-xpy which also calls this.
+        if type(self).__name__ == "CommmandProcessor":
+            initfile_list = get_option("initfile_list")
+            for init_cmdfile in initfile_list:
+                self.queue_startfile(init_cmdfile)
         return
 
     def _saferepr(self, str, maxwidth=None):
