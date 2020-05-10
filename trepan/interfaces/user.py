@@ -50,6 +50,7 @@ class UserInterface(Minterface.TrepanInterface):
         self.interactive = True  # Or at least so we think initially
         self.input       = inp or Minput.DebuggerUserInput()
         self.output      = out or Moutput.DebuggerUserOutput()
+        self.debugger_name = user_opts.get("debugger_name", "trepan3k")
 
         if self.input.use_history():
             self.complete = user_opts['complete']
@@ -115,7 +116,7 @@ class UserInterface(Minterface.TrepanInterface):
         # This routine gets called multiple times.
         # We hard-code the close() function here.
         try:
-            self.msg("trepan3k: That's all, folks...")
+            self.msg("%s: That's all, folks..." % self.debugger_name)
             self.close()
         except:
             pass

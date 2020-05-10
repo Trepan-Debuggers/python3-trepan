@@ -13,8 +13,8 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-''' Not a command. A stub class used by a command in its 'main' for
-demonstrating how the command works.'''
+""" Not a command. A stub class used by a command in its 'main' for
+demonstrating how the command works."""
 
 import trepan.lib
 import trepan.inout
@@ -24,28 +24,32 @@ import trepan.processor.command
 import os, sys
 from trepan.lib import breakpoint, default
 
+
 class MockIO:
-    def readline(self, prompt='', add_to_history=False):
+    def readline(self, prompt="", add_to_history=False):
         print(prompt)
-        return 'quit'
+        return "quit"
 
     def output(self):
         print
+
     pass
+
 
 class MockUserInterface:
     def __init__(self):
         self.io = MockIO()
         self.output = MockIO()
+        self.debugger_name = "trepan3k"
         return
 
     def confirm(self, msg, default):
-        print('** %s' % msg)
+        print("** %s" % msg)
         # Ignore the default.
         return True
 
     def errmsg(self, msg):
-        print('** %s' % msg)
+        print("** %s" % msg)
         return
 
     def finalize(self, last_wishes=None):
@@ -58,54 +62,59 @@ class MockUserInterface:
     def msg_nocr(self, msg):
         sys.stdout.write(msg)
         return
+
     pass
+
 
 class MockProcessor:
     def __init__(self, core):
-        self.core         = core
-        self.debugger     = core.debugger
+        self.core = core
+        self.debugger = core.debugger
         self.continue_running = False
-        self.curframe     = None
-        self.event2short  = {}
-        self.frame        = None
-        self.intf         = core.debugger.intf
+        self.curframe = None
+        self.event2short = {}
+        self.frame = None
+        self.intf = core.debugger.intf
         self.last_command = None
-        self.stack        = []
+        self.stack = []
         return
 
-    def get_int(self, arg, min_value=0, default=1, cmdname=None,
-                    at_most=None):
+    def get_int(self, arg, min_value=0, default=1, cmdname=None, at_most=None):
         return None
 
     def undefined_cmd(self, cmd):
         self.intf[-1].errmsg('Undefined mock command: "%s' % cmd)
         return
+
     pass
+
 
 # External Egg packages
 import tracefilter
 
+
 class MockDebuggerCore:
     def __init__(self, debugger):
-        self.debugger       = debugger
-        self.execution_status = 'Pre-execution'
-        self.filename_cache  = {}
-        self.ignore_filter  = tracefilter.TraceFilter([])
-        self.bpmgr          = breakpoint.BreakpointManager()
-        self.processor      = MockProcessor(self)
-        self.step_ignore    = -1
-        self.stop_frame     = None
-        self.last_lineno    = None
-        self.last_offset    = None
-        self.last_filename  = None
+        self.debugger = debugger
+        self.execution_status = "Pre-execution"
+        self.filename_cache = {}
+        self.ignore_filter = tracefilter.TraceFilter([])
+        self.bpmgr = breakpoint.BreakpointManager()
+        self.processor = MockProcessor(self)
+        self.step_ignore = -1
+        self.stop_frame = None
+        self.last_lineno = None
+        self.last_offset = None
+        self.last_filename = None
         self.different_line = None
-        self.from_ipython   = False
+        self.from_ipython = False
         return
 
     def set_next(self, frame, step_events=None):
         pass
 
-    def stop(self): pass
+    def stop(self):
+        pass
 
     def canonic(self, filename):
         return filename
@@ -117,28 +126,36 @@ class MockDebuggerCore:
         return name
 
     def is_running(self):
-        return 'Running' == self.execution_status
+        return "Running" == self.execution_status
 
     def get_file_breaks(self, filename):
         return []
+
     pass
+
 
 class MockDebugger:
     def __init__(self):
-        self.intf             = [MockUserInterface()]
-        self.core             = MockDebuggerCore(self)
-        self.settings         = default.DEBUGGER_SETTINGS
-        self.orig_sys_argv    = None
+        self.intf = [MockUserInterface()]
+        self.core = MockDebuggerCore(self)
+        self.settings = default.DEBUGGER_SETTINGS
+        self.orig_sys_argv = None
         self.program_sys_argv = []
         return
 
-    def stop(self): pass
+    def stop(self):
+        pass
 
-    def restart_argv(self): return []
+    def restart_argv(self):
+        return []
+
     pass
 
-def dbg_setup(d = None):
-    if d is None: d = MockDebugger()
+
+def dbg_setup(d=None):
+    if d is None:
+        d = MockDebugger()
     from trepan.processor import cmdproc
+
     cp = cmdproc.CommandProcessor(d.core)
     return d, cp

@@ -304,7 +304,10 @@ class Trepan(object):
 
         # How is I/O for this debugger handled? This should
         # be set before calling DebuggerCore.
-        interface_opts={'complete': completer}
+        interface_opts={
+            "complete": completer,
+            "debugger_name": "trepan3k",
+        }
         # FIXME when I pass in opts=opts things break
         interface = (get_option('interface') or
                      Muser.UserInterface(opts=interface_opts))
