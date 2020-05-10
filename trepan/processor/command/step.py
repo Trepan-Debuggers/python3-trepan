@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
+import os.path as osp
 import tracer
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor import cmdfns as Mcmdfns
 
 
-class StepCommand(Mbase_cmd.DebuggerCommand):
+class StepCommand(DebuggerCommand):
     """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
 
 Execute the current line, stopping at the next event.
@@ -64,24 +64,35 @@ See also:
 `finish` for other ways to progress execution.
 """
 
-    aliases       = ('step+', 'step-', 'step>', 'step<', 'step!',
-                     's', 's+', 's-', 's<', 's>', 's!')
-    category      = 'running'
-    min_args      = 0
-    max_args      = None
-    execution_set = ['Running']
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Step program (possibly entering called functions)'
+    aliases = (
+        "step+",
+        "step-",
+        "step>",
+        "step<",
+        "step!",
+        "s",
+        "s+",
+        "s-",
+        "s<",
+        "s>",
+        "s!",
+    )
+    category = "running"
+    min_args = 0
+    max_args = None
+    execution_set = ["Running"]
+    name = osp.basename(__file__).split(".")[0]
+    need_stack = True
+    short_help = "Step program (possibly entering called functions)"
 
     def run(self, args):
-        step_events  = []
-        if args[0][-1] == '>':
-            step_events  = ['call']
-        elif args[0][-1] == '<':
-            step_events  = ['return']
-        elif args[0][-1] == '!':
-            step_events  = ['exception']
+        step_events = []
+        if args[0][-1] == ">":
+            step_events = ["call"]
+        elif args[0][-1] == "<":
+            step_events = ["return"]
+        elif args[0][-1] == "!":
+            step_events = ["exception"]
             pass
         if len(args) <= 1:
             self.proc.debugger.core.step_ignore = 0
@@ -96,15 +107,16 @@ See also:
                 pos += 1
                 pass
             if pos == len(args) - 1:
-                self.core.step_ignore = self.proc.get_int(args[pos], default=1,
-                                                          cmdname='step')
-                if self.core.step_ignore is None: return False
+                self.core.step_ignore = self.proc.get_int(
+                    args[pos], default=1, cmdname="step"
+                )
+                if self.core.step_ignore is None:
+                    return False
                 # 0 means stop now or step 1, so we subtract 1.
                 self.core.step_ignore -= 1
                 pass
             elif pos != len(args):
-                self.errmsg("Invalid additional parameters %s"
-                            % ' '.join(args[pos]))
+                self.errmsg("Invalid additional parameters %s" % " ".join(args[pos]))
                 return False
             pass
 
@@ -114,33 +126,35 @@ See also:
             self.core.step_events = step_events
             pass
 
-        self.core.different_line   = \
-            Mcmdfns.want_different_line(args[0], self.settings['different'])
-        self.core.stop_level       = None
-        self.core.last_frame       = None
-        self.core.stop_on_finish   = False
+        self.core.different_line = Mcmdfns.want_different_line(
+            args[0], self.settings["different"]
+        )
+        self.core.stop_level = None
+        self.core.last_frame = None
+        self.core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
         return True
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from mock import MockDebugger
+
     d = MockDebugger()
     cmd = StepCommand(d.core.processor)
-    for c in (['s', '5'],
-              ['step', '1+2'],
-              ['s', 'foo']):
+    for c in (["s", "5"], ["step", "1+2"], ["s", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)
-        print('Execute result: %s' % result)
-        print('step_ignore %s' % repr(d.core.step_ignore))
-        print('continue_running: %s' % cmd.proc.continue_running)
+        print("Execute result: %s" % result)
+        print("step_ignore %s" % repr(d.core.step_ignore))
+        print("continue_running: %s" % cmd.proc.continue_running)
         pass
-    for c in (['s'], ['step+'], ['s-'], ['s!'], ['s>'], ['s<']):
+    for c in (["s"], ["step+"], ["s-"], ["s!"], ["s>"], ["s<"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print('different line %s:' % c[0], cmd.core.different_line)
+        print("different line %s:" % c[0], cmd.core.different_line)
         pass
     pass

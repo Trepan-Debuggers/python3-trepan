@@ -14,9 +14,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os, threading
+import ctypes
 
 # Our local modules
-import trepan.processor.command.base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.exception import DebuggerQuit
 
 
@@ -46,7 +47,7 @@ def ctype_async_raise(thread_obj, exception):
         raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
-class QuitCommand(Mbase_cmd.DebuggerCommand):
+class QuitCommand(DebuggerCommand):
     """**quit** [**unconditionally**]
 
 Gently terminate the debugged program.
