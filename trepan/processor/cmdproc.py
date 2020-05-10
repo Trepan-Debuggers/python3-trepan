@@ -16,6 +16,7 @@
 import inspect, linecache, sys, shlex, tempfile, traceback, re
 import os.path as osp
 import pyficache
+import importlib
 from trepan.processor import cmdfns
 from trepan.lib.deparse import deparse_and_cache
 
@@ -1004,20 +1005,19 @@ class CommandProcessor(Mprocessor.Processor):
             pass
         return cmd_instances
 
-    def populate_commands_easy_install(self, Mcommand, srcdir=get_srcdir()):
+    def populate_commands_easy_install(self, Mcommand):
         """
         Add files in filesystem to self.commands.
         If running from source or from an easy_install'd package, this is used.
         """
         cmd_instances = []
-        sys.path.insert(0, srcdir)
 
         for mod_name in Mcommand.__modules__:
             if mod_name in ("info_sub", "set_sub", "show_sub",):
                 pass
-            import_name = "command." + mod_name
+            import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
-                command_mod = getattr(__import__(import_name), mod_name)
+                command_mod = importlib.import_module(import_name)
             except:
                 if mod_name not in self.optional_modules:
                     print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
