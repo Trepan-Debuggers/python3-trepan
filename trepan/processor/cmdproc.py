@@ -420,12 +420,9 @@ class CommandProcessor(Mprocessor.Processor):
         self.thread_name = None
         self.frame_thread_name = None
 
-        # FIXME: A horrible hack until we figure out what's up with
-        # trepan-xpy which also calls this.
-        if type(self).__name__ == "CommandProcessor":
-            initfile_list = get_option("initfile_list")
-            for init_cmdfile in initfile_list:
-                self.queue_startfile(init_cmdfile)
+        initfile_list = get_option("initfile_list")
+        for init_cmdfile in initfile_list:
+            self.queue_startfile(init_cmdfile)
         return
 
     def _saferepr(self, str, maxwidth=None):
