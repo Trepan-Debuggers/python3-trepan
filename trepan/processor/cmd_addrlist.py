@@ -111,7 +111,7 @@ def parse_addr_list_cmd(proc, args, listsize=40):
                 else:
                     last = first + int(last[1:])
             elif not last:
-                last_is_addr = True
+                last_is_addr = first_is_addr
                 last = first + listsize
             elif last < first:
                 # Treat as a count rather than an absolute location

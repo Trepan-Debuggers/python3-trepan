@@ -504,7 +504,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.frame_thread_name = None
         return
 
-    def eval(self, arg):
+    def eval(self, arg, show_error=True):
         """Eval string arg in the current frame context."""
         try:
             return eval(arg, self.curframe.f_globals, self.curframe.f_locals)
@@ -515,7 +515,8 @@ class CommandProcessor(Mprocessor.Processor):
                 pass
             else:
                 exc_type_name = t.__name__
-            self.errmsg(str("%s: %s" % (exc_type_name, arg)))
+            if show_error:
+                self.errmsg(str("%s: %s" % (exc_type_name, arg)))
             raise
         return None  # Not reached
 
