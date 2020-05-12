@@ -121,7 +121,8 @@ DEBUGGER_SETTINGS = {
     # Reread source file if we determine it has changed?
     'reload'        : False,
 
-    # Stop at 'def' and 'class' statements?
+    # Skip instructions that make clases, functions, and closures?
+    # (In the Python they are "class" and "def" statments)
     'skip'          : True,
 
     # print trace output?
