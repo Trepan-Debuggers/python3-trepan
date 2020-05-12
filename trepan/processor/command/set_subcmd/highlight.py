@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2012-2013, 2015-2016 Rocky Bernstein
+#   Copyright (C) 2012-2013, 2015-2016, 2020 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 from pyficache import clear_file_format_cache
 
 # Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.lib.complete import complete_token
 from trepan.lib.format import color_tf
 
 
-class SetHighlight(Mbase_subcmd.DebuggerSubcommand):
+class SetHighlight(DebuggerSubcommand):
     """**set highlight** [ **reset** ] {**plain** | **light** | **dark** | **off**}
 
 Set whether we use terminal highlighting. Permissible values are:
@@ -56,54 +56,60 @@ See also:
 ---------
 `show highlight` and `set style`"""
 
-    in_list    = True
-    min_abbrev = len('hi')
-    short_help = 'Set whether we use terminal highlighting'
+    in_list = True
+    min_abbrev = len("hi")
+    short_help = "Set whether we use terminal highlighting"
 
-    highlight_choices = ('reset', 'plain', 'light', 'dark', 'off')
+    highlight_choices = ("reset", "plain", "light", "dark", "off")
 
     def complete(self, prefix):
-        return Mcomplete.complete_token(SetHighlight.highlight_choices,
-                                        prefix)
+        return complete_token(SetHighlight.highlight_choices, prefix)
 
     def get_highlight_type(self, arg):
-        if not arg: return 'light'
+        if not arg:
+            return "light"
         if arg in SetHighlight.highlight_choices:
             return arg
         else:
-            self.errmsg('Expecting %s"; got %s' %
-                        (', '.join(SetHighlight.highlight_choices), arg))
+            self.errmsg(
+                'Expecting %s"; got %s'
+                % (", ".join(SetHighlight.highlight_choices), arg)
+            )
             return None
         pass
 
     def run(self, args):
-        if len(args) >= 1 and 'reset' == args[0]:
+        if len(args) >= 1 and "reset" == args[0]:
             if len(args) >= 2:
                 highlight_type = self.get_highlight_type(args[1])
             else:
                 highlight_type = self.debugger.settings[self.name]
-            if not highlight_type: return
+            if not highlight_type:
+                return
             clear_file_format_cache()
         elif len(args) == 0:
-            highlight_type = 'plain'
+            highlight_type = "plain"
         else:
             highlight_type = self.get_highlight_type(args[0])
-            if not highlight_type: return
-            if 'off' == highlight_type:
-                highlight_type = 'plain'
+            if not highlight_type:
+                return
+            if "off" == highlight_type:
+                highlight_type = "plain"
             else:
                 clear_file_format_cache()
             pass
         self.debugger.settings[self.name] = highlight_type
-        if highlight_type in ('dark', 'light'):
+        if highlight_type in ("dark", "light"):
             color_tf.bg = highlight_type
         self.proc.set_prompt()
-        show_cmd = self.proc.commands['show']
-        show_cmd.run(['show', self.name])
+        show_cmd = self.proc.commands["show"]
+        show_cmd.run(["show", self.name])
         return
+
     pass
 
+
 # if __name__ == '__main__':
-#     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
-#     Mhelper.demo_run(SetHighlight)
+#     from trepan.processor.command.set_subcmd.__demo_helper__ import demo_run
+#     demo_run(SetHighlight)
 #     pass
