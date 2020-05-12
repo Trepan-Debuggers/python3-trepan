@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2010, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2010, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,14 +13,16 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, os, re, string, sys, importlib
+import inspect, re, sys, importlib
 
 from trepan.processor.command import base_cmd as Mbase_cmd
 from trepan.processor import subcmd as Msubcmd
 from trepan.lib import complete as Mcomplete
 
+
 def abbrev_stringify(name, min_abbrev):
-    return ("(%s)%s" % (name[:min_abbrev], name[min_abbrev:],))
+    return "(%s)%s" % (name[:min_abbrev], name[min_abbrev:],)
+
 
 def capitalize(s):
     # "abcd" -> "Abcd"
@@ -30,13 +32,14 @@ def capitalize(s):
         return s
     pass
 
+
 class SubcommandMgr(Mbase_cmd.DebuggerCommand):
 
-    category      = 'status'
-    min_args      = 0
-    max_args      = None
-    name          = '???'  # Need to define this!
-    need_stack    = False
+    category = "status"
+    min_args = 0
+    max_args = None
+    name = "???"  # Need to define this!
+    need_stack = False
 
     def __init__(self, proc, name=None):
         """Initialize show subcommands. Note: instance variable name
@@ -46,7 +49,8 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         Mbase_cmd.DebuggerCommand.__init__(self, proc)
 
         # Name is set in testing
-        if name is None: name  = self.__module__.split('.')[-1]
+        if name is None:
+            name = self.__module__.split(".")[-1]
         self.__class__.name = name
 
         self.cmds = Msubcmd.Subcmd(name, self)
@@ -56,7 +60,7 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
 
         return
 
-    def _load_debugger_subcommands(self, name):
+    def _load_debugger_subcommands(self, name, base="trepan"):
         """ Create an instance of each of the debugger
         subcommands. Commands are found by importing files in the
         directory 'name' + 'sub'. Some files are excluded via an array set
@@ -67,30 +71,40 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         commands."""
 
         # Initialization
-        cmd_instances     = []
-        class_prefix      = capitalize(name)  # e.g. Info, Set, or Show
-        module_dir        = 'trepan.processor.command.%s_subcmd' % name
-        mod               = __import__(module_dir, None, None, ['*'])
-        eval_cmd_template = 'command_mod.%s(self)'
+        cmd_instances = []
+        class_prefix = capitalize(name)  # e.g. Info, Set, or Show
+        module_dir = "%s.processor.command.%s_subcmd" % (base, name)
+        mod = __import__(module_dir, None, None, ["*"])
+        eval_cmd_template = "command_mod.%s(self)"
 
         # Import, instantiate, and add classes for each of the
         # modules found in module_dir imported above.
         for module_name in mod.__modules__:
-            import_name = module_dir + '.' + module_name
+            import_name = module_dir + "." + module_name
             try:
                 command_mod = importlib.import_module(import_name)
             except ImportError:
-                print(("Error importing name %s module %s: %s" %
-                      (import_name, module_name, sys.exc_info()[0])))
+                print(
+                    (
+                        "Error importing name %s module %s: %s"
+                        % (import_name, module_name, sys.exc_info()[0])
+                    )
+                )
                 continue
 
             # Even though we tend not to do this, it is possible to
             # put more than one class into a module/file.  So look for
             # all of them.
-            classnames = [ classname for classname, classvalue in
-                           inspect.getmembers(command_mod, inspect.isclass)
-                           if ('DebuggerCommand' != classname and
-                               classname.startswith(class_prefix)) ]
+            classnames = [
+                classname
+                for classname, classvalue in inspect.getmembers(
+                    command_mod, inspect.isclass
+                )
+                if (
+                    "DebuggerCommand" != classname
+                    and classname.startswith(class_prefix)
+                )
+            ]
 
             for classname in classnames:
                 eval_cmd = eval_cmd_template % classname
@@ -120,17 +134,19 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
             # "help cmd". Give the general help for the command part.
             doc = self.__doc__ or self.run.__doc__
             if doc:
-                self.rst_msg(doc.rstrip('\n'))
+                self.rst_msg(doc.rstrip("\n"))
             else:
-                self.proc.intf[-1].errmsg('Sorry - author mess up. ' +
-                                          'No help registered for command' +
-                                          self.name)
+                self.proc.intf[-1].errmsg(
+                    "Sorry - author mess up. "
+                    + "No help registered for command"
+                    + self.name
+                )
                 pass
             return
 
         subcmd_name = args[2]
 
-        if '*' == subcmd_name:
+        if "*" == subcmd_name:
             self.section("List of subcommands for command '%s':" % self.name)
             self.msg(self.columnize_commands(self.cmds.list()))
             return
@@ -140,22 +156,24 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         if cmd:
             doc = cmd.__doc__ or cmd.run.__doc__
             if doc:
-                self.proc.rst_msg(doc.rstrip('\n'))
+                self.proc.rst_msg(doc.rstrip("\n"))
             else:
-                self.proc.intf[-1] \
-                  .errmsg('Sorry - author mess up. No help registered for '
-                          'subcommand %s of command %s' %
-                          (subcmd_name, self.name))
+                self.proc.intf[-1].errmsg(
+                    "Sorry - author mess up. No help registered for "
+                    "subcommand %s of command %s" % (subcmd_name, self.name)
+                )
                 pass
         else:
-            cmds = [c for c in self.cmds.list()
-                    if re.match('^' + subcmd_name, c) ]
+            cmds = [c for c in self.cmds.list() if re.match("^" + subcmd_name, c)]
             if cmds == []:
-                self.errmsg("No %s subcommands found matching /^%s/. "
-                            "Try \"help\"." % (self.name, subcmd_name))
+                self.errmsg(
+                    "No %s subcommands found matching /^%s/. "
+                    'Try "help".' % (self.name, subcmd_name)
+                )
             else:
-                self.section("Subcommand(s) of \"%s\" matching /^%s/:" %
-                         (self.name, subcmd_name,))
+                self.section(
+                    'Subcommand(s) of "%s" matching /^%s/:' % (self.name, subcmd_name,)
+                )
                 self.msg_nocr(self.columnize_commands(cmds))
                 pass
             pass
@@ -178,8 +196,10 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
             # We were given cmd without a subcommand; cmd is something
             # like "show", "info" or "set". Generally this means list
             # all of the subcommands.
-            self.section("List of %s commands (with minimum abbreviation in "
-                     "parenthesis):" % self.name)
+            self.section(
+                "List of %s commands (with minimum abbreviation in "
+                "parenthesis):" % self.name
+            )
             for subcmd_name in self.cmds.list():
                 # Some commands have lots of output.
                 # they are excluded here because 'in_list' is false.
@@ -195,14 +215,16 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         if subcmd:
             nargs = len(args) - 2
             if nargs < subcmd.min_args:
-                self.errmsg(("Subcommand '%s %s' needs at least %d argument(s); " +
-                             "got %d.") %
-                             (self.name, subcmd.name, subcmd.min_args, nargs))
+                self.errmsg(
+                    ("Subcommand '%s %s' needs at least %d argument(s); " + "got %d.")
+                    % (self.name, subcmd.name, subcmd.min_args, nargs)
+                )
                 return False
             if subcmd.max_args is not None and nargs > subcmd.max_args:
-                self.errmsg(("Subcommand '%s %s' takes at most %d argument(s); " +
-                             "got %d.") %
-                             (self.name, subcmd.name, subcmd.max_args, nargs))
+                self.errmsg(
+                    ("Subcommand '%s %s' takes at most %d argument(s); " + "got %d.")
+                    % (self.name, subcmd.name, subcmd.max_args, nargs)
+                )
                 return False
             return subcmd.run(args[2:])
         else:
@@ -210,18 +232,22 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         return  # Not reached
 
     def summary_help(self, subcmd_name, subcmd):
-        self.msg_nocr('  %-12s -- ' %
-                      abbrev_stringify(subcmd_name, subcmd.min_abbrev))
+        self.msg_nocr("  %-12s -- " % abbrev_stringify(subcmd_name, subcmd.min_abbrev))
         self.rst_msg(subcmd.short_help.rstrip("\n"))
         return
+
     pass
 
     def undefined_subcmd(self, cmd, subcmd):
         """Error message when subcommand asked for but doesn't exist"""
-        self.proc.intf[-1].errmsg(('Undefined "%s" subcommand: "%s". ' +
-                                  'Try "help %s *".') % (cmd, subcmd, cmd))
+        self.proc.intf[-1].errmsg(
+            ('Undefined "%s" subcommand: "%s". ' + 'Try "help %s *".')
+            % (cmd, subcmd, cmd)
+        )
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pass

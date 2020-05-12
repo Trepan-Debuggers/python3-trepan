@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,12 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import os.path as osp
 
-from trepan.processor.command import base_submgr
+from trepan.processor.command.base_submgr import SubcommandMgr
 
 
-class SetCommand(base_submgr.SubcommandMgr):
+class SetCommand(SubcommandMgr):
     """**set** *set subcommand*
 
 Modifies parts of the debugger environment.
@@ -31,16 +31,18 @@ Type `set` for a list of *set* subcommands and what they do.
 Type `help set *` for just the list of *set* subcommands.
 """
 
-    category      = 'data'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Modify parts of the debugger environment'
+    category = "data"
+    min_args = 0
+    max_args = None
+    name = osp.basename(__file__).split(".")[0]
+    need_stack = False
+    short_help = "Modify parts of the debugger environment"
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
-    command = SetCommand(cp, 'set')
-    command.run(['set'])
+    command = SetCommand(cp, "set")
+    command.run(["set"])
     pass
