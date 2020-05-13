@@ -41,7 +41,8 @@ or `exec''d code.*
 
 But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
-bytecode. See the set_substitute_ command for details here.
+bytecode. See the `set substitute <set_substitute>`_ command for
+details here.
 
 
 Source-code Syntax Colorization
