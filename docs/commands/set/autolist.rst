@@ -42,8 +42,7 @@ With this, you will get output like:
      10             self.stderr = None
     (trepan3k)
 
-You may also want to put this this in your debugger startup file. See
-:ref:`Startup Profile <http://python3k-trepan.readthedocs.io/en/latest/entry-exit.html#startup-profile>`
+You may also want to put this this in your debugger startup file.
 
 .. seealso::
 

@@ -1,3 +1,6 @@
+.. index:: syntax; arange
+.. _syntax_arange:
+
 Syntax for Address Ranges
 =========================
 

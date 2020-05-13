@@ -1,3 +1,6 @@
+.. index:: syntax; range
+.. _syntax_range:
+
 Syntax for List Ranges
 ======================
 

@@ -88,6 +88,6 @@ Options
 See also
 --------
 
-:ref:`trepan2` (1), :ref:`trepan3kc` (1), :ref:`trepan2c`
+`trepan2 <http://python2-trepan.readthedocs.org>`_ (1), :ref:`trepan3kc`
 
-Full Documentation is available at http://python2-trepan.readthedocs.org
+Full Documentation is available at http://python3-trepan.readthedocs.org

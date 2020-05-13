@@ -11,4 +11,4 @@ Command examples
 
 .. seealso::
 
- :ref:`macro <macro>`, :ref:`alias <alias>`, :ref:`python <python>`, :ref:`set auto eval`, :ref:`set abbrev <set_abbrev>`, :ref:`info macro <info_macro>`, and the *show* variants of the above *set* commands.
+ :ref:`macro <macro>`, :ref:`alias <alias>`, :ref:`python <python>`, :ref:`set auto eval <set_autoeval>`, :ref:`info macro <info_macro>`, and the *show* variants of the above *set* commands.

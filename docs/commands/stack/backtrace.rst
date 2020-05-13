@@ -38,4 +38,4 @@ Examples:
 
 .. seealso::
 
-   :ref:`frame <frame>`, :ref:`locals <locals>`, :ref:`deparse <deparse>` and :ref:`list <list>`.
+   :ref:`frame <frame>`, :ref:`info locals <info_locals>`, :ref:`deparse <deparse>` and :ref:`list <list>`.

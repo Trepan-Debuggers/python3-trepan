@@ -8,5 +8,6 @@ Command Syntax
    syntax/command
    syntax/examples
    syntax/filename
+   syntax/location
    syntax/range
    syntax/suffixes

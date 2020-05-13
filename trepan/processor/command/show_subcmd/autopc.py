@@ -18,23 +18,23 @@
 from trepan.processor.command.base_subcmd import DebuggerShowBoolSubcommand
 
 
-class ShowAutoList(DebuggerShowBoolSubcommand):
-    """**show autolist**
+class ShowAutoPC(DebuggerShowBoolSubcommand):
+    """**show autopc**
 
-Show debugger `list` command automatically on entry.
+Show debugger `info pc` command automatically on entry.
 
 See also:
 ---------
 
-`set autolist`"""
+`set autopc`"""
 
     min_abbrev = len("autol")
-    short_help = "Show `list` on debugger entry"
+    short_help = "Show `info pc` on debugger entry"
     pass
 
 
 if __name__ == "__main__":
     from trepan.processor.command.show_subcmd.__demo_helper__ import demo_run
 
-    demo_run(ShowAutoList)
+    demo_run(ShowAutoPC)
     pass

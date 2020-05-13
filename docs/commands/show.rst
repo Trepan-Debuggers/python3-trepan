@@ -20,6 +20,7 @@ Show
    show/args
    show/autoeval
    show/autolist
+   show/autopc
    show/autopython
    show/basename
    show/cmdtrace
@@ -27,6 +28,7 @@ Show
    show/dbg_trepan
    show/different
    show/events
+   show/flush
    show/highlight
    show/listsize
    show/maxstring

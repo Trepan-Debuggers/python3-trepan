@@ -52,4 +52,4 @@ python shell every time you enter the debugger.
 
 .. seealso::
 
-:ref:`help syntax suffixes <syntax_suffixes>`
+  :ref:`help syntax suffixes <syntax_suffixes>`

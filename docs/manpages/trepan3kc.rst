@@ -36,6 +36,6 @@ Options
 See also
 --------
 
-:ref:`trepan3k` (1), :ref:`trepan2` (1), :ref:`trepan2c`
+:ref:`trepan3k` (1)
 
-Full Documentation is available at http://python2-trepan.readthedocs.org
+Full Documentation is available at http://python3-trepan.readthedocs.org

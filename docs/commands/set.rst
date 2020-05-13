@@ -23,6 +23,7 @@ environment settings with the :ref:`show <show>` command.
 
    set/autoeval
    set/autolist
+   set/autopc
    set/autopython
    set/basename
    set/cmdtrace

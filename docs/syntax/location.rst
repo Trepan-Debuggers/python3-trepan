@@ -1,3 +1,6 @@
+.. index:: syntax; location
+.. _syntax_location:
+
 Syntax for Source-Code Locations
 ================================
 

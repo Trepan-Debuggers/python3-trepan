@@ -60,7 +60,7 @@ class TestCompletion(unittest.TestCase):
                     ['set basename of', ['off']],
 
                     # Multiple completion on two words
-                    ['set auto', ['autoeval', 'autolist', 'autopython']],
+                    ['set auto', ['autoeval', 'autolist', 'autopc', 'autopython']],
 
                     # Completion when word is complete, without space.
                     ['show', ['show ']],

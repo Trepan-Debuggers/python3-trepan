@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2017, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -46,6 +46,9 @@ DEBUGGER_SETTINGS = {
 
     # Run 'list' command every time we enter the debugger?
     'autolist'      : False,
+
+    # Run 'info pc' command every time we enter the debugger?
+    'autopc'      : False,
 
     # Enter IPython every time we enter the debugger?
     # Note: only relevant if we have ipython installed. This takes

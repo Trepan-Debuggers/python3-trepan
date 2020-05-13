@@ -47,7 +47,7 @@ Use the `trepan IPython extension <https://github.com/rocky/ipython-trepan>`_.
 
 To install execute the the following code snippet in an IPython shell or IPython notebook cell:
 
-.. code:: ipython
+.. code:: python
 
     %load https://raw.github.com/rocky/ipython-trepan/master/trepanmagic.py
 
@@ -64,7 +64,7 @@ After installing the trepan extension, the following IPython magic functions are
 Example
 +++++++
 
-.. code:: ipython
+.. code::
 
 	  $ ipython
 	  Python 3.6.8 (default, Aug 20 2019, 17:12:48)
@@ -115,9 +115,9 @@ After doing this, when you run `python -i` you should see on entry the *print* m
 	  .pythonrc.py loaded
 	  >>>
 
-If you see the above ".pythonrc.py" message, great! If not, it might be that *PYTHONSTARTUP* is not defined. Here run:
+If you see the above `.pythonrc.py` message, great! If not, it might be that *PYTHONSTARTUP* is not defined. Here run:
 
-.. code:: ipython
+.. code:: console
 
 	  >>> path=".pythonrc.py" # customize to location of file
           >>> exec(open(path).read())
@@ -197,9 +197,6 @@ session I would put the trepan debugger commands in a file, say
 .. code:: python
 
           debug(start_opts={'startup-profile': ["/home/rocky/trepan-startup"]})
-
-See :ref:`Startup Profile <startup_profile>` for a sample profile.
-
 
 Calling the debugger from pytest
 ================================

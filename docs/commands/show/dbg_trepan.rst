@@ -7,4 +7,4 @@ Show debugging the debugger
 
 .. seealso::
 
-   :ref:`set dbg_trepan`
+   :ref:`set dbg_trepan <set_dbg_trepan>`

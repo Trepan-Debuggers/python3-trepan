@@ -23,6 +23,11 @@ from trepan.lib.disassemble import disassemble_bytes
 from trepan.misc import wrapped_lines
 
 
+# FIXME: this could be combined with trepan-xpy's `info pc`, but that
+# requires a running program whereas where we just use f_lasti.
+# What we have here is more flexible in the presence of exceptions.
+# trepan3k would have to be looked over to see if it too would
+# work.
 class InfoPC(DebuggerSubcommand):
     """**info pc**
 

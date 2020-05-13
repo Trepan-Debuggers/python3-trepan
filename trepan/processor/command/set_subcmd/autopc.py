@@ -17,47 +17,42 @@
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSetBoolSubcommand
 from trepan.processor.cmdfns import run_set_bool, run_show_bool
-from trepan.lib.stack import frame2file
 
 
-class SetAutoList(DebuggerSetBoolSubcommand):
-    """**set autolist** [ **on** | **off** ]
+class SetAutoPC(DebuggerSetBoolSubcommand):
+    """**set autopc** [ **on** | **off** ]
 
-Run the `list` command every time we enter the debugger.
+Run the `info pc` command every time we enter the debugger.
 
 See also:
 ---------
 
-`show autolist`
+`show autopc`
 """
 
     in_list = True
-    min_abbrev = len("autol")
+    min_abbrev = len("autop")
 
-    list_cmd = None
+    infopc_cmd = None
 
     def run(self, args):
         run_set_bool(self, args)
-        if self.settings["autolist"]:
-            if self.list_cmd is None:
-                self.list_cmd = self.proc.commands["list"].run
+        if self.settings["autopc"]:
+            if self.infopc_cmd is None:
+                info_cmd = self.proc.commands["info"]
+                self.info_pc_cmd = info_cmd.cmds.lookup("pc").run
                 pass
-            self.proc.add_preloop_hook(self.run_list, 0)
+            self.proc.add_preloop_hook(self.run_infopc, 0)
 
         else:
-            self.proc.remove_preloop_hook(self.run_list)
+            self.proc.remove_preloop_hook(self.run_infopc)
             pass
-        run_show_bool(self, "Show `list` on debugger entry")
+        run_show_bool(self, "Run `info pc` on debugger entry")
         return
 
-    def run_list(self, args):
-        # Check if there is a "file" to show. Right now we just
-        # handle the case of a string.
-        # FIXME: generalize this so for other kinds of missing "files"
-        # are not shown.
-        filename = frame2file(self.core, self.proc.curframe)
-        if "<string>" != filename:
-            self.list_cmd(["list"])
+    def run_infopc(self, args):
+        if self.proc.frame:
+            self.info_pc_cmd(["info", "pc"])
         return
 
     pass
@@ -66,5 +61,5 @@ See also:
 if __name__ == "__main__":
     from trepan.processor.command.show_subcmd.__demo_helper__ import demo_run
 
-    demo_run(SetAutoList)
+    demo_run(SetAutoPC)
     pass
