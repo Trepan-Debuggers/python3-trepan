@@ -41,7 +41,7 @@ or `exec''d code.*
 
 But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
-bytecode. See the `set substitute <set_substitute>`_ command for
+bytecode. See the :ref:`set substitute <set_substitute>` for
 details here.
 
 
@@ -50,10 +50,10 @@ Source-code Syntax Colorization
 
 Terminal source code is colorized via pygments_ . And with that you
 can set the pygments color style, e.g. "colorful", "paraiso-dark". See
-set_style_ . Furthermore, we make use of terminal bold and emphasized
-text in debugger output and help text. Of course, you can also turn
-this off. Starting with release 0.6.0, you can use your own
-pygments_style_, provided you have a terminal that supports 256
+:ref:`set style <set_style>`. Furthermore, we make use of terminal bold
+and emphasized text in debugger output and help text. Of course, you
+can also turn this off. Starting with release 0.6.0, you can use your
+own pygments_style_, provided you have a terminal that supports 256
 colors. If your terminal supports the basic ANSI color sequences only,
 we support that too in both dark and light themes.
 
@@ -70,16 +70,15 @@ Terminal Handling
 -----------------
 
 We can adjust debugger output depending on the line width of your
-terminal. If it changes, or you want to adjust it, see set_width_ .
+terminal. If it changes, or you want to adjust it, see :ref:`set width <set_width>` .
 
 Smart Eval
 ----------
 
-Starting with release 0.2.0, if you want to evaluate the current
-source line before it is run in the code, use ``eval``. To evaluate
-text of a common fragment of line, such as the expression part of an
-*if* statement, you can do that with ``eval?``. See eval_ for more
-information.
+If you want to evaluate the current source line before it is run in
+the code, use ``eval``. To evaluate text of a common fragment of line,
+such as the expression part of an *if* statement, you can do that with
+``eval?``. See :ref:`eval` for more information.
 
 More Stepping Control
 ---------------------
@@ -229,10 +228,6 @@ Documentation: http://python3-trepan.readthedocs.org
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
    :target: https://pypi.python.org/pypi/trepan
    :alt: License
-.. _set_substitute:  https://python2-trepan.readthedocs.org/en/latest/commands/set/substitute.html
-.. _set_style:  https://python2-trepan.readthedocs.org/en/latest/commands/set/style.html
-.. _set_width:  https://python2-trepan.readthedocs.org/en/latest/commands/set/width.html
-.. _eval: https://python2-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python2-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan.svg

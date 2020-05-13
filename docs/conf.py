@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.join(os.path.abspath('..'), 'trepan'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.githubpages',
     # 'numpydoc',
 ]
