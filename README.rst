@@ -35,8 +35,9 @@ Python reports line information on the granularity of a line. To get
 more precise information, we can (de)parse into Python the byte code
 around a bytecode offset such as the place you are stopped at.
 
-So far as I know, there is no other debugger that can do this.
+So far as I know, there is no other debugger that decompile code at runtime.
 
+See the `deparse <deparse>`_ command for details.
 
 Debugging Python bytecode (no source available)
 -----------------------------------------------
@@ -58,8 +59,23 @@ But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
 bytecode. See the set_substitute_ command for details here.
 
+Source-code Syntax Colorization
+-------------------------------
 
-GNU Readline command completion has been added. Command completion is
+Terminal source code is colorized via pygments_ . And with that you
+can set the pygments color style, e.g. "colorful", "paraiso-dark". See
+set_style_ . Furthermore, we make use of terminal bold and emphasized
+text in debugger output and help text. Of course, you can also turn
+this off. Starting with release 0.6.0, you can use your own
+pygments_style_, provided you have a terminal that supports 256
+colors. If your terminal supports the basic ANSI color sequences only,
+we support that too in both dark and light themes.
+
+
+Command Completion
+------------------
+
+GNU readline command completion is available. Command completion is
 not just a simple static list, but varies depending on the
 context. For example, for frame-changing commands which take optional
 numbers, on the list of *valid numbers* is considered.
@@ -76,8 +92,7 @@ Smart Eval
 If you want to evaluate the current source line before it is run in
 the code, use ``eval`` or ``deval``. To evaluate text of a common
 fragment of line, such as the expression part of an *if* statement,
-you can do that with ``eval?`` or ``deval?``. See eval_ for more
-information.
+you can do that with ``eval?``. See eval_ for more information.
 
 More Stepping Control
 ---------------------
@@ -95,11 +110,6 @@ a different line on a subsequent stop, the dash-suffixed commands
 don't.  Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return``
 and ``exception`` events respectively. And without a suffix you get
 the default; this is set by the ``set different`` command.
-
-Documentation
--------------
-
-Documentation: http://python3-trepan.readthedocs.org
 
 Event Filtering and Tracing
 ...........................
@@ -149,22 +159,30 @@ Byte-code Instruction Introspection
 
 We do more in the way of looking at the byte codes to give better information. Through this we can provide:
 
-* a *skip* command. It is like the *jump* command, but you don't have to deal with line numbers.
-* disassembly of code fragments. You can now disassemble relative to the stack frames you are currently stopped at.
-* Better interpretation of where you are when inside *execfile* or *exec*. (But really though this is probably a Python compiler misfeature.)
+* a *skip* command. It is like the *jump* command, but you don't have
+  to deal with line numbers.
+* disassembly of code fragments. You can now disassemble relative to
+  the stack frames you are currently stopped at.
+* Better interpretation of where you are when inside *execfile* or
+  *exec*. (But really though this is probably a Python compiler
+  *misfeature.)
 * Check that breakpoints are set only where they make sense.
-* A more accurate determination of if you are at a function-defining *def* statement (because the caller instruction contains ``MAKE_FUNCTION``.)
+* A more accurate determination of if you are at a function-defining
+  *def* or *class* statements (because the caller instruction contains
+  ``MAKE_FUNCTION`` or ``BUILD_CLASS``.)
 
-Even without "deparsing" mentioned above, the abilty to disassemble by line number range or byte-offset range lets you tell exactly where you are and code is getting run.
+Even without "deparsing" mentioned above, the ability to disassemble
+by line number range or byte-offset range lets you tell exactly where
+you are and code is getting run.
 
 Some Debugger Command Arguments can be Variables and Expressions
 ----------------------------------------------------------------
 
-Commands that take integer arguments like frame-moving commands like
-*up*, allow you to use a Python expression which may include local or
-global variables that evaluates to an integer. This eliminates the
-need in *gdb* for special "dollar" debugger variables. (Note however
-because of *shlex* parsing, expressions can't have embedded blanks.)
+Commands that take integer arguments like *up*, allow you to use a
+Python expression which may include local or global variables that
+evaluates to an integer. This eliminates the need in *gdb* for special
+"dollar" debugger variables. (Note however because of *shlex* parsing,
+expressions can't have embedded blanks.)
 
 Out-of-Process Debugging
 ------------------------
@@ -193,6 +211,11 @@ keeping developers happy is a good thing.(TM)
 * An interface is it's own layer. Local debugging, remote debugging, running debugger commands from a file (``source``) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
 * more testable. Much more unit and functional tests. More of *pydb*'s integration test will eventually be added.
+
+Documentation
+-------------
+
+Documentation: http://python3-trepan.readthedocs.org
 
 See Also
 --------
@@ -225,6 +248,7 @@ See Also
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
+.. _deparse:  https://python3-trepan.readthedocs.org/en/latest/commands/deparse.html
 .. _set_style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
 .. _set_substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
 .. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html

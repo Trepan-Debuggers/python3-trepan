@@ -6,7 +6,7 @@ Show Autorun Info PC
 
 **show infopc**
 
-Run a debugger ref:`info pc <info_pc>` command automatically on debugger entry.
+Run a debugger `info pc <info_pc>`_ command automatically on debugger entry.
 
 .. seealso::
 
