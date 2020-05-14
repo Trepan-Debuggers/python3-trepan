@@ -4,7 +4,10 @@
 """Disassembly Routines"""
 
 import inspect, sys, types
-from dis import distb, findlabels, findlinestarts
+
+# FIXME: add distb to xdis
+from xdis import findlabels, findlinestarts
+from dis import distb
 
 from xdis import Bytecode, IS_PYPY, PYTHON_VERSION
 from xdis.main import get_opcode
@@ -187,6 +190,7 @@ def disassemble(
         highlight,
         start_offset=start_offset,
         end_offset=end_offset,
+        opc=opc,
     )
 
 
@@ -216,6 +220,7 @@ def disassemble_bytes(
     highlight="light",
     start_offset=0,
     end_offset=None,
+    opc=opc,
 ):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""
@@ -226,7 +231,7 @@ def disassemble_bytes(
         end_line += start_line - 1
         pass
 
-    labels = findlabels(code)
+    labels = findlabels(code, opc)
 
     null_print = lambda x: None
     if start_line > cur_line:

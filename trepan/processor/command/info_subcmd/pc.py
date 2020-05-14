@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
-from dis import findlinestarts
+from xdis import findlinestarts
 
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
