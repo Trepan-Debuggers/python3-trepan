@@ -24,16 +24,14 @@ handling what to do when an event is triggered."""
 
 # Common Python packages
 import os, sys, threading
+import os.path as osp
 
 # External packages
 import tracer
 
 # Our local modules
 from trepan.lib import breakpoint, default, stack as Mstack
-import trepan.lib.breakpoint as breakpoint
-import trepan.lib.default as default
-import trepan.lib.stack as Mstack
-import trepan.misc as Mmisc
+from trepan.misc import option_set
 import trepan.clifns as Mclifns
 from trepan.processor import trace as Mtrace, cmdproc as Mcmdproc
 
@@ -59,7 +57,7 @@ class TrepanCore(object):
 
         import trepan.bwprocessor as Mbwproc
 
-        get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)
+        get_option = lambda key: option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
         self.bpmgr = breakpoint.BreakpointManager()
         self.current_bp = None
@@ -162,11 +160,11 @@ class TrepanCore(object):
                 # other than where the program resides. filename is
                 # relative to where the program resides. So make sure
                 # to use that.
-                canonic = os.path.abspath(os.path.join(self.main_dirname, filename))
+                canonic = osp.abspath(osp.join(self.main_dirname, filename))
             else:
-                canonic = os.path.abspath(filename)
+                canonic = osp.abspath(filename)
                 pass
-            if not os.path.isfile(canonic):
+            if not osp.isfile(canonic):
                 canonic = Mclifns.search_file(
                     filename, self.search_path, self.main_dirname
                 )
@@ -174,7 +172,7 @@ class TrepanCore(object):
                 if not canonic:
                     canonic = filename
                 pass
-            canonic = os.path.realpath(os.path.normcase(canonic))
+            canonic = osp.realpath(osp.normcase(canonic))
             self.filename_cache[filename] = canonic
         return canonic
 
@@ -192,7 +190,7 @@ class TrepanCore(object):
             else:
                 return None
         if self.debugger.settings["basename"]:
-            return os.path.basename(filename)
+            return osp.basename(filename)
         return filename
 
     def is_running(self):
@@ -224,7 +222,7 @@ class TrepanCore(object):
         #    sys.settrace(self._trace_dispatch)
         try:
             self.trace_hook_suspend = True
-            get_option = lambda key: Mmisc.option_set(opts, key, default.START_OPTS)
+            get_option = lambda key: option_set(opts, key, default.START_OPTS)
 
             add_hook_opts = get_option("add_hook_opts")
 
@@ -251,7 +249,7 @@ class TrepanCore(object):
         #    sys.settrace(None)
         try:
             self.trace_hook_suspend = True
-            get_option = lambda key: Mmisc.option_set(options, key, default.STOP_OPTS)
+            get_option = lambda key: option_set(options, key, default.STOP_OPTS)
             args = [self.trace_dispatch]
             remove = get_option("remove")
             if remove:

@@ -68,7 +68,6 @@ def deparse_getline(code, filename, line_number, opts):
             (line_no, deparsed.source_linemap[line_no])
             for line_no in sorted(deparsed.source_linemap.keys())
         ]
-        print("XXXX", linemap)
         pyficache.remap_file_lines(filename, remapped_filename, linemap)
         return remapped_filename, pyficache.getline(filename, line_number, opts)
     return None, None
