@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009,2013,2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,11 +15,12 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger output. """
 
-import io, sys, types
+import io, sys
 
-from trepan.inout import base as Mbase
+from trepan.inout.base import DebuggerInOutBase
 
-class DebuggerUserOutput(Mbase.DebuggerInOutBase):
+
+class DebuggerUserOutput(DebuggerInOutBase):
     """Debugger output shown directly to what we think of as end-user
     ouptut as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
@@ -37,15 +38,18 @@ class DebuggerUserOutput(Mbase.DebuggerInOutBase):
     def open(self, output, opts=None):
         """Use this to set where to write to. output can be a
         file object or a string. This code raises IOError on error."""
-        if isinstance(output, io.TextIOWrapper) or \
-           isinstance(output, io.StringIO) or \
-           output == sys.stdout:
+        if (
+            isinstance(output, io.TextIOWrapper)
+            or isinstance(output, io.StringIO)
+            or output == sys.stdout
+        ):
             pass
-        elif isinstance(output, 'string'.__class__):  # FIXME
-            output = open(output, 'w')
+        elif isinstance(output, "string".__class__):  # FIXME
+            output = open(output, "w")
         else:
-            raise IOError("Invalid output type (%s) for %s" %
-                          (output.__class__.__name__, output))
+            raise IOError(
+                "Invalid output type (%s) for %s" % (output.__class__.__name__, output)
+            )
             # raise IOError("Invalid output type (%s) for %s" % (type(output),
             #                                                     output))
         self.output = output
@@ -58,12 +62,15 @@ class DebuggerUserOutput(Mbase.DebuggerInOutBase):
         if self.output.closed:
             raise IOError("writing %s on a closed file" % msg)
         self.output.write(msg)
-        if self.flush_after_write: self.flush()
+        if self.flush_after_write:
+            self.flush()
         return
+
     pass
 
+
 # Demo
-if __name__=='__main__':
+if __name__ == "__main__":
     out = DebuggerUserOutput()
     out.writeline("Hello, world!")
     out.write("Hello")

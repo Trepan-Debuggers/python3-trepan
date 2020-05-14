@@ -92,13 +92,10 @@ DEBUGGER_SETTINGS = {
     'highlight'     : is_dark_background(),
 
     # Save debugger history?
-    'hist_save'     : False,
+    'hist_save'     : True,
 
     # Where do we save the history?
     'histfile'     : None,
-
-    # Save debugger history?
-    'hist_save'     : True,
 
     # Show function calls/returns?
     'fntrace'       : False,
