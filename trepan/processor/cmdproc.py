@@ -28,7 +28,7 @@ from pygments.console import colorize
 from tracer import EVENT2SHORT
 
 import trepan.vprocessor as Mprocessor
-import trepan.lib.bytecode as Mbytecode
+from trepan.lib.bytecode import is_def_stmt, is_class_def
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
 import trepan.misc as Mmisc
@@ -462,7 +462,22 @@ class CommandProcessor(Mprocessor.Processor):
         self.prompt_str += " "
 
     def event_processor(self, frame, event, event_arg, prompt="trepan3k"):
-        "command event processor: reading a commands do something with them."
+        """
+        command event processor: reading a commands do something with them.
+
+        See https://docs.python.org/3/library/sys.html#sys.settrace
+        for how this protocol works and what the events means.
+
+        Of particular note those is what we return:
+
+            The local trace function should return a reference to
+            itself (or to another function for further tracing in that
+            scope), or None to turn off tracing in that scope.
+
+            If there is any error occurred in the trace function, it
+            will be unset, just like settrace(None) is called.
+        """
+
         self.frame = frame
         self.event = event
         self.event_arg = event_arg
@@ -482,10 +497,10 @@ class CommandProcessor(Mprocessor.Processor):
             line = pyficache.getline(filename, lineno, opts)
         self.current_source_text = line
         if self.settings("skip") is not None:
-            if Mbytecode.is_def_stmt(line, frame):
-                return True
-            if Mbytecode.is_class_def(line, frame):
-                return True
+            if is_def_stmt(line, frame):
+                return self.event_processor
+            if is_class_def(line, frame):
+                return self.event_processor
             pass
         self.thread_name = Mthread.current_thread_name()
         self.frame_thread_name = self.thread_name
@@ -493,7 +508,7 @@ class CommandProcessor(Mprocessor.Processor):
         self.process_commands()
         if filename == "<string>":
             pyficache.remove_remap_file("<string>")
-        return True
+        return self.event_processor
 
     def forget(self):
         """ Remove memory of state variables set in the command processor """
