@@ -2,21 +2,13 @@
 ====================================================
 
 
-The main impetus for this release is to start to be able to support
-debugging in [x-python](https://pypi.org/project/x-python/). This code
-is used as a common debugger base for the upcoming `trepan-xpy`
-debugger release.
+The main impetus for this release is to start to be able to support debugging in [x-python](https://pypi.org/project/x-python/). This code is used as a common debugger base for the upcoming `trepan-xpy` debugger release.
 
-We simplify imports using xdis 4.6.0. And dependence on previous
-versions has been tightened. Previously, there could be version and API
-mismatches if you had an older release of `xdis` or `uncompyle6` installed.
+We simplify imports using xdis 4.6.0. And dependence on previous versions has been tightened. Previously, there could be version and API mismatches if you had an older release of `xdis` or `uncompyle6` installed.
 
-The bump to 1.0.0 should have been done a while ago. Semantic
-versioning suggests that this is where we should have *started*. Well,
-better late than never.
+The bump to 1.0.0 should have been done a while ago. Semantic versioning suggests that this is where we should have *started*. Well, better late than never.
 
-But as with any 1.0 release, there are, alas, major portions that need
-upgrading to newer 3.6 and 3.8 Python features, pytest interfaces. And so on.
+But as with any 1.0 release, there are, alas, major portions that needupgrading to newer 3.6 and 3.8 Python features, pytest interfaces. And so on.
 
 Perhaps later if there's help or support by some other means.
 
@@ -29,8 +21,7 @@ Some changes:
 * some modernization (blacken some files, simplify imports, and run
   lint) on some source code
 
-Read the ChangeLog or git commit log for more details on what's
-changed.
+Read the `ChangeLog` or git commit log/history for more details on what's changed.
 
 
 0.8.11 2020-03-16 post Ides of March
