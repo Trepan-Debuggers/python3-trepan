@@ -29,6 +29,12 @@ if SYS_VERSION <= (3, 2):
 else:
     pygments_version = ">= 2.2.0"
 
+# Python-version | package | last-version |
+# -----------------------------------------
+# 3.2            | pip     | 8.1.2        |
+# 3.3            | pip     | 10.0.1       |
+# 3.4            | pip     | 19.1.1       |
+
 # Things that change more often go here.
 copyright = """Copyright (C) 2013, 2015-2020 Rocky Bernstein <rocky@gnu.org>."""
 classifiers = [
@@ -68,8 +74,8 @@ install_requires = [
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
-    "uncompyle6 >= 3.6.7",
-    "xdis >= 4.5.1, < 4.6.0",
+    "uncompyle6 >= 3.7.0",
+    "xdis >= 4.6.0, < 4.7.0",
 ]
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
