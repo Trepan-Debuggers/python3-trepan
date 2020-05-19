@@ -345,7 +345,7 @@ class TrepanCore(object):
         self.last_filename = filename
 
         if self.stop_level is not None:
-            if frame != self.last_frame:
+            if frame and frame != self.last_frame:
                 # Recompute stack_depth
                 self.last_level = Mstack.count_frames(frame)
                 self.last_frame = frame
