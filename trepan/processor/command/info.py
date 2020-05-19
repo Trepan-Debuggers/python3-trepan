@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,12 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import os.path as osp
 
-from trepan.processor.command import base_submgr as Mbase_submgr
+from trepan.processor.command.base_submgr import SubcommandMgr
 
 
-class InfoCommand(Mbase_submgr.SubcommandMgr):
+class InfoCommand(SubcommandMgr):
     """Generic command for showing things about the program being debugged.
 
 You can give unique prefix of the name of a subcommand to get
@@ -29,17 +29,19 @@ Type `info` for a list of *info* subcommands and what they do.
 Type `help info *` for just a list of *info* subcommands.
 """
 
-    aliases       = ('i',)
-    category      = 'status'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Information about debugged program and its environment'
+    aliases = ("i",)
+    category = "status"
+    min_args = 0
+    max_args = None
+    name = osp.basename(__file__).split(".")[0]
+    need_stack = False
+    short_help = "Information about debugged program and its environment"
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
-    command = InfoCommand(cp, 'info')
-    command.run(['info'])
+    command = InfoCommand(cp, "info")
+    command.run(["info"])
     pass

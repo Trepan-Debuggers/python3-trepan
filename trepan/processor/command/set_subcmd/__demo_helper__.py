@@ -18,9 +18,9 @@ def demo_setup():
     mgr = Mset.SetCommand(cp)
     return mgr
 
-def demo_run(subcmd):
+def demo_run(subcmd, *args):
     mgr = demo_setup()
     sub = subcmd(mgr)
     sub.name = get_name()
-    sub.run([])
+    sub.run(*args)
     return sub

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2018 Rocky Bernstein
+#  Copyright (C) 2015-2018, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,23 +13,25 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
+
+import os.path as osp
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import code_deparse
-from trepan.lib.deparse import (deparse_and_cache, deparse_offset)
+from trepan.lib.deparse import deparse_and_cache, deparse_offset
 from pyficache import highlight_string, getlines
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
-class DeparseCommand(Mbase_cmd.DebuggerCommand):
+
+class DeparseCommand(DebuggerCommand):
     """**deparse** [options] [ . ]
 
 Options:
 ------
 
     -p | --parent        show parent node
-    -A | --tree | --AST  show abstract syntax tree (AST)
+    -A | --tree          show parse tree
     -o | --offset [num]  show deparse of offset NUM
     -h | --help          give this help
 
@@ -50,7 +52,7 @@ Examples:
     deparse .           # deparse current function or main
     deparse --offset 6  # deparse starting at offset 6
     deparse --offsets   # show all exect deparsing offsets
-    deparse --AST       # deparse and show AST
+    deparse --tree       # deparse and show parse tree
 
 See also:
 ---------
@@ -58,21 +60,21 @@ See also:
 `disassemble`, `list`, and `set highlight`
 """
 
-    category      = 'data'
-    min_args      = 0
-    max_args      = 10
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Deparse source via uncompyle6'
+    category = "data"
+    min_args = 0
+    max_args = 10
+    name = osp.basename(__file__).split(".")[0]
+    need_stack = True
+    short_help = "Deparse source via uncompyle6"
 
     def print_text(self, text):
-        if self.settings['highlight'] == 'plain':
+        if self.settings["highlight"] == "plain":
             self.msg(text)
             return
-        opts = {'bg': self.settings['highlight']}
+        opts = {"bg": self.settings["highlight"]}
 
-        if 'style' in self.settings:
-            opts['style'] = self.settings['style']
+        if "style" in self.settings:
+            opts["style"] = self.settings["style"]
         self.msg(highlight_string(text, opts).strip("\n"))
 
     def run(self, args):
@@ -80,29 +82,33 @@ See also:
         name = co.co_name
 
         try:
-            opts, args = getopt(args[1:], "hpPAto:O",
-                                ["help", "parent", "pretty", "AST",
-                                 'tree', "offset=", "offsets"])
+            opts, args = getopt(
+                args[1:],
+                "hpPto:O",
+                ["help", "parent", "pretty", "tree", "offset=", "offsets"],
+            )
         except GetoptError as err:
             # print help information and exit:
-            print(str(err))  # will print something like "option -a not recognized"
+            self.errmsg(
+                str(err)
+            )  # will print something like "option -a not recognized"
             return
 
         show_parent = False
-        show_ast = False
+        show_tree = False
         offset = None
         show_offsets = False
         for o, a in opts:
             if o in ("-h", "--help"):
-                self.proc.commands['help'].run(['help', 'deparse'])
+                self.proc.commands["help"].run(["help", "deparse"])
                 return
             elif o in ("-O", "--offsets"):
                 show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
-            elif o in ("-A", "--tree", '--AST'):
-                show_ast = True
-            elif o in ("-o", '--offset'):
+            elif o in ("-t", "--tree",):
+                show_tree = True
+            elif o in ("-o", "--offset"):
                 offset = a
             else:
                 self.errmsg("unhandled option '%s'" % o)
@@ -110,37 +116,42 @@ See also:
         pass
         nodeInfo = None
 
-        if len(args) >= 1 and args[0] == '.':
+        if len(args) >= 1 and args[0] == ".":
             temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
             if not temp_filename:
                 return
-            self.print_text(''.join(getlines(temp_filename)))
+            self.print_text("".join(getlines(temp_filename)))
             return
         elif show_offsets:
             deparsed = code_deparse(co)
             self.section("Offsets known:")
-            m = self.columnize_commands(list(sorted(deparsed.offsets.keys(),
-                                                    key=lambda x: str(x[0]))))
+            m = self.columnize_commands(
+                list(sorted(deparsed.offsets.keys(), key=lambda x: str(x[0])))
+            )
             self.msg_nocr(m)
             return
         elif offset is not None:
-            mess = ("The 'deparse' command when given an argument requires an"
-                    " instruction offset. Got: '%s'" % offset)
+            mess = (
+                "The 'deparse' command when given an argument requires an"
+                " instruction offset. Got: '%s'" % offset
+            )
             last_i = self.proc.get_an_int(offset, mess)
             if last_i is None:
                 return
         else:
             last_i = self.proc.curframe.f_lasti
-            if last_i == -1: last_i = 0
+            if last_i == -1:
+                last_i = 0
 
         deparsed, nodeInfo = deparse_offset(co, name, last_i, self.errmsg)
         if not deparsed:
             return
+
         if nodeInfo:
             extractInfo = deparsed.extract_node_info(nodeInfo)
             parentInfo = None
             # print extractInfo
-            if show_ast:
+            if show_tree:
                 p = deparsed.ast
                 if show_parent:
                     parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
@@ -168,21 +179,29 @@ See also:
             else:
                 self.msg("At beginning")
         else:
-            self.errmsg("haven't recorded info for offset %d. Offsets I know are:"
-                        % last_i)
-            offsets = [key[1] for key in deparsed.offsets.keys() if isinstance(key[1], int)]
+            self.errmsg(
+                "haven't recorded info for offset %d. Offsets I know are:" % last_i
+            )
+            offsets = [
+                key[1] for key in deparsed.offsets.keys() if isinstance(key[1], int)
+            ]
             m = self.columnize_commands(list(sorted(offsets)))
             self.msg_nocr(m)
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
     from trepan import debugger
-    d            = debugger.Trepan()
-    cp           = d.core.processor
-    command      = DeparseCommand(d.core.processor)
+
+    d = debugger.Trepan()
+    cp = d.core.processor
+    command = DeparseCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
-    command.run(['deparse'])
+    command.run(["deparse", "--bad"])
+    command.run(["deparse"])
+    command.run(["deparse", "--help"])
     pass
