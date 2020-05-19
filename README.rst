@@ -224,8 +224,9 @@ See Also
 * pydbgr_  : previous incarnation of debugger
 * pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
+* https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python`
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
-* https://pypi.python.org/pypi/xdis : cross-platform disassembler
+[* https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
 
 .. _pygments:  http://pygments.org
