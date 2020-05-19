@@ -165,7 +165,7 @@ We do more in the way of looking at the byte codes to give better information. T
   the stack frames you are currently stopped at.
 * Better interpretation of where you are when inside *execfile* or
   *exec*. (But really though this is probably a Python compiler
-  *misfeature.)
+  misfeature.)
 * Check that breakpoints are set only where they make sense.
 * A more accurate determination of if you are at a function-defining
   *def* or *class* statements (because the caller instruction contains
@@ -248,7 +248,6 @@ See Also
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
-.. _deparse:  https://python3-trepan.readthedocs.org/en/latest/commands/deparse.html
 .. _set_style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
 .. _set_substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
 .. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
