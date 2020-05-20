@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2017 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 import code, os, sys
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.interfaces.server import ServerInterface
 
 
-class PythonCommand(Mbase_cmd.DebuggerCommand):
+class PythonCommand(DebuggerCommand):
     """**python** [**-d**]
 
 Run Python as a command subshell. The *sys.ps1* prompt will be set to
@@ -38,18 +38,18 @@ See also:
 `ipython`, `bpython`
 """
 
-    aliases      = ('py', 'shell')
-    category      = 'support'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Run Python as a command subshell'
+    aliases = ("py", "shell")
+    category = "support"
+    min_args = 0
+    max_args = 1
+    name = os.path.basename(__file__).split(".")[0]
+    need_stack = False
+    short_help = "Run Python as a command subshell"
 
     def dbgr(self, string):
-        '''Invoke a debugger command from inside a python shell called inside
+        """Invoke a debugger command from inside a python shell called inside
         the debugger.
-        '''
+        """
         self.proc.cmd_queue.append(string)
         self.proc.process_command()
         return
@@ -72,16 +72,15 @@ See also:
                 pass
             pass
 
-        banner_tmpl='''trepan3 python shell%s
-Use dbgr(*string*) to issue debugger command: *string*'''
+        banner_tmpl = """trepan3 python shell%s
+Use dbgr(*string*) to issue debugger command: *string*"""
 
-        debug = len(args) > 1 and args[1] == '-d'
+        debug = len(args) > 1 and args[1] == "-d"
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a trepan"
-                            "debugger object.")
+            banner_tmpl += "\nVariable 'debugger' contains a trepan" "debugger object."
             pass
 
-        my_locals  = {}
+        my_locals = {}
         my_globals = None
         if self.proc.curframe:
             my_globals = self.proc.curframe.f_globals
@@ -91,8 +90,9 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             pass
 
         # Give python and the user a way to get access to the debugger.
-        if debug: my_locals['debugger'] = self.debugger
-        my_locals['dbgr'] = self.dbgr
+        if debug:
+            my_locals["debugger"] = self.debugger
+        my_locals["dbgr"] = self.dbgr
 
         # Change from debugger completion to python completion
         try:
@@ -102,23 +102,27 @@ Use dbgr(*string*) to issue debugger command: *string*'''
         else:
             readline.parse_and_bind("tab: complete")
 
-        sys.ps1 = 'trepan3k >>> '
+        sys.ps1 = "trepan3k >>> "
         old_sys_excepthook = sys.excepthook
         try:
             sys.excepthook = None
             if len(my_locals):
-                interact(banner=(banner_tmpl % ' with locals'),
-                         my_locals=my_locals, my_globals=my_globals)
+                interact(
+                    banner=(banner_tmpl % " with locals"),
+                    my_locals=my_locals,
+                    my_globals=my_globals,
+                )
             else:
-                interact(banner=(banner_tmpl % ''))
+                interact(banner=(banner_tmpl % ""))
                 pass
         finally:
             sys.excepthook = old_sys_excepthook
 
         # restore completion and our history if we can do so.
-        if hasattr(self.proc.intf[-1], 'complete'):
+        if hasattr(self.proc.intf[-1], "complete"):
             try:
                 from readline import set_completer, parse_and_bind
+
                 parse_and_bind("tab: complete")
                 set_completer(self.proc.intf[-1].complete)
             except ImportError:
@@ -129,6 +133,7 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             self.proc.read_history_file()
             pass
         return
+
     pass
 
 
@@ -149,12 +154,13 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     local -- passed to InteractiveInterpreter.__init__()
 
     """
+
     def console_runcode(code_obj):
         runcode(console, code_obj)
 
-    console = code.InteractiveConsole(my_locals, filename='<trepan>')
+    console = code.InteractiveConsole(my_locals, filename="<trepan>")
     console.runcode = console_runcode
-    setattr(console, 'globals', my_globals)
+    setattr(console, "globals", my_globals)
     if readfunc is not None:
         console.raw_input = readfunc
     else:
@@ -164,6 +170,7 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
             pass
     console.interact(banner)
     pass
+
 
 # Also monkey-patched from code.py
 # FIXME: get changes into Python.
@@ -191,19 +198,20 @@ def runcode(obj, code_obj):
     return
 
 
-if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+if __name__ == "__main__":
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     command = PythonCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
     if len(sys.argv) > 1:
         print("Type Python commands and exit to quit.")
         print(sys.argv[1])
-        if sys.argv[1] == '-d':
-            print(command.run(['python', '-d']))
+        if sys.argv[1] == "-d":
+            print(command.run(["python", "-d"]))
         else:
-            print(command.run(['python']))
+            print(command.run(["python"]))
             pass
         pass
     pass

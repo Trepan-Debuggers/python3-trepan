@@ -5,17 +5,10 @@
 
 import inspect, sys, types
 
-# FIXME: add distb to xdis
-from xdis import findlabels, findlinestarts
-from dis import distb
+from xdis import Bytecode, findlabels, findlinestarts, get_instructions_bytes, get_opcode, IS_PYPY, PYTHON_VERSION
+from xdis.std import distb
 
-from xdis import Bytecode, IS_PYPY, PYTHON_VERSION
-from xdis.main import get_opcode
-from xdis.bytecode import get_instructions_bytes
-
-from trepan.lib import format as Mformat
-
-format_token = Mformat.format_token
+from trepan.lib.format import format_token, Comment, LineNumber, Arrow, Opcode, Name
 
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
 
@@ -104,7 +97,7 @@ def dis(
         x = x.f_code
         if include_header:
             header_lines = Bytecode(x, opc).info().split("\n")
-            header = "\n".join([format_token(Mformat.Comment, h) for h in header_lines])
+            header = "\n".join([format_token(Comment, h) for h in header_lines])
             msg(header)
         pass
     elif inspect.iscode(x):
@@ -265,9 +258,7 @@ def disassemble_bytes(
                 pass
             if (cur_line > end_line) or (end_offset and offset > end_offset):
                 break
-            msg_nocr(
-                format_token(Mformat.LineNumber, "%4d" % cur_line, highlight=highlight)
-            )
+            msg_nocr(format_token(LineNumber, "%4d" % cur_line, highlight=highlight))
         else:
             if start_offset and offset and start_offset <= offset:
                 msg_nocr = orig_msg_nocr
@@ -276,22 +267,20 @@ def disassemble_bytes(
             msg_nocr("    ")
 
         if offset == lasti:
-            msg_nocr(format_token(Mformat.Arrow, "-->", highlight=highlight))
+            msg_nocr(format_token(Arrow, "-->", highlight=highlight))
         else:
             msg_nocr("   ")
         if offset in labels:
-            msg_nocr(format_token(Mformat.Arrow, ">>", highlight=highlight))
+            msg_nocr(format_token(Arrow, ">>", highlight=highlight))
         else:
             msg_nocr("  ")
         msg_nocr(repr(offset).rjust(4))
         msg_nocr(" ")
-        msg_nocr(
-            format_token(Mformat.Opcode, instr.opname.ljust(20), highlight=highlight)
-        )
+        msg_nocr(format_token(Opcode, instr.opname.ljust(20), highlight=highlight))
         msg_nocr(repr(instr.arg).ljust(10))
         msg_nocr(" ")
         # Show argval?
-        msg(format_token(Mformat.Name, instr.argrepr.ljust(20), highlight=highlight))
+        msg(format_token(Name, instr.argrepr.ljust(20), highlight=highlight))
         pass
 
     return code, offset
