@@ -13,10 +13,10 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
+import os.path as osp
 
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor import cmdbreak as Mcmdbreak
+from trepan.processor.cmdbreak import parse_break_cmd, set_break
 
 
 class ContinueCommand(DebuggerCommand):
@@ -50,17 +50,17 @@ See also:
     execution_set = ["Running"]
     min_args = 0
     max_args = None
-    name = os.path.basename(__file__).split(".")[0]
+    name = osp.basename(__file__).split(".")[0]
     need_stack = True
     short_help = "Continue execution of debugged program"
 
     def run(self, args):
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
-            func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(
+            func, filename, lineno, condition = parse_break_cmd(
                 self.proc, args
             )
-            if not Mcmdbreak.set_break(
+            if not set_break(
                 self, func, filename, lineno, condition, True, args
             ):
                 return False
@@ -74,9 +74,9 @@ See also:
 
 if __name__ == "__main__":
     import sys
-    from trepan import debugger as Mdebugger
+    from trepan.debugger import Trepan
 
-    d = Mdebugger.Trepan()
+    d = Trepan()
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()
     cmd.proc.setup()
