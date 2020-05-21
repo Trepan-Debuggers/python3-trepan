@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import code, os, sys
+import code, os.path as osp, sys
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -42,7 +42,7 @@ See also:
     category = "support"
     min_args = 0
     max_args = 1
-    name = os.path.basename(__file__).split(".")[0]
+    name = osp.basename(__file__).split(".")[0]
     need_stack = False
     short_help = "Run Python as a command subshell"
 
@@ -82,10 +82,11 @@ Use dbgr(*string*) to issue debugger command: *string*"""
 
         my_locals = {}
         my_globals = None
-        if self.proc.curframe:
-            my_globals = self.proc.curframe.f_globals
-            if self.proc.curframe.f_locals:
-                my_locals = self.proc.curframe.f_locals
+        proc = self.proc
+        if proc.curframe:
+            my_globals = proc.curframe.f_globals
+            if proc.curframe.f_locals:
+                my_locals = proc.curframe.f_locals
                 pass
             pass
 
@@ -119,18 +120,18 @@ Use dbgr(*string*) to issue debugger command: *string*"""
             sys.excepthook = old_sys_excepthook
 
         # restore completion and our history if we can do so.
-        if hasattr(self.proc.intf[-1], "complete"):
+        if hasattr(proc.intf[-1], "complete"):
             try:
                 from readline import set_completer, parse_and_bind
 
                 parse_and_bind("tab: complete")
-                set_completer(self.proc.intf[-1].complete)
+                set_completer(proc.intf[-1].complete)
             except ImportError:
                 pass
             pass
 
         if have_line_edit:
-            self.proc.read_history_file()
+            proc.read_history_file()
             pass
         return
 
