@@ -29,11 +29,12 @@ if SYS_VERSION <= (3, 2):
 else:
     pygments_version = ">= 2.2.0"
 
-# Python-version | package | last-version |
-# -----------------------------------------
-# 3.2            | pip     | 8.1.2        |
-# 3.3            | pip     | 10.0.1       |
-# 3.4            | pip     | 19.1.1       |
+# Python-version | package  | last-version |
+# ------------------------------------------
+# 3.2            | pip      | 8.1.2        |
+# 3.2            | pygments | 1.6          |
+# 3.3            | pip      | 10.0.1       |
+# 3.4            | pip      | 19.1.1       |
 
 # Things that change more often go here.
 copyright = """Copyright (C) 2013, 2015-2020 Rocky Bernstein <rocky@gnu.org>."""
