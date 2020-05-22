@@ -16,17 +16,17 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Interface when communicating with the user in the same process as
     the debugged program."""
-import atexit, os, sys
+import atexit, os.path as osp
 
 # Our local modules
-from trepan import interface as Minterface
+from trepan.interface import TrepanInterface
 
-histfile = os.path.expanduser('~/.trepan3k_hist')
+histfile = osp.expanduser("~/.trepan3k_hist")
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
 DEFAULT_USER_SETTINGS = {
-    'histfile'     : histfile,  # Where do we save the history?
-    'complete'     : None,      # Function which handles tab completion, or None
+    "histfile": histfile,  # Where do we save the history?
+    "complete": None,  # Function which handles tab completion, or None
 }
 
 try:
@@ -35,7 +35,8 @@ try:
 except ImportError:
     pass
 
-class UserInterface(Minterface.TrepanInterface):
+
+class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
     process as the debugged program."""
 
@@ -48,29 +49,35 @@ class UserInterface(Minterface.TrepanInterface):
 
         atexit.register(self.finalize)
         self.interactive = True  # Or at least so we think initially
-        self.input       = inp or Minput.DebuggerUserInput()
-        self.output      = out or Moutput.DebuggerUserOutput()
+        self.input = inp or Minput.DebuggerUserInput()
+        self.output = out or Moutput.DebuggerUserOutput()
         self.debugger_name = user_opts.get("debugger_name", "trepan3k")
 
         if self.input.use_history():
-            self.complete = user_opts['complete']
+            self.complete = user_opts["complete"]
             if self.complete:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
                 pass
-            self.histfile = user_opts['histfile']
+            self.histfile = user_opts["histfile"]
             if self.histfile:
                 try:
                     read_history_file(histfile)
                 except IOError:
                     pass
                 except:
-                    # PyPy read_history_file may fail
+                    # PyPy read_history_file fails
                     return
                 set_history_length(50)
-                atexit.register(write_history_file, self.histfile)
+                atexit.register(self.user_write_history_file)
                 pass
         return
+
+    def user_write_history_file(self):
+        try:
+            write_history_file(self.histfile)
+        except:
+            pass
 
     def close(self):
         """ Closes both input and output """
@@ -87,9 +94,9 @@ class UserInterface(Minterface.TrepanInterface):
         suffixed with a question mark and the default value.  The user
         response converted to a boolean is returned."""
         if default:
-            prompt += '? (Y or n) '
+            prompt += "? (Y or n) "
         else:
-            prompt += '? (N or y) '
+            prompt += "? (N or y) "
             pass
         while True:
             try:
@@ -97,9 +104,9 @@ class UserInterface(Minterface.TrepanInterface):
                 reply = reply.strip().lower()
             except EOFError:
                 return default
-            if reply in ('y', 'yes'):
+            if reply in ("y", "yes"):
                 return True
-            elif reply in ('n', 'no'):
+            elif reply in ("n", "no"):
                 return False
             else:
                 self.msg("Please answer y or n.")
@@ -110,38 +117,46 @@ class UserInterface(Minterface.TrepanInterface):
     def errmsg(self, msg, prefix="** "):
         """Common routine for reporting debugger error messages.
         """
-        return self.msg("%s%s" %(prefix, msg))
+        return self.msg("%s%s" % (prefix, msg))
 
     def finalize(self, last_wishes=None):
         # This routine gets called multiple times.
         # We hard-code the close() function here.
         try:
             self.msg("%s: That's all, folks..." % self.debugger_name)
-            self.close()
         except:
             pass
-        # save history
+        else:
+            self.close()
+            pass
         return
 
-    def read_command(self, prompt=''):
+    def read_command(self, prompt=""):
         line = self.readline(prompt)
         # Do something with history?
         return line
 
-    def readline(self, prompt=''):
-        if (hasattr(self.input, 'use_raw')
+    def readline(self, prompt=""):
+        if (
+            hasattr(self.input, "use_raw")
             and not self.input.use_raw
-            and prompt and len(prompt) > 0):
+            and prompt
+            and len(prompt) > 0
+        ):
             self.output.write(prompt)
             self.output.flush()
             pass
         return self.input.readline(prompt=prompt)
+
     pass
 
+
 # Demo
-if __name__=='__main__':
+if __name__ == "__main__":
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
+    import sys
+
     if len(sys.argv) > 1:
         try:
             line = intf.readline("Type something: ")

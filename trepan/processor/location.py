@@ -86,7 +86,7 @@ def resolve_location(proc, location):
             is_address = location.is_address
             if inspect.ismodule(modfunc):
                 if hasattr(modfunc, '__file__'):
-                    filename = pyficache.pyc2py(modfunc.__file__)
+                    filename = pyficache.resolve_name_to_path(modfunc.__file__)
                     filename = proc.core.canonic(filename)
                     if not lineno:
                         # use first line of module file
@@ -177,7 +177,7 @@ def resolve_address_location(proc, location):
             is_address = location.is_address
             if inspect.ismodule(modfunc):
                 if hasattr(modfunc, '__file__'):
-                    filename = pyficache.pyc2py(modfunc.__file__)
+                    filename = pyficache.resolve_name_to_path(modfunc.__file__)
                     filename = proc.core.canonic(filename)
                     if not offset:
                         # use first offset of module file

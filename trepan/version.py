@@ -4,4 +4,4 @@
 # This file should define a variable VERSION which we use as the
 # debugger version number.
 
-VERSION="1.0.0"  # noqa
+VERSION="1.0.1"  # noqa

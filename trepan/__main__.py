@@ -200,7 +200,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         # If mainpyfile is an optimized Python script try to find and
         # use non-optimized alternative.
-        mainpyfile_noopt = pyficache.pyc2py(mainpyfile)
+        mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
         if mainpyfile != mainpyfile_noopt and Mfile.readable(mainpyfile_noopt):
             print("%s: Compiled Python script given and we can't use that." % __title__)
             print(

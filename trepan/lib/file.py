@@ -89,7 +89,7 @@ def parse_position(errmsg, arg):
             errmsg("'%s' not found using sys.path" % filename)
             return (None, None, None)
         else:
-            filename = pyficache.pyc2py(f)
+            filename = pyficache.resolve_name_to_path(f)
             arg = arg[colon + 1 :].lstrip()
             pass
         try:

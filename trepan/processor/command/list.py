@@ -81,7 +81,7 @@ of a range.
         filename, first, last = parse_list_cmd(proc, args, listsize)
         curframe = proc.curframe
         if filename is None: return
-        filename = pyficache.unmap_file(pyficache.pyc2py(filename))
+        filename = pyficache.unmap_file(pyficache.resolve_name_to_path(filename))
 
         # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
