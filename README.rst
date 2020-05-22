@@ -226,7 +226,7 @@ See Also
 * Tutorial_: Tutorial for how to use
 * https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python`
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
-[* https://pypi.python.org/pypi/xdis : cross-platform disassembler
+* https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
 
 .. _pygments:  http://pygments.org

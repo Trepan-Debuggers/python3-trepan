@@ -8,6 +8,7 @@
 - [Make sure pyenv is running and check versions](#make-sure-pyenv-is-running-and-check-versions)
 - [Make packages](#make-packages)
 - [Check packages](#check-packages)
+- [Release on github](#release-on-github)
 - [Get on PyPy](#get-on-pypy)
 
 <!-- markdown-toc end -->
@@ -41,12 +42,13 @@
 
     $ . ./admin-tools/make-dist.sh
 
-Goto https://github.com/rocky/python3-trepan/releases/new
-
 # Check packages
 
 	$ twine check dist/trepan3k-$VERSION*
 
+# Release on github
+
+Goto https://github.com/rocky/python3-trepan/releases/new
 
 # Get on PyPy
 
