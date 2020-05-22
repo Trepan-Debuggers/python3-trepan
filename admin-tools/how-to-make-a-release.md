@@ -2,16 +2,13 @@
 **Table of Contents**
 
 - [Get latest sources:](#get-latest-sources)
-- [Change version in uncompyle6/version.py](#change-version-in-uncompyle6versionpy)
+- [Change version in trepan/version.py:](#change-version-in-trepanversionpy)
 - [Update ChangeLog:](#update-changelog)
-- [Update NEWS from ChangeLog:](#update-news-from-changelog)
+- [Update NEWS.md from ChangeLog:](#update-newsmd-from-changelog)
 - [Make sure pyenv is running and check versions](#make-sure-pyenv-is-running-and-check-versions)
-- [Update NEWS from master branch](#update-news-from-master-branch)
-- [Check against all versions](#check-against-all-versions)
-- [Make packages and tag](#make-packages-and-tag)
-- [Upload single package and look at Rst Formating](#upload-single-package-and-look-at-rst-formating)
-- [Upload rest of versions](#upload-rest-of-versions)
-- [Push tags:](#push-tags)
+- [Make packages](#make-packages)
+- [Check packages](#check-packages)
+- [Get on PyPy](#get-on-pypy)
 
 <!-- markdown-toc end -->
 # Get latest sources:
@@ -40,25 +37,17 @@
     $ pyenv local && source admin-tools/check-versions.sh
 
 
-# make check-rst or better check via:
-
-http://rst.ninjs.org
-
-# Make packages and tag
+# Make packages
 
     $ . ./admin-tools/make-dist.sh
 
 Goto https://github.com/rocky/python3-trepan/releases/new
 
-# Upload single package and look at Rst Formating
+# Check packages
 
-	$ twine check dist/trepan3k-${VERSION}*
-    $ twine upload dist/trepan3k-${VERSION}-py3.3.egg
+	$ twine check dist/trepan3k-$VERSION*
 
-# Upload rest of versions
 
-    $ twine upload dist/trepan3k-${VERSION}*
+# Get on PyPy
 
-# Push tags:
-
-    $ git push --tags
+	$ twine upload dist/trepan3k-${VERSION}*
