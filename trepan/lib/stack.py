@@ -191,7 +191,10 @@ def check_path_with_frame(frame, path):
     if bc_size and bc_size != my_size:
         return False, "bytecode and local files mismatch"
     if fs_size and fs_size != my_size:
-        return False, "debugger file and local files mismatch"
+        return False, (
+            "frame file size, %d bytes, and local file size, %d bytes, on file %s mismatch" %
+            (fs_size, my_size, path)
+        )
     return True, None
 
 
