@@ -52,7 +52,7 @@ Examples:
     deparse .           # deparse current function or main
     deparse --offset 6  # deparse starting at offset 6
     deparse --offsets   # show all exect deparsing offsets
-    deparse --tree       # deparse and show parse tree
+    deparse --tree      # deparse and show parse tree
 
 See also:
 ---------

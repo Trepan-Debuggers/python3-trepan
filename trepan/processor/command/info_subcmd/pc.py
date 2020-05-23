@@ -60,17 +60,19 @@ See also:
                 disassemble_bytes(
                     self.msg,
                     self.msg_nocr,
-                    co_code,
-                    offset,
-                    line_no,
-                    line_no - 1,
-                    line_no + 1,
+                    code = co_code,
+                    lasti = offset,
+                    cur_line = line_no,
+                    start_line = line_no - 1,
+                    end_line = line_no + 1,
+                    varnames=code.co_varnames,
+                    names=code.co_names,
                     constants=code.co_consts,
                     cells=code.co_cellvars,
-                    varnames=code.co_varnames,
                     freevars=code.co_freevars,
                     linestarts=dict(findlinestarts(code)),
                     end_offset=offset + 10,
+                    opc=proc.vm.opc,
                 )
                 pass
             pass
