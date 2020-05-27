@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,28 +14,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import os.path as osp
 
 # Our local modules
-from trepan.processor.command import base_cmd
-from trepan.processor import cmdfns as Mcmdfns
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.cmdfns import want_different_line
 
 
-class NextCommand(base_cmd.DebuggerCommand):
+class NextCommand(DebuggerCommand):
+    """**next**[**+**|**-**] [*count*]
 
-    aliases       = ('next+', 'next-', 'n', 'n-', 'n+')
-    category      = 'running'
-    execution_set = ['Running']
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Step program without entering called functions'
-
-    def run(self, args):
-        """**next**[**+**|**-**] [*count*]
-
-Step one statement ignoring steps into function calls at this level.
+Execute the current simple statement stopping at the next event but
+ignoring steps into function calls at this level,
 
 With an integer argument, perform `next` that many times. However if
 an exception occurs at this level, or we *return*, *yield* or the
@@ -53,38 +43,51 @@ See also:
 `finish` for other ways to progress execution.
 """
 
+    aliases = ("next+", "next-", "n", "n-", "n+")
+    category = "running"
+    execution_set = ["Running"]
+    min_args = 0
+    max_args = 1
+    name = osp.basename(__file__).split(".")[0]
+    need_stack = True
+    short_help = "Step over"
+
+    def run(self, args):
         if len(args) <= 1:
             step_ignore = 0
         else:
-            step_ignore = self.proc.get_int(args[1], default=1,
-                                            cmdname='next')
-            if step_ignore is None: return False
+            step_ignore = self.proc.get_int(args[1], default=1, cmdname="next")
+            if step_ignore is None:
+                return False
             # 0 means stop now or step 1, so we subtract 1.
             step_ignore -= 1
             pass
-        self.core.different_line   = \
-            Mcmdfns.want_different_line(args[0],
-                                        self.debugger.settings['different'])
+        self.core.different_line = want_different_line(
+            args[0], self.debugger.settings["different"]
+        )
         self.core.set_next(self.proc.frame, step_ignore)
-        self.proc.continue_running = True   # Break out of command read loop
+        self.proc.continue_running = True  # Break out of command read loop
         return True
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from mock import MockDebugger
+
     d = MockDebugger()
     cmd = NextCommand(d.core.processor)
-    for c in (['n', '5'],
-              ['next', '1+2'],
-              ['n', 'foo']):
+    for c in (["n", "5"], ["next", "1+2"], ["n", "foo"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print('Run result: %s' % result)
-        print('step_ignore %d, continue_running: %s' % (d.core.step_ignore,
-                                                        cmd.continue_running,))
+        print("Run result: %s" % result)
+        print(
+            "step_ignore %d, continue_running: %s"
+            % (d.core.step_ignore, cmd.continue_running,)
+        )
         pass
-    for c in (['n'], ['next+'], ['n-']):
+    for c in (["n"], ["next+"], ["n-"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
