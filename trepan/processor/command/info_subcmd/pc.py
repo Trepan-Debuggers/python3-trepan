@@ -72,7 +72,6 @@ See also:
                     freevars=code.co_freevars,
                     linestarts=dict(findlinestarts(code)),
                     end_offset=offset + 10,
-                    opc=proc.vm.opc,
                 )
                 pass
             pass

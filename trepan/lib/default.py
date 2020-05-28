@@ -125,6 +125,8 @@ DEBUGGER_SETTINGS = {
     # (In the Python they are "class" and "def" statments)
     'skip'          : True,
 
+    'step_ignore'   : 0,
+
     # print trace output?
     'trace'         : False,
 
