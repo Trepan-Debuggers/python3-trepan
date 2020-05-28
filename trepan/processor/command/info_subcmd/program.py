@@ -46,15 +46,15 @@ See also:
         proc = self.proc
         if self.core.is_running():
             if mainfile:
-                part1 = "Python program '%s' is stopped" % mainfile
+                part1 = "Python program '%s' is stopped." % mainfile
             else:
-                part1 = "Program is stopped"
+                part1 = "Program is stopped."
                 pass
             if proc.event:
                 msg = "via a %s event." % proc.event
             else:
                 msg = "."
-            self.msg(wrapped_lines(part1, msg, self.settings["width"]))
+            self.msg(part1)
             if proc.curframe:
                 self.msg("PC offset is %d." % proc.curframe.f_lasti)
 
