@@ -341,6 +341,8 @@ def print_location(proc_obj):
         val = proc_obj.event_arg
         intf_obj.msg("R=> %s" % proc_obj._saferepr(val))
         pass
+    elif proc_obj.event == "call" and proc_obj.curframe.f_locals.get("__name__", "") != "__main__":
+        proc_obj.commands["info"].run(["info", "locals"])
     return True
 
 

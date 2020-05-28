@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015-2016 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015-2016, 2020 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,10 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor.command.base_subcmd import DebuggerSetBoolSubcommand
 
 
-class SetDifferent(Mbase_subcmd.DebuggerSetBoolSubcommand):
+class SetDifferent(DebuggerSetBoolSubcommand):
     """**set different** [ **on** | **off** ]
 
 Set different line location between consecutive debugger stops.
@@ -43,11 +43,14 @@ See also:
 `set trace` to change what events you want to filter.
 `show trace`
 """
-    in_list    = True
-    min_abbrev = len('dif')    # Min is "set dif"
+
+    in_list = True
+    min_abbrev = len("dif")  # Min is "set dif"
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(SetDifferent)
     pass
