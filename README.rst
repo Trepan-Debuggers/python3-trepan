@@ -221,10 +221,11 @@ See Also
 --------
 
 * trepan2_ : trepan debugger for Python 2
+* trepanxpy_ : trepan debugger for |`x-python`|
 * pydbgr_  : previous incarnation of debugger
 * pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
-* https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python`
+* https://github.com/rocky/trepan-xpy : Python debugger using this code to support x-python_
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
 * https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
@@ -236,6 +237,8 @@ See Also
 .. _pydbgr: https://pypi.python.org/pypi/pydbgr
 .. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _trepan3: https://github.com/rocky/python3-trepan
+.. _trepanxpy: https://pypi.python.org/pypi/trepanxpy
+.. _xpython: https://pypi.python.org/pypi/x-python
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
