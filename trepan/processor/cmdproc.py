@@ -27,7 +27,7 @@ from pygments.console import colorize
 
 from tracer import EVENT2SHORT
 
-import trepan.vprocessor as Mprocessor
+from trepan.vprocessor import Processor
 from trepan.lib.bytecode import is_def_stmt, is_class_def
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
@@ -355,10 +355,10 @@ DEFAULT_PROC_OPTS = {
 }
 
 
-class CommandProcessor(Mprocessor.Processor):
+class CommandProcessor(Processor):
     def __init__(self, core_obj, opts=None):
         get_option = lambda key: Mmisc.option_set(opts, key, DEFAULT_PROC_OPTS)
-        Mprocessor.Processor.__init__(self, core_obj)
+        super().__init__(core_obj)
 
         self.continue_running = False  # True if we should leave command loop
         self.event2short = dict(EVENT2SHORT)
