@@ -50,6 +50,10 @@
 
 Goto https://github.com/rocky/python3-trepan/releases/new
 
-# Get on PyPy
+# Get on PyPi
 
 	$ twine upload dist/trepan3k-${VERSION}*
+
+# Move dist files to uploaded
+
+	$ mv -v dist/trepan3k-${VERSION}* dist/uploaded
