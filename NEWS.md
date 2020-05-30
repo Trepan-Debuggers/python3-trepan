@@ -1,3 +1,14 @@
+1.0.2 2020-04-30 Lady Elaine
+============================
+
+The main purpose of this release is again to support upcomping improvements to x-python.
+This might be the last release before a more substantial refactoring to fix some
+longer-term slowness and weirdnesses in tracing by using 3.6, and 3.8 APIs
+
+* Show args via "info local" on a call event
+* Better file remapping and size check error msgs
+* Blacken some buffers, and use more conventional imports
+
 1.0.1 2020-04-22
 ================
 
