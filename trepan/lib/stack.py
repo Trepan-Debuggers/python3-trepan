@@ -14,6 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
+
+import importlib.machinery
+
 import inspect, linecache, os, re, xdis
 
 import trepan.lib.bytecode as Mbytecode
@@ -21,6 +24,7 @@ import trepan.lib.printing as Mprint
 import trepan.lib.format as Mformat
 import trepan.lib.pp as Mpp
 
+import os.path as osp
 from trepan.lib.deparse import deparse_offset
 from trepan.processor.cmdfns import deparse_fn
 
@@ -45,6 +49,32 @@ import reprlib as Mrepr
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
+
+# Taken from 3.7 inspect.py. However instead of an object name, we
+# start with the filename. Also, oddly getsourcefile wasn't
+# stripping out __pycache__. Finally, we've adapted this
+# so it works back to 3.0.
+#
+def getsourcefile(filename):
+    """Return the filename that can be used to locate an object's source.
+    Return None if no way can be identified to get the source.
+    """
+    all_bytecode_suffixes = (".pyc", ".pyo")
+    if any(filename.endswith(s) for s in all_bytecode_suffixes):
+        if osp.dirname(filename).endswith("__pycache__"):
+            filename = osp.join(osp.dirname(osp.dirname(filename)), osp.basename(filename))
+        filename = (osp.splitext(filename)[0] + ".py")
+    elif any(filename.endswith(s) for s in
+             [".abi3.so", ".so"]):
+        return None
+    if osp.exists(filename):
+        return filename
+    # only return a non-existent filename if the module has a PEP 302 loader
+    if getattr(inspect.getmodule(object, filename), '__loader__', None) is not None:
+        return filename
+    # or it is in the linecache
+    if filename in linecache.cache:
+        return filename
 
 def deparse_source_from_code(code):
     source_text = ""
@@ -167,7 +197,8 @@ def frame2filesize(frame):
     else:
         bc_path = None
     path = frame.f_globals["__file__"]
-    fs_size = os.stat(path).st_size
+    source_path = getsourcefile(path)
+    fs_size = os.stat(source_path).st_size
     if bc_path:
         (
             version,
@@ -179,7 +210,7 @@ def frame2filesize(frame):
             sip_hash,
         ) = xdis.load_module(bc_path, fast_load=True, get_code=False)
         return fs_size, bc_source_size
-    elif os.path.exists(path):
+    elif osp.exists(path):
         return fs_size, None
     else:
         return None, None
@@ -396,30 +427,35 @@ if __name__ == "__main__":
         pass
 
     frame = inspect.currentframe()
-    m = MockDebugger()
-    print(format_stack_entry(m, (frame, 10,)))
-    print(format_stack_entry(m, (frame, 10,), color="dark"))
-    print("frame count: %d" % count_frames(frame))
-    print("frame count: %d" % count_frames(frame.f_back))
-    print("frame count: %d" % count_frames(frame, 1))
-    print("def statement: x=5?: %s" % repr(Mbytecode.is_def_stmt("x=5", frame)))
-    # Not a "def" statement because frame is wrong spot
-    print(Mbytecode.is_def_stmt("def foo():", frame))
+    print(frame2filesize(frame))
+    pyc_file = osp.join(osp.dirname(__file__),
+                        "__pycache__", osp.basename(__file__)[:-3] + ".pyc")
+    print(pyc_file, getsourcefile(pyc_file))
 
-    def sqr(x):
-        x * x
+    # m = MockDebugger()
+    # print(format_stack_entry(m, (frame, 10,)))
+    # print(format_stack_entry(m, (frame, 10,), color="dark"))
+    # print("frame count: %d" % count_frames(frame))
+    # print("frame count: %d" % count_frames(frame.f_back))
+    # print("frame count: %d" % count_frames(frame, 1))
+    # print("def statement: x=5?: %s" % repr(Mbytecode.is_def_stmt("x=5", frame)))
+    # # Not a "def" statement because frame is wrong spot
+    # print(Mbytecode.is_def_stmt("def foo():", frame))
 
-    def fn(x):
-        frame = inspect.currentframe()
-        print(get_call_function_name(frame))
-        return
+    # def sqr(x):
+    #     x * x
 
-    print("=" * 30)
-    eval("fn(5)")
-    print("=" * 30)
-    print(print_obj("fn", fn))
-    print("=" * 30)
-    print(print_obj("len", len))
-    print("=" * 30)
-    print(print_obj("MockDebugger", MockDebugger))
+    # def fn(x):
+    #     frame = inspect.currentframe()
+    #     print(get_call_function_name(frame))
+    #     return
+
+    # print("=" * 30)
+    # eval("fn(5)")
+    # print("=" * 30)
+    # print(print_obj("fn", fn))
+    # print("=" * 30)
+    # print(print_obj("len", len))
+    # print("=" * 30)
+    # print(print_obj("MockDebugger", MockDebugger))
     pass
