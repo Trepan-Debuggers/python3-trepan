@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2018 Rocky Bernstein
+#   Copyright (C) 2015, 2018, 2020 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
 
 # Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.lib.complete import complete_token
 
 
 style_names = sorted(list(STYLE_MAP.keys()))
-def complete(self, prefix):
-    return Mcomplete.complete_token(style_names)
 
-class ShowStyle(Mbase_subcmd.DebuggerSubcommand):
+
+def complete(self, prefix):
+    return complete_token(style_names)
+
+
+class ShowStyle(DebuggerSubcommand):
     """**show style* *name*
 
 Show the pygments style used in formatting 256-color terminal text.
@@ -24,9 +27,9 @@ See also:
 `set style`, `show highlight`
 """
 
-    in_list    = True
-    min_abbrev = len('sty')
-    short_help = 'Set the pygments style'
+    in_list = True
+    min_abbrev = len("sty")
+    short_help = "Set the pygments style"
 
     def run(self, args):
         if len(args) != 0:
@@ -39,11 +42,14 @@ See also:
         else:
             self.msg("Pygments style not set")
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
-    sub = Mhelper.demo_run(ShowStyle)
+
+    sub = Mhelper.demo_run(ShowStyle, [])
     d = sub.proc.debugger
-    sub.run([])
+    sub.run(["show"])
     pass
