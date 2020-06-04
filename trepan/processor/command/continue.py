@@ -13,7 +13,6 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os.path as osp
 
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdbreak import parse_break_cmd, set_break
@@ -45,14 +44,10 @@ See also:
 `step` `jump`, `next`, `finish` and `help syntax location`
 """
 
-    category = "running"
     aliases = ("c",)
     execution_set = ["Running"]
-    min_args = 0
-    max_args = None
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = True
     short_help = "Continue execution of debugged program"
+    DebuggerCommand.setup(category="running", need_stack=True)
 
     def run(self, args):
         if len(args) > 1:

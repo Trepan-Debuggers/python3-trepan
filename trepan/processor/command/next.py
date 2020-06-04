@@ -14,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path as osp
-
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
@@ -44,13 +42,12 @@ See also:
 """
 
     aliases = ("next+", "next-", "n", "n-", "n+")
-    category = "running"
     execution_set = ["Running"]
-    min_args = 0
-    max_args = 1
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = True
     short_help = "Step over"
+
+    DebuggerCommand.setup(
+        category="running", need_stack=True, max_args=1
+    )
 
     def run(self, args):
         if len(args) <= 1:

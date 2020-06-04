@@ -14,8 +14,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path as osp
-
 from trepan.processor.command.base_submgr import SubcommandMgr
 
 
@@ -30,12 +28,8 @@ Type `show` for a list of *show* subcommands and what they do.
 Type `help show *` for just a list of *show* subcommands.
 """
 
-    category = "status"
-    min_args = 0
-    max_args = None
-    name = osp.basename(__file__).split('.')[0]
-    need_stack = False
     short_help = "Show parts of the debugger environment"
+    SubcommandMgr.setup(category="status")
 
 
 if __name__ == "__main__":

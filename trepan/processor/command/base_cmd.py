@@ -23,6 +23,7 @@ and storing it as a list of known debugger commands.
 NotImplementedMessage = "This method must be overriden in a subclass"
 
 import columnize
+from inspect import currentframe, getframeinfo
 from pygments.console import colorize
 
 from trepan.lib import format as Mformat
@@ -35,6 +36,17 @@ class DebuggerCommand:
     functions for command from module cmdfns."""
 
     category = 'misc'
+
+    @classmethod
+    def setup(cls, category="misc", min_args=0, max_args=None,
+              need_stack=False):
+        curframe = currentframe()
+        filename = getframeinfo(curframe.f_back).filename
+        cls.category = category
+        cls.min_args = min_args
+        cls.max_args = max_args
+        cls.need_stack = need_stack
+        return
 
     def __init__(self, proc):
         """proc contains the command processor object that this
