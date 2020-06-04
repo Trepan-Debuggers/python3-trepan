@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2017, 2019 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,10 +13,10 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''Some singleton debugger methods that can be called without first
+"""Some singleton debugger methods that can be called without first
 creating a debugger object -- these methods will create a debugger object,
 if necessary, first.
-'''
+"""
 
 # The following routines could be done via something like the following
 # untested code:
@@ -34,16 +34,25 @@ if necessary, first.
 
 import sys
 
-from trepan import debugger as Mdebugger, post_mortem as Mpost_mortem
+from trepan import debugger as Mdebugger
+from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
+from trepan.debugger import Trepan
+
 
 def debugger_on_post_mortem():
-    '''Call debugger on an exeception that terminates a program'''
-    sys.excepthook = Mpost_mortem.post_mortem_excepthook
+    """Call debugger on an exeception that terminates a program"""
+    sys.excepthook = post_mortem_excepthook
     return
 
 
-def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
-             locals_=None, tb_fn = None):
+def run_eval(
+    expression,
+    debug_opts=None,
+    start_opts=None,
+    globals_=None,
+    locals_=None,
+    tb_fn=None,
+):
 
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement subsequent to the place that
@@ -55,14 +64,16 @@ def run_eval(expression, debug_opts=None, start_opts=None, globals_=None,
     Otherwise this function is similar to run().
     """
 
-    dbg = Mdebugger.Trepan(opts=debug_opts)
+    dbg = Trepan(opts=debug_opts)
     try:
-        return dbg.run_eval(expression, start_opts=start_opts,
-                            globals_=globals_, locals_=locals_)
+        return dbg.run_eval(
+            expression, start_opts=start_opts, globals_=globals_, locals_=locals_
+        )
     except:
         dbg.core.trace_hook_suspend = True
-        if start_opts and 'tb_fn' in start_opts: tb_fn = start_opts['tb_fn']
-        Mpost_mortem.uncaught_exception(dbg, tb_fn)
+        if start_opts and "tb_fn" in start_opts:
+            tb_fn = start_opts["tb_fn"]
+        uncaught_exception(dbg, tb_fn)
     finally:
         dbg.core.trace_hook_suspend = False
     return
@@ -78,17 +89,16 @@ def run_call(func, *args, **kwds):
     returned.  The debugger prompt appears as soon as the function is
     entered."""
 
-    dbg = Mdebugger.Trepan()
+    dbg = Trepan()
     try:
         return dbg.run_call(func, *args, **kwds)
     except:
-        Mpost_mortem.uncaught_exception(dbg)
+        uncaught_exception(dbg)
         pass
     return
 
 
-def run_exec(statement, debug_opts=None, start_opts=None, globals_=None,
-             locals_=None):
+def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_=None):
 
     """Execute the statement (given as a string) under debugger
     control starting with the statement subsequent to the place that
@@ -104,18 +114,18 @@ def run_exec(statement, debug_opts=None, start_opts=None, globals_=None,
     in which the code is executed; by default the dictionary of the
     module __main__ is used."""
 
-    dbg = Mdebugger.Trepan(opts=debug_opts)
+    dbg = Trepan(opts=debug_opts)
     try:
-        return dbg.run_exec(statement, start_opts=start_opts,
-                            globals_=globals_, locals_=locals_)
+        return dbg.run_exec(
+            statement, start_opts=start_opts, globals_=globals_, locals_=locals_
+        )
     except:
-        Mpost_mortem.uncaught_exception(dbg)
+        uncaught_exception(dbg)
         pass
     return
 
 
-def debug(dbg_opts=None, start_opts=None, post_mortem=True,
-          step_ignore=1, level=0):
+def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level=0):
     """
 Enter the debugger.
 
@@ -201,11 +211,12 @@ dictionary that gets fed to trepan.Debugger.core.start().
         Mdebugger.debugger_obj.core.add_ignore(debug, stop)
         pass
     core = Mdebugger.debugger_obj.core
-    frame = sys._getframe(0+level)
+    frame = sys._getframe(0 + level)
     core.set_next(frame)
-    if start_opts and 'startup-profile' in start_opts and start_opts['startup-profile']:
-        dbg_initfiles = start_opts['startup-profile']
+    if start_opts and "startup-profile" in start_opts and start_opts["startup-profile"]:
+        dbg_initfiles = start_opts["startup-profile"]
         from trepan import options
+
         options.add_startup_file(dbg_initfiles)
         for init_cmdfile in dbg_initfiles:
             core.processor.queue_startfile(init_cmdfile)
@@ -217,47 +228,51 @@ dictionary that gets fed to trepan.Debugger.core.start().
         debugger_on_post_mortem()
         pass
     if 0 == step_ignore:
-        frame                   = sys._getframe(1+level)
-        core.stop_reason        = 'at a debug() call'
-        old_trace_hook_suspend  = core.trace_hook_suspend
+        frame = sys._getframe(1 + level)
+        core.stop_reason = "at a debug() call"
+        old_trace_hook_suspend = core.trace_hook_suspend
         core.trace_hook_suspend = True
-        core.processor.event_processor(frame, 'line', None)
+        core.processor.event_processor(frame, "line", None)
         core.trace_hook_suspend = old_trace_hook_suspend
     else:
-        core.step_ignore = step_ignore-1
+        core.step_ignore = step_ignore - 1
         pass
     return
 
 
 def stop(opts=None):
-    if isinstance(Mdebugger.Trepan, Mdebugger.debugger_obj):
+    if isinstance(Trepan, Mdebugger.debugger_obj):
         return Mdebugger.debugger_obj.stop(opts)
     return None
 
-# # Demo it
-# if __name__=='__main__':
-#     import tracer
 
-#     def foo(n):
-#         y = n
-#         for i in range(n):
-#             print(i)
-#             pass
-#         return y
-#     from trepan.lib import default as Mdefault
-#     settings = dict(Mdefault.DEBUGGER_SETTINGS)
-#     settings.update({'trace': True, 'printset': tracer.ALL_EVENTS})
-#     debug_opts={'step_ignore': -1, 'settings': settings}
-#     print('Issuing: run_eval("1+2")')
-#     print(run_eval('1+2', debug_opts=debug_opts))
-#     print('Issuing: run_exec("x=1; y=2")')
-#     run_exec('x=1; y=2', debug_opts=debug_opts)
-#     print('Issuing: run_call(foo, debug_opts, None, 2)')
-#     run_call(foo, debug_opts, None, 2)
-#     # if len(sys.argv) > 1:
-#     #     # FIXME: should this work better?
-#     #     # print 'Issuing interactive: run_exec(x=1; y=2)'
-#     #     # run_exec('x=1; y=2')
-#     #     print 'Issuing interactive: run_call(foo)'
-#     #     run_call(foo, debug_opts)
-#     pass
+# # Demo it
+if __name__ == "__main__":
+    import tracer
+
+    def foo(n):
+        y = n
+        for i in range(n):
+            print(i)
+            pass
+        return y
+
+    from trepan.lib.default import DEBUGGER_SETTINGS
+
+    settings = dict(DEBUGGER_SETTINGS)
+    settings.update({"trace": True, "printset": tracer.ALL_EVENTS})
+    debug_opts = {"step_ignore": -1, "settings": settings}
+    print('Issuing: run_eval("1+2")')
+    print(run_eval("1+2", debug_opts=debug_opts))
+    print('Issuing: run_exec("x=1; y=2")')
+    run_exec("x=1; y=2", debug_opts=debug_opts)
+    print("Issuing: run_call(foo, debug_opts, None, 2)")
+    if len(sys.argv) > 1:
+        print(
+            "Issuing interactive: run_call(foo, %s, None, %s)"
+            % (debug_opts, sys.argv[1])
+        )
+        run_call(foo, debug_opts, int(sys.argv[1]))
+    else:
+        run_call(foo, debug_opts, 2)
+    pass
