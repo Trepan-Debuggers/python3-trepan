@@ -29,7 +29,7 @@ Type `help show *` for just a list of *show* subcommands.
 """
 
     short_help = "Show parts of the debugger environment"
-    SubcommandMgr.setup(category="status")
+    SubcommandMgr.setup(locals(), category="status")
 
 
 if __name__ == "__main__":

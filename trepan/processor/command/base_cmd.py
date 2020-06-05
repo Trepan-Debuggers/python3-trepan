@@ -23,7 +23,6 @@ and storing it as a list of known debugger commands.
 NotImplementedMessage = "This method must be overriden in a subclass"
 
 import columnize
-from inspect import currentframe, getframeinfo
 from pygments.console import colorize
 
 from trepan.lib import format as Mformat
@@ -37,15 +36,14 @@ class DebuggerCommand:
 
     category = 'misc'
 
-    @classmethod
-    def setup(cls, category="misc", min_args=0, max_args=None,
+    @staticmethod
+    def setup(l, category="misc", min_args=0, max_args=None,
               need_stack=False):
-        curframe = currentframe()
-        filename = getframeinfo(curframe.f_back).filename
-        cls.category = category
-        cls.min_args = min_args
-        cls.max_args = max_args
-        cls.need_stack = need_stack
+        l["name"] =l["__module__"].split(".")[-1]
+        l["category"] = category
+        l["min_args"] = min_args
+        l["max_args"] = max_args
+        l["need_stack"] = need_stack
         return
 
     def __init__(self, proc):

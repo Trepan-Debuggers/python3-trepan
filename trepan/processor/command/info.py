@@ -14,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path as osp
-
 from trepan.processor.command.base_submgr import SubcommandMgr
 
 
@@ -30,13 +28,9 @@ Type `help info *` for just a list of *info* subcommands.
 """
 
     aliases = ("i",)
-    category = "status"
-    min_args = 0
-    max_args = None
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = False
     short_help = "Information about debugged program and its environment"
 
+    SubcommandMgr.setup(locals(), category="status")
 
 if __name__ == "__main__":
     from trepan.processor.command import mock

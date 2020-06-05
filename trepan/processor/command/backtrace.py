@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2018-2019 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2018-2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
+
 from getopt import getopt, GetoptError
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.lib import stack as Mstack
 
 
-class BacktraceCommand(Mbase_cmd.DebuggerCommand):
+class BacktraceCommand(DebuggerCommand):
     """**backtrace** [*options*] [*count*]
 
 Print backtrace of all stack frames, or innermost *count* frames.
@@ -57,54 +57,55 @@ See also:
 `frame`, `locals`, `global`, `deparse`, `list`.
 """
 
-    aliases       = ('bt', 'where')
-    category      = 'stack'
-    min_args      = 0
-    max_args      = 4
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help   = 'Print backtrace of stack frames'
+    aliases = ("bt", "where")
+    short_help = "Print backtrace of stack frames"
+
+    DebuggerCommand.setup(locals(), category="stack", max_args=4, need_stack=True)
 
     def run(self, args):
 
         try:
-            opts, args = getopt(args[1:], "hfds",
-                                "help deparse full source".split())
+            opts, args = getopt(args[1:], "hfds", "help deparse full source".split())
         except GetoptError as err:
             # print help information and exit:
             print(str(err))  # will print something like "option -a not recognized"
             return
 
-        bt_opts = {'width': self.settings['width']}
+        bt_opts = {"width": self.settings["width"]}
         for o, a in opts:
             if o in ("-h", "--help"):
-                self.proc.commands['help'].run(['help', 'backtrace'])
+                self.proc.commands["help"].run(["help", "backtrace"])
                 return
             elif o in ("-d", "--deparse"):
-                bt_opts['deparse'] = True
+                bt_opts["deparse"] = True
             elif o in ("-f", "--full"):
-                bt_opts['full'] = True
+                bt_opts["full"] = True
             elif o in ("-s", "--source"):
-                bt_opts['source'] = True
+                bt_opts["source"] = True
             else:
                 self.errmsg("unhandled option '%s'" % o)
             pass
-
 
         if len(args) > 0:
             at_most = len(self.proc.stack)
             if at_most == 0:
                 self.errmsg("Stack is empty.")
                 return False
-            min_value = - at_most + 1
-            count = self.proc.get_int(args[0], min_value = min_value,
-                                      cmdname = 'backtrace',
-                                      default=0, at_most = at_most)
-            if count is None: return False
+            min_value = -at_most + 1
+            count = self.proc.get_int(
+                args[0],
+                min_value=min_value,
+                cmdname="backtrace",
+                default=0,
+                at_most=at_most,
+            )
+            if count is None:
+                return False
             if count < 0:
-                count =  at_most - count
+                count = at_most - count
                 pass
-            elif 0 == count: count = None
+            elif 0 == count:
+                count = None
         else:
             count = None
             pass
@@ -112,52 +113,55 @@ See also:
         if not self.proc.curframe:
             self.errmsg("No stack.")
             return False
-        Mstack.print_stack_trace(self.proc, count,
-                                 color=self.settings['highlight'],
-                                 opts=bt_opts)
+        Mstack.print_stack_trace(
+            self.proc, count, color=self.settings["highlight"], opts=bt_opts
+        )
         return False
 
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor import cmdproc
     from trepan import debugger
-    d            = debugger.Debugger()
-    cp           = d.core.processor
-    command      = BacktraceCommand(cp)
-    command.run(['backtrace', 'wrong', 'number', 'of', 'args'])
+
+    d = debugger.Debugger()
+    cp = d.core.processor
+    command = BacktraceCommand(cp)
+    command.run(["backtrace", "wrong", "number", "of", "args"])
 
     def nest_me(cp, command, i):
         import inspect
+
         if i > 1:
             cp.curframe = inspect.currentframe()
-            cp.stack, cp.curindex = cmdproc.get_stack(cp.curframe, None, None,
-                                                      cp)
-            print('-' * 10)
-            command.run(['backtrace'])
-            print('-' * 10)
-            command.run(['backtrace', '1'])
+            cp.stack, cp.curindex = cmdproc.get_stack(cp.curframe, None, None, cp)
+            print("-" * 10)
+            command.run(["backtrace"])
+            print("-" * 10)
+            command.run(["backtrace", "1"])
         else:
-            nest_me(cp, command, i+1)
+            nest_me(cp, command, i + 1)
         return
 
     def ignore_me(cp, command, i):
-        print('=' * 10)
+        print("=" * 10)
         nest_me(cp, command, 1)
-        print('=' * 10)
+        print("=" * 10)
         cp.core.add_ignore(ignore_me)
         nest_me(cp, command, 1)
         return
+
     cp.forget()
-    command.run(['backtrace'])
-    print('-' * 10)
+    command.run(["backtrace"])
+    print("-" * 10)
     ignore_me(cp, command, 1)
-    command.run(['backtrace', '1'])
-    print('-' * 10)
-    command.run(['backtrace', '-1'])
-    print('-' * 10)
-    command.run(['backtrace', '3'])
-    print('-' * 10)
-    command.run(['backtrace', '-2'])
-    print('-' * 10)
+    command.run(["backtrace", "1"])
+    print("-" * 10)
+    command.run(["backtrace", "-1"])
+    print("-" * 10)
+    command.run(["backtrace", "3"])
+    print("-" * 10)
+    command.run(["backtrace", "-2"])
+    print("-" * 10)
     pass

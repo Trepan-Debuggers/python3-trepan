@@ -14,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path as osp
-
 from trepan.processor.command.base_submgr import SubcommandMgr
 
 
@@ -31,13 +29,9 @@ Type `set` for a list of *set* subcommands and what they do.
 Type `help set *` for just the list of *set* subcommands.
 """
 
-    category = "data"
-    min_args = 0
-    max_args = None
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = False
     short_help = "Modify parts of the debugger environment"
 
+    SubcommandMgr.setup(locals(), category="data")
 
 if __name__ == "__main__":
     from trepan.processor.command import mock

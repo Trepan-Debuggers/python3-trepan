@@ -60,7 +60,7 @@ See also:
 """
 
     short_help = "Deparse source via uncompyle6"
-    DebuggerCommand.setup(category="data", max_args=10, need_stack=True)
+    DebuggerCommand.setup(locals(), category="data", max_args=10, need_stack=True)
 
     def print_text(self, text):
         if self.settings["highlight"] == "plain":

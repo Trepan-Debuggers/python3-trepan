@@ -1025,6 +1025,7 @@ class CommandProcessor(Processor):
             pass
         return cmd_instances
 
+    # This is the most-used way of adding commands
     def populate_commands_easy_install(self, Mcommand):
         """
         Add files in filesystem to self.commands.

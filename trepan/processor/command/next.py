@@ -46,7 +46,7 @@ See also:
     short_help = "Step over"
 
     DebuggerCommand.setup(
-        category="running", need_stack=True, max_args=1
+        locals(), category="running", need_stack=True, max_args=1
     )
 
     def run(self, args):

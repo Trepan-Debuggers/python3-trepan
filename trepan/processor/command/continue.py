@@ -34,7 +34,7 @@ Examples:
     continue          # Continue execution
     continue 5        # Continue with a one-time breakpoint at line 5
     continue basename # Go to os.path.basename if we have basename imported
-    continue /usr/lib/python2.7/posixpath.py:110 # Possibly the same as
+    continue /usr/lib/python3.8/posixpath.py:110 # Possibly the same as
                                                  # the above using file
                                                  # and line number
 
@@ -47,17 +47,13 @@ See also:
     aliases = ("c",)
     execution_set = ["Running"]
     short_help = "Continue execution of debugged program"
-    DebuggerCommand.setup(category="running", need_stack=True)
+    DebuggerCommand.setup(locals(), category="running", need_stack=True)
 
     def run(self, args):
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
-            func, filename, lineno, condition = parse_break_cmd(
-                self.proc, args
-            )
-            if not set_break(
-                self, func, filename, lineno, condition, True, args
-            ):
+            func, filename, lineno, condition = parse_break_cmd(self.proc, args)
+            if not set_break(self, func, filename, lineno, condition, True, args):
                 return False
         self.core.step_events = None  # All events
         self.core.step_ignore = -1
