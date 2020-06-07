@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2017-2018 Rocky Bernstein
+#  Copyright (C) 2017-2018, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,17 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
 from sys import version_info
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from uncompyle6.semantics.fragments import deparse_code
 from xdis import IS_PYPY
 from uncompyle6.semantics.fragments import deparsed_find
 
 
-class DEvalCommand(Mbase_cmd.DebuggerCommand):
+class DEvalCommand(DebuggerCommand):
     """**deval**
     **deval?**
 
@@ -46,19 +44,18 @@ See also:
 `eval`
 
     """
-    category      = 'data'
-    aliases       = ('deval?',)
-    min_args      = 0
-    max_args      = 0
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Print value of deparsed expression'
+
+    aliases = ("deval?",)
+    short_help = "Print value of deparsed expression"
+
+    DebuggerCommand.setup(locals(), category="data", need_stack=True, max_args=0)
 
     def run(self, args):
         co = self.proc.curframe.f_code
         name = co.co_name
         last_i = self.proc.curframe.f_lasti
-        if last_i == -1: last_i = 0
+        if last_i == -1:
+            last_i = 0
 
         sys_version = version_info[0] + (version_info[1] / 10.0)
         try:
@@ -70,7 +67,7 @@ See also:
         except:
             self.errmsg("error in deparsing code")
             return
-        if '?' == args[0][-1]:
+        if "?" == args[0][-1]:
             extractInfo = deparsed.extract_node_info(nodeInfo.node)
         else:
             extractInfo, _ = deparsed.extract_parent_info(nodeInfo.node)
@@ -82,11 +79,13 @@ See also:
         except:
             pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import inspect
     from trepan import debugger
-    d           = debugger.Trepan()
-    cp          = d.core.processor
+
+    d = debugger.Trepan()
+    cp = d.core.processor
     cp.curframe = inspect.currentframe()
     command = DEvalCommand(cp)
     me = 10

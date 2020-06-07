@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013-2015, 2017-2018 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -13,15 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor import cmdbreak as Mcmdbreak
-from trepan.processor import complete as Mcomplete
+from trepan.processor.complete import complete_break_linenumber
 
 
-class BreakCommand(Mbase_cmd.DebuggerCommand):
+class BreakCommand(DebuggerCommand):
     """**break** [*location*] [if *condition*]]
 
 Sets a breakpoint, i.e. stopping point just before the
@@ -64,54 +63,55 @@ See also:
 
 `info break`, `tbreak`, `condition` and `help syntax location`."""
 
-    aliases       = ('b', 'break!', 'b!')
-    category      = 'breakpoints'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Set breakpoint at specified line or function'
+    aliases = ("b", "break!", "b!")
+    short_help = "Set breakpoint at specified line or function"
 
-    complete= Mcomplete.complete_break_linenumber
+    DebuggerCommand.setup(locals(), category="breakpoints", need_stack=True)
+
+    complete = complete_break_linenumber
 
     def run(self, args):
-        force = True if args[0][-1] == '!' else False
+        force = True if args[0][-1] == "!" else False
 
-        (func, filename, lineno,
-         condition) = Mcmdbreak.parse_break_cmd(self.proc, args)
+        (func, filename, lineno, condition) = Mcmdbreak.parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
-            Mcmdbreak.set_break(self, func, filename, lineno, condition,
-                                False, args, force=force)
+            Mcmdbreak.set_break(
+                self, func, filename, lineno, condition, False, args, force=force
+            )
         return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
+
     def doit(cmd, a):
-        cmd.current_command = ' '.join(a)
+        cmd.current_command = " ".join(a)
         print(Mcmdbreak.parse_break_cmd(cmd.proc, a))
 
     import sys
     from trepan import debugger as Mdebugger
+
     d = Mdebugger.Trepan()
     command = BreakCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    doit(command, [' '])
-    doit(command, ['10'])
-    doit(command, [__file__ + ':10'])
+    doit(command, [" "])
+    doit(command, ["10"])
+    doit(command, [__file__ + ":10"])
 
     def foo():
-        return 'bar'
-    doit(command, ['foo'])
-    doit(command, ['os.path'])
-    doit(command, ['os.path', '5+1'])
-    doit(command, ['os.path.join'])
-    doit(command, ['if', 'True'])
-    doit(command, ['foo', 'if', 'True'])
-    doit(command, ['os.path:10', 'if', 'True'])
-    command.run(['break'])
-    command.run(['break', 'command.run'])
-    command.run(['break', '10'])
-    command.run(['break', __file__ + ':10'])
-    command.run(['break', 'foo'])
+        return "bar"
+
+    doit(command, ["foo"])
+    doit(command, ["os.path"])
+    doit(command, ["os.path", "5+1"])
+    doit(command, ["os.path.join"])
+    doit(command, ["if", "True"])
+    doit(command, ["foo", "if", "True"])
+    doit(command, ["os.path:10", "if", "True"])
+    command.run(["break"])
+    command.run(["break", "command.run"])
+    command.run(["break", "10"])
+    command.run(["break", __file__ + ":10"])
+    command.run(["break", "foo"])
     pass
