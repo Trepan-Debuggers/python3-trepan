@@ -39,12 +39,9 @@ See also:
 """
 
     aliases = ("py", "shell")
-    category = "support"
-    min_args = 0
-    max_args = 1
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = False
     short_help = "Run Python as a command subshell"
+
+    DebuggerCommand.setup(locals(), category="data", max_args=1)
 
     def dbgr(self, string):
         """Invoke a debugger command from inside a python shell called inside

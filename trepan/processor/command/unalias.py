@@ -1,4 +1,4 @@
-#  Copyright (C) 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,11 +14,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.lib import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.lib.complete import complete_token
 
 
-class UnaliasCommand(Mbase_cmd.DebuggerCommand):
+class UnaliasCommand(DebuggerCommand):
     """**unalias** *alias-name*
 
 Remove alias *alias-name*
@@ -29,15 +29,14 @@ See also:
 'alias'
 """
 
-    category      = 'support'
     min_args      = 1
-    max_args      = None
-    name          = 'unalias'
-    need_stack    = True
     short_help    = 'Remove an alias'
 
+    DebuggerCommand.setup(
+        locals(), category="support", max_args=1
+    )
     def complete(self, prefix):
-        return Mcomplete.complete_token(self.proc.aliases.keys(), prefix)
+        return complete_token(self.proc.aliases.keys(), prefix)
 
     # Run command.
     def run(self, args):

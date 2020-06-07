@@ -13,12 +13,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os.path as osp
 import tracer
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor import cmdfns as Mcmdfns
+from trepan.processor.cmdfns import want_different_line
 
 
 class StepCommand(DebuggerCommand):
@@ -77,13 +76,10 @@ See also:
         "s>",
         "s!",
     )
-    category = "running"
-    min_args = 0
-    max_args = None
     execution_set = ["Running"]
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = True
     short_help = "Step program (possibly entering called functions)"
+
+    DebuggerCommand.setup(locals(), category="running", need_stack=True)
 
     def run(self, args):
         step_events = []
@@ -126,7 +122,7 @@ See also:
             self.core.step_events = step_events
             pass
 
-        self.core.different_line = Mcmdfns.want_different_line(
+        self.core.different_line = want_different_line(
             args[0], self.settings["different"]
         )
         self.core.stop_level = None

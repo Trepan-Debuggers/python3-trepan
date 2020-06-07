@@ -14,10 +14,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, os, sys
+import inspect, sys
+import os.path as osp
 
 # Our local modules
-import trepan.processor.command.base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 import trepan.lib.disassemble as Mdis
 import trepan.lib.file as Mfile
 from xdis.load import load_module
@@ -48,7 +49,7 @@ def cache_from_source(path, debug_override=None):
     else:
         suffixes = OPTIMIZED_BYTECODE_SUFFIXES
         pass
-    head, tail = os.path.split(path)
+    head, tail = osp.split(path)
     base_filename, sep, _ = tail.partition(".")
     if not hasattr(sys, "implementation"):
         # Python <= 3.2
@@ -58,11 +59,11 @@ def cache_from_source(path, debug_override=None):
         raise NotImplementedError("sys.implementation.cache_tag is None")
     filename = "".join([base_filename, sep, tag, suffixes[0]])
     if head.endswith(_PYCACHE):
-        return os.path.join(head, filename)
-    return os.path.join(head, _PYCACHE, filename)
+        return osp.join(head, filename)
+    return osp.join(head, _PYCACHE, filename)
 
 
-class DisassembleCommand(Mbase_cmd.DebuggerCommand):
+class DisassembleCommand(DebuggerCommand):
     """**disassemble** [*thing*]
 
 **disassemble** [*address-range*]
@@ -104,12 +105,11 @@ See also:
 """
 
     aliases = ("disasm",)  # Note: we will have disable
-    category = "data"
-    min_args = 0
-    max_args = 2
-    name = os.path.basename(__file__).split(".")[0]
-    need_stack = False
     short_help = "Disassemble Python bytecode"
+
+    DebuggerCommand.setup(
+        locals(), category="data", max_args=2
+    )
 
     def run(self, args):
         proc = self.proc
@@ -129,12 +129,12 @@ See also:
         curframe = proc.curframe
         if curframe:
             line_no = inspect.getlineno(curframe)
-            opts["start_line"] = line_no-1
-            opts["end_line"] = line_no+1
+            opts["start_line"] = line_no - 1
+            opts["end_line"] = line_no + 1
 
         do_parse = True
         if len(args) == 2:
-            if args[1].endswith('()'):
+            if args[1].endswith("()"):
                 eval_args = args[1][:-2]
             else:
                 eval_args = args[1]
@@ -180,7 +180,10 @@ See also:
         else:
             opts["end_line"] = last
 
-        if not obj and (bytecode_file and (not bytecode_file.endswith(".pyo") or bytecode_file.endswith("pyc"))):
+        if not obj and (
+            bytecode_file
+            and (not bytecode_file.endswith(".pyo") or bytecode_file.endswith("pyc"))
+        ):
             # bytecode_file may be a source file. Try to tun it into a bytecode file for diassembly.
             bytecode_file = cache_from_source(bytecode_file)
             if bytecode_file and Mfile.readable(bytecode_file):
@@ -232,14 +235,14 @@ if __name__ == "__main__":
     command = DisassembleCommand(cp)
     prefix = "-" * 20 + " disassemble "
 
-    print(prefix + 'os.path')
-    doit(command, ['dissassemble', 'cp.errmsg()'])
+    print(prefix + "os.path")
+    doit(command, ["dissassemble", "cp.errmsg()"])
 
-    print(prefix + 'cp.errmsg()')
-    doit(command, ['dissassemble', 'cp.errmsg()'])
+    print(prefix + "cp.errmsg()")
+    doit(command, ["dissassemble", "cp.errmsg()"])
 
-    print(prefix + 'cp.errmsg()')
-    doit(command, ['dissassemble', 'cp.errmsg()'])
+    print(prefix + "cp.errmsg()")
+    doit(command, ["dissassemble", "cp.errmsg()"])
 
     # print(prefix)
     # doit(command, ['disassemble']) # no good
@@ -247,27 +250,26 @@ if __name__ == "__main__":
     # print(prefix + 'me')
     # doit(command, ['disassemble', 'me()']) # reports invalid function correctly
 
-    print(prefix + '*0 +248')
-    doit(command, ['disassemble', '*0,', '+248'])
+    print(prefix + "*0 +248")
+    doit(command, ["disassemble", "*0,", "+248"])
 
     # print(prefix + '+ 2-1')
     # doit(command, ['disassemble', '+', '2-1']) # not valid?
 
-
     # print(prefix + '- 1')
     # doit(command, ['disassemble', '-', '1']) # not working
 
-    print(prefix + '.')
-    doit(command, ['disassemble', '.'])
+    print(prefix + ".")
+    doit(command, ["disassemble", "."])
 
     __file__ = "./disassemble.py:21"
-    doit(command, ['disassemble', "%s:21" % __file__])
+    doit(command, ["disassemble", "%s:21" % __file__])
 
     # bytecode_file = cache_from_source(__file__)
     # print(bytecode_file)
     # if bytecode_file:
     #     doit(command, ["disassemble", bytecode_file + ":22,28"])
 
-    doit(command, ['disassemble', '*15,', '*25'])
+    doit(command, ["disassemble", "*15,", "*25"])
     doit(command, ["disassemble", "30"])
     pass

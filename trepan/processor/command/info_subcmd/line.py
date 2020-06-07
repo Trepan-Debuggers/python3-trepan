@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,13 +16,14 @@
 import inspect, os, re
 
 # Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import file
-from trepan import clifns as Mclifns, misc as Mmisc
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.lib.file import lookupmodule
+from trepan.clifns import search_file
+from trepan.misc import wrapped_lines
 
 
 def find_function(funcname, filename):
-    cre = re.compile(r'def\s+%s\s*[(]' % re.escape(funcname))
+    cre = re.compile(r"def\s+%s\s*[(]" % re.escape(funcname))
     try:
         fp = open(filename)
     except IOError:
@@ -32,7 +33,7 @@ def find_function(funcname, filename):
     answer = None
     while True:
         line = fp.readline()
-        if line == '':
+        if line == "":
             break
         if cre.match(line):
             answer = funcname, filename, lineno
@@ -42,19 +43,20 @@ def find_function(funcname, filename):
     fp.close()
     return answer
 
-class InfoLine(Mbase_subcmd.DebuggerSubcommand):
-    '''**info line**
+
+class InfoLine(DebuggerSubcommand):
+    """**info line**
 
 Show information about the current line
 
 See also:
 ---------
-`info program`, `info frame`'''
+`info program`, `info frame`"""
 
     min_abbrev = 2
     max_args = 0
     need_stack = True
-    short_help = 'Show current-line information'
+    short_help = "Show current-line information"
 
     def lineinfo(self, identifier):
         failed = (None, None, None)
@@ -68,10 +70,11 @@ See also:
             ident = idstring[1].strip()
         else:
             return failed
-        if ident == '': return failed
-        parts = ident.split('.')
+        if ident == "":
+            return failed
+        parts = ident.split(".")
         # Protection for derived debuggers
-        if parts[0] == 'self':
+        if parts[0] == "self":
             del parts[0]
             if len(parts) == 0:
                 return failed
@@ -82,9 +85,9 @@ See also:
         else:
             # More than one part.
             # First is module, second is method/class
-            m, f = file.lookupmodule('.'.join(parts[1:]),
-                                     self.debugger.mainpyfile,
-                                     self.core.canonic)
+            m, f = lookupmodule(
+                ".".join(parts[1:]), self.debugger.mainpyfile, self.core.canonic
+            )
             if f:
                 fname = f
             item = parts[-1]
@@ -103,40 +106,44 @@ See also:
             if answer[0]:
                 item, filename, lineno = answer
                 if not os.path.isfile(filename):
-                    filename = Mclifns.search_file(filename,
-                                                   self.core.search_path,
-                                                   self.main_dirname)
-                self.msg('Line %s of "%s" <%s>' %
-                         (lineno, filename, item))
+                    filename = search_file(
+                        filename, self.core.search_path, self.main_dirname
+                    )
+                self.msg('Line %s of "%s" <%s>' % (lineno, filename, item))
             return
-        filename=self.core.canonic_filename(self.proc.curframe)
+        filename = self.core.canonic_filename(self.proc.curframe)
         if not os.path.isfile(filename):
-            filename = Mclifns.search_file(filename, self.core.search_path,
-                                           self.main_dirname)
+            filename = search_file(filename, self.core.search_path, self.main_dirname)
             pass
 
         filename = self.core.canonic_filename(self.proc.curframe)
-        msg1 = 'Line %d of \"%s\"'  % (inspect.getlineno(self.proc.curframe),
-                                       self.core.filename(filename))
-        msg2 = ('at instruction %d' % self.proc.curframe.f_lasti)
+        msg1 = 'Line %d of "%s"' % (
+            inspect.getlineno(self.proc.curframe),
+            self.core.filename(filename),
+        )
+        msg2 = "at offset %d" % self.proc.curframe.f_lasti
         if self.proc.event:
-            msg2 += ', %s event' % self.proc.event
+            msg2 += ", %s event" % self.proc.event
             pass
-        self.msg(Mmisc.wrapped_lines(msg1, msg2, self.settings['width']))
+        self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
         return False
+
     pass
 
-if __name__ == '__main__':
-    from trepan.processor.command import mock, info as Minfo
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+
+if __name__ == "__main__":
+    from trepan.processor.command import mock
+    from trepan.processor.command.info import InfoCommand
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     d, cp = mock.dbg_setup(d)
-    i = Minfo.InfoCommand(cp)
+    i = InfoCommand(cp)
     sub = InfoLine(i)
     sub.run([])
     cp.curframe = inspect.currentframe()
     for width in (80, 200):
-        sub.settings['width'] = width
-        sub.run(['file.py', 'lines'])
+        sub.settings["width"] = width
+        sub.run(["file.py", "lines"])
         pass
     pass

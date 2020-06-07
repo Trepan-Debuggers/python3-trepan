@@ -42,13 +42,10 @@ See also:
     # exceptions, 'yield'ing and so on still apply.
 
     aliases = ("fin",)
-    category = "running"
     execution_set = ["Running"]
-    min_args = 0
     max_args = 1
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = True
     short_help = "Execute until selected stack frame returns"
+    DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
         if self.proc.stack is None:

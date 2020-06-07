@@ -15,9 +15,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect, re, sys, importlib
 
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import subcmd as Msubcmd
-from trepan.lib import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.subcmd import Subcmd
+from trepan.lib.complete import complete_token, complete_token_with_next
 
 
 def abbrev_stringify(name, min_abbrev):
@@ -33,7 +33,7 @@ def capitalize(s):
     pass
 
 
-class SubcommandMgr(Mbase_cmd.DebuggerCommand):
+class SubcommandMgr(DebuggerCommand):
 
     category = "status"
     min_args = 0
@@ -46,14 +46,14 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
         has to be setcmds ('set' + 'cmds') for subcommand completion
         to work."""
 
-        Mbase_cmd.DebuggerCommand.__init__(self, proc)
+        DebuggerCommand.__init__(self, proc)
 
         # Name is set in testing
         if name is None:
             name = self.__module__.split(".")[-1]
         self.__class__.name = name
 
-        self.cmds = Msubcmd.Subcmd(name, self)
+        self.cmds = Subcmd(name, self)
         self.name = name
         self._load_debugger_subcommands(name)
         self.proc = proc
@@ -183,11 +183,11 @@ class SubcommandMgr(Mbase_cmd.DebuggerCommand):
     # found we just return +arg+.
     # FIXME: Not used any more?
     def complete(self, prefix):
-        return Mcomplete.complete_token(self.subcmds.subcmds.keys(), prefix)
+        return complete_token(self.subcmds.subcmds.keys(), prefix)
 
     def complete_token_with_next(self, prefix):
         # from trepan.api import debug; debug()
-        result = Mcomplete.complete_token_with_next(self.cmds.subcmds, prefix)
+        result = complete_token_with_next(self.cmds.subcmds, prefix)
         return result
 
     def run(self, args):

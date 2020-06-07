@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os, threading
+import threading
 import ctypes
 
 # Our local modules
@@ -76,11 +76,12 @@ See `exit` or `kill` for more forceful termination commands.
 
     aliases = ("q", "quit!")
     category = "support"
-    min_args = 0
     max_args = 0
-    name = os.path.basename(__file__).split(".")[0]
-    need_stack = False
     short_help = "Terminate the program - gently"
+
+    DebuggerCommand.setup(
+        locals(), category="support", max_args=0
+    )
 
     def nothread_quit(self, arg):
         """ quit command when there's just one thread. """

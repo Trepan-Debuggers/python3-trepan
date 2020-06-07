@@ -36,6 +36,16 @@ class DebuggerCommand:
 
     category = 'misc'
 
+    @staticmethod
+    def setup(l, category="misc", min_args=0, max_args=None,
+              need_stack=False):
+        l["name"] =l["__module__"].split(".")[-1]
+        l["category"] = category
+        l["min_args"] = min_args
+        l["max_args"] = max_args
+        l["need_stack"] = need_stack
+        return
+
     def __init__(self, proc):
         """proc contains the command processor object that this
         command is invoked through.  A debugger field gives access to

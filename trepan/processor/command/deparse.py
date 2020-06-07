@@ -14,7 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path as osp
 from getopt import getopt, GetoptError
 from uncompyle6.semantics.fragments import code_deparse
 from trepan.lib.deparse import deparse_and_cache, deparse_offset
@@ -31,7 +30,7 @@ Options:
 ------
 
     -p | --parent        show parent node
-    -A | --tree          show parse tree
+    -t | --tree          show parse tree
     -o | --offset [num]  show deparse of offset NUM
     -h | --help          give this help
 
@@ -60,12 +59,8 @@ See also:
 `disassemble`, `list`, and `set highlight`
 """
 
-    category = "data"
-    min_args = 0
-    max_args = 10
-    name = osp.basename(__file__).split(".")[0]
-    need_stack = True
     short_help = "Deparse source via uncompyle6"
+    DebuggerCommand.setup(locals(), category="data", max_args=10, need_stack=True)
 
     def print_text(self, text):
         if self.settings["highlight"] == "plain":
