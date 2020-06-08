@@ -13,15 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os, sys
+import sys
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import cmdbreak as Mcmdbreak
-from trepan.processor import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.cmdbreak import parse_break_cmd, set_break
+from trepan.processor.complete import complete_break_linenumber
 
 
-class TempBreakCommand(Mbase_cmd.DebuggerCommand):
+class TempBreakCommand(DebuggerCommand):
     """**tbreak** [*location*] [**if** *condition*]
 
 Sets a temporary breakpoint, i.e. one that is removed the after
@@ -57,42 +57,47 @@ See also:
 `break`, `condition` and `help syntax location`.
 """
 
-    category      = 'breakpoints'
+    aliases = ("tb", "tbreak!", "tb!")
     min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
     short_help    = 'Set temporary breakpoint at specified line or function'
 
-    complete = Mcomplete.complete_break_linenumber
+    DebuggerCommand.setup(locals(), category="breakpoints", need_stack=True)
+
+    complete = complete_break_linenumber
 
     def run(self, args):
-        func, filename, lineno, condition = Mcmdbreak.parse_break_cmd(self.proc, args)
+        func, filename, lineno, condition = parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
-            Mcmdbreak.set_break(self, func, filename, lineno, condition,
-                                True, args)
+            set_break(self, func, filename, lineno, condition,
+                      True, args)
         return
 
 if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     command = TempBreakCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    print(Mcmdbreak.parse_break_cmd(command, []))
-    print(Mcmdbreak.parse_break_cmd(command, ['10']))
-    print(Mcmdbreak.parse_break_cmd(command, [__file__ + ':10']))
+    def doit(args):
+        command.proc.current_command = " ".join(args)
+        print(parse_break_cmd(command.proc, args))
+
+    d = Trepan()
+
+    print(doit(["10"]))
+    print(doit([__file__ + ':10']))
 
     def foo():
         return 'bar'
-    print(Mcmdbreak.parse_break_cmd(command, ['foo']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path', '5+1']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path.join']))
-    print(Mcmdbreak.parse_break_cmd(command, ['if', 'True']))
-    print(Mcmdbreak.parse_break_cmd(command, ['foo', 'if', 'True']))
-    print(Mcmdbreak.parse_break_cmd(command, ['os.path:10', 'if', 'True']))
+    print(doit(['foo']))
+    print(doit(['os.path']))
+    print(doit(['os.path', '5+1']))
+    print(doit(['os.path.join']))
+    print(doit(['if', 'True']))
+    print(doit(['foo', 'if', 'True']))
+    print(doit(['os.path:10', 'if', 'True']))
     command.run(['tbreak'])
     command.run(['tbreak', 'command.run'])
     command.run(['tbreak', '10'])

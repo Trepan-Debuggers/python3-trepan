@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2017 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,14 +13,15 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import code, os, sys
+import code, sys
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 from traitlets.config.loader import Config
 
-class IPythonCommand(Mbase_cmd.DebuggerCommand):
+
+class IPythonCommand(DebuggerCommand):
     """**ipython** [**-d**]
 
 Run IPython as a command subshell.
@@ -37,17 +38,14 @@ See also:
 `python`, `bpython`
 """
 
-    category      = 'support'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Run IPython as a command subshell'
+    short_help = "Run IPython as a command subshell"
+
+    DebuggerCommand.setup(locals(), category="support", max_args=1)
 
     def dbgr(self, string):
-        '''Invoke a debugger command from inside a IPython shell called
+        """Invoke a debugger command from inside a IPython shell called
         inside the debugger.
-        '''
+        """
         self.proc.cmd_queue.append(string)
         self.proc.process_command()
         return
@@ -66,14 +64,13 @@ See also:
             pass
 
         cfg = Config()
-        banner_tmpl='''IPython trepan2 shell%s
+        banner_tmpl = """IPython trepan3k shell%s
 
-Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
+Use dbgr(*string*) to issue non-continuing debugger command: *string*"""
 
-        debug = len(args) > 1 and args[1] == '-d'
+        debug = len(args) > 1 and args[1] == "-d"
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a trepan "
-                            "debugger object.")
+            banner_tmpl += "\nVariable 'debugger' contains a trepan " "debugger object."
             pass
         try:
             from IPython.terminal.embed import InteractiveShellEmbed
@@ -89,7 +86,7 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
         # Add common classes and methods our namespace here so that
         # inside the ipython shell users don't have run imports
 
-        my_locals  = {}
+        my_locals = {}
         my_globals = None
         if self.proc.curframe:
             my_globals = self.proc.curframe.f_globals
@@ -99,26 +96,31 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
         pass
 
         # Give IPython and the user a way to get access to the debugger.
-        if debug: my_locals['debugger'] = self.debugger
-        my_locals['dbgr'] = self.dbgr
+        if debug:
+            my_locals["debugger"] = self.debugger
+        my_locals["dbgr"] = self.dbgr
         cfg.TerminalInteractiveShell.confirm_exit = False
 
         # sys.ps1 = 'trepan3 >>> '
         if len(my_locals):
-            banner=(banner_tmpl % ' with locals')
+            banner = banner_tmpl % " with locals"
         else:
-            banner=(banner_tmpl % '')
+            banner = banner_tmpl % ""
             pass
 
-        InteractiveShellEmbed(config=cfg, banner1=banner,
-                              user_ns = my_locals,
-                              module = my_globals,
-                              exit_msg='IPython exiting to trepan3k...')()
+        InteractiveShellEmbed(
+            config=cfg,
+            banner1=banner,
+            user_ns=my_locals,
+            module=my_globals,
+            exit_msg="IPython exiting to trepan3k...",
+        )()
 
         # restore completion and our history if we can do so.
-        if hasattr(self.proc.intf[-1], 'complete'):
+        if hasattr(self.proc.intf[-1], "complete"):
             try:
                 from readline import set_completer, parse_and_bind
+
                 parse_and_bind("tab: complete")
                 set_completer(self.proc.intf[-1].complete)
             except ImportError:
@@ -129,6 +131,7 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*'''
             self.proc.read_history_file()
             pass
         return
+
     pass
 
 
@@ -149,9 +152,9 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     local -- passed to InteractiveInterpreter.__init__()
 
     """
-    console = code.InteractiveConsole(my_locals, filename='<trepan>')
+    console = code.InteractiveConsole(my_locals, filename="<trepan>")
     console.runcode = lambda code_obj: runcode(console, code_obj)
-    setattr(console, 'globals', my_globals)
+    setattr(console, "globals", my_globals)
     if readfunc is not None:
         console.raw_input = readfunc
     else:
@@ -161,6 +164,7 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
             pass
     console.interact(banner)
     pass
+
 
 # Also monkey-patched from code.py
 # FIXME: get changes into Python.
@@ -190,19 +194,20 @@ def runcode(obj, code_obj):
     return
 
 
-if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Debugger()
+if __name__ == "__main__":
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     command = IPythonCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
     if len(sys.argv) > 1:
         print("Type Python commands and exit to quit.")
         print(sys.argv[1])
-        if sys.argv[1] == '-d':
-            print(command.run(['python', '-d']))
+        if sys.argv[1] == "-d":
+            print(command.run(["bpython", "-d"]))
         else:
-            print(command.run(['python']))
+            print(command.run(["bpython"]))
             pass
         pass
     pass

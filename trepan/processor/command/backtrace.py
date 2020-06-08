@@ -123,9 +123,9 @@ See also:
 
 if __name__ == "__main__":
     from trepan.processor import cmdproc
-    from trepan import debugger
+    from trepan.debugger import Trepan
 
-    d = debugger.Debugger()
+    d = Trepan()
     cp = d.core.processor
     command = BacktraceCommand(cp)
     command.run(["backtrace", "wrong", "number", "of", "args"])

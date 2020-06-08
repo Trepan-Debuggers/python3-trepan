@@ -16,7 +16,7 @@
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor import cmdbreak as Mcmdbreak
+from trepan.processor.cmdbreak import parse_break_cmd, set_break
 from trepan.processor.complete import complete_break_linenumber
 
 
@@ -73,9 +73,9 @@ See also:
     def run(self, args):
         force = True if args[0][-1] == "!" else False
 
-        (func, filename, lineno, condition) = Mcmdbreak.parse_break_cmd(self.proc, args)
+        (func, filename, lineno, condition) = parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
-            Mcmdbreak.set_break(
+            set_break(
                 self, func, filename, lineno, condition, False, args, force=force
             )
         return
@@ -85,12 +85,12 @@ if __name__ == "__main__":
 
     def doit(cmd, a):
         cmd.current_command = " ".join(a)
-        print(Mcmdbreak.parse_break_cmd(cmd.proc, a))
+        print(parse_break_cmd(cmd.proc, a))
 
     import sys
-    from trepan import debugger as Mdebugger
+    from trepan.debugger import Trepan
 
-    d = Mdebugger.Trepan()
+    d = Trepan()
     command = BreakCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
