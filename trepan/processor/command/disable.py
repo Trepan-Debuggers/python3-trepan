@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2015, 2017 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015, 2017, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.complete import complete_bpnumber
 
-class DisableCommand(Mbase_cmd.DebuggerCommand):
+
+class DisableCommand(DebuggerCommand):
     """**disable** *bpnumber* [*bpnumber* ...]
 
 Disables the breakpoints given as a space separated list of breakpoint
@@ -31,36 +30,35 @@ See also:
 `enable`
 """
 
-    category      = 'breakpoints'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Disable some breakpoints'
+    short_help = "Disable some breakpoints"
 
-    complete = Mcomplete.complete_bpnumber
+    complete = complete_bpnumber
+
+    DebuggerCommand.setup(locals(), category="breakpoints")
 
     def run(self, args):
         if len(args) == 1:
             self.msg(self.core.bpmgr.en_disable_all_breakpoints(do_enable=False))
             return
-#         if args[1] == 'display':
-#             self.display_enable(args[2:], 0)
-#             return
+        #         if args[1] == 'display':
+        #             self.display_enable(args[2:], 0)
+        #             return
         for i in args[1:]:
-            success, msg = self.core \
-              .bpmgr.en_disable_breakpoint_by_number(int(i), False)
+            success, msg = self.core.bpmgr.en_disable_breakpoint_by_number(
+                int(i), False
+            )
             if not success:
                 self.errmsg(msg)
             else:
-                self.msg('Breakpoint %s disabled.' % i)
+                self.msg("Breakpoint %s disabled." % i)
                 pass
             pass
         return
 
 
-if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+if __name__ == "__main__":
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     command = DisableCommand(d.core.processor)
     pass
