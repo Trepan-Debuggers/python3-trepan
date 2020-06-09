@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 import os
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
-class ExitCommand(Mbase_cmd.DebuggerCommand):
+class ExitCommand(DebuggerCommand):
     """**exit** [*exitcode*]
 
 Hard exit of the debugged program.
@@ -34,33 +34,34 @@ See also:
 See `quit` and `kill`.
 """
 
-    category      = 'support'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Exit program via sys.exit()'
+    short_help = "Exit program via sys.exit()"
+
+    DebuggerCommand.setup(locals(), category="support", max_args=1)
 
     def run(self, args):
         self.core.stop()
-        self.core.execution_status = 'Exit command'
+        self.core.execution_status = "Exit command"
         if len(args) <= 1:
             exit_code = 0
         else:
-            exit_code = self.proc.get_int(args[1], default=0, cmdname='exit')
-            if exit_code is None: return False
+            exit_code = self.proc.get_int(args[1], default=0, cmdname="exit")
+            if exit_code is None:
+                return False
             pass
         # FIXME: allow setting a return code.
         import sys
+
         sys.exit(int(exit_code))
         # Not reached
         return True
 
+
 # Demo it
-if __name__ == '__main__':
+if __name__ == "__main__":
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
     command = ExitCommand(cp)
-    command.run(['exit', 'wrong', 'number', 'of', 'args'])
-    command.run(['exit', 'foo'])
-    command.run(['exit', '10'])
+    command.run(["exit", "wrong", "number", "of", "args"])
+    command.run(["exit", "foo"])
+    command.run(["exit", "10"])

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 import inspect, os, sys
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor import cmdproc as Mcmdproc
 
 
-class JumpCommand(Mbase_cmd.DebuggerCommand):
+class JumpCommand(DebuggerCommand):
     """**jump** *lineno*
 
 Set the next line that will be executed. The line must be within the

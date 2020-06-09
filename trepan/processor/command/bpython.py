@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015 Rocky Bernstein
+#  Copyright (C) 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,14 +13,12 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import code, os, sys
+import sys
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
-import bpython
-
-class PythonCommand(Mbase_cmd.DebuggerCommand):
+class PythonCommand(DebuggerCommand):
     """**bpython** [**-d**]
 
 Run bpython as a command subshell. The *sys.ps1* prompt will be set to
@@ -33,13 +31,9 @@ To issue a debugger command use function *dbgr()*. For example:
   dbgr('info program')
 """
 
-    aliases      = ('bpython',)
-    category      = 'support'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
     short_help    = 'Run bpython as a command subshell'
+
+    DebuggerCommand.setup(locals(), category="support", max_args=1)
 
     def dbgr(self, string):
         '''Invoke a debugger command from inside a python shell called inside

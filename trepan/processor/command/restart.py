@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 import atexit, os
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan import misc as Mmisc
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.misc import wrapped_lines
 
 
-class RestartCommand(Mbase_cmd.DebuggerCommand):
+class RestartCommand(DebuggerCommand):
     """**restart**
 
 Restart debugger and program via an *exec()* call. All state is lost,
@@ -33,20 +33,20 @@ See also:
 
 See `quit`, `exit` or `kill` for termination commands."""
 
-    category      = 'support'
-    min_args      = 0
-    max_args      = 0
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = '(Hard) restart of program via execv()'
+    short_help = "(Hard) restart of program via execv()"
+
+    DebuggerCommand.setup(locals(), category="support", max_args=0)
 
     def run(self, args):
         sys_argv = self.debugger.restart_argv()
         if sys_argv and len(sys_argv) > 0:
-            confirmed = self.confirm('Restart (execv)', False)
+            confirmed = self.confirm("Restart (execv)", False)
             if confirmed:
-                self.msg(Mmisc.wrapped_lines("Re exec'ing:", repr(sys_argv),
-                                             self.settings['width']))
+                self.msg(
+                    wrapped_lines(
+                        "Re exec'ing:", repr(sys_argv), self.settings["width"]
+                    )
+                )
                 # Run atexit finalize routines. This seems to be Kosher:
                 # http://mail.python.org/pipermail/python-dev/2009-February/085791.html # NOQA
                 try:
@@ -60,17 +60,21 @@ See `quit`, `exit` or `kill` for termination commands."""
             self.errmsg("No executable file and command options recorded.")
             pass
         return
+
     pass
 
-if __name__ == '__main__':
-    from trepan.processor.command import mock
-    d, cp = mock.dbg_setup()
+
+if __name__ == "__main__":
+    from trepan.processor.command.mock import dbg_setup
+
+    d, cp = dbg_setup()
     command = RestartCommand(cp)
     command.run([])
     import sys
+
     if len(sys.argv) > 1:
         # Strip of arguments so we don't loop in exec.
-        d.orig_sys_argv = ['python', sys.argv[0]]
+        d.orig_sys_argv = ["python", sys.argv[0]]
         command.run([])
         pass
     pass
