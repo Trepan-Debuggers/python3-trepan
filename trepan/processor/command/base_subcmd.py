@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2012-2013, 2015-2016 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -32,17 +32,17 @@ class DebuggerSubcommand:
     """Base Class for Debugger subcommands. We pull in some helper
     functions for command from module cmdfns."""
 
-    in_list     = True  # Show item in help list of commands
+    in_list = True  # Show item in help list of commands
 
     # Run subcommand for those subcommands like "show"
     # which append current settings to list output.
-    run_cmd     = True
+    run_cmd = True
 
     run_in_help = True  # Run to get value in 'show' command?
-    min_abbrev  = 1
-    min_args    = 0
-    max_args    = None
-    need_stack  = False
+    min_abbrev = 1
+    min_args = 0
+    max_args = None
+    need_stack = False
 
     def __init__(self, cmd):
         """cmd contains the command object that this
@@ -55,15 +55,15 @@ class DebuggerSubcommand:
         # errmsg(), msg(), and msg_nocr() might. (See the note below
         # on these latter 3 methods.)
         #
-        self.proc     = cmd.proc
-        self.core     = cmd.core
+        self.proc = cmd.proc
+        self.core = cmd.core
         self.debugger = cmd.debugger
         self.settings = cmd.debugger.settings
 
-        if not hasattr(self, 'short_help'):
+        if not hasattr(self, "short_help"):
             help = self.__doc__.split("\n")
             if len(help) > 0:
-                if help[0][0] == '*' and len(help) > 2:
+                if help[0][0] == "*" and len(help) > 2:
                     self.short_help = help[2]
                 else:
                     self.short_help = help[0]
@@ -75,20 +75,19 @@ class DebuggerSubcommand:
         # that -- perhaps one may want to put several subcommands into
         # a single file. So in those cases, one will have to set self.name
         # accordingly by other means.
-        self.name  = self.__module__.split('.')[-1]
+        self.name = self.__module__.split(".")[-1]
 
         return
 
     def columnize_commands(self, commands):
         """List commands arranged in an aligned columns"""
         commands.sort()
-        width = self.debugger.settings['width']
-        return columnize.columnize(commands, displaywidth=width,
-                                   lineprefix='    ')
+        width = self.debugger.settings["width"]
+        return columnize.columnize(commands, displaywidth=width, lineprefix="    ")
 
     def confirm(self, msg, default=False):
         """ Convenience short-hand for self.debugger.intf.confirm """
-        return(self.debugger.intf[-1].confirm(msg, default))
+        return self.debugger.intf[-1].confirm(msg, default)
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
     # an assignment of method names like self.msg = self.debugger.intf.msg,
@@ -98,22 +97,22 @@ class DebuggerSubcommand:
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].errmsg """
-        return(self.debugger.intf[-1].errmsg(msg))
+        return self.debugger.intf[-1].errmsg(msg)
 
     def msg(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].msg """
-        return(self.debugger.intf[-1].msg(msg))
+        return self.debugger.intf[-1].msg(msg)
 
     def msg_nocr(self, msg):
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
-        return(self.debugger.intf[-1].msg_nocr(msg))
+        return self.debugger.intf[-1].msg_nocr(msg)
 
     aliases = ()
-    name    = 'YourCommandName'
+    name = "YourCommandName"
 
     def rst_msg(self, text):
         """Convenience short-hand for self.proc.rst_msg(text)"""
-        return(self.proc.rst_msg(text))
+        return self.proc.rst_msg(text)
 
     def run(self):
         """ The method that implements the debugger command.
@@ -122,41 +121,45 @@ class DebuggerSubcommand:
         raise NotImplementedError(NotImplementedMessage)
 
     def section(self, message, opts={}):
-        if 'plain' != self.settings['highlight']:
-            message = colorize('bold', message)
+        if "plain" != self.settings["highlight"]:
+            message = colorize("bold", message)
         else:
-            message += "\n" + '-' * len(message)
+            message += "\n" + "-" * len(message)
             pass
         self.msg(message)
+
     pass
 
-from trepan.processor import cmdfns as Mcmdfns
-from trepan.lib import complete as Mcomplete
+
+from trepan.processor.cmdfns import run_set_bool, run_show_bool, run_show_int
+from trepan.lib.complete import complete_token
 
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
     max_args = 1
 
     def complete(self, prefix):
-        result = Mcomplete.complete_token(('on', 'off'), prefix)
+        result = complete_token(("on", "off"), prefix)
         return result
 
     def run(self, args):
         # Strip off ReStructuredText tags
-        doc = re.sub('[*]', '', self.short_help).lstrip()
+        doc = re.sub("[*]", "", self.short_help).lstrip()
         # Take only the first two tokens
-        i = doc.find(' ')
+        i = doc.find(" ")
         if i > 0:
-            j = doc.find(' ', i+1)
-            if j > 0: doc = doc[0:j]
+            j = doc.find(" ", i + 1)
+            if j > 0:
+                doc = doc[0:j]
             pass
-        doc = doc.capitalize().split('\n')[0].rstrip('.')
-        Mcmdfns.run_set_bool(self, args)
-        Mcmdfns.run_show_bool(self, doc)
+        doc = doc.capitalize().split("\n")[0].rstrip(".")
+        run_set_bool(self, args)
+        run_show_bool(self, doc)
         return
 
     def summary_help(self, subcmd_name, subcmd):
         return self.msg_nocr("%-12s: " % self.short_help)
+
     pass
 
 
@@ -164,12 +167,12 @@ class DebuggerShowIntSubcommand(DebuggerSubcommand):
     max_args = 0
 
     def run(self, args):
-        if hasattr(self, 'short_help'):
+        if hasattr(self, "short_help"):
             short_help = self.short_help
         else:
             short_help = self.__doc__[5:].capitalize()
             pass
-        Mcmdfns.run_show_int(self, short_help)
+        run_show_int(self, short_help)
         return
 
 
@@ -178,12 +181,14 @@ class DebuggerShowBoolSubcommand(DebuggerSubcommand):
 
     def run(self, args):
         # Strip off ReStructuredText tags
-        doc = re.sub('[*]', '', self.short_help)
-        doc = doc[5:].capitalize().split('\n')[0].rstrip('.')
-        Mcmdfns.run_show_bool(self, doc)
+        doc = re.sub("[*]", "", self.short_help)
+        doc = doc[5:].capitalize().split("\n")[0].rstrip(".")
+        run_show_bool(self, doc)
         return
 
-if __name__ == '__main__':
-    from trepan.processor.command import mock
-    d, cp = mock.dbg_setup()
-    dd = DebuggerSubcommand(cp.commands['quit'])
+
+if __name__ == "__main__":
+    from trepan.processor.command.mock import dbg_setup
+
+    d, cp = dbg_setup()
+    dd = DebuggerSubcommand(cp.commands["quit"])

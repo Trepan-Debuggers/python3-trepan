@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os
 
-from trepan.processor import frame as Mframe
-from trepan.processor.command import up as Mupcmd
+from trepan.processor.frame import adjust_relative
+from trepan.processor.command.up import UpCommand
 
 
-class DownCommand(Mupcmd.UpCommand):
+class DownCommand(UpCommand):
 
-    signum        = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    short_help    = 'Move stack frame to a more recent selected frame'
+    signum = 1  # This is what distinguishes us from "up".
+    short_help = "Move stack frame to a more recent selected frame"
+
+    UpCommand.setup(locals(), category="stack", need_stack=True, max_args=1)
 
     def run(self, args):
         """**down** [*count*]
@@ -36,31 +36,32 @@ See also:
 
 `up` and `frame`."""
 
-        Mframe.adjust_relative(self.proc, self.name, args, self.signum)
+        adjust_relative(self.proc, self.name, args, self.signum)
         return False
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import inspect
-    from trepan.processor import cmdproc as Mcmdproc
-    from trepan import debugger as Mdebugger
-    d            = Mdebugger.Trepan()
-    cp           = d.core.processor
+    from trepan.processor.cmdproc import get_stack
+    from trepan.debugger import Trepan
+
+    d = Trepan()
+    cp = d.core.processor
     command = DownCommand(cp)
-    command.run(['down'])
+    command.run(["down"])
 
     def nest_me(cp, command, i):
         if i > 1:
             cp.curframe = inspect.currentframe()
-            cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None,
-                                                       cp)
-            command.run(['down'])
-            print('-' * 10)
-            command.run(['down', '1'])
-            print('-' * 10)
-            command.run(['down', '-1'])
-            print('-' * 10)
+            cp.stack, cp.curindex = get_stack(cp.curframe, None, None, cp)
+            command.run(["down"])
+            print("-" * 10)
+            command.run(["down", "1"])
+            print("-" * 10)
+            command.run(["down", "-1"])
+            print("-" * 10)
         else:
-            nest_me(cp, command, i+1)
+            nest_me(cp, command, i + 1)
         return
 
     cp.forget()

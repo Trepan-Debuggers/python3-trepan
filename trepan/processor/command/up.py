@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,27 +14,23 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import frame as Mframe
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.frame import adjust_relative, frame_complete
 
 
-class UpCommand(Mbase_cmd.DebuggerCommand):
+class UpCommand(DebuggerCommand):
 
-    signum        = -1
-    category      = 'stack'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
+    signum        = -1  # This is what distinguishes us from "down"
+
+    DebuggerCommand.setup(locals(), category="stack", need_stack=True, max_args=1)
+
     short_help    = 'Move frame in the direction of the caller of ' \
       'the last-selected frame'
 
     def complete(self, prefix):
         proc_obj = self.proc
-        return Mframe.frame_complete(proc_obj, prefix, self.signum)
+        return frame_complete(proc_obj, prefix, self.signum)
 
     def run(self, args):
         """**up** [*count*]
@@ -46,7 +42,7 @@ See also:
 ---------
 
 `down` and `frame`."""
-        Mframe.adjust_relative(self.proc, self.name, args, self.signum)
+        adjust_relative(self.proc, self.name, args, self.signum)
         return False
 
 

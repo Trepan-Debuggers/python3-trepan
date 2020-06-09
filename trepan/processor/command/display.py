@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2013, 2015-2016 Rocky Bernstein
+#  Copyright (C) 2009-2013, 2015-2016, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.complete import complete_id_and_builtins
 
-class DisplayCommand(Mbase_cmd.DebuggerCommand):
+
+class DisplayCommand(DebuggerCommand):
     """**display** [*format*] *expression*
 
 Print value of expression *expression* each time the program stops.
@@ -37,18 +36,14 @@ With no argument, evaluate and display all currently requested
 auto-display expressions.  Use `undisplay` to cancel display
 requests previously made."""
 
-    category      = 'data'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Display expressions when entering debugger'
+    short_help = "Display expressions when entering debugger"
 
-    format_specs = ('/c', '/x', '/o', '/f', '/s')
+    format_specs = ("/c", "/x", "/o", "/f", "/s")
+
+    DebuggerCommand.setup(locals(), category="data")
 
     def complete(self, prefix):
-        return (DisplayCommand.format_specs +
-                Mcomplete.complete_expression(self, prefix))
+        return DisplayCommand.format_specs + complete_id_and_builtins(self, prefix)
 
     def run_eval_display(self, args=None):
         for line in self.proc.display_mgr.display(self.proc.curframe):
@@ -65,36 +60,38 @@ requests previously made."""
                     self.errmsg("Expecting an expression after the format")
                     return
                 format = args[1]
-                expr   = ' '.join(args[2:])
+                expr = " ".join(args[2:])
             else:
                 format = None
-                expr = ' '.join(args[1:])
+                expr = " ".join(args[1:])
                 pass
             dp = self.proc.display_mgr.add(self.proc.curframe, expr, format)
             if dp is None:
-                self.errmsg('Error evaluating "%s" in the current frame'
-                            % expr)
+                self.errmsg('Error evaluating "%s" in the current frame' % expr)
                 return
             self.msg(dp.format(show_enabled=False))
             self.proc.add_preloop_hook(self.run_eval_display)
             self.msg(dp.to_s(self.proc.curframe))
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor import cmdproc as Mcmdproc
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     import inspect
-    d            = Mdebugger.Trepan()
-    cp           = d.core.processor
+
+    d = Trepan()
+    cp = d.core.processor
     command = DisplayCommand(d.core.processor)
     cp.curframe = inspect.currentframe()
-    cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None,
-                                               cp)
-    command.run(['display'])
-    command.run(['display', '/x', '10'])
-    command.run(['display', 'd'])
-    print('==' * 10)
-    command.run(['display'])
+    cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None, cp)
+    command.run(["display"])
+    command.run(["display", "/x", "10"])
+    command.run(["display", "d"])
+    print("==" * 10)
+    command.run(["display"])
     pass

@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "CommandProcessor completion routines"
-import pyficache, re
+import pyficache
 
 import trepan.lib.complete as Mcomplete
 
@@ -158,14 +158,14 @@ def complete_id_and_builtins(cmd, prefix):
 
 if __name__ == "__main__":
     import inspect
-    from trepan.processor import cmdproc as Mcmdproc
-    from trepan.processor.command import mock as Mmock
-    from trepan.processor.command import base_cmd as mBaseCmd
+    from trepan.processor.cmdproc import CommandProcessor
+    from trepan.processor.command.mock import MockDebugger
+    from trepan.processor.command.base_cmd import DebuggerCommand
 
-    d = Mmock.MockDebugger()
-    cmdproc = Mcmdproc.CommandProcessor(d.core)
+    d = MockDebugger()
+    cmdproc = CommandProcessor(d.core)
     cmdproc.curframe = inspect.currentframe()
-    cmd = mBaseCmd.DebuggerCommand(cmdproc)
+    cmd = DebuggerCommand(cmdproc)
     print(complete_identifier(cmd, ""))
     print(complete_identifier(cmd, "M"))
     print(complete_id_and_builtins(cmd, "M"))

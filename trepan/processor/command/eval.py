@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2012-2013, 2015, 2017 Rocky Bernstein
+#  Copyright (C) 2012-2013, 2015, 2017, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,14 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.lib import eval as Meval
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.lib.eval import extract_expression
 
 
-class EvalCommand(Mbase_cmd.DebuggerCommand):
+class EvalCommand(DebuggerCommand):
     """**eval** *python-statement*
 
 Run *python-statement* in the context of the current frame.
@@ -54,27 +52,25 @@ See also:
 
 `deval`, `set autoeval`, `pr`, `pp` and `examine`.
 """
-    aliases       = ('eval?', '?')
-    category      = 'data'
-    min_args      = 0
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
-    short_help    = 'Print value of expression EXP'
+
+    aliases = ("eval?", "?")
+    short_help = "Print value of expression EXP"
+
+    DebuggerCommand.setup(locals(), category="data", need_stack=True)
 
     def run(self, args):
         if 1 == len(args):
             if self.proc.current_source_text:
-                text = self.proc.current_source_text.rstrip('\n')
-                if '?' == args[0][-1]:
-                    text = Meval.extract_expression(text)
+                text = self.proc.current_source_text.rstrip("\n")
+                if "?" == args[0][-1]:
+                    text = extract_expression(text)
                     self.msg("eval: %s" % text)
                     pass
             else:
                 self.errmsg("Don't have program source text")
                 return
         else:
-            text = self.proc.current_command[len(self.proc.cmd_name):]
+            text = self.proc.current_command[len(self.proc.cmd_name) :]
             pass
         text = text.strip()
         try:
@@ -82,11 +78,13 @@ See also:
         except:
             pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import inspect
-    from trepan import debugger
-    d           = debugger.Trepan()
-    cp          = d.core.processor
+    from trepan.debugger import Trepan
+
+    d = Trepan()
+    cp = d.core.processor
     cp.curframe = inspect.currentframe()
     command = EvalCommand(cp)
     me = 10
