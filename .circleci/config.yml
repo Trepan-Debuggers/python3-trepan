@@ -1,21 +1,28 @@
-version: 2
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
 jobs:
-  build:
+  build-and-test:
+    executor: python/default
     working_directory: ~/rocky/python3-trepan
-    docker:
-    - image: circleci/python:3.7
     steps:
-    - checkout  # checkout source code to working directory
-    - run: sudo chown -R circleci:circleci /usr/local/
-    - run:
-        command: |  # use pipenv to install dependencies
-          sudo pip install pipenv
-          pipenv install
-          pip install -e .
-          pip install -r requirements-dev.txt
-    - run: python ./setup.py develop && make test-unit test-functional
-    - store_test_results:
-        path: test-results
-    - store_artifacts:
-        path: test-results
-        destination: tr1
+      - checkout  # checkout source code to working directory
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: |  # use pip to install dependencies. FIXME: can we get rid of sudo?
+            sudo pip install git+git://github.com/rocky/python-xdis.git#egg=xdis
+            sudo pip install -e .
+            sudo pip install -r requirements-dev.txt
+          name: Install dependencies
+      - run:
+          command: sudo python ./setup.py develop && sudo make test-unit test-functional
+          name: Run Tests
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
