@@ -15,6 +15,8 @@ jobs:
       - run:
           command: |  # use pip to install dependencies. FIXME: can we get rid of sudo?
             sudo pip install git+git://github.com/rocky/python-xdis.git#egg=xdis
+            sudo pip install git+git://github.com/rocky/python-uncompyle6.git#egg=uncompyle6
+            sudo pip install git+git://github.com/rocky/python-filecache.git#egg=pyficache
             sudo pip install -e .
             sudo pip install -r requirements-dev.txt
           name: Install dependencies
