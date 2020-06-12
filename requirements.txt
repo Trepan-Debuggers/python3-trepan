@@ -4,10 +4,11 @@
 # And the xdis version is missing
 columnize >= 0.3.10
 nose>=1.0.0, <= 1.3.7
-pyficache >= 2.0.1, < 2.1.0
 pygments >= 2.2.0
 spark_parser
 tracer >= 0.3.2
-# uncompyle6 >= 3.7.0
-# xdis - get from github
 flake8
+# Get these from github
+# pyficache >= 2.1.0, < 2.2.0
+# uncompyle6 >= 3.7.0
+# xdis
