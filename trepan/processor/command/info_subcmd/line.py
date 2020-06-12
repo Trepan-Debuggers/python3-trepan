@@ -61,7 +61,9 @@ See also:
     short_help = "Show line information"
 
     def lineinfo(self, arg):
-        (func, filename, lineno, condition, offset) = parse_break_cmd(self.proc, ["info args"])
+        (func, filename, lineno, condition, offset) = parse_break_cmd(
+            self.proc, ["info args"]
+        )
         if filename != None and lineno != None:
             return lineno, filename
         else:
@@ -100,11 +102,20 @@ See also:
                 line_info[0].name,
                 len(line_info[0].offsets),
             )
-        self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+            self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+        else:
+            self.errmsg(
+                "No line information for line %d of %s"
+                % (line_number, self.core.filename(filename))
+            )
         if line_info and len(line_info) > 1:
-            self.msg(
-                "There are multiple starting offsets this line. Other starting offsets: %s"
-                % ", ".join([str(li.offsets[0]) for li in line_info[1:]])
+            self.msg(wrapped_lines(
+                "There are multiple starting offsets this line.",
+                "Other starting offsets: %s"
+                % ", ".join(
+                    ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]),
+                self.settings["width"]
+                )
             )
         return False
 
@@ -124,7 +135,8 @@ if __name__ == "__main__":
     for width in (80, 200):
         sub.settings["width"] = width
         sub.run([])
-        line = inspect.getlineno(cp.curframe); x = 1
+        line = inspect.getlineno(cp.curframe)
+        x = 1
         cp.current_command = "info args %d" % line
         sub.run([line])
         pass

@@ -16,19 +16,29 @@
 
 import inspect
 from pyficache import code_line_info
-from trepan import misc as Mmisc
+from trepan.misc import wrapped_lines
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
 from trepan.processor.location import resolve_location
 
 
-def set_break(cmd_obj, func, filename, lineno, condition, temporary, args, force=False, offset=None):
+def set_break(
+    cmd_obj,
+    func,
+    filename,
+    lineno,
+    condition,
+    temporary,
+    args,
+    force=False,
+    offset=None,
+):
     if lineno is None:
         part1 = "I don't understand '%s' as a line number, function name," % " ".join(
             args[1:]
         )
-        msg = Mmisc.wrapped_lines(
+        msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
         )
         cmd_obj.errmsg(msg)
@@ -41,7 +51,7 @@ def set_break(cmd_obj, func, filename, lineno, condition, temporary, args, force
         line_info = code_line_info(filename, lineno)
         if not line_info:
             part1 = "File %s" % cmd_obj.core.filename(filename)
-            msg = Mmisc.wrapped_lines(
+            msg = wrapped_lines(
                 part1,
                 "is not stoppable at line %d." % lineno,
                 cmd_obj.settings["width"],
@@ -58,13 +68,13 @@ def set_break(cmd_obj, func, filename, lineno, condition, temporary, args, force
             "Breakpoint %d set on calling function %s()" % (bp.number, func.__name__)
         )
         part1 = "Currently this is line %d of file" % lineno
-        msg = Mmisc.wrapped_lines(
+        msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
     else:
         part1 = "Breakpoint %d set at line %d of file" % (bp.number, lineno)
-        msg = Mmisc.wrapped_lines(
+        msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
@@ -73,9 +83,13 @@ def set_break(cmd_obj, func, filename, lineno, condition, temporary, args, force
             % (line_info[0].offsets[0], line_info[0].name)
         )
         if len(line_info) > 1:
-            cmd_obj.msg(
-                "Other offsets are available for stopping too. See `info line` for their offsets"
+            msg = wrapped_lines(
+                "Other offsets are available for stopping too.",
+                "See `info line` for their offsets.",
+                cmd_obj.settings["width"],
             )
+            cmd_obj.msg(msg)
+
         pass
     return True
 
@@ -114,7 +128,13 @@ def parse_break_cmd(proc, args):
 
     location = resolve_location(proc, location)
     if location:
-        return location.method, location.path, location.line_number, condition, location.offset
+        return (
+            location.method,
+            location.path,
+            location.line_number,
+            condition,
+            location.offset,
+        )
     else:
         return INVALID_PARSE_BREAK
 
