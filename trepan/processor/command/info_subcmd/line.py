@@ -61,7 +61,7 @@ See also:
     short_help = "Show line information"
 
     def lineinfo(self, arg):
-        (func, filename, lineno, condition) = parse_break_cmd(self.proc, ["info args"])
+        (func, filename, lineno, condition, offset) = parse_break_cmd(self.proc, ["info args"])
         if filename != None and lineno != None:
             return lineno, filename
         else:

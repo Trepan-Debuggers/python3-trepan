@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 Rocky Bernstein
+#  Copyright (C) 2017, 2020 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect, pyficache
-from trepan.lib import stack as Mstack
+from trepan.lib.stack import frame2file
 import os.path as osp
 from trepan.processor.parse.semantics import Location
 
@@ -27,13 +27,15 @@ def resolve_location(proc, location):
        location file and line number: use that
     """
     curframe = proc.curframe
+    offset = None
     if location == '.':
         if not curframe:
             proc.errmsg("Don't have a stack to get location from")
             return INVALID_LOCATION
-        filename = Mstack.frame2file(proc.core, curframe, canonic=False)
+        filename = frame2file(proc.core, curframe, canonic=False)
         lineno   = inspect.getlineno(curframe)
-        return Location(filename, lineno, False, None)
+        offset   = curframe.f_lasti
+        return Location(filename, lineno, False, None, offset)
 
     assert isinstance(location, Location)
     is_address = False
@@ -91,8 +93,9 @@ def resolve_location(proc, location):
                     if not lineno:
                         # use first line of module file
                         lineno = 1
+                        offset = 0
                         is_address = False
-                    return Location(filename, lineno, is_address, modfunc)
+                    return Location(filename, lineno, is_address, modfunc, offset)
                 else:
                     msg = ("module '%s' doesn't have a file associated with it" %
                             location.path)
@@ -106,11 +109,11 @@ def resolve_location(proc, location):
                         % (lineno, filename, maxline))
             return INVALID_LOCATION
     elif location.line_number:
-        filename   = Mstack.frame2file(proc.core, curframe, canonic=False)
+        filename   = frame2file(proc.core, curframe, canonic=False)
         lineno     = location.line_number
         is_address = location.is_address
         modfunc  = None
-    return Location(filename, lineno, is_address, modfunc)
+    return Location(filename, lineno, is_address, modfunc, offset)
 
 def resolve_address_location(proc, location):
     """Expand fields in Location namedtuple. If:
@@ -120,10 +123,10 @@ def resolve_address_location(proc, location):
     """
     curframe = proc.curframe
     if location == '.':
-        filename = Mstack.frame2file(proc.core, curframe, canonic=False)
+        filename = frame2file(proc.core, curframe, canonic=False)
         offset   = curframe.f_lasti
         is_address = True
-        return Location(filename, offset, False, None)
+        return Location(filename, offset, False, None, offset)
 
     assert isinstance(location, Location)
     is_address = True
@@ -183,7 +186,7 @@ def resolve_address_location(proc, location):
                         # use first offset of module file
                         offset = 0
                         is_address = True
-                    return Location(filename, offset, is_address, modfunc)
+                    return Location(filename, offset, is_address, modfunc, offset)
                 else:
                     msg = ("module '%s' doesn't have a file associated with it" %
                             location.path)
@@ -197,8 +200,8 @@ def resolve_address_location(proc, location):
                         % (offset, filename, maxline))
             return INVALID_LOCATION
     elif location.line_number is not None:
-        filename   = Mstack.frame2file(proc.core, curframe, canonic=False)
+        filename   = frame2file(proc.core, curframe, canonic=False)
         offset     = location.line_number
         is_address = location.is_address
         modfunc    = proc.list_object
-    return Location(filename, offset, is_address, modfunc)
+    return Location(filename, offset, is_address, modfunc, offset)

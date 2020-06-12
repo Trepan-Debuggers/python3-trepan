@@ -42,25 +42,25 @@ class TestCmdParse(unittest.TestCase):
         self.cp.frame = sys._getframe()
         self.cp.setup()
         for expect, cmd in (
-                ( (None, None, None, None),
+                ( (None, None, None),
                   "break '''c:\\tmp\\foo.bat''':1" ),
-                ( (None, None, None, None),
+                ( (None, None, None),
                   'break """/Users/My Documents/foo.py""":2' ),
-                ( (None, osp.basename(__file__), 10, None),
+                ( (None, osp.basename(__file__), 10),
                   "break 10" ),
-                ( (None, None, None, None),
+                ( (None, None, None),
                    "break cmdproc.py:5" ) ,
-                ( (None, None, None, None),
+                ( (None, None, None),
                    "break set_break()" ),
                 ( (None, osp.basename(__file__), 4, 'i==5'),
                    "break 4 if i==5" ),
-                ( (None, None, None, None),
+                ( (None, None, None),
                   "break cmdproc.setup()" ),
                 ):
             args = cmd.split(' ')
             self.cp.current_command = cmd
             got = canonic_tuple(parse_break_cmd(self.cp, args))
-            self.assertEqual(expect, tuple(got))
+            self.assertEqual(expect, tuple(got[:len(expect)]), cmd)
             # print(got)
 
 
@@ -79,7 +79,7 @@ class TestCmdParse(unittest.TestCase):
             args = cmd.split(' ')
             self.cp.current_command = cmd
             got = canonic_tuple(parse_break_cmd(self.cp, args))
-            self.assertEqual(expect, got)
+            self.assertEqual(expect, got[:len(expect)])
             print(parse_break_cmd(self.cp, args))
 
         print(break_lineno)

@@ -38,11 +38,11 @@ class TestBreakCommand(unittest.TestCase):
         self.cmd.errmsg = self.errmsg
         proc = self.cmd.proc
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'break')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break')
         self.assertEqual((None, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'break 11')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break 11')
         self.assertEqual((None, True, 11),
                          (fn, fi.endswith('test-break.py'), li))
 
@@ -52,37 +52,37 @@ class TestBreakCommand(unittest.TestCase):
             else:
                 brk_cmd = 'b %s:8' % __file__
 
-                fn, fi, li, cond = self.parse_break_cmd(proc, brk_cmd)
+                fn, fi, li, cond, offset = self.parse_break_cmd(proc, brk_cmd)
                 self.assertEqual((None, True, 8),
                                  (fn, isinstance(fi, str), li))
 
         def foo():
             return 'bar'
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'break foo()')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break foo()')
         self.assertEqual((foo, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'break food()')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break food()')
         self.assertEqual((None, None, None, None), (fn, fi, li, cond))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'b os.path:5')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'b os.path:5')
         self.assertEqual((os.path, True, 5),
                          (fn, isinstance(fi, str), li))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'b os.path.join()')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'b os.path.join()')
         self.assertEqual((os.path.join, True, True),
                          (fn, isinstance(fi, str), li > 1))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'break if True')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break if True')
         self.assertEqual((None, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'b foo() if True')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'b foo() if True')
         self.assertEqual((foo, True, True),
                          (fn, fi.endswith('test-break.py'), li > 1))
 
-        fn, fi, li, cond = self.parse_break_cmd(proc, 'br os.path:10 if True')
+        fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'br os.path:10 if True')
         self.assertEqual((True, 10),
                          (isinstance(fi, str), li))
 
