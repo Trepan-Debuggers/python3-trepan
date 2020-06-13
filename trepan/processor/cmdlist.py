@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 Rocky Bernstein
+#  Copyright (C) 2017, 2020 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor.parse.semantics import build_range, Location
+from trepan.processor.parse.semantics import build_location, build_range, Location
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
 from trepan.processor.location import resolve_location
@@ -105,6 +105,35 @@ def parse_list_cmd(proc, args, listsize=10):
             return location.path, first, last
         pass
     return
+
+INVALID_PARSE_LOCATION = (None, None)
+def parse_location(proc, args):
+    text = proc.current_command[len(args[0])+1:].strip()
+
+    if text in frozenset(('', '.')):
+        if text == '.':
+            location = resolve_location(proc, '.')
+            return location.path, location.line_number
+        else:
+            filename = proc.list_filename
+            if text == '':
+                # Continue from where we last left off
+                first = proc.list_lineno + 1
+        return filename, first
+    else:
+        try:
+            location = build_location(text)
+        except LocationError as e:
+            proc.errmsg("Error in parsing location at or around:")
+            proc.errmsg(e.text)
+            proc.errmsg(e.text_cursor)
+            return INVALID_PARSE_LOCATION
+        except ScannerError as e:
+            proc.errmsg("Lexical error in location at or around:")
+            proc.errmsg(e.text)
+            proc.errmsg(e.text_cursor)
+            return INVALID_PARSE_LOCATION
+        return location
 
 # Demo it
 if __name__=='__main__':

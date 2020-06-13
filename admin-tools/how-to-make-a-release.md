@@ -50,9 +50,30 @@
 
 Goto https://github.com/rocky/python3-trepan/releases/new
 
-# Get on PyPi
+Set version, copy in `NEWS.md` item, upload binaries.
+
+Now check the *tagged* release. (Checking the untagged release was previously done).
+
+Todo: turn this into a script in `admin-tools`
+
+	$ pushd /tmp/gittest
+	$ pip install -e git://github.com/rocky/python-filecache@$VERSION.git#egg=pyficache
+	$ pip uninstall pyficache
+	$ popd
+
+
+	$ twine check dist/pyficache-$VERSION*
+
+# Get on PyPI
 
 	$ twine upload dist/trepan3k-${VERSION}*
+
+Check on https://pypi.org/project/trepan3k/
+
+# Push and Pull tags:
+
+    $ git push --tags
+    $ git pull --tags
 
 # Move dist files to uploaded
 

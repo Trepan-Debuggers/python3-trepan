@@ -11,9 +11,7 @@ Examining data.
    data/display
    data/eval
    data/examine
-   data/pdef
    data/pp
    data/pr
-   data/pydocx
    data/undisplay
    data/whatis

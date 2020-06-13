@@ -1,9 +1,26 @@
+1.1.0 2020-06-13 Fleetwood66+
+=============================
+
+A major change was made in the way that position info is saved. Using an updated xdis, for lines we store its module or function name and the list of offsets it has.
+A line may have several sets of module/function and offsets. You can see this new information using `info line`. `info line` also supports giving a line number.
+
+Breakpoint structures now have an offset field which will be used to distinguish which of several offsets to stop at when a line has more than one stoppable offset (i.e. is in the line number table more than once.)
+
+All of this possibly will occur in a new release. However expect it in `trepan-xpy` first.
+
+A refactoring of how subcommand code gets loaded was started to DRY code, reduce code bulk, regularize, modernize the use of imports and this blacken code.
+A few more routines still should be converted but that's left to a future release.
+
+Perhaps later will be an Emacs-Lisp-like "autoload" feature so the debugger loads faster.
+
+Little-used commands `pdef` and `pdocx` were removed. Note these never had equivalents in `gdb` and were written in the days before had its better introspection support. Nowadays, `help(fn)` will do about the same thing.
+
+The "edit" command was revised to use the current location parsing regime. Previously it was broken when the location parsing was converted.
+
 1.0.2 2020-04-30 Lady Elaine
 ============================
 
-The main purpose of this release is again to support upcomping improvements to x-python.
-This might be the last release before a more substantial refactoring to fix some
-longer-term slowness and weirdnesses in tracing by using 3.6, and 3.8 APIs
+The main purpose of this release is again to support upcomping improvements to x-python. This might be the last release before a more substantial refactoring to fix some longer-term slowness and weirdnesses in tracing by using 3.6, and 3.8 APIs.
 
 * Show args via "info local" on a call event
 * Better file remapping and size check error msgs

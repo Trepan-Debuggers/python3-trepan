@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,14 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, os
+import os
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.cmdlist import parse_location
 
 
-class EditCommand(Mbase_cmd.DebuggerCommand):
-    """**edit** *position*
+class EditCommand(DebuggerCommand):
+    """**edit** *location*
 
 Edit specified file or module.
 With no argument, edits file containing most recent line listed.
@@ -32,39 +33,37 @@ See also:
 `list`
 """
 
-    aliases       = ('ed',)
-    category      = 'files'
-    min_args      = 0
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Edit specified file or module'
+    aliases = ("ed",)
+    short_help = "Edit specified file or module"
+
+    DebuggerCommand.setup(
+        locals(), category="files", max_args=1,
+    )
 
     def run(self, args):
         curframe = self.proc.curframe
         if len(args) == 1:
             if curframe is None:
-                self.errmsg('edit: no stack to pick up position from. '
-                            'Use edit FILE:LINE form.')
+                self.errmsg(
+                    "edit: no stack to pick up position from. "
+                    "Use edit FILE:LINE form."
+                )
                 return
             filename = curframe.f_code.co_filename
-            lineno   = curframe.f_lineno
-        elif len(args) == 2:
-            (modfunc, filename, lineno) = self.proc.parse_position(args[1])
-            if inspect.ismodule(modfunc) and lineno is None and len(args) > 2:
-                val = self.proc.get_an_int(args[1],
-                                           'Line number expected, got %s.' %
-                                           args[1])
-                if val is None: return
-                lineno = val
-                pass
-            elif lineno is None:
-                self.errmsg('edit: no linenumber provided')
+            lineno = curframe.f_lineno
+        elif len(args) > 1:
+            location = parse_location(self.proc, args)
+            if not location:
                 return
-            pass
-        editor = 'ex'
-        if 'EDITOR' in os.environ:
-            editor = os.environ['EDITOR']
+            if not location.path:
+                return
+            filename = location.path
+            if not location.line_number:
+                return
+            lineno = location.line_number
+        editor = "ex"
+        if "EDITOR" in os.environ:
+            editor = os.environ["EDITOR"]
             pass
         if os.path.exists(filename):
             os.system("%s +%d %s" % (editor, lineno, filename))
@@ -72,16 +71,27 @@ See also:
             self.errmsg("edit: file %s doesn't exist" % filename)
             pass
         return
+
     pass
 
-if __name__ == '__main__':
-    from trepan import debugger as Mdebugger
-    d = Mdebugger.Trepan()
+
+if __name__ == "__main__":
+
+    def doit(cmd, a):
+        cmd.proc.current_command = " ".join(a)
+        print(cmd.run(a))
+
+    import sys
+    from trepan.debugger import Trepan
+
+    d = Trepan()
     cmd = EditCommand(d.core.processor)
-    for c in (['edit'],
-              ['edit', './edit.py:34'],
-              ['edit', './noogood.py'],
-              ):
-        cmd.run(c)
+    cmd.proc.curframe = sys._getframe()
+    for c in (
+        ["edit"],
+        ["edit", "./edit.py:34"],
+        ["edit", "./noogood.py"],
+    ):
+        doit(cmd, c)
         pass
     pass

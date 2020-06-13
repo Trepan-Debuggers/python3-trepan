@@ -1,7 +1,7 @@
 #  Copyright (c) 2017-2018, 2020 by Rocky Bernstein
 
 from trepan.processor.parse.parser import (
-    parse_bp_location, parse_range, parse_arange
+    parse_bp_location, parse_range, parse_arange, parse_location
     )
 from trepan.processor.parse.parser import LocationError as PLocationError
 from trepan.processor.parse.scanner import ScannerError
@@ -264,6 +264,21 @@ def build_range(string, show_tokens=False, show_ast=False, show_grammar=False):
     walker.traverse(parsed)
     list_range = walker.result
     return list_range
+
+def build_location(string, show_tokens=False, show_ast=False, show_grammar=False):
+    parser_debug = {'rules': False, 'transition': False,
+                    'reduce': show_grammar,
+                    'errorstack': None,
+                    'context': False, 'dups': True
+                        }
+    parsed = parse_location("location", string, show_tokens=show_tokens,
+                            parser_debug=parser_debug)
+    if show_ast:
+        print(parsed)
+    assert parsed == 'location'
+    walker = LocationGrok(string)
+    walker.traverse(parsed)
+    return walker.result
 
 # FIXME: DRY with build_range
 def build_arange(string, show_tokens=False, show_ast=False, show_grammar=False):

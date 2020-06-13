@@ -20,4 +20,4 @@ We get this most of this information via the *inspect* module.
 
 .. seealso::
 
-   :ref:`pydocx <pydocx>`, the :py:mod:`inspect` module.
+   the :py:mod:`inspect` module.
