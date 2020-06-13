@@ -73,10 +73,11 @@ See also:
     def run(self, args):
         force = True if args[0][-1] == "!" else False
 
-        (func, filename, lineno, condition) = parse_break_cmd(self.proc, args)
+        (func, filename, lineno, condition, offset) = parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
             set_break(
-                self, func, filename, lineno, condition, False, args, force=force
+                self, func, filename, lineno, condition, False, args, force=force,
+                offset=offset
             )
         return
 

@@ -1,5 +1,4 @@
-#  Copyright (c) 2017-2018 by Rocky Bernstein
-from __future__ import print_function
+#  Copyright (c) 2017-2018, 2020 by Rocky Bernstein
 
 from trepan.processor.parse.parser import (
     parse_bp_location, parse_range, parse_arange
@@ -9,7 +8,7 @@ from trepan.processor.parse.scanner import ScannerError
 from spark_parser import GenericASTTraversal # , DEFAULT_DEBUG as PARSER_DEFAULT_DEBUG
 
 from collections import namedtuple
-Location = namedtuple("Location", "path line_number is_address method")
+Location = namedtuple("Location", "path line_number is_address method offset")
 BPLocation = namedtuple("BPLocation", "location condition")
 ListRange = namedtuple("ListRange", "first last")
 
@@ -48,11 +47,11 @@ class LocationGrok(GenericASTTraversal, object):
             if n0 == 'ADDRESS':
                 assert node[0].value[0] == '*'
                 line_number = int(node[0].value[1:])
-                self.result = Location(path, line_number, True, method)
+                self.result = Location(path, line_number, True, method, offset=None)
             elif n0 == 'NUMBER':
-                self.result = Location(path, node[0].value, True, method)
+                self.result = Location(path, node[0].value, True, method, offset=None)
             else:
-                self.result = Location(path, line_number, False, node[0].value[:-2])
+                self.result = Location(path, line_number, False, node[0].value[:-2], offset=None)
             node.location = self.result
             self.prune()
         else:
@@ -63,7 +62,7 @@ class LocationGrok(GenericASTTraversal, object):
 
 
     def n_location(self, node):
-        path, line_number, method = None, None, None
+        path, line_number, method, offset = None, None, None, None
         if node[0] == 'FILENAME':
             path = node[0].value
             # If there is a line number, it is the last token of a location
@@ -71,19 +70,20 @@ class LocationGrok(GenericASTTraversal, object):
                 line_number = node[-1].value
         elif node[0] == 'FUNCNAME':
             method = node[0].value[:-2]
+            offset = 0
         elif node[0] == 'NUMBER':
             line_number = node[0].value
         else:
             assert True, "n_location: Something's is wrong; node[0] is %s" % node[0]
-        self.result = Location(path, line_number, False, method)
-        node.location = Location(path, line_number, False, method)
+        self.result = Location(path, line_number, False, method, offset=offset)
+        node.location = Location(path, line_number, False, method, offset=offset)
         self.prune()
 
     def n_NUMBER(self, node):
-        self.result = Location(None, node.value, False, None)
+        self.result = Location(None, node.value, False, None, offset=None)
 
     def n_FUNCNAME(self, node):
-        self.result = Location(None, None, False, node.value[:-2])
+        self.result = Location(None, None, False, node.value[:-2], offset=0)
 
     def n_location_if(self, node):
         location = None
@@ -125,18 +125,20 @@ class LocationGrok(GenericASTTraversal, object):
                 self.preorder(arange_node[-1])
                 self.result = ListRange(last_node.location, None)
             elif last_node == 'FUNCNAME':
-                self.result = ListRange(Location(None, None, False, last_node.value[:-2]),
+                self.result = ListRange(Location(None, None, False, last_node.value[:-2], offset=0),
                                         None)
             elif last_node in ('NUMBER', 'OFFSET', 'ADDRESS'):
+                offset = None
                 if last_node == 'ADDRESS':
                     assert last_node.value[0] == '*'
                     is_address = True
                     value = int(last_node.value[1:])
+                    offset = value
                 else:
                     is_address = False
                     value = last_node.value
 
-                self.result = ListRange(Location(None, value, is_address, None),
+                self.result = ListRange(Location(None, value, is_address, None, offset=offset),
                                         None)
             else:
                 assert last_node == 'DIRECTION'
@@ -182,10 +184,10 @@ class LocationGrok(GenericASTTraversal, object):
                 self.preorder(range_node[-1])
                 self.result = ListRange(last_node.location, None)
             elif last_node == 'FUNCNAME':
-                self.result = ListRange(Location(None, None, False, last_node.value[:-2]),
+                self.result = ListRange(Location(None, None, False, last_node.value[:-2], offset=None),
                                         None)
             elif last_node in ('NUMBER', 'OFFSET'):
-                self.result = ListRange(Location(None, last_node.value, False, None),
+                self.result = ListRange(Location(None, last_node.value, False, None, offset=None),
                                         None)
             else:
                 assert last_node == 'DIRECTION'

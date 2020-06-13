@@ -71,12 +71,12 @@ ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
     "nose>=1.0.0, <= 1.3.7",
-    "pyficache >= 2.0.1, < 2.1.0",
+    "pyficache >= 2.1.0",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
     "uncompyle6 >= 3.7.0",
-    "xdis >= 4.6.1, < 4.7.0",
+    "xdis >= 4.7.0",
 ]
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"

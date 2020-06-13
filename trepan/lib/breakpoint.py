@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -221,8 +221,9 @@ class Breakpoint:
     """
 
     def __init__(self, number, filename, line, temporary=False,
-                 condition=None, funcname=None):
+                 condition=None, funcname=None, offset=None):
 
+        self.offset = offset
         self.condition = condition
         self.enabled   = True
 

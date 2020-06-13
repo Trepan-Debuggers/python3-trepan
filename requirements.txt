@@ -1,0 +1,13 @@
+# This file is for CircleCI until I can figure
+# out how to get it to do "pip install -e"
+# The "pygments" version is not quite right
+# And the xdis version is missing
+columnize >= 0.3.10
+nose>=1.0.0, <= 1.3.7
+pygments >= 2.2.0
+spark_parser
+tracer >= 0.3.2
+flake8
+pyficache >= 2.1.0, < 2.2.0
+uncompyle6 >= 3.7.0
+xdis >= 4.7.0

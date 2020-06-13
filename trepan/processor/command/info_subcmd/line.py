@@ -13,13 +13,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, os, re
+import inspect, re
+import os.path as osp
 
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
-from trepan.lib.file import lookupmodule
 from trepan.clifns import search_file
 from trepan.misc import wrapped_lines
+from trepan.processor.cmdbreak import parse_break_cmd
+from pyficache import code_line_info
 
 
 def find_function(funcname, filename):
@@ -45,87 +47,76 @@ def find_function(funcname, filename):
 
 
 class InfoLine(DebuggerSubcommand):
-    """**info line**
+    """**info line* [*location*]
 
-Show information about the current line
+Show information about the current line.
 
 See also:
 ---------
 `info program`, `info frame`"""
 
     min_abbrev = 2
-    max_args = 0
-    need_stack = True
-    short_help = "Show current-line information"
+    max_args = 4
+    need_stack = False
+    short_help = "Show line information"
 
-    def lineinfo(self, identifier):
-        failed = (None, None, None)
-        # Input is identifier, may be in single quotes
-        idstring = identifier.split("'")
-        if len(idstring) == 1:
-            # not in single quotes
-            ident = idstring[0].strip()
-        elif len(idstring) == 3:
-            # quoted
-            ident = idstring[1].strip()
+    def lineinfo(self, arg):
+        (func, filename, lineno, condition, offset) = parse_break_cmd(
+            self.proc, ["info args"]
+        )
+        if filename != None and lineno != None:
+            return lineno, filename
         else:
-            return failed
-        if ident == "":
-            return failed
-        parts = ident.split(".")
-        # Protection for derived debuggers
-        if parts[0] == "self":
-            del parts[0]
-            if len(parts) == 0:
-                return failed
-        # Best first guess at file to look at
-        fname = self.proc.defaultFile()
-        if len(parts) == 1:
-            item = parts[0]
-        else:
-            # More than one part.
-            # First is module, second is method/class
-            m, f = lookupmodule(
-                ".".join(parts[1:]), self.debugger.mainpyfile, self.core.canonic
-            )
-            if f:
-                fname = f
-            item = parts[-1]
-        answer = find_function(item, fname)
-        return answer or failed
+            return None, None
 
     def run(self, args):
         """Current line number in source file"""
-        # info line identifier
         if not self.proc.curframe:
             self.errmsg("No line number information available.")
             return
-        if len(args) == 3:
+
+        # info line <loc>
+        if len(args) == 0:
+            # No line number. Use current frame line number
+            line_number = inspect.getlineno(self.proc.curframe)
+            filename = self.core.canonic_filename(self.proc.curframe)
+        elif len(args) == 1:
             # lineinfo returns (item, file, lineno) or (None,)
-            answer = self.lineinfo(args[2])
-            if answer[0]:
-                item, filename, lineno = answer
-                if not os.path.isfile(filename):
-                    filename = search_file(
-                        filename, self.core.search_path, self.main_dirname
-                    )
-                self.msg('Line %s of "%s" <%s>' % (lineno, filename, item))
+            line_number, filename = self.lineinfo(args[2:])
+            if not filename:
+                self.errmsg("Can't parse '%s'" % args[2])
+                pass
+            filename = self.core.canonic(filename)
+        else:
+            self.errmsg("Wrong number of arguments.")
             return
-        filename = self.core.canonic_filename(self.proc.curframe)
-        if not os.path.isfile(filename):
+        if not osp.isfile(filename):
             filename = search_file(filename, self.core.search_path, self.main_dirname)
             pass
 
-        filename = self.core.canonic_filename(self.proc.curframe)
-        msg1 = 'Line %d of "%s"' % (
-            inspect.getlineno(self.proc.curframe),
-            self.core.filename(filename),
-        )
-        msg2 = "at offset %d" % self.proc.curframe.f_lasti
-        if self.proc.event:
-            msg2 += ", %s event" % self.proc.event
-            pass
-        self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+        line_info = code_line_info(filename, line_number)
+        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
+        if line_info:
+            msg2 = "starts at offset %d of %s and contains %d instructions" % (
+                line_info[0].offsets[0],
+                line_info[0].name,
+                len(line_info[0].offsets),
+            )
+            self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+        else:
+            self.errmsg(
+                "No line information for line %d of %s"
+                % (line_number, self.core.filename(filename))
+            )
+        if line_info and len(line_info) > 1:
+            self.msg(wrapped_lines(
+                "There are multiple starting offsets this line.",
+                "Other starting offsets: %s"
+                % ", ".join(
+                    ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]),
+                self.settings["width"]
+                )
+            )
         return False
 
     pass
@@ -140,10 +131,13 @@ if __name__ == "__main__":
     d, cp = mock.dbg_setup(d)
     i = InfoCommand(cp)
     sub = InfoLine(i)
-    sub.run([])
     cp.curframe = inspect.currentframe()
     for width in (80, 200):
         sub.settings["width"] = width
-        sub.run(["file.py", "lines"])
+        sub.run([])
+        line = inspect.getlineno(cp.curframe)
+        x = 1
+        cp.current_command = "info args %d" % line
+        sub.run([line])
         pass
     pass
