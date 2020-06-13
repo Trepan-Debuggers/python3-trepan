@@ -216,15 +216,15 @@ Documentation: http://python3-trepan.readthedocs.org
 See Also
 --------
 
+
 * trepan2_ : trepan debugger for Python 2
-* trepanxpy_ : trepan debugger for |`x-python`|, the bytecode interpreter written in Python
-* pydbgr_  : previous incarnation of Python 2 debugger
+* trepanxpy_ : trepan debugger for `x-python <https://pypi.python.org/pypi/x-python>`_, the bytecode interpreter written in Python
+* pydbgr_  : previous incarnation of the Python 2 debugger
 * pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
-* https://github.com/rocky/trepan-xpy : Python debugger using this code to support x-python_
+* https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python <https://pypi.python.org/pypi/x-python>`_
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
 * https://pypi.python.org/pypi/xdis : cross-platform disassembler
-
 |buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 
 .. _pygments:  http://pygments.org

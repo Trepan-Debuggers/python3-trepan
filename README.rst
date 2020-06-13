@@ -37,11 +37,11 @@ around a bytecode offset such as the place you are stopped at.
 
 So far as I know, there is no other debugger that decompile code at runtime.
 
-See the `deparse <deparse>`_ command for details.
+See the ``deparse`` command for details.
 
 We use information in the line number table in byte to understand
 which lines are breakpointable, and in which module or function the
-line appears in. Use `info line`_ to see this information.
+line appears in. Use ``info line`` to see this information.
 
 In the future we may allow specifiying an offset to indicate which
 offset to stop at when there are several choices for a given line
@@ -232,11 +232,11 @@ See Also
 --------
 
 * trepan2_ : trepan debugger for Python 2
-* trepanxpy_ : trepan debugger for |`x-python`|, the bytecode interpreter written in Python
+* trepanxpy_ : trepan debugger for `x-python <https://pypi.python.org/pypi/x-python>`_, the bytecode interpreter written in Python
 * pydbgr_  : previous incarnation of the Python 2 debugger
 * pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
-* https://github.com/rocky/trepan-xpy : Python debugger using this code to support x-python_
+* https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python <https://pypi.python.org/pypi/x-python>`_
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
 * https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
@@ -249,7 +249,6 @@ See Also
 .. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _trepan3: https://github.com/rocky/python3-trepan
 .. _trepanxpy: https://pypi.python.org/pypi/trepanxpy
-.. _xpython: https://pypi.python.org/pypi/x-python
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan

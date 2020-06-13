@@ -49,7 +49,21 @@ def find_function(funcname, filename):
 class InfoLine(DebuggerSubcommand):
     """**info line* [*location*]
 
-Show information about the current line.
+Show line information for location *location*.
+
+If no location is given, use the the current stopped line.
+
+Examples
+--------
+
+    (trepan3k) info line
+    Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
+        starts at offset 0 of <module> and contains 2 instructions
+    There are multiple starting offsets this line. Other starting offsets: 4 of <module>
+
+    (trepan3k) info line 5
+    Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
+        starts at offset 16 of <module> and contains 7 instructions
 
 See also:
 ---------
