@@ -56,13 +56,13 @@ Now check the *tagged* release. (Checking the untagged release was previously do
 
 Todo: turn this into a script in `admin-tools`
 
-	$ pushd /tmp/gittest
-	$ pip install -e git://github.com/rocky/python-filecache@$VERSION.git#egg=pyficache
-	$ pip uninstall pyficache
+	$ mkdir /tmp/gittest; pushd /tmp/gittest
+	$ pyenv local 3.7.5  # or some other non-current version
+	$ pip install -e git://github.com/rocky/python3-trepan.git@$VERSION#egg=trepan3k
+	$ trepan3k trepan3k
+	$ pip uninstall trepan3k
 	$ popd
 
-
-	$ twine check dist/pyficache-$VERSION*
 
 # Get on PyPI
 
