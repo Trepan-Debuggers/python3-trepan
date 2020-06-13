@@ -7,7 +7,8 @@ trepan3k - a gdb-like debugger for Python 3
 ===========================================
 
 trepan3k is a gdb-like debugger for Python. It is a rewrite of *pdb*
-from the ground up.
+from the ground up. It is aimed for people who care about high-quality
+debuggers
 
 A command-line interface (CLI) is provided as well as an remote access
 interface over TCP/IP.

@@ -8,11 +8,11 @@ in general, knowledge gained by learning this is transferable to those
 debuggers and vice versa.
 
 There's a lot of cool stuff here that's not in the stock
-Python debugger *pdb*.
+Python debugger *pdb*, or in any other Python debugger that I know about.
 
 
-Exact location information
---------------------------
+More Exact location information
+-------------------------------
 
 Python reports line information on the granularity of a line. To get
 more precise information, we can (de)parse into Python the byte code
@@ -22,6 +22,14 @@ So far as I know, there is no other debugger that decompile code at runtime.
 
 See the `deparse <deparse>`_ command for details.
 
+We use information in the line number table in byte to understand
+which lines are breakpointable, and in which module or function the
+line appears in. Use `info line`_ to see this information.
+
+In the future we may allow specifiying an offset to indicate which
+offset to stop at when there are several choices for a given line
+number.
+
 
 Debugging Python bytecode (no source available)
 -----------------------------------------------
@@ -29,8 +37,8 @@ Debugging Python bytecode (no source available)
 You can pass the debugger the name of Python bytecode and many times,
 the debugger will merrily proceed.  This debugger tries very hard find
 the source code. Either by using the current executable search path
-(e.g. `PATH`) or for some by looking inside the bytecode for a
-filename in the main code object (`co_filename`) and applying that
+(e.g. ``PATH``) or for some by looking inside the bytecode for a
+filename in the main code object (``co_filename``) and applying that
 with a search path which takes into account directory where the
 bytecode lives.
 
@@ -95,7 +103,7 @@ aliases to ``s+``, ``s>`` and so on. The plus-suffixed commands force
 a different line on a subsequent stop, the dash-suffixed commands
 don't.  Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return``
 and ``exception`` events respectively. And without a suffix you get
-the default; this is set by the `set different` command.
+the default; this is set by the ``set different`` command.
 
 Event Filtering and Tracing
 ...........................
@@ -106,7 +114,7 @@ to stop at ``line`` events (which is largely what you happens in
 *pdb*) you can. If however you just want to stop at calls and returns,
 that's possible too. Or pick some combination.
 
-In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via `info program`.
+In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via ``info program``.
 
 Event Tracing of Calls and Returns
 ----------------------------------
@@ -204,6 +212,18 @@ Documentation
 -------------
 
 Documentation: http://python3-trepan.readthedocs.org
+
+See Also
+--------
+
+* trepan2_ : trepan debugger for Python 2
+* trepanxpy_ : trepan debugger for |`x-python`|, the bytecode interpreter written in Python
+* pydbgr_  : previous incarnation of Python 2 debugger
+* pydb_ : even older incarnation of debugger (for very old Python 2)
+* Tutorial_: Tutorial for how to use
+* https://github.com/rocky/trepan-xpy : Python debugger using this code to support x-python_
+* https://pypi.python.org/pypi/uncompyle6 : Python decompiler
+* https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
 |buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 

@@ -25,11 +25,11 @@ in general, knowledge gained by learning this is transferable to those
 debuggers and vice versa.
 
 There's a lot of cool stuff here that's not in the stock
-Python debugger *pdb*.
+Python debugger *pdb*, or in any other Python debugger that I know about.
 
 
-Exact location information
---------------------------
+More Exact location information
+-------------------------------
 
 Python reports line information on the granularity of a line. To get
 more precise information, we can (de)parse into Python the byte code
@@ -38,6 +38,15 @@ around a bytecode offset such as the place you are stopped at.
 So far as I know, there is no other debugger that decompile code at runtime.
 
 See the `deparse <deparse>`_ command for details.
+
+We use information in the line number table in byte to understand
+which lines are breakpointable, and in which module or function the
+line appears in. Use `info line`_ to see this information.
+
+In the future we may allow specifiying an offset to indicate which
+offset to stop at when there are several choices for a given line
+number.
+
 
 Debugging Python bytecode (no source available)
 -----------------------------------------------
@@ -90,9 +99,9 @@ Smart Eval
 ----------
 
 If you want to evaluate the current source line before it is run in
-the code, use ``eval`` or ``deval``. To evaluate text of a common
-fragment of line, such as the expression part of an *if* statement,
-you can do that with ``eval?``. See eval_ for more information.
+the code, use ``eval``. To evaluate text of a common fragment of line,
+such as the expression part of an *if* statement, you can do that with
+``eval?``. See eval_ for more information.
 
 More Stepping Control
 ---------------------
@@ -172,17 +181,19 @@ We do more in the way of looking at the byte codes to give better information. T
   ``MAKE_FUNCTION`` or ``BUILD_CLASS``.)
 
 Even without "deparsing" mentioned above, the ability to disassemble
-by line number range or byte-offset range lets you tell exactly where
-you are and code is getting run.
+where the PC is currently located (see `info pc <info_pc>`_), by line
+number range or byte-offset range lets you tell exactly where you are
+and code is getting run.
 
 Some Debugger Command Arguments can be Variables and Expressions
 ----------------------------------------------------------------
 
-Commands that take integer arguments like *up*, allow you to use a
-Python expression which may include local or global variables that
-evaluates to an integer. This eliminates the need in *gdb* for special
-"dollar" debugger variables. (Note however because of *shlex* parsing,
-expressions can't have embedded blanks.)
+Commands that take integer arguments like *up*, *list*, or
+*disassemble* allow you to use a Python expression which may include
+local or global variables that evaluates to an integer. This
+eliminates the need in *gdb* for special "dollar" debugger
+variables. (Note however because of *shlex* parsing, expressions can't
+have embedded blanks.)
 
 Out-of-Process Debugging
 ------------------------
@@ -221,8 +232,8 @@ See Also
 --------
 
 * trepan2_ : trepan debugger for Python 2
-* trepanxpy_ : trepan debugger for |`x-python`|
-* pydbgr_  : previous incarnation of debugger
+* trepanxpy_ : trepan debugger for |`x-python`|, the bytecode interpreter written in Python
+* pydbgr_  : previous incarnation of the Python 2 debugger
 * pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
 * https://github.com/rocky/trepan-xpy : Python debugger using this code to support x-python_
