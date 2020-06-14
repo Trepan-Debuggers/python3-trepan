@@ -14,6 +14,7 @@ python:
 
 install:
 - pip install -e git://github.com/rocky/python-xdis.git#egg=xdis
+- pip install -e git://github.com/rocky/python-filecache.git#egg=pyficache
 - pip install -e .
 - pip install -r requirements-dev.txt
 
