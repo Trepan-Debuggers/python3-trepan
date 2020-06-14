@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
-from pyficache import code_line_info
+from pyficache import code_line_info, code_offset_info
 from trepan.misc import wrapped_lines
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
@@ -34,7 +34,7 @@ def set_break(
     force=False,
     offset=None,
 ):
-    if lineno is None:
+    if lineno is None and offset is None:
         part1 = "I don't understand '%s' as a line number, function name," % " ".join(
             args[1:]
         )
@@ -48,19 +48,34 @@ def set_break(
         filename = cmd_obj.core.canonic(filename)
         pass
     if func is None:
-        line_info = code_line_info(filename, lineno)
-        if not line_info:
-            part1 = "File %s" % cmd_obj.core.filename(filename)
-            msg = wrapped_lines(
-                part1,
-                "is not stoppable at line %d." % lineno,
-                cmd_obj.settings["width"],
-            )
-            cmd_obj.errmsg(msg)
-            if force:
-                cmd_obj.msg("Breakpoint set although it may never be reached")
-            else:
+        if lineno:
+            line_info = code_line_info(filename, lineno)
+            if not line_info:
+                part1 = "File %s" % cmd_obj.core.filename(filename)
+                msg = wrapped_lines(
+                    part1,
+                    "is not stoppable at line %d." % lineno,
+                    cmd_obj.settings["width"],
+                )
+                cmd_obj.errmsg(msg)
+                if force:
+                    cmd_obj.msg("Breakpoint set although it may never be reached")
+                else:
+                    return False
+        else:
+            assert offset is not None
+            lineno = code_offset_info(filename, offset)
+            from trepan.api import debug; debug()
+            if lineno is None:
+                part1 = "File %s" % cmd_obj.core.filename(filename)
+                msg = wrapped_lines(
+                    part1,
+                    "has no line associcated with offset %d." % offset,
+                    cmd_obj.settings["width"],
+                )
+                cmd_obj.errmsg(msg)
                 return False
+
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(
         filename,

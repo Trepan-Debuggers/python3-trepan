@@ -126,9 +126,10 @@ class LocationParser(GenericASTBuilder):
         location    ::= FILENAME COLON NUMBER
         location    ::= FUNCNAME
 
-        # If just a number is given, the filename is implied
+        # If just a number, offset or address is given, the filename is implied
         location    ::= NUMBER
         location    ::= OFFSET
+        location    ::= ADDRESS
 
         # For tokens we accept anything. Were really just
         # going to use the underlying string from the part

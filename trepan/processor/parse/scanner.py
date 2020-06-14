@@ -56,7 +56,7 @@ x = 2y + z
         pass
 
     def t_file_or_func(self, s):
-        r'(?:[^*-+,\d\'"\t \n:][^\'"\t \n:,]*)|(?:^""".+""")|(?:\'\'\'.+\'\'\')'
+        r'(?:[^*-+@,\d\'"\t \n:][^\'"\t \n:,]*)|(?:^""".+""")|(?:\'\'\'.+\'\'\')'
         maybe_funcname = True
         if s == 'if':
             self.add_token('IF', s)
@@ -126,7 +126,7 @@ x = 2y + z
 
     # Recognize addresses (bytecode offsets)
     def t_address(self, s):
-        r'[*]\d+'
+        r'[*@]\d+'
         pos = self.pos
         self.add_token('ADDRESS', s)
         self.pos = pos + len(s)
@@ -138,6 +138,7 @@ if __name__ == "__main__":
             "'/tmp/foo.py:12'",
             "6",
             "*6",
+            "@6",
             "8 *6",
             # "/tmp/foo.py line 12",
             # "\"\"\"/tmp/foo.py's line 12\"\"\"",
