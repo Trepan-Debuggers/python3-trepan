@@ -35,7 +35,7 @@ def set_break(
     offset=None,
 ):
     if lineno is None and offset is None:
-        part1 = "I don't understand '%s' as a line number, function name," % " ".join(
+        part1 = "I don't understand '%s' as a line number, offset, or function name," % " ".join(
             args[1:]
         )
         msg = wrapped_lines(
@@ -65,7 +65,6 @@ def set_break(
         else:
             assert offset is not None
             lineno = code_offset_info(filename, offset)
-            from trepan.api import debug; debug()
             if lineno is None:
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
@@ -101,18 +100,7 @@ def set_break(
         )
         cmd_obj.msg(msg)
         if offset is not None and offset >= 0:
-            cmd_obj.msg(
-                "Breakpoint is at offset %d of %s"
-                % (line_info[0].offsets[0], line_info[0].name)
-            )
-            if len(line_info) > 1:
-                msg = wrapped_lines(
-                    "Other offsets are available for stopping too.",
-                    "See `info line` for their offsets.",
-                    cmd_obj.settings["width"],
-                )
-                cmd_obj.msg(msg)
-
+            cmd_obj.msg("Breakpoint is at offset %d "% offset)
         pass
     return True
 
