@@ -121,7 +121,7 @@ def resolve_location(proc, location):
         lineno     = location.line_number
         is_address = location.is_address
         if offset is None:
-            lineinfo = pyficache.code_line_info(filename, lineno)
+            lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
         modfunc  = None
