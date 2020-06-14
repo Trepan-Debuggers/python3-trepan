@@ -59,7 +59,7 @@ Examples
     (trepan3k) info line
     Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
         starts at offset 0 of <module> and contains 2 instructions
-    There are multiple starting offsets this line. Other starting offsets: 4 of <module>
+    There are multiple line offsets this line number. Other line offsets: 4 of <module>
 
     (trepan3k) info line 5
     Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
@@ -124,8 +124,8 @@ See also:
             )
         if line_info and len(line_info) > 1:
             self.msg(wrapped_lines(
-                "There are multiple starting offsets this line.",
-                "Other starting offsets: %s"
+                "There are multiple line offsets for line number.",
+                "Other line offsets: %s"
                 % ", ".join(
                     ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]),
                 self.settings["width"]
