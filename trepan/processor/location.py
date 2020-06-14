@@ -110,7 +110,7 @@ def resolve_location(proc, location):
             return INVALID_LOCATION
         offset = location.offset
         if offset is None:
-            lineinfo = pyficache.code_line_info(filename, lineno)
+            lineinfo = pyficache.code_offset_info(filename, lineno)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
             else:
@@ -125,6 +125,12 @@ def resolve_location(proc, location):
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
         modfunc  = None
+    elif location.offset is not None:
+        filename   = frame2file(proc.core, curframe, canonic=False)
+        is_address = True
+        lineno     = None
+        modfunc  = None
+        offset = location.offset
     return Location(filename, lineno, is_address, modfunc, offset)
 
 def resolve_address_location(proc, location):

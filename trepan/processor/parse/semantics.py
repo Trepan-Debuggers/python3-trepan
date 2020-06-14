@@ -54,6 +54,8 @@ class LocationGrok(GenericASTTraversal, object):
                 self.result = Location(path, line_number, False, node[0].value[:-2], offset=None)
             node.location = self.result
             self.prune()
+        elif n0 == "OFFSET":
+            print("WOOT")
         else:
             # print(node[0])
             assert node[0] == 'location'
@@ -81,6 +83,9 @@ class LocationGrok(GenericASTTraversal, object):
 
     def n_NUMBER(self, node):
         self.result = Location(None, node.value, False, None, offset=None)
+
+    def n_ADDRESS(self, node):
+        self.result = Location(None, None, True, None, offset=int(node.value[1:]))
 
     def n_FUNCNAME(self, node):
         self.result = Location(None, None, False, node.value[:-2], offset=0)
@@ -118,7 +123,6 @@ class LocationGrok(GenericASTTraversal, object):
             # arange ::= DIRECTION
             # arange ::= FUNCNAME
             # arange ::= NUMBER
-            # arange ::= OFFSET
             # arange ::= ADDRESS
             last_node = arange_node[-1]
             if last_node == 'location':
@@ -130,7 +134,7 @@ class LocationGrok(GenericASTTraversal, object):
             elif last_node in ('NUMBER', 'OFFSET', 'ADDRESS'):
                 offset = None
                 if last_node == 'ADDRESS':
-                    assert last_node.value[0] == '*'
+                    assert last_node.value[0] in ["*", "@"]
                     is_address = True
                     value = int(last_node.value[1:])
                     offset = value
@@ -246,7 +250,7 @@ def build_bp_expr(string, show_tokens=False, show_ast=False, show_grammar=False)
     if isinstance(bp_expr, Location):
         bp_expr = BPLocation(bp_expr, None)
     location = bp_expr.location
-    assert location.line_number is not None or location.method
+    assert location.line_number is not None or location.offset is not None or location.method
     return bp_expr
 
 def build_range(string, show_tokens=False, show_ast=False, show_grammar=False):
@@ -315,22 +319,23 @@ if __name__ == '__main__':
             print(e.text)
             print(e.text_cursor)
 
-    # lines = """
-    # /tmp/foo.py:12
-    # /tmp/foo.py line 12
-    # 12
-    # ../foo.py:5
-    # gcd()
-    # foo.py line 5 if x > 1
-    # """.splitlines()
-    # for line in lines:
-    #     if not line.strip():
-    #         continue
-    #     print("=" * 30)
-    #     print(line)
-    #     print("+" * 30)
-    #     bp_expr = build_bp_expr(line)
-    #     print(bp_expr)
+    lines = """
+    @4
+    *4
+    /tmp/foo.py:12
+    12
+    ../foo.py:5
+    gcd()
+    foo.py:5 if x > 1
+    """.splitlines()
+    for line in lines:
+        if not line.strip():
+            continue
+        print("=" * 30)
+        print(line)
+        print("+" * 30)
+        bp_expr = build_bp_expr(line)
+        print(bp_expr)
     # lines = (
     #     "/tmp/foo.py:12 , 5",
     #     "-"
@@ -341,17 +346,17 @@ if __name__ == '__main__':
     #     "6 , +2",
     #     ", /foo.py:5",
     #     )
-    lines = (
-        "*10",
-        "*10",
-        "/tmp/foo.py:1, *5",
-        "../foo.py:0,  +5",
-        "../foo.py:5,  *30",
-        "*0, *10",
-        ", /foo.py:5",
-        )
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        doit(build_arange, line)
+    # lines = (
+    #     "*10",
+    #     "@10",
+    #     "/tmp/foo.py:1, *5",
+    #     "../foo.py:0,  +5",
+    #     "../foo.py:5,  *30",
+    #     "*0, *10",
+    #     ", /foo.py:5",
+    #     )
+    # for line in lines:
+    #     line = line.strip()
+    #     if not line:
+    #         continue
+    #     doit(build_arange, line)

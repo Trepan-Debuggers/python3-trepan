@@ -218,10 +218,14 @@ class Breakpoint:
     """Breakpoint class implements temporary breakpoints, ignore
     counts, disabling and (re)-enabling breakpoints and breakpoint
     conditionals.
+
+    When matching an offset, if offset is None, the offset value is not
+    considered in a match. If offset is -1, we are at a "call" event;
+    the first offset in bytecode is 0.
     """
 
     def __init__(self, number, filename, line, temporary=False,
-                 condition=None, funcname=None, offset=-1):
+                 condition=None, funcname=None, offset=None):
 
         self.offset = offset
         self.condition = condition
@@ -257,7 +261,7 @@ class Breakpoint:
         else:
             disp = disp + 'no   '
         if self.offset is None:
-            offset_str = "    "
+            offset_str = " any"
         else:
             offset_str = "%4d" % self.offset
         msg = '%-4dbreakpoint   %s %s at %s:%d' % (self.number, disp,
