@@ -50,7 +50,7 @@ class TestLibComplete(unittest.TestCase):
 
     def test_complete_brkpts(self):
         bpmgr = Mbreakpoint.BreakpointManager()
-        bp = bpmgr.add_breakpoint('foo', 5)
+        bp = bpmgr.add_breakpoint('foo', 10, 5)
         for find in ('1'):
             self.assertEqual(Mcomplete.complete_brkpts(bpmgr, find), ['1'],
                              "breakpoint completion of '%s'" % find)

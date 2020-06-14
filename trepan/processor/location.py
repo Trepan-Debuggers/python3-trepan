@@ -108,10 +108,22 @@ def resolve_location(proc, location):
             proc.errmsg("Line number %d out of range; %s has %d lines."
                         % (lineno, filename, maxline))
             return INVALID_LOCATION
+        offset = location.offset
+        if offset is None:
+            lineinfo = pyficache.code_line_info(filename, lineno)
+            if lineinfo:
+                offset = lineinfo[0].offsets[0]
+            else:
+                print("No offset found for %s %s" % (filename, lineno))
+
     elif location.line_number:
         filename   = frame2file(proc.core, curframe, canonic=False)
         lineno     = location.line_number
         is_address = location.is_address
+        if offset is None:
+            lineinfo = pyficache.code_line_info(filename, lineno)
+            if lineinfo:
+                offset = lineinfo[0].offsets[0]
         modfunc  = None
     return Location(filename, lineno, is_address, modfunc, offset)
 

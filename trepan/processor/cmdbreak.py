@@ -62,7 +62,13 @@ def set_break(
             else:
                 return False
         pass
-    bp = cmd_obj.core.bpmgr.add_breakpoint(filename, lineno, temporary, condition, func)
+    bp = cmd_obj.core.bpmgr.add_breakpoint(
+        filename,
+        lineno=lineno,
+        offset=offset,
+        temporary=temporary,
+        condition=condition,
+        func=func)
     if func and inspect.isfunction(func):
         cmd_obj.msg(
             "Breakpoint %d set on calling function %s()" % (bp.number, func.__name__)
@@ -73,22 +79,24 @@ def set_break(
         )
         cmd_obj.msg(msg)
     else:
-        part1 = "Breakpoint %d set at line %d of file" % (bp.number, lineno)
+        part1 = ("Breakpoint %d set at line %d of file" %
+                 (bp.number, lineno))
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
-        cmd_obj.msg(
-            "Breakpoint is at offset %d of %s"
-            % (line_info[0].offsets[0], line_info[0].name)
-        )
-        if len(line_info) > 1:
-            msg = wrapped_lines(
-                "Other offsets are available for stopping too.",
-                "See `info line` for their offsets.",
-                cmd_obj.settings["width"],
+        if offset is not None and offset >= 0:
+            cmd_obj.msg(
+                "Breakpoint is at offset %d of %s"
+                % (line_info[0].offsets[0], line_info[0].name)
             )
-            cmd_obj.msg(msg)
+            if len(line_info) > 1:
+                msg = wrapped_lines(
+                    "Other offsets are available for stopping too.",
+                    "See `info line` for their offsets.",
+                    cmd_obj.settings["width"],
+                )
+                cmd_obj.msg(msg)
 
         pass
     return True
@@ -141,11 +149,11 @@ def parse_break_cmd(proc, args):
 
 # Demo it
 if __name__ == "__main__":
-    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command.mock import MockDebugger
     from trepan.processor.cmdproc import CommandProcessor
     import sys
 
-    d = Mmock.MockDebugger()
+    d = MockDebugger()
     cmdproc = CommandProcessor(d.core)
     # print '-' * 10
     # print_source_line(sys.stdout.write, 100, 'source_line_test.py')
@@ -153,13 +161,13 @@ if __name__ == "__main__":
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
     for cmd in (
-        # "break '''c:\\tmp\\foo.bat''':1",
-        # 'break """/Users/My Documents/foo.py""":2',
-        # "break",
-        # "break 10",
-        # "break if True",
-        # "break cmdproc.py:5",
-        # "break set_break()",
+        "break '''c:\\tmp\\foo.bat''':1",
+        'break """/Users/My Documents/foo.py""":2',
+        "break",
+        "break 10",
+        "break if True",
+        "break cmdproc.py:5",
+        "break set_break()",
         "break 4 if i==5",
         # "break cmdproc.setup()",
     ):

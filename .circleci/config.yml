@@ -14,6 +14,7 @@ jobs:
       - python/save-cache
       - run:
           command: |  # use pip to install dependencies. FIXME: can we get rid of sudo?
+            sudo pip install -e git://github.com/rocky/python-xdis.git#egg=xdis
             sudo pip install -e .
             sudo pip install -r requirements-dev.txt
           name: Install dependencies

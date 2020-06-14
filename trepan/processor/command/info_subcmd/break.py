@@ -40,11 +40,11 @@ Example:
 
 
     (trepan3k) info break
-    Num Type          Disp Enb    Where
-    1   breakpoint    del  n   at /tmp/fib.py:9
-    2   breakpoint    keep y   at /tmp/fib.py:4
+    Num Type          Disp Enb Off Where
+    1   breakpoint    del  n     3 at /tmp/fib.py:9
+    2   breakpoint    keep y    10 at /tmp/fib.py:4
             breakpoint already hit 1 time
-    3   breakpoint    keep y   at /tmp/fib.py:6
+    3   breakpoint    keep y    20 at /tmp/fib.py:6
             stop only if x > 0
 
 See also:
@@ -61,28 +61,31 @@ See also:
 
     def bpprint(self, bp):
         if bp.temporary:
-            disp = 'del  '
+            disp = "del  "
         else:
-            disp = 'keep '
+            disp = "keep "
             pass
         if bp.enabled:
-            disp = disp + 'y  '
+            disp = disp + "y  "
         else:
-            disp = disp + 'n  '
+            disp = disp + "n  "
             pass
-        self.msg('%-4dbreakpoint    %s at %s:%d' %
-                 (bp.number, disp, self.core.filename(bp.filename), bp.line))
+        self.msg(
+            "%-4dbreakpoint    %s %3d at %s:%d"
+            % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
+        )
         if bp.condition:
-            self.msg('\tstop only if %s' % (bp.condition))
+            self.msg("\tstop only if %s" % (bp.condition))
             pass
         if bp.ignore:
-            self.msg('\tignore next %d hits' % (bp.ignore))
+            self.msg("\tignore next %d hits" % (bp.ignore))
             pass
-        if (bp.hits):
-            if (bp.hits > 1): ss = 's'
-            else: ss = ''
-            self.msg('\tbreakpoint already hit %d time%s' %
-                     (bp.hits, ss))
+        if bp.hits:
+            if bp.hits > 1:
+                ss = "s"
+            else:
+                ss = ""
+            self.msg("\tbreakpoint already hit %d time%s" % (bp.hits, ss))
             pass
         return
 
@@ -101,7 +104,7 @@ See also:
                     pass
                 pass
             else:
-                self.section("Num Type          Disp Enb    Where")
+                self.section("Num Type          Disp Enb Off Where")
                 for bp in bpmgr.bpbynumber:
                     if bp:
                         self.bpprint(bp)
@@ -113,11 +116,14 @@ See also:
             self.msg("No breakpoints.")
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan import debugger as Mdebugger
     from trepan.processor.command import info as Minfo
+
     d = Mdebugger.Trepan()
     i = Minfo.InfoCommand(d.core.processor)
     sub = InfoBreak(i)

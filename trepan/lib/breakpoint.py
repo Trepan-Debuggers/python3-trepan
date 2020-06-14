@@ -45,13 +45,13 @@ class BreakpointManager:
             return (False, 'Breakpoint %d previously deleted.' % i, None)
         return (True, None, bp)
 
-    def add_breakpoint(self, filename, lineno, temporary=False, condition=None,
+    def add_breakpoint(self, filename, lineno, offset, temporary=False, condition=None,
                        func=None):
 
         bpnum = len(self.bpbynumber)
         if filename: filename  = os.path.realpath(filename)
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition,
-                           func)
+                           func, offset)
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
         if (filename, lineno) in self.bplist:
@@ -221,7 +221,7 @@ class Breakpoint:
     """
 
     def __init__(self, number, filename, line, temporary=False,
-                 condition=None, funcname=None, offset=None):
+                 condition=None, funcname=None, offset=-1):
 
         self.offset = offset
         self.condition = condition
@@ -256,8 +256,12 @@ class Breakpoint:
             disp = disp + 'yes  '
         else:
             disp = disp + 'no   '
-        msg = '%-4dbreakpoint   %s at %s:%d' % (self.number, disp,
-                                                self.filename, self.line)
+        if self.offset is None:
+            offset_str = "    "
+        else:
+            offset_str = "%4d" % self.offset
+        msg = '%-4dbreakpoint   %s %s at %s:%d' % (self.number, disp,
+                                                    offset_str, self.filename, self.line)
         if self.condition:
             msg += '\n\tstop only if %s' % self.condition
         if self.ignore:
@@ -320,7 +324,7 @@ def checkfuncname(b, frame):
 if __name__=='__main__':
     bpmgr = BreakpointManager()
     print(bpmgr.last())
-    bp = bpmgr.add_breakpoint('foo', 5)
+    bp = bpmgr.add_breakpoint('foo', 0, 5)
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
@@ -339,20 +343,20 @@ if __name__=='__main__':
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint('foo', frame.f_lineno+1)
+        bp3 = bpmgr.add_breakpoint('foo', 0, frame.f_lineno+1)
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
     bp2 = bpmgr.add_breakpoint(None, None, False, None, 'foo')
     foo(bp2, bpmgr)
-    bp3 = bpmgr.add_breakpoint('foo', 5, temporary=True)
+    bp3 = bpmgr.add_breakpoint('foo', 5, 2, temporary=True)
     print(bp3.icon_char())
     print(bpmgr.bpnumbers())
 
-    bp = bpmgr.add_breakpoint('bar', 3)
+    bp = bpmgr.add_breakpoint('bar', 10, 3)
     filename = bp.filename
     for i in range(3):
-        bp = bpmgr.add_breakpoint('bar', 6)
+        bp = bpmgr.add_breakpoint('bar', 2, 6)
     print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
     print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
     print(bpmgr.bpnumbers())
