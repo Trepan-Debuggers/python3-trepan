@@ -413,7 +413,7 @@ class TrepanCore(object):
             # which will give a cryptic the message on setting f_lineno:
             #   f_lineno can only be set by a trace function
             if self.ignore_filter and self.ignore_filter.is_included(frame):
-                return True
+                return self
 
             if self.debugger.settings["trace"]:
                 print_event_set = self.debugger.settings["printset"]
@@ -424,12 +424,12 @@ class TrepanCore(object):
 
             if self.until_condition:
                 if not self.matches_condition(frame):
-                    return True
+                    return self
                 pass
 
             trace_event_set = self.debugger.settings["events"]
             if trace_event_set is None or self.event not in trace_event_set:
-                return True
+                return self
 
             # I think we *have* to run is_stop_here() before
             # is_break_here() because is_stop_here() sets various
@@ -440,7 +440,7 @@ class TrepanCore(object):
             if self.is_stop_here(frame, event) or self.is_break_here(frame):
                 # Run the event processor
                 return self.processor.event_processor(frame, self.event, arg)
-            return True
+            return self
         finally:
             try:
                 self.debugger_lock.release()
