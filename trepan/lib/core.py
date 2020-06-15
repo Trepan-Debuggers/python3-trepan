@@ -265,7 +265,7 @@ class TrepanCore(object):
             self.trace_hook_suspend = False
         return
 
-    def is_break_here(self, frame, arg):
+    def is_break_here(self, frame):
         filename = self.canonic(frame.f_code.co_filename)
         if "call" == self.event:
             find_name = frame.f_code.co_name
@@ -317,7 +317,7 @@ class TrepanCore(object):
             return False
         return val
 
-    def is_stop_here(self, frame, event, arg):
+    def is_stop_here(self, frame, event):
         """ Does the magic to determine if we stop here and run a
         command processor or not. If so, return True and set
         self.stop_reason; if not, return False.
@@ -437,7 +437,7 @@ class TrepanCore(object):
             # user's standpoint to test for breaks before steps. In
             # this case we will need to factor out the counting
             # updates.
-            if self.is_stop_here(frame, event, arg) or self.is_break_here(frame, arg):
+            if self.is_stop_here(frame, event) or self.is_break_here(frame):
                 # Run the event processor
                 return self.processor.event_processor(frame, self.event, arg)
             return True
