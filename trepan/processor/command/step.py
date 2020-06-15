@@ -79,7 +79,7 @@ See also:
     execution_set = ["Running"]
     short_help = "Step program (possibly entering called functions)"
 
-    DebuggerCommand.setup(locals(), category="running", need_stack=True)
+    DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
         step_events = []

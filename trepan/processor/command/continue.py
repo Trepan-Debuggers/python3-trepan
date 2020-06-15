@@ -47,7 +47,7 @@ See also:
     aliases = ("c",)
     execution_set = ["Running"]
     short_help = "Continue execution of debugged program"
-    DebuggerCommand.setup(locals(), category="running", need_stack=True)
+    DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
         if len(args) > 1:
