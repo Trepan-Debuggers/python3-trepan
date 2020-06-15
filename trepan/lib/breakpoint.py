@@ -59,7 +59,7 @@ class BreakpointManager:
         else:
             self.bplist[filename, lineno] = [brkpt]
             pass
-        if func:
+        if func and offset in [None, -1]:
             if func in self.fnlist:
                 self.fnlist[func].append(brkpt)
             else:

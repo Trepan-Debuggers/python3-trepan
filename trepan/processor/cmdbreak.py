@@ -50,7 +50,9 @@ def set_break(
     if func is None:
         if lineno:
             line_info = code_line_info(filename, lineno)
-            if not line_info:
+            if line_info:
+                func = line_info[0].name
+            else:
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
@@ -69,7 +71,7 @@ def set_break(
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
-                    "has no line associcated with offset %d." % offset,
+                    "has no line associated with offset %d." % offset,
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
@@ -99,8 +101,12 @@ def set_break(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
+        if func:
+            func_str = " of %s" % func
+        else:
+            func_str = ""
         if offset is not None and offset >= 0:
-            cmd_obj.msg("Breakpoint is at offset %d "% offset)
+            cmd_obj.msg("Breakpoint is at offset %d%s "% (offset, func_str))
         pass
     return True
 
