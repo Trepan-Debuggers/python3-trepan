@@ -50,9 +50,7 @@ def set_break(
     if func is None:
         if lineno:
             line_info = code_line_info(filename, lineno)
-            if line_info:
-                func = line_info[0].name
-            else:
+            if not line_info:
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,

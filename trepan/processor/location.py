@@ -117,7 +117,10 @@ def resolve_location(proc, location):
         if offset is None:
             lineinfo = pyficache.code_offset_info(filename, lineno)
             if lineinfo:
-                offset = lineinfo[0].offsets[0]
+                if isinstance(lineinfo, int):
+                    offset = lineinfo
+                else:
+                    offset = lineinfo[0].offsets[0]
             else:
                 print("No offset found for %s %s" % (filename, lineno))
 
