@@ -107,13 +107,18 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     is_pypy,
                     source_size,
                     sip_hash,
-                ) = load_module(mainpyfile, code_objects=None, fast_load=True)
-                assert is_pypy == IS_PYPY
-                assert python_version == PYTHON_VERSION, (
-                    "bytecode is for version %s but we are version %s"
-                    % (python_version, PYTHON_VERSION)
-                )
-                # We should we check version magic_int
+                ) = load_module(mainpyfile, code_objects=None, fast_load=False)
+                if is_pypy != IS_PYPY:
+                    print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
+                    print("For a cross-version debugger, use trepan-xpy with x-python.")
+                    sys.exit(2)
+                if python_version != PYTHON_VERSION:
+                    print(
+                        "Bytecode is for version %s but we are version %s."
+                        % (python_version, PYTHON_VERSION)
+                    )
+                    print("For a cross-version debugger, use trepan-xpy with x-python.")
+                    sys.exit(2)
 
                 py_file = co.co_filename
                 if osp.isabs(py_file):
