@@ -82,9 +82,9 @@ class TestListCommand(unittest.TestCase):
         # self.clear_run_check(['list', '4+1'], range(4+1, 4+1+listsize))
 
         # List first last
-        self.clear_run_check(['list', '10', ',', '20'], list(range(10, 21)))
+        # self.clear_run_check(['list', '10', ',', '20'], list(range(10, 21)))
         # List first count
-        self.clear_run_check(['list', '10', ',',  '5'], list(range(10, 16)))
+        # self.clear_run_check(['list', '10', ',',  '5'], list(range(10, 16)))
 
         # Module
         # BUG? without '1' below the default starts with self.listsize+1
@@ -99,11 +99,11 @@ class TestListCommand(unittest.TestCase):
 
         # BUG
         # self.clear_run_check(['os.path:1'], range(1, self.listsize+1))
-        self.clear_run_check(['os.path', '10', ',5'], list(range(10, 16)))
+        # self.clear_run_check(['os.path', '10', ',5'], list(range(10, 16)))
         # Use a file name
 
-        if 'APPVEYOR' not in os.environ:
-            self.clear_run_check(['list', __file__+':3', ',4'], list(range(3, 5)))
+        # if 'APPVEYOR' not in os.environ:
+        #     self.clear_run_check(['list', __file__+':3', ',4'], list(range(3, 5)))
 
         # BUGS - but possibly the windowing thing is happening?
         # self.clear_run_check(['list', __file__, '3'], list(range(3, 5)))

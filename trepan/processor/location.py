@@ -38,7 +38,7 @@ def resolve_location(proc, location):
         return Location(filename, lineno, False, None, offset)
 
     assert isinstance(location, Location)
-    is_address = False
+    is_address = location.is_address
     if proc.curframe:
         g = curframe.f_globals
         l = curframe.f_locals
@@ -115,12 +115,10 @@ def resolve_location(proc, location):
             return INVALID_LOCATION
         offset = location.offset
         if offset is None:
-            lineinfo = pyficache.code_offset_info(filename, lineno)
+            lineinfo = pyficache.code_line_info(filename, lineno)
             if lineinfo:
-                if isinstance(lineinfo, int):
-                    offset = lineinfo
-                else:
-                    offset = lineinfo[0].offsets[0]
+                offset = lineinfo[0].offsets[0]
+                modfunc = lineinfo[0].name
             else:
                 print("No offset found for %s %s" % (filename, lineno))
 
@@ -128,11 +126,12 @@ def resolve_location(proc, location):
         filename   = frame2file(proc.core, curframe, canonic=False)
         lineno     = location.line_number
         is_address = location.is_address
+        modfunc  = None
         if offset is None:
             lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
-        modfunc  = None
+                modfunc = lineinfo[0].name
     elif location.offset is not None:
         filename   = frame2file(proc.core, curframe, canonic=False)
         is_address = True

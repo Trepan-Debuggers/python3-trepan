@@ -43,7 +43,7 @@ class TestBreakCommand(unittest.TestCase):
                          (fn, fi.endswith('test-break.py'), li > 1))
 
         fn, fi, li, cond, offset = self.parse_break_cmd(proc, 'break 11')
-        self.assertEqual((None, True, 11),
+        self.assertEqual(("<module>", True, 11),
                          (fn, fi.endswith('test-break.py'), li))
 
         if 'APPVEYOR' not in os.environ:
@@ -53,7 +53,7 @@ class TestBreakCommand(unittest.TestCase):
                 brk_cmd = 'b %s:8' % __file__
 
                 fn, fi, li, cond, offset = self.parse_break_cmd(proc, brk_cmd)
-                self.assertEqual((None, True, 8),
+                self.assertEqual(("<module>", True, 8),
                                  (fn, isinstance(fi, str), li))
 
         def foo():

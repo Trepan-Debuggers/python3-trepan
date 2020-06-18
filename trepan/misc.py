@@ -34,6 +34,11 @@ def wrapped_lines(msg_part1, msg_part2, width):
         return msg_part1 + " " + msg_part2
     return  # Not reached
 
+def pretty_modfunc_name(s):
+    if s == "<module>":
+        return s
+    else:
+        return s + "()"
 
 import os
 from glob import glob

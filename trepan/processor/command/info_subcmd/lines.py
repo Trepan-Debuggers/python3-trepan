@@ -16,14 +16,8 @@
 
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.misc import pretty_modfunc_name
 from pyficache import cache_code_lines
-
-
-def pretty_name(s):
-    if s == "<module>":
-        return s
-    else:
-        return s + "()"
 
 
 class InfoOffsets(DebuggerSubcommand):
@@ -81,7 +75,7 @@ See also:
                             line_number,
                             ", ".join(
                                 [
-                                    "%s @%d" % (pretty_name(li.name), li.offsets[0])
+                                    "%s @%d" % (pretty_modfunc_name(li.name), li.offsets[0])
                                     for li in line_info
                                 ]
                             ),

@@ -84,9 +84,16 @@ See also:
 
 if __name__ == "__main__":
 
-    def doit(cmd, a):
-        cmd.current_command = " ".join(a)
-        print(parse_break_cmd(cmd.proc, a))
+    def do_parse(cmd, a):
+        name = "break"
+        cmd.proc.current_command = name + " " + " ".join(a)
+        print(a, "\n\t", parse_break_cmd(cmd.proc, [name] + a))
+
+    def do_run(cmd, a):
+        name = "break"
+        cmd.proc.current_command = name + " " + " ".join(a)
+        print(a)
+        cmd.run([name] + a)
 
     import sys
     from trepan.debugger import Trepan
@@ -96,23 +103,27 @@ if __name__ == "__main__":
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    doit(command, [" "])
-    doit(command, ["10"])
-    doit(command, [__file__ + ":10"])
+    # do_parse(command, [""])
+    # import inspect
+    # line = inspect.currentframe().f_lineno
+    # do_parse(command, [str(line)])
+    # do_parse(command, ["%s:%s" % (__file__, line)])
 
-    def foo():
-        return "bar"
+    # def foo():
+    #     return "bar"
 
-    doit(command, ["foo"])
-    doit(command, ["os.path"])
-    doit(command, ["os.path", "5+1"])
-    doit(command, ["os.path.join"])
-    doit(command, ["if", "True"])
-    doit(command, ["foo", "if", "True"])
-    doit(command, ["os.path:10", "if", "True"])
-    command.run(["break"])
-    command.run(["break", "command.run"])
-    command.run(["break", "10"])
-    command.run(["break", __file__ + ":10"])
-    command.run(["break", "foo"])
+    # do_parse(command, ["foo()"])
+    # do_parse(command, ["os.path"])
+    # do_parse(command, ["os.path", "5"])
+    # import os.path
+    # do_parse(command, ["os.path.join()"])
+    # do_parse(command, ["if", "True"])
+    # do_parse(command, ["foo()", "if", "True"])
+    # do_parse(command, ["os.path:10", "if", "True"])
+
+    do_run(command, [""])
+    # do_run(command, ["command.run()"])
+    do_run(command, ["89"])
+    # command.run(["break", __file__ + ":10"])
+    # command.run(["break", "foo"])
     pass

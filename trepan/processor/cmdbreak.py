@@ -16,7 +16,7 @@
 
 import inspect
 from pyficache import code_line_info, code_offset_info
-from trepan.misc import wrapped_lines
+from trepan.misc import wrapped_lines, pretty_modfunc_name
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
@@ -100,7 +100,7 @@ def set_break(
         )
         cmd_obj.msg(msg)
         if func:
-            func_str = " of %s" % func
+            func_str = " of %s" % pretty_modfunc_name(func)
         else:
             func_str = ""
         if offset is not None and offset >= 0:
