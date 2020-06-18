@@ -29,22 +29,28 @@ def pretty_name(s):
 class InfoOffsets(DebuggerSubcommand):
     """**info lines** [*function-file-or-module*]
 
-Show line offset information for a function, module, or a file.
+Show line - function/offste information for a function, module, or a file.
 
 If no location is given, use the the current frame.
 
-Examples
---------
+Example
+-------
 
     (trepan3k) info lines
-    Offset - line number table for offsets.py
-           0:  16    40:  23    72:  94   108:  98   136: 101   164: 104   188: 107
-          16:  19    48:  45    84:  95   114:  99   144: 102   174: 105
-          28:  20    64:  93    96:  96   128: 100   154: 103   184: 106
+    Line - (fn, start offset) table for test/example/gcd.py
+      10: <module> @0         21: check_args() @84     36: gcd() @30
+      11: <module> @4         22: check_args() @106    37: gcd() @50
+      13: <module> @12        23: check_args() @116    38: gcd() @54
+      14: check_args() @0     24: check_args() @122    40: <module> @28
+      16: check_args() @14    26: <module> @20         41: <module> @36
+      17: check_args() @22    30: gcd() @0             43: <module> @42
+      18: check_args() @36    31: gcd() @8             44: <module> @60
+      19: check_args() @38    34: gcd() @18            45: <module> @84
+      20: check_args() @70    35: gcd() @26
 
 See also:
 ---------
-`info line`, `info offsets`, `info program`, `info frame`"""
+`info line`, `info offsets`, `info file`, `info program`, and `info frame`"""
 
     min_abbrev = 5
     max_args = 2

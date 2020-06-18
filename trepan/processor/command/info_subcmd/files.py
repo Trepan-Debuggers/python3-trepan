@@ -13,33 +13,16 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import columnize, inspect, pyficache, sys, os
+import columnize, inspect, pyficache, sys
 
 # Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan import misc as Mmisc
 from trepan.lib import complete as Mcomplete
 from trepan.lib.file import file_list
 
 
-class InfoFiles(Mbase_subcmd.DebuggerSubcommand):
-    """**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
-
-Show information about the current file. If no filename is given and
-the program is running then the current file associated with the
-current stack entry is used. Sub options which can be shown about a file are:
-
- * **brkpts** Line numbers where there are statement boundaries. These
- lines can be used in breakpoint commands.
-
- * **sha1**	A SHA1 hash of the source text. """ + \
-"""This may be useful in comparing source code.
-
- * **size**	The number of lines in the file.
-
- * **all** All of the above information.
-"""
-
+class InfoFiles(DebuggerSubcommand):
     min_abbrev = 2
     need_stack = False
     short_help = 'Show information about an imported or loaded Python file'
@@ -49,7 +32,23 @@ current stack entry is used. Sub options which can be shown about a file are:
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
-        """Get file information"""
+        """**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
+
+Show information about the current file. If no filename is
+given and the program is running then the current file associated
+with the current stack entry is used. Sub options which can be
+shown about a file are:
+
+* **brkpts** Line numbers where there are statement boundaries. These lines can be used in breakpoint commands.
+
+* **sha1**	A SHA1 hash of the source text.
+
+The following may be useful in comparing source code.
+
+* **size**	The number of lines in the file.
+
+* **all** All of the above information.
+        """
         if len(args) == 0:
             if not self.proc.curframe:
                 self.errmsg("No frame - no default file.")
@@ -114,7 +113,7 @@ current stack entry is used. Sub options which can be shown about a file are:
                 lines = pyficache.trace_line_numbers(canonic_name)
                 if lines:
                     self.section("Possible breakpoint line numbers:")
-                    fmt_lines = columnize.columnize(lines, ljust = False,
+                    fmt_lines = columnize.columnize(list(lines), ljust = False,
                                                     arrange_vertical = False,
                                                     lineprefix='  ')
                     self.msg(fmt_lines)
