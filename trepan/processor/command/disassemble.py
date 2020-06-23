@@ -19,7 +19,7 @@ import os.path as osp
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-import trepan.lib.disassemble as Mdis
+from trepan.lib.disassemble import dis
 import trepan.lib.file as Mfile
 from xdis.load import load_module
 from trepan.processor.cmd_addrlist import parse_addr_list_cmd
@@ -213,7 +213,7 @@ See also:
                     return
 
         # We now have all  information. Do the listing.
-        (obj, proc.list_offset) = Mdis.dis(
+        (obj, proc.list_offset) = dis(
             self.msg, self.msg_nocr, self.section, self.errmsg, obj, **opts
         )
         return False

@@ -138,6 +138,7 @@ def dis(
                         start_line=start_line,
                         end_line=end_line,
                         relative_pos=relative_pos,
+                        asm_format=asm_format
                     )
                     msg("")
                 except TypeError:
