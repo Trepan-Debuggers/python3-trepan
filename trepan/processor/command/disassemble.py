@@ -124,6 +124,7 @@ See also:
             "start_offset": None,
             "end_offset": None,
             "relative_pos": False,
+            "asm_format" : self.settings["asmfmt"]
         }
 
         curframe = proc.curframe

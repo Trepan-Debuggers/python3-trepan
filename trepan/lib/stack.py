@@ -15,8 +15,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
 
-import importlib.machinery
-
 import inspect, linecache, os, re, xdis
 
 import trepan.lib.bytecode as Mbytecode
@@ -28,8 +26,7 @@ import os.path as osp
 from trepan.lib.deparse import deparse_offset
 from trepan.processor.cmdfns import deparse_fn
 
-from xdis.main import get_opcode
-from xdis import PYTHON_VERSION, IS_PYPY
+from xdis import PYTHON_VERSION, IS_PYPY, get_opcode
 
 format_token = Mformat.format_token
 

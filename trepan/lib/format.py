@@ -75,13 +75,17 @@ def format_token(ttype, token, colorscheme=color_scheme, highlight="light"):
 Arrow = Name.Variable
 Compare = Name.Exception
 Const = String
+Details = Generic.Emph
 Filename = Comment.Preproc
 Function = Name.Function
+Hex = Number.Hex
 Label = Operator.Word
 LineNumber = Number
+Integer = Number
 Offset = Operator
 Opcode = Name.Function
 Return = Operator.Word
+Symbol = String.Symbol
 Var = Keyword
 Verbatim = String
 
