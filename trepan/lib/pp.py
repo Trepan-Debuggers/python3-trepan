@@ -27,8 +27,13 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
         else:
             msg(prefix)
         pass
-    if not pprint_simple_array(val, display_width, msg_nocr, msg, "  "):
-        print("Can't print_simple_array")
+    if isinstance(val, list) or isinstance(val, tuple):
+        if not pprint_simple_array(val, display_width, msg_nocr, msg, "  "):
+            print("Can't print_simple_array")
+            msg("  " + pprint.pformat(val))
+            pass
+        pass
+    else:
         msg("  " + pprint.pformat(val))
         pass
     return
@@ -40,7 +45,7 @@ def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=""):
     """Try to pretty print a simple case where a list is not nested.
     Return True if we can do it and False if not. """
 
-    if type(val) != list:
+    if not (isinstance(val, list) or isinstance(val, tuple)):
         return False
 
     numeric = True

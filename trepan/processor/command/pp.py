@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,15 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.lib import pp as Mpp
-from trepan.processor import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.lib.pp import pp
+from trepan.processor.complete import complete_identifier
 
 
-class PrettyPrintCommand(Mbase_cmd.DebuggerCommand):
+class PrettyPrintCommand(DebuggerCommand):
     """**pp** *expression*
 
 Pretty-print the value of the expression.
@@ -37,34 +35,35 @@ See also:
 formatting.
 """
 
-    category     = 'data'
-    min_args      = 1
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Pretty print value of expression EXP'
+    short_help = "Pretty print value of expression EXP"
 
-    complete = Mcomplete.complete_identifier
+    complete = complete_identifier
+
+    DebuggerCommand.setup(locals(), category="data", min_args=1)
 
     def run(self, args):
-        arg = ' '.join(args[1:])
+        arg = " ".join(args[1:])
         val = self.proc.eval(arg)
-        Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg)
+        pp(val, self.settings["width"], self.msg_nocr, self.msg)
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import inspect
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
     cp.curframe = inspect.currentframe()
     command = PrettyPrintCommand(cp)
     me = list(range(10))
-    command.run(['pp', 'me'])
+    command.run(["pp", "me"])
     me = list(range(100))
-    command.run(['pp', 'me'])
+    command.run(["pp", "me"])
     import sys
-    command.run(['pp', 'sys.modules.keys()'])
-    me = 'fooled you'
-    command.run(['pp', 'locals()'])
+
+    command.run(["pp", "sys.modules.keys()"])
+    me = "fooled you"
+    command.run(["pp", "locals()"])
     pass
