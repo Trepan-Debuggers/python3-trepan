@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 
 import os
 
-from trepan.processor.command import base_cmd as Mbase_cmd
-from trepan.processor import complete as Mcomplete
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.complete import complete_bpnumber
 
 
-class ConditionCommand(Mbase_cmd.DebuggerCommand):
+class ConditionCommand(DebuggerCommand):
     """**condition** *bp_number* *condition*
 
 *bp_number* is a breakpoint number. *condition* is an expression which
@@ -39,14 +39,12 @@ See also:
 
 `break`, `tbreak`."""
 
-    aliases       = ('cond',)
-    category      = 'breakpoints'
-    min_args      = 1
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Specify breakpoint number N to break only if COND is True'
-    complete = Mcomplete.complete_bpnumber
+    aliases = ("cond",)
+    short_help = "Specify breakpoint number N to break only if COND is True"
+
+    DebuggerCommand.setup(locals(), category="breakpoints", min_args=1)
+
+    complete = complete_bpnumber
 
     def run(self, args):
         success, msg, bp = self.core.bpmgr.get_breakpoint(int(args[1]))
@@ -54,27 +52,29 @@ See also:
             self.errmsg(msg)
             return
         if len(args) > 2:
-            condition = ' '.join(args[2:])
+            condition = " ".join(args[2:])
         else:
             condition = None
-            self.msg('Breakpoint %d is now unconditional.' % bp.number)
+            self.msg("Breakpoint %d is now unconditional." % bp.number)
             pass
         bp.condition = condition
         return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
     from trepan import debugger as Mdebugger
-    Mbreak = __import__('trepan.processor.command.break', None, None, ['*'])
+
+    Mbreak = __import__("trepan.processor.command.break", None, None, ["*"])
     d = Mdebugger.Trepan()
     brkcmd = Mbreak.BreakCommand(d.core.processor)
     command = ConditionCommand(d.core.processor)
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    command.run(['condition', '1'])
-    brkcmd.run(['break'])
-    command.run(['condition', '1'])
-    command.run(['condition', '1', 'x', '>', '10'])
-    command.run(['condition', '1'])
+    command.run(["condition", "1"])
+    brkcmd.run(["break"])
+    command.run(["condition", "1"])
+    command.run(["condition", "1", "x", ">", "10"])
+    command.run(["condition", "1"])
     pass
