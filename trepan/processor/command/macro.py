@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,13 +14,13 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, sys, types
+import types
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
-class MacroCommand(Mbase_cmd.DebuggerCommand):
+class MacroCommand(DebuggerCommand):
     """**macro** *macro-name* *lambda-object*
 
 Define *macro-name* as a debugger macro. Debugger macros get a list of
@@ -78,17 +78,14 @@ See also:
  `alias` and `info macro`.
   """
 
-    category   = 'support'
-    min_args   = 2  # Need at least this many: macro_name
-    max_args   = None
-    name       = os.path.basename(__file__).split('.')[0]
-    need_stack  = False
-    short_help  = 'Define a macro'
+    short_help = "Define a macro"
+
+    DebuggerCommand.setup(locals(), category="support", min_args=2)
 
     def run(self, args):
 
         cmd_name = args[1]
-        cmd_argstr = self.proc.cmd_argstr[len(cmd_name):].lstrip()
+        cmd_argstr = self.proc.cmd_argstr[len(cmd_name) :].lstrip()
         proc_obj = None
         try:
             proc_obj = eval(cmd_argstr)
@@ -98,24 +95,27 @@ See also:
         if proc_obj:
             if isinstance(proc_obj, types.FunctionType):
                 self.proc.macros[cmd_name] = [proc_obj, cmd_argstr]
-                self.msg("Macro \"%s\" defined." % cmd_name)
+                self.msg('Macro "%s" defined.' % cmd_name)
             else:
-                self.errmsg("Expecting a Python lambda expression; got: %s" %
-                            cmd_argstr)
+                self.errmsg(
+                    "Expecting a Python lambda expression; got: %s" % cmd_argstr
+                )
                 pass
             pass
         return
+
     pass
 
+
 # Demo it
-if __name__ == '__main__':
+if __name__ == "__main__":
     from trepan.processor.command import mock as Mmock
+
     dbgr, cmd = Mmock.dbg_setup()
     command = MacroCommand(cmd)
-    for cmdline in ["macro foo lambda a,y: x+y",
-                    "macro bad2 1+2"]:
+    for cmdline in ["macro foo lambda a,y: x+y", "macro bad2 1+2"]:
         args = cmdline.split()
-        cmd_argstr = cmdline[len(args[0]):].lstrip()
+        cmd_argstr = cmdline[len(args[0]) :].lstrip()
         cmd.cmd_argstr = cmd_argstr
         command.run(args)
         pass

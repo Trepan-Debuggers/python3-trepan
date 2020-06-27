@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013, 2015 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.lib import complete as Mcomplete
 
 
-class UndisplayCommand(Mbase_cmd.DebuggerCommand):
+class UndisplayCommand(DebuggerCommand):
     """**undisplay** *display-number*...
 
 Cancel some expressions to be displayed when program stops.
@@ -36,13 +34,11 @@ See also:
 """
 
     aliases       = ('und',)
-    category      = 'data'
-    min_args      = 1
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
     short_help    = ('Cancel some expressions to be displayed '
                      'when program stops')
+
+    DebuggerCommand.setup(locals(), category="data", min_args=1)
+
 
     def complete(self, prefix):
         completions = [str(disp.number) for disp in

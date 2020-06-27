@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,13 +14,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
-class HandleCommand(Mbase_cmd.DebuggerCommand):
+class HandleCommand(DebuggerCommand):
     """**handle** [*signal-name* [*action1* *action2* ...]]
 
 Specify how to handle a signal *signal-name*. *signal-name* can be a
@@ -54,26 +52,25 @@ Without any action names the current settings are shown.
   handle INT nostop  # Don't stop in the debugger on SIGINT
 """
 
-    category     = 'running'
-    min_args      = 1
-    max_args      = None
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = "Specify how to handle a signal"
+    short_help = "Specify how to handle a signal"
+
+    DebuggerCommand.setup(locals(), category="running", min_args=1)
 
     def run(self, args):
-        if (self.debugger.sigmgr.action(' '.join(args[1:]))
-            and len(args) > 2):
+        if self.debugger.sigmgr.action(" ".join(args[1:])) and len(args) > 2:
             # Show results of recent change
             self.debugger.sigmgr.info_signal([args[1]])
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan import debugger as Mdebugger
+
     d = Mdebugger.Trepan()
     command = HandleCommand(d.core.processor)
-    command.run(['handle', 'USR1'])
-    command.run(['handle', 'term', 'stop'])
+    command.run(["handle", "USR1"])
+    command.run(["handle", "term", "stop"])
     pass

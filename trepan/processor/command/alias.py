@@ -1,4 +1,4 @@
-#  Copyright (C) 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2013, 2015, 2020 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,10 +14,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
-from trepan.processor.command import base_cmd as Mbase_cmd
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
-class AliasCommand(Mbase_cmd.DebuggerCommand):
+class AliasCommand(DebuggerCommand):
     """**alias** *alias-name* *debugger-command*
 
 Add alias *alias-name* for a debugger command *debugger-command*.  You
@@ -42,48 +42,54 @@ See also:
 `unalias` and `show alias`.
     """
 
-    category      = 'support'
-    min_args      = 0
-    max_args      = 2  # Need at most this many
-    name          = 'alias'
-    need_stack    = True
-    short_help    = 'Add an alias for a debugger command'
+    name = "alias"
+    short_help = "Add an alias for a debugger command"
+
+    DebuggerCommand.setup(locals(), category="support", max_args=2, need_stack=True)
 
     # Run command.
     def run(self, args):
         if len(args) == 1:
-            self.proc.commands['show'].run(['show', 'alias'])
+            self.proc.commands["show"].run(["show", "alias"])
         elif len(args) == 2:
-            self.proc.commands['show'].run(['show', 'alias', args[1]])
+            self.proc.commands["show"].run(["show", "alias", args[1]])
         else:
             junk, al, command = args
             if command in self.proc.commands:
                 if al in self.proc.aliases:
                     old_command = self.proc.aliases[al]
-                    self.msg(("Alias '%s#' for command '%s'replaced old " +
-                              "alias for '%s'.") %
-                             (al, command, old_command))
+                    self.msg(
+                        (
+                            "Alias '%s#' for command '%s'replaced old "
+                            + "alias for '%s'."
+                        )
+                        % (al, command, old_command)
+                    )
                 else:
-                    self.msg("New alias '%s' for command '%s' created." %
-                             (al, command))
+                    self.msg("New alias '%s' for command '%s' created." % (al, command))
                     pass
                 self.proc.aliases[al] = command
             else:
-                self.errmsg(("You must alias to a command name, and '%s' " +
-                             'and is not one.') % command)
+                self.errmsg(
+                    ("You must alias to a command name, and '%s' " + "and is not one.")
+                    % command
+                )
                 pass
             return
         pass
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Demo it.
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
-    command      = AliasCommand(cp)
-    command.run(['alias', 'yy', 'foo'])
-    command.run(['alias', 'yy', ' foo'])
-    command.run(['alias', 'yy'  'step'])
-    command.run(['alias'])
-    command.run(['alias', 'yy'  'next'])
+    command = AliasCommand(cp)
+    command.run(["alias", "yy", "foo"])
+    command.run(["alias", "yy", " foo"])
+    command.run(["alias", "yy" "step"])
+    command.run(["alias"])
+    command.run(["alias", "yy" "next"])
     pass
