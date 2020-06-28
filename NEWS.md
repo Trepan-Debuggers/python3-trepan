@@ -1,3 +1,23 @@
+1.2.0 2020-06-27
+================
+
+disasesmbly via [`xdis`](https://pypi.org/project/xdis/) now supports "extended" assembly listing which is new. Use that by default. New command `
+
+Commands have been gone over to be DRYer and use a more modern style of imports.
+Small bugs have been fixed in conjunction with going over the commands.
+
+New/Changed commands:
+
+* `set asmfmt` will let you select between the different formats and
+* `show asmfmt` will show you what format is in effect
+* `info lines` shows more information about what lines can be breakpointed (have line number table offsets in code)
+* `info offsets` shows you what offsets can be breakpointed (start on a line-number table entry)
+* `info line` gives more information, i.e. offset info, for a given line.
+
+
+Some changes were made to allow using from [`trepan-xpy`](https://pypi.org/project/trepanxpy/). In particular we allow breakpoints by offset in addition to by line.
+
+
 1.1.0 2020-06-13 Fleetwood66+
 =============================
 
