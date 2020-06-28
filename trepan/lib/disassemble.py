@@ -353,8 +353,6 @@ def disassemble_bytes(
                     if new_repr:
                         argrepr = new_repr
                 pass
-            if not argrepr:
-                msg(format_token(Integer, instr.arg, highlight=highlight))
         elif asm_format in ("extended", "extended-bytes"):
            op = instr.opcode
            if (
@@ -366,7 +364,7 @@ def disassemble_bytes(
                     argrepr = new_repr
         if argrepr is None:
             if instr.arg is not None:
-                msg(format_token(Integer, instr.arg, highlight=highlight))
+                msg(format_token(Integer, str(instr.arg), highlight=highlight))
             else:
                 msg("")
                 pass

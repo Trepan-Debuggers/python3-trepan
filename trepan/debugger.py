@@ -213,11 +213,14 @@ class Trepan(object):
         try:
             compiled = compile(open(self.mainpyfile).read(),
                                self.mainpyfile, 'exec')
-            self.core.start(start_opts)
-            exec(compiled, globals_, locals_)
-            retval = True
-        except SyntaxError:
-            print(sys.exc_info()[1])
+        except (SyntaxError):
+            self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
+            self.intf[0].errmsg(sys.exc_info()[1])
+            retval = False
+            pass
+        except UnicodeDecodeError:
+            self.intf[0].errmsg("File %s can't be read as a text file. Is it Python source?" % self.mainpyfile)
+            self.intf[0].errmsg(sys.exc_info()[1])
             retval = False
             pass
         except IOError:
@@ -228,6 +231,10 @@ class Trepan(object):
         except DebuggerRestart:
             self.core.execution_status = 'Restart requested'
             raise DebuggerRestart
+        else:
+            self.core.start(start_opts)
+            exec(compiled, globals_, locals_)
+            retval = True
         finally:
             self.core.stop(options={'remove': True})
         return retval
