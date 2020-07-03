@@ -9,7 +9,7 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 import os.path
 
 
-class BreakpointManager:
+class BreakpointManager(object):
     """Manages the list of Breakpoints.
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
