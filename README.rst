@@ -1,5 +1,7 @@
 |buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 
+|packagestatus|
+
 .. contents:: :local:
 
 Abstract
@@ -271,3 +273,5 @@ See Also
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
 .. |Pypi Installs| image:: https://pepy.tech/badge/trepan3k
+.. |packagestatus| image:: https://repology.org/badge/vertical-allrepos/python:trepan3k.svg
+		 :target: https://repology.org/project/python:trepan3k/versions
