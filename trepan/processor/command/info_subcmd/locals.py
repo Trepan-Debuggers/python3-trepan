@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015, 2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2018, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import re
 
+from getopt import getopt, GetoptError
+
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import pp as Mpp
@@ -26,7 +28,9 @@ from trepan.lib import complete as Mcomplete
 _with_local_varname = re.compile(r'_\[[0-9+]\]')
 
 class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
-    """**info locals** [*var1 ...*]
+    """**info locals** [-l | --list | | -h --help]
+
+    **info locals** [*var1 ...*]
 
 **info locals** *
 
@@ -54,7 +58,39 @@ See also:
         if not self.proc.curframe:
             self.errmsg("No frame selected")
             return False
+
+        try:
+            opts, args = getopt(
+                args,
+                "hl",
+                ["help", "list"],
+            )
+        except GetoptError as err:
+            # print help information and exit:
+            self.errmsg(
+                str(err)
+            )  # will print something like "option -a not recognized"
+            return
+
+        list_only = False
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                self.proc.commands["help"].run(["help", "info", "locals"])
+                return
+            elif o in ("-l", "--list"):
+                list_only = True
+            else:
+                self.errmsg("unhandled option '%s'" % o)
+            pass
+        pass
+
+
         names = list(self.proc.curframe.f_locals.keys())
+
+        if list_only:
+            for name in names:
+                self.msg(name)
+            return
         if len(args) > 0 and args[0] == '*' :
             self.section("locals")
             self.msg(self.columnize_commands(names))

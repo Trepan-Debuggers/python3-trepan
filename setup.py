@@ -2,8 +2,8 @@
 import sys
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 1) <= SYS_VERSION <= (3, 8)):
-    mess = "Python Versions 3.1 to 3.8 are supported only in this package."
+if not ((3, 1) <= SYS_VERSION <= (3, 9)):
+    mess = "Python Versions 3.1 to 3.9 are supported only in this package."
     if (2, 4) <= SYS_VERSION <= (2, 7):
         mess += "\nFor your Python, version %s, See trepan2" % sys.version[0:3]
     elif SYS_VERSION < (2, 4):
