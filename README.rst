@@ -1,4 +1,4 @@
-|buildstatus| |Pypi Installs| |license| |Supported Python Versions|
+|TravisCI| |Pypi Installs| |license| |Supported Python Versions|
 
 |packagestatus|
 
@@ -258,7 +258,8 @@ See Also
 .. _Tutorial: http://python2-trepan.readthedocs.io/en/latest/entry-exit.html
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
-.. |buildstatus| image:: https://api.travis-ci.org/rocky/python3-trepan.svg
+.. |TravisCI| image:: https://api.travis-ci.org/rocky/python3-trepan.svg
+.. |CircleCI| image::https://circleci.com/gh/rocky/python3-trepan.svg?style=svg
    :target: https://travis-ci.org/rocky/python3-trepan
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
