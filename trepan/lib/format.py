@@ -229,14 +229,14 @@ class RSTTerminalFormatter(Formatter):
             self.write_nl()
             self.last_was_nl = True
             return
-        elif self.verbatim == "colon-verbatim" and ttype == Token.Text and text == "\n":
+        elif self.verbatim == 'colon-verbatim' and ttype == Token.Text and text == '\n':
             self.write_nl()
             self.last_was_nl = False
             return
         last_last_nl = self.last_was_nl
-        if text == "":
+        if text == '':
             pass
-        elif text[-1] == "\n":
+        elif text[-1] == '\n':
             if self.last_was_nl:
                 self.write_nl()
                 self.write_nl()
@@ -244,21 +244,19 @@ class RSTTerminalFormatter(Formatter):
             elif self.verbatim:
                 self.write_verbatim(text)
                 self.column = 0
-                self.verbatim = len(text) >= 2 and text[-2] == "\n"
+                self.verbatim = len(text) >=2 and text[-2] == '\n'
                 self.last_was_nl = True
                 return
             else:
-                self.write(" ", color)
+                self.write(' ', color)
                 text = text[:-1]
                 pass
             self.last_was_nl = True
-            if "" == text:
-                return
-            while text[-1] == "\n":
+            if '' == text: return
+            while text[-1] == '\n':
                 self.write_nl()
                 text = text[:-1]
-                if "" == text:
-                    return
+                if '' == text: return
                 pass
             pass
         else:
@@ -266,10 +264,8 @@ class RSTTerminalFormatter(Formatter):
             pass
         self.in_list = False
         if last_last_nl:
-            if " * " == text[0:3]:
-                self.in_list = True
-            elif "  " == text[0:2]:
-                self.verbatim = self.verbatim or True
+            if ' * ' == text[0:3]: self.in_list = True
+            elif '  ' == text[0:2]: self.verbatim = self.verbatim or True
             pass
 
         # FIXME: there may be nested lists, tables and so on.
@@ -277,9 +273,7 @@ class RSTTerminalFormatter(Formatter):
             self.write_verbatim(text)
         elif self.in_list:
             # FIXME:
-            self.write(
-                text, color,
-            )
+            self.write(text, color,)
         else:
             words = re.compile("[ \t]+").split(text)
             for word in words[:-1]:

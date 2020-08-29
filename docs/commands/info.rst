@@ -23,6 +23,7 @@ Type `info` for a list of info subcommands and what they do. Type help
    info/frame
    info/globals
    info/line
+   info/lines
    info/locals
    info/macro
    info/pc

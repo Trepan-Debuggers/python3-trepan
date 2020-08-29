@@ -27,19 +27,18 @@ from pygments.console import colorize
 
 from trepan.lib import format as Mformat
 
-__all__ = ['DebuggerCommand']
+__all__ = ["DebuggerCommand"]
 
 
 class DebuggerCommand:
     """Base Class for Debugger commands. We pull in some helper
     functions for command from module cmdfns."""
 
-    category = 'misc'
+    category = "misc"
 
     @staticmethod
-    def setup(l, category="misc", min_args=0, max_args=None,
-              need_stack=False):
-        l["name"] =l["__module__"].split(".")[-1]
+    def setup(l, category="misc", min_args=0, max_args=None, need_stack=False):
+        l["name"] = l["__module__"].split(".")[-1]
         l["category"] = category
         l["min_args"] = min_args
         l["max_args"] = max_args
@@ -57,20 +56,19 @@ class DebuggerCommand:
         # execution like errmsg(), msg(), and msg_nocr() might. (See
         # the note below on these latter 3 methods.)
         #
-        self.core     = proc.core
+        self.core = proc.core
         self.debugger = proc.debugger
         self.settings = self.debugger.settings
         return
 
     aliases = ()
-    name    = 'YourCommandName'
+    name = "YourCommandName"
 
     def columnize_commands(self, commands):
         """List commands arranged in an aligned columns"""
         commands.sort()
-        width = self.debugger.settings['width']
-        return columnize.columnize(commands, displaywidth=width,
-                                   lineprefix='    ')
+        width = self.debugger.settings["width"]
+        return columnize.columnize(commands, displaywidth=width, lineprefix="    ")
 
     def confirm(self, msg, default=False):
         """ Convenience short-hand for self.debugger.intf[-1].confirm """
@@ -85,7 +83,7 @@ class DebuggerCommand:
     def errmsg(self, msg, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].errmsg """
         try:
-            return(self.debugger.intf[-1].errmsg(msg))
+            return self.debugger.intf[-1].errmsg(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
@@ -94,7 +92,7 @@ class DebuggerCommand:
     def msg(self, msg, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].msg """
         try:
-            return(self.debugger.intf[-1].msg(msg))
+            return self.debugger.intf[-1].msg(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
@@ -103,7 +101,7 @@ class DebuggerCommand:
     def msg_nocr(self, msg, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
         try:
-            return(self.debugger.intf[-1].msg_nocr(msg))
+            return self.debugger.intf[-1].msg_nocr(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
@@ -111,9 +109,11 @@ class DebuggerCommand:
 
     def rst_msg(self, text, opts={}):
         """Convert ReStructuredText and run through msg()"""
-        text = Mformat.rst_text(text,
-                                'plain' == self.debugger.settings['highlight'],
-                                self.debugger.settings['width'])
+        text = Mformat.rst_text(
+            text,
+            "plain" == self.debugger.settings["highlight"],
+            self.debugger.settings["width"],
+        )
         return self.msg(text)
 
     def run(self, args):
@@ -125,15 +125,17 @@ class DebuggerCommand:
     pass
 
     def section(self, message, opts={}):
-        if 'plain' != self.settings['highlight']:
-            message = colorize('bold', message)
+        if "plain" != self.settings["highlight"]:
+            message = colorize("bold", message)
         else:
-            message += "\n" + '-' * len(message)
+            message += "\n" + "-" * len(message)
             pass
         self.msg(message)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
     dd = DebuggerCommand(cp)
     dd.msg("hi")

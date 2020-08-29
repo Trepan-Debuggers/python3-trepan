@@ -14,6 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+from getopt import getopt, GetoptError
+
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.misc import pretty_modfunc_name
@@ -21,14 +24,13 @@ from pyficache import cache_code_lines
 
 
 class InfoOffsets(DebuggerSubcommand):
-    """**info lines** [*function-file-or-module*]
+    """**info lines** [-n *function-or-module*]
 
-Show line - function/offste information for a function, module, or a file.
+Show line - function/offset information
+Use -n *function-or-module* to filter results.
 
-If no location is given, use the the current frame.
-
-Example
--------
+Examples
+--------
 
     (trepan3k) info lines
     Line - (fn, start offset) table for test/example/gcd.py
@@ -41,6 +43,14 @@ Example
       18: check_args() @36    31: gcd() @8             44: <module> @60
       19: check_args() @38    34: gcd() @18            45: <module> @84
       20: check_args() @70    35: gcd() @26
+    (trepan3k) info lines -n <module>
+      10: <module> @0    11: <module> @4   13: <module> @12
+      40: <module> @28   26: <module> @20  41: <module> @36
+      43: <module> @42   44: <module> @60  45: <module> @84
+    (trepan3k) info lines -n gcd
+      30: gcd() @0   31: gcd() @8   34: gcd() @18
+      35: gcd() @26  36: gcd() @30  37: gcd() @50
+      38: gcd() @54
 
 See also:
 ---------
@@ -54,21 +64,42 @@ See also:
     def run(self, args):
         """Current line number in source file"""
         # info line <loc>
-        if len(args) == 0:
-            curframe = self.proc.curframe
-            if not curframe:
-                self.errmsg("No line number information available.")
-                return
+        try:
+            opts, args = getopt(args, "hn:", ["help", "name"],)
+        except GetoptError:
+            # print help information and exit:
+            self.errmsg(
+                str(sys.exc_info()[1])
+            )  # will print something like "option -a not recognized"
+            return
 
-            # No line number. Use current frame line number
-            filename = curframe.f_code.co_filename
-            file_info = cache_code_lines(
-                filename, toplevel_only=False, include_offsets=True
-            )
-            if file_info:
-                self.section("Line - (fn, start offset) table for %s" % filename)
-                lines = []
-                for line_number, line_info in file_info.line_numbers.items():
+        name = None
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                self.proc.commands["help"].run(["help", "info", "lines"])
+                return
+            elif o in ("-n", "--name"):
+                name = a
+            else:
+                self.errmsg("unhandled option '%s'" % o)
+            pass
+        pass
+
+        curframe = self.proc.curframe
+        if not curframe:
+            self.errmsg("No line number information available.")
+            return
+
+        # No line number. Use current frame line number
+        filename = curframe.f_code.co_filename
+        file_info = cache_code_lines(
+            filename, toplevel_only=False, include_offsets=True
+        )
+        if file_info:
+            self.section("Line - (fn, start offset) table for %s" % filename)
+            lines = []
+            for line_number, line_info in file_info.line_numbers.items():
+                if not name or any(li.name == name for li in line_info):
                     lines.append(
                         "%4d: %s"
                         % (
@@ -76,20 +107,17 @@ See also:
                             ", ".join(
                                 [
                                     "%s @%d" % (pretty_modfunc_name(li.name), li.offsets[0])
-                                    for li in line_info
+                                    for li in line_info if not name or li.name == name
                                 ]
                             ),
                         )
                     )
-                m = self.columnize_commands(list(sorted(lines)))
-                self.msg(m)
-            else:
-                self.errmsg("haven't recorded info for offset file %s" % filename)
-                pass
-            pass
+            m = self.columnize_commands(list(sorted(lines)))
+            self.msg(m)
         else:
-            self.errmsg("Passing a filename, function, or module not completed yet...")
-        return
+            self.errmsg("haven't recorded info for offset file %s" % filename)
+            pass
+        pass
 
     pass
 
