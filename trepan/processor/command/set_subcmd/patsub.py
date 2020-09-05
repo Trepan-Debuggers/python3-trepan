@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015-2016, 2020 Rocky Bernstein
+#   Copyright (C) 2020 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,38 +14,38 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pyficache
-
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
-class SetSubstitute(Mbase_subcmd.DebuggerSubcommand):
-    """**set substitute** *from-name* *to-path*
+class SetPatSub(Mbase_subcmd.DebuggerSubcommand):
+    """**set patsub** *from-re* *replace-string*
 
-Add a substitution rule replacing *from-name* into *to-path* in source file names.
-If a substitution rule was previously set for *from-name*, the old rule
-is replaced by the new one.
+Add a substitution pattern rule replacing *patsub* with
+*replace-string* anywhere it is found in source file names.  If a
+substitution rule was previously set for *from-re*, the old rule is
+replaced by the new one.
 
-Spaces in "filenames" like `<frozen importlib._bootstrap>` messes up our normal shell
-tokenization, so we have added a hack to ignore `<frozen .. >`.
+In the following example, suppose in a docker container /mnt/project is
+the mount-point for /home/rocky/project. You are running the code
+from the docker container, but debugging this from outside of that.
 
-So, for frozen files like `<frozen importlib._bootstrap>`, `use importlib._bootstrap`
+Example:
+--------
 
-Examples:
----------
+    set patsub ^/mmt/project /home/rocky/project
 
-    set substitute importlib._bootstrap /usr/lib/python3.4/importlib/_bootstrap.py
-    set substitute ./gcd.py /tmp/gcd.py
-
-"""
+    """
 
     in_list = True
-    min_abbrev = len("sub")
-    short_help = "Set filename substitution"
+    min_abbrev = len("pats")
+    short_help = "Set pattern substitution rule"
 
     def run(self, args):
-        pyficache.remap_file(args[1], args[0])
+        if len(args) != 2:
+            self.errmsg("Expecting two arguments; got %d." % len(args))
+            return
+        self.proc.add_remap_pat(args[0], args[1])
 
     pass
 
@@ -53,5 +53,5 @@ Examples:
 if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
 
-    Mhelper.demo_run(SetSubstitute)
+    Mhelper.demo_run(SetPatSub)
     pass
