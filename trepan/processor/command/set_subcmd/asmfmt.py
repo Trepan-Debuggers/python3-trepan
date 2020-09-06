@@ -18,6 +18,7 @@
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.lib.complete import complete_token
 
+choices = ["classic", "extended", "extended-bytes", "bytes"]
 
 class SetAsmFmt(DebuggerSubcommand):
     """**set asmfmt** {**classic** | **extended** | **bytes** | **extended-bytes**}
@@ -41,28 +42,32 @@ See also:
 `show asmfmt`"""
 
     in_list = True
+    max_args = 1
     min_abbrev = len("asmf")
+    min_args = 0
     short_help = "Set disassembly style"
 
-    choices = ("classic", "extended", "extended-bytes", "bytes")
-
     def complete(self, prefix):
-        return complete_token(SetAsmFmt.choices, prefix)
+        return complete_token(choices, prefix)
 
     def get_format_type(self, arg):
         if not arg:
             return "extended"
-        if arg in SetAsmFmt.choices:
+        if arg in choices:
             return arg
         else:
             self.errmsg(
                 'Expecting %s"; got %s'
-                % (", ".join(SetAsmFmt.choices), arg)
+                % (", ".join(choices), arg)
             )
             return None
         pass
 
     def run(self, args):
+        if len(args) == 0:
+            self.section("disasembly style types: ")
+            self.msg(self.columnize_commands(choices))
+            return
         format_type = self.get_format_type(args[0])
         if not format_type:
             return

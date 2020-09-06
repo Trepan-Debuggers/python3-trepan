@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017-2018 Rocky Bernstein
+#   Copyright (C) 2015, 2017-2018, 2020 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
+
 style_names = sorted(list(STYLE_MAP.keys()))
 
 # Our local modules
@@ -36,19 +37,16 @@ See also:
     def complete(self, prefix):
         return Mcomplete.complete_token(style_names, prefix)
 
-    in_list    = True
-    min_abbrev = len('sty')
-    short_help = 'Set the pygments style'
+    in_list = True
+    min_abbrev = len("sty")
+    short_help = "Set the pygments style"
 
     def run(self, args):
         if len(args) == 0:
             self.section("style names: ")
             self.msg(self.columnize_commands(style_names))
             return
-        elif len(args) > 1:
-            self.errmsg("Expecting zero one one arg")
-            return
-        if args[0] == 'none':
+        if args[0] == "none":
             self.debugger.settings[self.name] = None
             return
 
@@ -59,7 +57,9 @@ See also:
 
         self.debugger.settings[self.name] = args[0]
         return
+
     pass
+
 
 # if __name__ == '__main__':
 #     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
