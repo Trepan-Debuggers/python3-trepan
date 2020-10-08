@@ -59,19 +59,21 @@ def getsourcefile(filename):
     all_bytecode_suffixes = (".pyc", ".pyo")
     if any(filename.endswith(s) for s in all_bytecode_suffixes):
         if osp.dirname(filename).endswith("__pycache__"):
-            filename = osp.join(osp.dirname(osp.dirname(filename)), osp.basename(filename))
-        filename = (osp.splitext(filename)[0] + ".py")
-    elif any(filename.endswith(s) for s in
-             [".abi3.so", ".so"]):
+            filename = osp.join(
+                osp.dirname(osp.dirname(filename)), osp.basename(filename)
+            )
+        filename = osp.splitext(filename)[0] + ".py"
+    elif any(filename.endswith(s) for s in [".abi3.so", ".so"]):
         return None
     if osp.exists(filename):
         return filename
     # only return a non-existent filename if the module has a PEP 302 loader
-    if getattr(inspect.getmodule(object, filename), '__loader__', None) is not None:
+    if getattr(inspect.getmodule(object, filename), "__loader__", None) is not None:
         return filename
     # or it is in the linecache
     if filename in linecache.cache:
         return filename
+
 
 def deparse_source_from_code(code):
     source_text = ""
@@ -107,7 +109,11 @@ def format_stack_entry(
     s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if "<module>" == funcname and ([], None, None,) == (args, varargs, varkw,):
+    if "<module>" == funcname and ([], None, None,) == (
+        args,
+        varargs,
+        varkw,
+    ):
         is_module = True
         if is_exec_stmt(frame):
             fn_name = format_token(Mformat.Function, "exec", highlight=color)
@@ -131,7 +137,7 @@ def format_stack_entry(
         try:
             parms = inspect.formatargvalues(args, varargs, varkw, local_vars)
         except:
-              pass
+            pass
         else:
             maxargstrsize = dbg_obj.settings["maxargstrsize"]
             if len(parms) >= maxargstrsize:
@@ -224,8 +230,8 @@ def check_path_with_frame(frame, path):
         return False, "bytecode and local files mismatch"
     if fs_size and fs_size != my_size:
         return False, (
-            "frame file size, %d bytes, and local file size, %d bytes, on file %s mismatch" %
-            (fs_size, my_size, path)
+            "frame file size, %d bytes, and local file size, %d bytes, on file %s mismatch"
+            % (fs_size, my_size, path)
         )
     return True, None
 
@@ -429,8 +435,9 @@ if __name__ == "__main__":
 
     frame = inspect.currentframe()
     print(frame2filesize(frame))
-    pyc_file = osp.join(osp.dirname(__file__),
-                        "__pycache__", osp.basename(__file__)[:-3] + ".pyc")
+    pyc_file = osp.join(
+        osp.dirname(__file__), "__pycache__", osp.basename(__file__)[:-3] + ".pyc"
+    )
     print(pyc_file, getsourcefile(pyc_file))
 
     # m = MockDebugger()
