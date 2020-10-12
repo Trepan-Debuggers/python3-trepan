@@ -27,6 +27,7 @@ import os, sys, threading
 import os.path as osp
 
 # External packages
+import pyficache
 import tracer
 
 # Our local modules
@@ -174,6 +175,8 @@ class TrepanCore(object):
                 pass
             canonic = osp.realpath(osp.normcase(canonic))
             self.filename_cache[filename] = canonic
+        canonic = pyficache.unmap_file(canonic)
+
         return canonic
 
     def canonic_filename(self, frame):

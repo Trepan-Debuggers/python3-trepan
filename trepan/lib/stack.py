@@ -109,11 +109,7 @@ def format_stack_entry(
     s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if "<module>" == funcname and ([], None, None,) == (
-        args,
-        varargs,
-        varkw,
-    ):
+    if "<module>" == funcname and ([], None, None,) == (args, varargs, varkw,):
         is_module = True
         if is_exec_stmt(frame):
             fn_name = format_token(Mformat.Function, "exec", highlight=color)
@@ -229,9 +225,12 @@ def check_path_with_frame(frame, path):
     if bc_size and bc_size != my_size:
         return False, "bytecode and local files mismatch"
     if fs_size and fs_size != my_size:
-        return False, (
-            "frame file size, %d bytes, and local file size, %d bytes, on file %s mismatch"
-            % (fs_size, my_size, path)
+        return (
+            False,
+            (
+                "frame file size, %d bytes, and local file size, %d bytes, on file %s mismatch"
+                % (fs_size, my_size, path)
+            ),
         )
     return True, None
 
