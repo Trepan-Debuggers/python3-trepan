@@ -54,6 +54,7 @@ classifiers = [
     "Programming Language :: Python :: 3.6 ",
     "Programming Language :: Python :: 3.7 ",
     "Programming Language :: Python :: 3.8 ",
+    "Programming Language :: Python :: 3.9 ",
 ]
 
 # The rest in alphabetic order
@@ -76,6 +77,7 @@ install_requires = [
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
+    "term-background >= 1.0.1",
     "uncompyle6 >= 3.7.4",
 ]
 license = "GPL3"
