@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2009-2010, 2013-2015,
-#   2017-2018 Rocky Bernstein <rocky@gnu.org>
+#   2017-2018, 2020 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ class UserInterface(TrepanInterface):
         return
 
     def confirm(self, prompt, default):
-        """ Called when a dangerous action is about to be done, to make
+        """Called when a dangerous action is about to be done, to make
         sure it's okay. Expect a yes/no answer to `prompt' which is printed,
         suffixed with a question mark and the default value.  The user
         response converted to a boolean is returned."""
@@ -114,9 +114,20 @@ class UserInterface(TrepanInterface):
             pass
         return default
 
-    def errmsg(self, msg, prefix="** "):
-        """Common routine for reporting debugger error messages.
+    def msg(self, msg):
+        """used to write to a debugger that is connected to this
+        server; `str' written will have a newline added to it
         """
+        super().msg(msg)
+        # from pydoc import ttypager
+        # if hasattr(self.output, "isatty"):
+        #     ttypager(msg)
+        #     super().msg("")
+        # else:
+        #     super().msg(msg)
+
+    def errmsg(self, msg, prefix="** "):
+        """Common routine for reporting debugger error messages."""
         return self.msg("%s%s" % (prefix, msg))
 
     def finalize(self, last_wishes=None):

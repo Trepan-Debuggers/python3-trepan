@@ -30,6 +30,8 @@ class DebuggerUserOutput(DebuggerInOutBase):
         self.flush_after_write = False
         self.output = out or sys.stdout
         self.open(self.output, opts)
+        if hasattr(self.output, "isatty"):
+            self.isatty = self.output.isatty
         return
 
     def flush(self):
