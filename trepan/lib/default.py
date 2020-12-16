@@ -19,7 +19,7 @@
 import os, tracer
 from columnize import computed_displaywidth
 
-from trepan.lib.term_background import is_dark_background
+from term_background import is_dark_background
 
 width = computed_displaywidth()
 

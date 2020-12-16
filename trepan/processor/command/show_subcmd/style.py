@@ -17,7 +17,7 @@ def complete(self, prefix):
 
 
 class ShowStyle(DebuggerSubcommand):
-    """**show style* *name*
+    """**show style* *pygments-style*
 
 Show the pygments style used in formatting 256-color terminal text.
 
@@ -36,11 +36,11 @@ See also:
             self.errmsg("Expecting no args")
             return
 
-        style = self.debugger.settings[self.name]
+        style = self.debugger.settings.get(self.name, None)
         if style:
-            self.msg("Pygments style is %s" % style)
+            self.msg("Pygments style is %s." % style)
         else:
-            self.msg("Pygments style not set")
+            self.msg("Pygments style not set.")
         return
 
     pass

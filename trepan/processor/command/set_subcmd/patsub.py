@@ -38,13 +38,12 @@ Example:
     """
 
     in_list = True
+    max_args = 2
     min_abbrev = len("pats")
+    min_args = 2
     short_help = "Set pattern substitution rule"
 
     def run(self, args):
-        if len(args) != 2:
-            self.errmsg("Expecting two arguments; got %d." % len(args))
-            return
         self.proc.add_remap_pat(args[0], args[1])
 
     pass

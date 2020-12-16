@@ -229,6 +229,8 @@ def print_location(proc_obj):
                     remapped_file = None
                     pass
                 pass
+            elif pyficache.main.remap_re_hash:
+                remapped_file = pyficache.remap_file_pat(filename, pyficache.main.remap_re_hash)
             elif m and m.group(1) in sys.modules:
                 remapped_file = m.group(1)
                 pyficache.remap_file(filename, remapped_file)
@@ -390,6 +392,7 @@ class CommandProcessor(Processor):
 
         self.preloop_hooks = []
         self.postcmd_hooks = []
+        self.remap_file_re = None
 
         self._populate_cmd_lists()
 
@@ -442,6 +445,13 @@ class CommandProcessor(Processor):
             return False
         self.preloop_hooks.insert(position, hook)
         return True
+
+    def add_remap_pat(self, pat, replace, clear_remap=True):
+        self.remap_re_hash[re.compile(pat)] = (pat, replace)
+        pyficache.main.add_remap_pat(pat, replace, clear_remap)
+        if clear_remap:
+             self.file2file_remap = {}
+             pyficache.file2file_remap = {}
 
     # To be overridden in derived debuggers
     def defaultFile(self):
