@@ -66,7 +66,7 @@ See also:
     complete = complete_break_linenumber
 
     def run(self, args):
-        func, filename, lineno, condition = parse_break_cmd(self.proc, args)
+        func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
         if not (func == None and filename == None):
             set_break(self, func, filename, lineno, condition,
                       True, args)

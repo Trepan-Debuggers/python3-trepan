@@ -52,7 +52,7 @@ See also:
     def run(self, args):
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
-            func, filename, lineno, condition = parse_break_cmd(self.proc, args)
+            func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
             if not set_break(self, func, filename, lineno, condition, True, args):
                 return False
         self.core.step_events = None  # All events
