@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020 Rocky Bernstein
+#   Copyright (C) 2020, 2021 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,26 +20,27 @@ from trepan.lib.complete import complete_token
 
 choices = ["classic", "extended", "extended-bytes", "bytes"]
 
+
 class SetAsmFmt(DebuggerSubcommand):
     """**set asmfmt** {**classic** | **extended** | **bytes** | **extended-bytes**}
 
-The style of format to use in disassembly:
+    The style of format to use in disassembly:
 
-       classic:  fields: line, marker offset, opcode operand
-       extended: above, but we try harder to get operand information from previous instructions
-       bytes:  like classic but we show the instruction bytes after the offset
-       extended-bytes:   bytes + extended
+           classic:  fields: line, marker offset, opcode operand
+           extended: above, but we try harder to get operand information from previous instructions
+           bytes:  like classic but we show the instruction bytes after the offset
+           extended-bytes:   bytes + extended
 
 
-Examples:
---------
+    Examples:
+    --------
 
-    set asmfmt extended # this is the default
-    set asmfmt classic  # no highlight
+        set asmfmt extended # this is the default
+        set asmfmt classic  # no highlight
 
-See also:
----------
-`show asmfmt`"""
+    See also:
+    ---------
+    `show asmfmt`"""
 
     in_list = True
     max_args = 1
@@ -56,10 +57,7 @@ See also:
         if arg in choices:
             return arg
         else:
-            self.errmsg(
-                'Expecting %s"; got %s'
-                % (", ".join(choices), arg)
-            )
+            self.errmsg("Expecting one of: %s; got: %s." % (", ".join(choices), arg))
             return None
         pass
 
@@ -79,7 +77,8 @@ See also:
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd.__demo_helper__ import demo_run
+
     demo_run(SetAsmFmt, ["classic"])
     pass
