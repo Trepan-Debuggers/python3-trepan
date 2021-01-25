@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-'''Deparsing Routines'''
+"""Deparsing Routines"""
 
 import sys, tempfile
 from io import StringIO
 from hashlib import sha1
 from uncompyle6.semantics.linemap import code_deparse_with_map
-from uncompyle6.semantics.fragments import (
-    deparsed_find, code_deparse)
+from uncompyle6.semantics.fragments import deparsed_find, code_deparse
 import pyficache
+
 # FIXME remap filename to a short name.
 
 deparse_cache = {}
 
-def deparse_and_cache(co, errmsg_fn):
+
+def deparse_and_cache(co, errmsg_fn, tempdir=None):
     # co = proc_obj.curframe.f_code
     out = StringIO()
     deparsed = deparse_cache.get(co, None)
@@ -27,32 +28,33 @@ def deparse_and_cache(co, errmsg_fn):
         deparse_cache[co] = deparsed
 
     text = out.getvalue()
-    linemap = [(line_no, deparsed.source_linemap[line_no])
-                   for line_no in
-                   sorted(deparsed.source_linemap.keys())]
+    linemap = [
+        (line_no, deparsed.source_linemap[line_no])
+        for line_no in sorted(deparsed.source_linemap.keys())
+    ]
 
     # FIXME: DRY code with version in cmdproc.py print_location
 
     name_for_code = sha1(co.co_code).hexdigest()[:6]
-    prefix='deparsed-'
-    fd = tempfile.NamedTemporaryFile(suffix='.py',
-                                     prefix=prefix,
-                                     delete=False)
+    prefix = "deparsed-"
+    fd = tempfile.NamedTemporaryFile(
+        suffix=".py", prefix=prefix, dir=tempdir, delete=False
+    )
     with fd:
-        fd.write(text.encode('utf-8'))
+        fd.write(text.encode("utf-8"))
         map_line = "\n\n# %s" % linemap
-        fd.write(map_line.encode('utf-8'))
+        fd.write(map_line.encode("utf-8"))
         remapped_file = fd.name
     fd.close()
     # FIXME remap filename to a short name.
-    pyficache.remap_file_lines(name_for_code, remapped_file,
-                               linemap)
+    pyficache.remap_file_lines(name_for_code, remapped_file, linemap)
     return remapped_file, name_for_code
+
 
 def deparse_offset(co, name, last_i, errmsg_fn):
     nodeInfo = None
     deparsed = deparse_cache.get(co, None)
-    if not deparsed or not hasattr(deparsed, 'offsets'):
+    if not deparsed or not hasattr(deparsed, "offsets"):
         out = StringIO()
         try:
             # FIXME: cache co
@@ -76,14 +78,15 @@ def deparse_offset(co, name, last_i, errmsg_fn):
 
 
 # Demo it
-if __name__ == '__main__':
+if __name__ == "__main__":
     import inspect
+
     def msg(msg_str):
         print(msg_str)
         return
 
     def errmsg(msg_str):
-        msg('*** ' + msg_str)
+        msg("*** " + msg_str)
         return
 
     curframe = inspect.currentframe()

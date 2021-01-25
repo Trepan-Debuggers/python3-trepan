@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2018, 2020 Rocky Bernstein
+#  Copyright (C) 2015-2018, 2020-2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -112,7 +112,9 @@ See also:
         nodeInfo = None
 
         if len(args) >= 1 and args[0] == ".":
-            temp_filename, name_for_code = deparse_and_cache(co, self.errmsg)
+            temp_filename, name_for_code = deparse_and_cache(
+                co, self.errmsg, tempdir=self.settings["tempdir"]
+            )
             if not temp_filename:
                 return
             self.print_text("".join(getlines(temp_filename)))

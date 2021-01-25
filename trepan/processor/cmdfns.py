@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2015, 2017-2018, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@ import pyficache
 from xdis import IS_PYPY
 
 
-def source_tempfile_remap(prefix, text):
-    fd = tempfile.NamedTemporaryFile(suffix=".py", prefix=prefix, delete=False)
+def source_tempfile_remap(prefix, text, tempdir=None):
+    fd = tempfile.NamedTemporaryFile(
+        suffix=".py", prefix=prefix, dir=tempdir, delete=False
+    )
     with fd:
         fd.write(bytes(text, "UTF-8"))
         fd.close()
@@ -46,31 +48,6 @@ def deparse_fn(code):
     except:
         raise
     return None
-
-
-def deparse_getline(code, filename, line_number, opts):
-    # I Would like to figure out how to deparse the entire module,
-    # instead doing this on a line-by-line basis.
-    # But because th Python import library routines have been rewritten many times, I
-    # can't figure out how to get from "<frozen importlib>" to
-    # the module's code.
-    # So for now, we'll have to do this on a function by function
-    # bases. Fortunately pyficache has the ability to remap line
-    # numbers
-    deparsed = deparse_fn(code)
-    text = deparsed.text.strip()
-    if text:
-        prefix = os.path.basename(filename) + "_"
-        remapped_filename = source_tempfile_remap(prefix, text)
-        lines = text.split("\n")
-        first_line = code.co_firstlineno
-        linemap = [
-            (line_no, deparsed.source_linemap[line_no])
-            for line_no in sorted(deparsed.source_linemap.keys())
-        ]
-        pyficache.remap_file_lines(filename, remapped_filename, linemap)
-        return remapped_filename, pyficache.getline(filename, line_number, opts)
-    return None, None
 
 
 def get_an_int(errmsg, arg, msg_on_error, min_value=None, max_value=None):

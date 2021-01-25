@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2021 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -207,7 +207,9 @@ def print_location(proc_obj):
             filename = pyficache.unmap_file(filename)
             if "<string>" == filename:
                 remapped = cmdfns.source_tempfile_remap(
-                    "eval_string", dbgr_obj.eval_string
+                    "eval_string",
+                    dbgr_obj.eval_string,
+                    tempdir=proc_obj.settings("tempdir"),
                 )
                 pyficache.remap_file(filename, remapped)
                 filename, lineno = pyficache.unmap_file_line(filename, lineno)
@@ -230,7 +232,9 @@ def print_location(proc_obj):
                     pass
                 pass
             elif pyficache.main.remap_re_hash:
-                remapped_file = pyficache.remap_file_pat(filename, pyficache.main.remap_re_hash)
+                remapped_file = pyficache.remap_file_pat(
+                    filename, pyficache.main.remap_re_hash
+                )
             elif m and m.group(1) in sys.modules:
                 remapped_file = m.group(1)
                 pyficache.remap_file(filename, remapped_file)
@@ -255,7 +259,10 @@ def print_location(proc_obj):
                 # Deparse the code object into a temp file and remap the line from code
                 # into the corresponding line of the tempfile
                 co = proc_obj.curframe.f_code
-                temp_filename, name_for_code = deparse_and_cache(co, proc_obj.errmsg)
+                tempdir = proc_obj.settings("tempdir")
+                temp_filename, name_for_code = deparse_and_cache(
+                    co, proc_obj.errmsg, tempdir=tempdir
+                )
                 lineno = 1
                 # _, lineno = pyficache.unmap_file_line(temp_filename, lineno, True)
                 if temp_filename:
@@ -275,7 +282,10 @@ def print_location(proc_obj):
                     # FIXME: DRY code with version in cmdproc.py print_location
                     prefix = osp.basename(temp_name).split(".")[0]
                     fd = tempfile.NamedTemporaryFile(
-                        suffix=".py", prefix=prefix, delete=False
+                        suffix=".py",
+                        prefix=prefix,
+                        delete=False,
+                        dir=proc_obj.settings("tempdir"),
                     )
                     with fd:
                         fd.write("".join(lines).encode("utf-8"))
@@ -343,7 +353,10 @@ def print_location(proc_obj):
         val = proc_obj.event_arg
         intf_obj.msg("R=> %s" % proc_obj._saferepr(val))
         pass
-    elif proc_obj.event == "call" and proc_obj.curframe.f_locals.get("__name__", "") != "__main__":
+    elif (
+        proc_obj.event == "call"
+        and proc_obj.curframe.f_locals.get("__name__", "") != "__main__"
+    ):
         try:
             proc_obj.commands["info"].run(["info", "locals"])
         except:
@@ -450,8 +463,8 @@ class CommandProcessor(Processor):
         self.remap_re_hash[re.compile(pat)] = (pat, replace)
         pyficache.main.add_remap_pat(pat, replace, clear_remap)
         if clear_remap:
-             self.file2file_remap = {}
-             pyficache.file2file_remap = {}
+            self.file2file_remap = {}
+            pyficache.file2file_remap = {}
 
     # To be overridden in derived debuggers
     def defaultFile(self):
