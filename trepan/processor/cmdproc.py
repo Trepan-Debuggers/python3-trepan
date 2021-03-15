@@ -212,7 +212,8 @@ def print_location(proc_obj):
                     tempdir=proc_obj.settings("tempdir"),
                 )
                 pyficache.remap_file(filename, remapped)
-                filename, lineno = pyficache.unmap_file_line(filename, lineno)
+                filename = remapped
+                lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif "<string>" == filename:
@@ -460,7 +461,6 @@ class CommandProcessor(Processor):
         return True
 
     def add_remap_pat(self, pat, replace, clear_remap=True):
-        self.remap_re_hash[re.compile(pat)] = (pat, replace)
         pyficache.main.add_remap_pat(pat, replace, clear_remap)
         if clear_remap:
             self.file2file_remap = {}
