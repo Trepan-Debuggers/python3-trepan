@@ -9,7 +9,10 @@
 - [Make packages](#make-packages)
 - [Check packages](#check-packages)
 - [Release on github](#release-on-github)
-- [Get on PyPy](#get-on-pypy)
+- [Release on github](#release-on-github-1)
+- [Get on PyPI](#get-on-pypi)
+- [Push and Pull tags:](#push-and-pull-tags)
+- [Move dist files to uploaded](#move-dist-files-to-uploaded)
 
 <!-- markdown-toc end -->
 # Get latest sources:
@@ -20,8 +23,8 @@
 
 	$ emacs trepan/version.py
     $ source trepan/version.py
-    $ echo $VERSION
-    $ git commit -m"Get ready for release $VERSION" .
+    $ echo $__version__
+    $ git commit -m"Get ready for release $__version__" .
 
 # Update ChangeLog:
 
@@ -44,7 +47,7 @@
 
 # Check packages
 
-	$ twine check dist/trepan3k-$VERSION*
+	$ twine check dist/trepan3k-$__version__*
 
 # Release on github
 
@@ -58,15 +61,18 @@ Todo: turn this into a script in `admin-tools`
 
 	$ mkdir /tmp/gittest; pushd /tmp/gittest
 	$ pyenv local 3.7.5  # or some other non-current version
-	$ pip install -e git://github.com/rocky/python3-trepan.git@$VERSION#egg=trepan3k
+	$ pip install -e git://github.com/rocky/python3-trepan.git@$__version__#egg=trepan3k
 	$ trepan3k trepan3k
 	$ pip uninstall trepan3k
 	$ popd
 
+# Release on github
+
+Goto https://github.com/rocky/python2-trepan/releases/new
 
 # Get on PyPI
 
-	$ twine upload dist/trepan3k-${VERSION}*
+	$ twine upload dist/trepan3k-${__version__}*
 
 Check on https://pypi.org/project/trepan3k/
 
@@ -77,4 +83,4 @@ Check on https://pypi.org/project/trepan3k/
 
 # Move dist files to uploaded
 
-	$ mv -v dist/trepan3k-${VERSION}* dist/uploaded
+	$ mv -v dist/trepan3k-${__version__}* dist/uploaded

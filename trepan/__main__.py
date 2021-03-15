@@ -35,7 +35,7 @@ import trepan.misc as Mmisc
 # The name of the debugger we are currently going by.
 __title__ = package
 
-from trepan.version import VERSION
+from trepan.version import __version__
 
 
 def main(dbg=None, sys_argv=list(sys.argv)):
@@ -44,7 +44,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv = Moptions.process_options(__title__, VERSION, sys_argv)
+    opts, dbg_opts, sys_argv = Moptions.process_options(
+        __title__, __version__, sys_argv
+    )
 
     if opts.server is not None:
         if opts.server == "tcp":

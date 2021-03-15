@@ -1,3 +1,28 @@
+1.2.3 2021-03-15
+================
+
+There is no 1.2.1 or 1.2.2 - this version number is to keep in sync with trepan2 which has about the
+same features.
+
+* Add `set tempdir` and `show tempdir`. In remote debugging this is useful
+* `set asmft` error message tweak
+* Fix the return tuples for `parse_break_cmd()` (from bradelkin)
+* eval?: add "and" and "or" by stripping out the final and/or
+* Deal with no style set
+* use PyPI term-background package
+* Extend patsub's effect to breakpoint Hook the command processor file
+  pattern substutition to python filecache's file pattern substitution
+* Add `info locals --list`
+* Tolerate inspect.formatargvalues() errors
+* Improve python source detection and invalid bytecode handling.
+* Get "set patsub" to substitute file paths e.g. "^/code" inside docker -> "/Users/rocky/project"
+
+About "set patsub". We need to do the substitution in the debugger, not in
+`pyficache` where we just want the presentation of the filename to be
+different. The actual location is the name `pyficache` sees and gets
+lines from.
+
+
 1.2.0 2020-06-27
 ================
 

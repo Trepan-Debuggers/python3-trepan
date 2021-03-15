@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015-2018, 2020-2021 Rocky Bernstein <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ else:
 # 3.4            | pip      | 19.1.1       |
 
 # Things that change more often go here.
-copyright = """Copyright (C) 2013, 2015-2020 Rocky Bernstein <rocky@gnu.org>."""
+copyright = """Copyright (C) 2013, 2015-2021 Rocky Bernstein <rocky@gnu.org>."""
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -73,7 +73,7 @@ install_requires = [
     "columnize >= 0.3.10",
     "nose>=1.0.0, <= 1.3.7",
     "pyficache >= 2.2.1",
-    "xdis >= 5.0.4",
+    "xdis >= 5.0.8",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
