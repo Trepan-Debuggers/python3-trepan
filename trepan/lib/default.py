@@ -47,12 +47,12 @@ DEBUGGER_SETTINGS = {
     "autoeval": True,
     # Run 'list' command every time we enter the debugger?
     "autolist": False,
-    # Run 'info pc' command every time we enter the debugger?
-    "autopc": False,
     # Enter IPython every time we enter the debugger?
     # Note: only relevant if we have ipython installed. This takes
-    # precidence over autopython.
+    # precedence over autopython.
     "autoipython": False,
+    # Run 'info pc' command every time we enter the debugger?
+    "autopc": False,
     # Enter Python every time we enter the debugger?
     "autopython": False,
     # Show basename only on filename output?
@@ -80,10 +80,10 @@ DEBUGGER_SETTINGS = {
     #  'dark'    : terminal highlighting for a dark background
     #  'light'   : terminal highlighting for a light background
     "highlight": is_dark_background(),
-    # Save debugger history?
-    "hist_save": True,
     # Where do we save the history?
     "histfile": None,
+    # Save debugger history?
+    "hist_save": True,
     # Show function calls/returns?
     "fntrace": False,
     # Number of lines to show by default in a 'list' command.
