@@ -241,7 +241,7 @@ dictionary that gets fed to trepan.Debugger.core.start().
 
 
 def stop(opts=None):
-    if isinstance(Trepan, Mdebugger.debugger_obj):
+    if isinstance( Mdebugger.debugger_obj, Trepan):
         return Mdebugger.debugger_obj.stop(opts)
     return None
 
