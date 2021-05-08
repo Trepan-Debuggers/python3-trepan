@@ -21,7 +21,9 @@ LOG_MAX_MSG = 4     # int(log(TCP_MAX_PACKET)
 
 def pack_msg(msg):
     fmt = '%%0%dd' % LOG_MAX_MSG  # A funny way of writing: '%04d'
-    return bytes(( fmt % len(msg)) + msg, 'UTF-8')
+    byte_msg = bytes(msg, 'UTF-8')
+    byte_fmt = bytes(fmt % len(byte_msg), 'UTF-8')
+    return byte_fmt + byte_msg
 
 def unpack_msg(buf):
     if len(buf) == 0:
