@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2017 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009-2017, 2021 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,26 +16,28 @@
 """Subsidiary routines used to "pack" and "unpack" TCP messages. """
 
 TCP_MAX_PACKET = 8192  # Largest size for a recv
-LOG_MAX_MSG = 4     # int(log(TCP_MAX_PACKET)
+LOG_MAX_MSG = 4  # int(log(TCP_MAX_PACKET)
 
 
 def pack_msg(msg):
-    fmt = '%%0%dd' % LOG_MAX_MSG  # A funny way of writing: '%04d'
-    byte_msg = bytes(msg, 'UTF-8')
-    byte_fmt = bytes(fmt % len(byte_msg), 'UTF-8')
+    fmt = "%%0%dd" % LOG_MAX_MSG  # A funny way of writing: '%04d'
+    byte_msg = bytes(msg, "UTF-8")
+    byte_fmt = bytes(fmt % len(byte_msg), "UTF-8")
     return byte_fmt + byte_msg
+
 
 def unpack_msg(buf):
     if len(buf) == 0:
         # Fake a quit
-        return '', bytes('q'.encode('utf-8'))
-    length  = int(buf[0:LOG_MAX_MSG])
-    data = buf[LOG_MAX_MSG:LOG_MAX_MSG+length]
-    buf = buf[LOG_MAX_MSG+length:]
+        return "", bytes("q".encode("utf-8"))
+    length = int(buf[0:LOG_MAX_MSG])
+    data = buf[LOG_MAX_MSG : LOG_MAX_MSG + length]
+    buf = buf[LOG_MAX_MSG + length :]
     return buf, data
 
+
 # Demo
-if __name__=='__main__':
-    print(unpack_msg(pack_msg('Hello, there!'))[1])
+if __name__ == "__main__":
+    print(unpack_msg(pack_msg("Hello, there!"))[1])
     # assert unpack_msg(pack_msg(msg))[1] == msg
     pass
