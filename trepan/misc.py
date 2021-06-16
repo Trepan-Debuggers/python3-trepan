@@ -23,7 +23,7 @@ def option_set(options, value, default_options):
     return None  # Not reached
 
 
-def bool2YN(b):
+def bool2YN(b) -> bool:
     return "Y" if b else "N"
 
 
@@ -35,7 +35,7 @@ def wrapped_lines(msg_part1, msg_part2, width):
     return  # Not reached
 
 
-def pretty_modfunc_name(s):
+def pretty_modfunc_name(s) -> str:
     if s == "<module>":
         # FIXME:
         # Pick replace with something more custom to modname?
