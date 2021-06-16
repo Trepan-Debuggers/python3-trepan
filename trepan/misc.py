@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015, 2020-2021 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -34,11 +34,15 @@ def wrapped_lines(msg_part1, msg_part2, width):
         return msg_part1 + " " + msg_part2
     return  # Not reached
 
+
 def pretty_modfunc_name(s):
     if s == "<module>":
-        return s
+        # FIXME:
+        # Pick replace with something more custom to modname?
+        return str(s)
     else:
-        return s + "()"
+        return str(s) + "()"
+
 
 import os
 from glob import glob
