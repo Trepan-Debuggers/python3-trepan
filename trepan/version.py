@@ -4,4 +4,4 @@
 # This file should define a variable __version__ which we use as the
 # debugger version number.
 
-__version__="1.2.5.dev0"  # noqa
+__version__="1.2.5"  # noqa
