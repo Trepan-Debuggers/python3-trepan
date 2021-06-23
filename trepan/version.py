@@ -4,4 +4,5 @@
 # This file should define a variable __version__ which we use as the
 # debugger version number.
 
-__version__="1.2.5"  # noqa
+# fmt: off
+__version__="1.2.6.dev0"  # noqa
