@@ -23,11 +23,16 @@
 
 import sys
 
+decompiler = "uncompyle6 >= 3.7.4"
+
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
     pygments_version = ">= 2.2.0"
+    if (3, 7) <= SYS_VERSION <= (3, 8):
+        decompiler = "decompyle3 >= 3.7.4"
+
 
 # Python-version | package  | last-version |
 # ------------------------------------------
@@ -78,7 +83,7 @@ install_requires = [
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
     "term-background >= 1.0.1",
-    "uncompyle6 >= 3.7.4",
+    decompiler,
 ]
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"

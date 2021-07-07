@@ -19,7 +19,7 @@ on/off setting value.
 """
 import os, sys, tempfile
 import pyficache
-from xdis import IS_PYPY
+from xdis import IS_PYPY, PYTHON_VERSION
 
 
 def source_tempfile_remap(prefix, text, tempdir=None):
@@ -35,9 +35,15 @@ def source_tempfile_remap(prefix, text, tempdir=None):
 
 def deparse_fn(code):
     try:
-        from uncompyle6.semanitcs.linemap import (
-            deparse_code_with_fragments_and_map as deparse_code,
-        )
+        if 3.7 <= PYTHON_VERSION <= 3.8:
+            from uncompyle6.semantics.linemap import (
+                deparse_code_with_fragments_and_map as deparse_code,
+            )
+        else:
+            from decompile3.semantics.linemap import (
+                deparse_code_with_fragments_and_map as deparse_code,
+            )
+
     except ImportError:
         return None
     sys_version = sys.version[:5]
