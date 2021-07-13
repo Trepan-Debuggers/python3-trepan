@@ -41,7 +41,10 @@ Examples:
 """
 
     in_list = True
+    max_args = 2
+    min_args = 2
     min_abbrev = len("sub")
+
     short_help = "Set filename substitution"
 
     def run(self, args):
