@@ -59,7 +59,7 @@ See also:
 `disassemble`, `list`, and `set highlight`
 """
 
-    short_help = "Deparse source via uncompyle6"
+    short_help = "Deparse source via uncompyle6/decompyle3"
     DebuggerCommand.setup(locals(), category="data", max_args=10, need_stack=True)
 
     def print_text(self, text):

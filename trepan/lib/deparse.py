@@ -4,8 +4,15 @@
 import sys, tempfile
 from io import StringIO
 from hashlib import sha1
-from uncompyle6.semantics.linemap import code_deparse_with_map
-from uncompyle6.semantics.fragments import deparsed_find, code_deparse
+from xdis import PYTHON_VERSION
+
+if 3.7 <= PYTHON_VERSION <= 3.8:
+    from decompyle3.semantics.linemap import code_deparse_with_map
+    from decompyle3.semantics.fragments import deparsed_find, code_deparse
+else:
+    from uncompyle6.semantics.linemap import code_deparse_with_map
+    from uncompyle6.semantics.fragments import deparsed_find, code_deparse
+
 import pyficache
 
 # FIXME remap filename to a short name.

@@ -145,12 +145,18 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         "Python file name embedded in code %s not found" % try_file
                     )
             except IOError:
+                decompiler = "uncompyle6"
                 try:
-                    from uncompyle6 import decompile_file
+                    if 3.7 <= PYTHON_VERSION <= 3.8:
+                        from uncompyle6 import decompile_file
+                    else:
+                        from decompyle3 import decompile_file
+
+                        decompiler = "decompyle3"
                 except ImportError:
                     print(
-                        "%s: Compiled python file '%s', but uncompyle6 not found"
-                        % (__title__, mainpyfile),
+                        "%s: Compiled python file '%s', but %s not found"
+                        % (__title__, mainpyfile, decompiler),
                         file=sys.stderr,
                     )
                     sys.exit(1)

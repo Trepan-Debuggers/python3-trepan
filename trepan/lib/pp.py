@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015-2016, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015-2016, 2020-2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,42 @@
 import pprint
 from columnize import columnize
 
+# Maximum length of strings
+MAX_PP_STRLEN = 100
+
+# Maximum number of keys in dictionary
+MAX_PP_COUNT = 20
+
+# Maximum total formatted string
+MAX_PP_LENGTH = 2000
+
+
+def truncate_length(obj, length=MAX_PP_COUNT):
+    """If `obj` is something that has more than `length` items,
+    then truncate it to the first `length` items.
+    """
+    if isinstance(obj, dict):
+        new_obj = dict((k[:length], v) for k, v in sorted(obj.items()))
+        # We hope zzz will be appear at the end of the sorted list.
+        new_obj.update({"zzz...": "..."})
+        return new_obj
+    elif hasattr(obj, "__getitem__"):
+        return list(obj[:length]) + ["..."]
+    return obj
+
+
+class SafePP(pprint.PrettyPrinter):
+    def _format(self, obj, *args, **kwargs):
+        if isinstance(obj, str):
+            if len(obj) > MAX_PP_STRLEN:
+                obj = obj[:MAX_PP_STRLEN] + "..."
+                pass
+            pass
+        elif hasattr(obj, "__len__") and len(obj) > MAX_PP_COUNT:
+            obj = truncate_length(obj)
+
+        return pprint.PrettyPrinter._format(self, obj, *args, **kwargs)
+
 
 def pp(val, display_width, msg_nocr, msg, prefix=None):
     if prefix is not None:
@@ -30,11 +66,11 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
     if isinstance(val, list) or isinstance(val, tuple):
         if not pprint_simple_array(val, display_width, msg_nocr, msg, "  "):
             print("Can't print_simple_array")
-            msg("  " + pprint.pformat(val))
+            msg("  " + pprint.pformat(val)[:MAX_PP_LENGTH])
             pass
         pass
     else:
-        msg("  " + pprint.pformat(val))
+        msg("  " + SafePP().pformat(val)[:MAX_PP_LENGTH])
         pass
     return
 
@@ -43,7 +79,7 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
 # Possibly some will go into columnize.
 def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=""):
     """Try to pretty print a simple case where a list is not nested.
-    Return True if we can do it and False if not. """
+    Return True if we can do it and False if not."""
 
     if not (isinstance(val, list) or isinstance(val, tuple)):
         return False
@@ -88,8 +124,8 @@ if __name__ == "__main__":
     pp(x, 20, msg_nocr, msg, "x = ")
     pp(x, 32, msg_nocr, msg, "x = ")
     x = [i for i in range(30)]
-    l = locals().keys()
-    for k in sorted(l):
+    ll = locals().keys()
+    for k in sorted(ll):
         pp(eval(k), 80, msg_nocr, msg, prefix="%s =" % k)
         pass
     pass

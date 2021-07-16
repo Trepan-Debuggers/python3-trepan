@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2012-2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -98,10 +98,10 @@ class DebuggerCommand:
             pass
         return None
 
-    def msg_nocr(self, msg, opts={}):
+    def msg_nocr(self, msg: str, opts={}):
         """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
         try:
-            return self.debugger.intf[-1].msg_nocr(msg)
+            return self.debugger.intf[-1].msg_nocr(msg[:1000])
         except EOFError:
             # FIXME: what do we do here?
             pass
