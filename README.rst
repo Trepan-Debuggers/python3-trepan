@@ -42,11 +42,11 @@ around a bytecode offset such as the place you are stopped at.
 
 So far as I know, there is no other debugger that decompile code at runtime.
 
-See the ``deparse`` command for details.
+See the deparse_ command for details.
 
 We use information in the line number table in byte to understand
 which lines are breakpointable, and in which module or function the
-line appears in. Use ``info line`` to see this information.
+line appears in. Use info_line_ to see this information.
 
 In the future we may allow specifiying an offset to indicate which
 offset to stop at when there are several choices for a given line
@@ -80,7 +80,7 @@ Terminal source code is colorized via pygments_ . And with that you
 can set the pygments color style, e.g. "colorful", "paraiso-dark". See
 set_style_ . Furthermore, we make use of terminal bold and emphasized
 text in debugger output and help text. Of course, you can also turn
-this off. Starting with release 0.6.0, you can use your own
+this off. You can use your own
 pygments_style_, provided you have a terminal that supports 256
 colors. If your terminal supports the basic ANSI color sequences only,
 we support that too in both dark and light themes.
@@ -298,6 +298,8 @@ See Also
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
+.. _deparse:  https://python3-trepan.readthedocs.io/en/latest/commands/data/deparse.html
+.. _info_line:  https://python3-trepan.readthedocs.io/en/latest/commands/info/line.html
 .. _set_style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
 .. _set_substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
 .. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
