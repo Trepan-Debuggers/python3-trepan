@@ -2,6 +2,9 @@
 ================
 
 * We now use `decompyle3` as our decompiler for Python 3.7 and 3.8 instead of `uncompyle6`
+* Set acceptable min/max values (2) on `set substitute` command.
+* Go over library pretty print routine (`pp`) to handle large objects better.
+* Remove silly `pp` message about how it can't print a simple array: who cares?
 * Go over README.rst to revise what's cool about this.
 * The usual stuff have using black to format, and add more annotation types
 
