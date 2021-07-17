@@ -8,7 +8,10 @@ Abstract
 ========
 
 This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
-the ground up.
+the ground up. It is both a high-level debugger as well as a
+lower-level bytecode debugger. By lower level debugger, I mean that it
+understands a lot about byte code and will try to make use of that in
+its normal higher-level instructions.
 
 A command-line interface (CLI) is provided as well as an remote access
 interface over TCP/IP.
@@ -104,6 +107,30 @@ If you want to evaluate the current source line before it is run in
 the code, use ``eval``. To evaluate text of a common fragment of line,
 such as the expression part of an *if* statement, you can do that with
 ``eval?``. See eval_ for more information.
+
+Function Breakpoints
+---------------------
+
+Many Python debuggers only allow setting a breakpoint at a line event
+and functions are treated like line numbers. But functions and lines
+are fundamentally different. If I write::
+
+     def five(): return 5
+
+this line means has three different kinds of things. First there is
+the code in Python that defines function ``five()`` for the first
+time. Then there is the function itself, and then there is some code
+inside that function.
+
+In this debugger, you can give the name of a *function* by surrounding
+adding ``()`` at the end::
+
+    break five()
+
+Also ``five`` could be a method of an object that is currently defined when the
+``breakpoint`` command is given::
+
+    self.five()
 
 More Stepping Control
 ---------------------
