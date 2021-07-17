@@ -9,7 +9,7 @@
 * The usual stuff have using black to format, and add more annotation types
 
 
-1.2.6 2021-06-17
+1.2.5 2021-06-17
 ================
 
 Small bug fixes. See #34 and #36
