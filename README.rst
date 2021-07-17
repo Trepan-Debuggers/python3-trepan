@@ -9,7 +9,7 @@ Abstract
 
 This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
 the ground up. It is both a high-level debugger as well as a
-lower-level bytecode debugger. By lower level debugger, I mean that it
+lower-level bytecode debugger. By lower-level debugger, I mean that it
 understands a lot about byte code and will try to make use of that in
 its normal higher-level instructions.
 
