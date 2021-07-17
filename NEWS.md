@@ -1,3 +1,22 @@
+1.2.6 2021-07-17
+================
+
+* We now use `decompyle3` as our decompiler for Python 3.7 and 3.8 instead of `uncompyle6`
+* Set acceptable min/max values (2) on `set substitute` command.
+* Go over library pretty print routine (`pp`) to handle large objects better.
+* Remove silly `pp` message about how it can't print a simple array: who cares?
+* Go over README.rst to revise what's cool about this.
+* The usual stuff have using black to format, and add more annotation types
+
+
+1.2.5 2021-06-17
+================
+
+Small bug fixes. See #34 and #36
+
+We now split off code internally to handle Python3 before 3.6 so we can start to modernize code and add type annotations.
+
+
 1.2.3 2021-03-15
 ================
 
