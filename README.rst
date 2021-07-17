@@ -229,6 +229,10 @@ Out-of-Process Debugging
 
 You can now debug your program in a different process or even a different computer on a different network!
 
+Related, is flexible support for remapping path names from file
+system, e.g. that inside a docker container or on a remote filesystem
+with locally-installed files. See subst_ for more information.
+
 Egg, Wheel, and Tarballs
 ------------------------
 
@@ -267,6 +271,7 @@ See Also
 * Tutorial_: Tutorial for how to use
 * https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python <https://pypi.python.org/pypi/x-python>`_
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
+* https://pypi.python.org/pypi/decompyle3 : Python 3.7 and 3.8 decompiler
 * https://pypi.python.org/pypi/xdis : cross-platform disassembler
 
 
@@ -298,6 +303,7 @@ See Also
 .. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
 .. _eval: https://python3-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
+.. _subst: https://python3-trepan.readthedocs.io/en/latest/commands/set/substitute.html
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
