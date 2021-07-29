@@ -7,8 +7,12 @@ from hashlib import sha1
 from xdis import PYTHON_VERSION
 
 if 3.7 <= PYTHON_VERSION <= 3.8:
-    from decompyle3.semantics.linemap import code_deparse_with_map
-    from decompyle3.semantics.fragments import deparsed_find, code_deparse
+    try:
+        from decompyle3.semantics.linemap import code_deparse_with_map
+        from decompyle3.semantics.fragments import deparsed_find, code_deparse
+    except ImportError:
+        from uncompyle6.semantics.linemap import code_deparse_with_map
+        from uncompyle6.semantics.fragments import deparsed_find, code_deparse
 else:
     from uncompyle6.semantics.linemap import code_deparse_with_map
     from uncompyle6.semantics.fragments import deparsed_find, code_deparse
