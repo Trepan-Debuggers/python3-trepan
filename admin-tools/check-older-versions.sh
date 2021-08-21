@@ -12,6 +12,8 @@ if ! source ./pyenv-older-versions ; then
     exit $?
 fi
 
+. ./setup-python-3.2.sh
+
 cd ..
 for version in $PYVERSIONS; do
     if ! pyenv local $version ; then

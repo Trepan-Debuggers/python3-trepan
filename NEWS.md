@@ -1,3 +1,11 @@
+1.2.7 2021-08-21
+================
+
+* autoeval now saferepr's its output
+* Use uncompyle6 on 3.7 & 3.8 if decompyle3 is not around
+* Tolerate having *only* decompile3 installed
+
+
 1.2.6 2021-07-17
 ================
 
