@@ -867,7 +867,8 @@ class CommandProcessor(Processor):
                 elif not self.settings("autoeval"):
                     self.undefined_cmd(current_command)
                 else:
-                    self.exec_line(current_command)
+                    # Autoeval
+                    self._saferepr(self.exec_line(current_command))
                     pass
                 pass
             pass

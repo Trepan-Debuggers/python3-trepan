@@ -14,8 +14,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+if (3, 7) <= sys.version_info[:2] <= (3, 8):
+    try:
+        from decompyle3.semantics.fragments import code_deparse
+    except ImportError:
+        from uncompyle6.semantics.fragments import code_deparse
+else:
+    from uncompyle6.semantics.fragments import code_deparse
+
 from getopt import getopt, GetoptError
-from uncompyle6.semantics.fragments import code_deparse
+
+
 from trepan.lib.deparse import deparse_and_cache, deparse_offset
 from pyficache import highlight_string, getlines
 

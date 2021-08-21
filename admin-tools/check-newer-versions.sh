@@ -12,6 +12,8 @@ if ! source ./pyenv-newer-versions ; then
     exit $?
 fi
 
+. ./admin-tools/setup-master.sh
+
 cd ..
 for version in $PYVERSIONS; do
     if ! pyenv local $version ; then
