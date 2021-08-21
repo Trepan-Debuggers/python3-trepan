@@ -17,6 +17,8 @@ if ! source ./setup-master.sh ; then
     exit $?
 fi
 
+. ./setup-master.sh
+
 cd ..
 source $PACKAGE/version.py
 echo $VERSION

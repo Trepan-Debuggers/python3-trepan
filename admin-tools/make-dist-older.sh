@@ -17,6 +17,8 @@ if ! source ./setup-python-3.2.sh ; then
     exit $?
 fi
 
+. ./setup-python-3.2.sh
+
 cd ..
 source $PACKAGE/version.py
 echo $VERSION
