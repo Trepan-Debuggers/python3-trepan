@@ -283,7 +283,7 @@ See Also
 .. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _trepan3: https://github.com/rocky/python3-trepan
 .. _trepanxpy: https://pypi.python.org/pypi/trepanxpy
-.. _other: https://www.npmjs.com/package/trepanjs
+.. _other: https://repology.org/project/zshdb/versions
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
