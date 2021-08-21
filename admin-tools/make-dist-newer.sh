@@ -17,7 +17,11 @@ if ! source ./setup-master.sh ; then
     exit $?
 fi
 
+<<<<<<< HEAD
 . ./setup-master.sh
+=======
+. ./admin-tools/setup-master.sh
+>>>>>>> e16b8a13936c86d7dd194090694fd423456df1bd
 
 cd ..
 source $PACKAGE/version.py
