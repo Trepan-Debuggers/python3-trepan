@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2010, 2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2010, 2013, 2015, 2020-2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class SubcommandMgr(DebuggerCommand):
     name = "???"  # Need to define this!
     need_stack = False
 
-    def __init__(self, proc, name=None):
+    def __init__(self, proc, name=None, base="trepan"):
         """Initialize show subcommands. Note: instance variable name
         has to be setcmds ('set' + 'cmds') for subcommand completion
         to work."""
@@ -55,13 +55,13 @@ class SubcommandMgr(DebuggerCommand):
 
         self.cmds = Subcmd(name, self)
         self.name = name
-        self._load_debugger_subcommands(name)
+        self._load_debugger_subcommands(name, base)
         self.proc = proc
 
         return
 
     def _load_debugger_subcommands(self, name, base="trepan"):
-        """ Create an instance of each of the debugger
+        """Create an instance of each of the debugger
         subcommands. Commands are found by importing files in the
         directory 'name' + 'sub'. Some files are excluded via an array set
         in __init__.  For each of the remaining files, we import them
