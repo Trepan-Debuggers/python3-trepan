@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2015, 2020-2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@ from trepan.processor.command.base_subcmd import DebuggerShowBoolSubcommand
 class ShowAutoPC(DebuggerShowBoolSubcommand):
     """**show autopc**
 
-Show debugger `info pc` command automatically on entry.
+    Show debugger `info pc` command automatically on entry.
 
-See also:
----------
+    See also:
+    ---------
 
-`set autopc`"""
+    `set autopc`"""
 
-    min_abbrev = len("autol")
+    min_abbrev = len("autos")
     short_help = "Show `info pc` on debugger entry"
     pass
 
