@@ -220,10 +220,8 @@ See Also
 * trepan2_ : trepan debugger for Python 2
 * trepanxpy_ : trepan debugger for `x-python <https://pypi.python.org/pypi/x-python>`_, the bytecode interpreter written in Python
 * pydbgr_  : previous incarnation of the Python 2 debugger
-* Tutorial_: Tutorial for how to use
-* https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python <https://pypi.python.org/pypi/x-python>`_
+* Tutorial_: for ways to get into the debugger
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
-* https://pypi.python.org/pypi/xdis : cross-platform disassembler |buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 
 .. _pygments:  http://pygments.org
 .. _pygments_style:  http://pygments.org/docs/styles/
@@ -236,23 +234,5 @@ See Also
 .. _Tutorial:  https://python3-trepan.readthedocs.io/en/latest/entry-exit.html
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
-.. |downloads| image:: https://img.shields.io/pypi/dd/trepan.svg
-    :target: https://pypi.python.org/pypi/trepan
-    :alt: Daily PyPI downloads
-.. |buildstatus| image:: https://travis-ci.org/rocky/python3-trepan.svg
-    :target: https://travis-ci.org/rocky/python3-trepan
-    :alt: CircleCI Build status
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/python2-trepan
-    :target: https://ci.appveyor.com/project/rocky/python2-trepan
-    :alt: Appveyor Build status
-.. |Latest Version| image:: https://pypip.in/version/trepan/badge.svg?text=version
-   :target: https://pypi.python.org/pypi/trepan/
-.. |license| image:: https://img.shields.io/pypi/l/trepan.svg
-   :target: https://pypi.python.org/pypi/trepan
-   :alt: License
-.. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
-.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan.svg
-   :target: https://pypi.python.org/pypi/trepan/
-   :alt: Supported Python versions
-.. |Pypi Installs| image:: https://pepy.tech/badge/trepan3k
+.. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
