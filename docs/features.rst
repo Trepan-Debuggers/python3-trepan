@@ -24,9 +24,9 @@ See the `deparse <deparse>`_ command for details.
 
 We use information in the line number table in byte to understand
 which lines are breakpointable, and in which module or function the
-line appears in. Use `info line`_ to see this information.
+line appears in. Use `info line <_info_line>`_ to see this information.
 
-In the future we may allow specifiying an offset to indicate which
+In the future we may allow specifying an offset to indicate which
 offset to stop at when there are several choices for a given line
 number.
 
@@ -220,18 +220,20 @@ See Also
 * trepan2_ : trepan debugger for Python 2
 * trepanxpy_ : trepan debugger for `x-python <https://pypi.python.org/pypi/x-python>`_, the bytecode interpreter written in Python
 * pydbgr_  : previous incarnation of the Python 2 debugger
-* pydb_ : even older incarnation of debugger (for very old Python 2)
 * Tutorial_: Tutorial for how to use
 * https://github.com/rocky/trepan-xpy : Python debugger using this code to support `x-python <https://pypi.python.org/pypi/x-python>`_
 * https://pypi.python.org/pypi/uncompyle6 : Python decompiler
-* https://pypi.python.org/pypi/xdis : cross-platform disassembler
-|buildstatus| |Pypi Installs| |license| |Supported Python Versions|
+* https://pypi.python.org/pypi/xdis : cross-platform disassembler |buildstatus| |Pypi Installs| |license| |Supported Python Versions|
 
 .. _pygments:  http://pygments.org
 .. _pygments_style:  http://pygments.org/docs/styles/
 .. _pydb:  http://bashdb.sf.net/pydb
+.. _pydbgr: https://pypi.python.org/pypi/pydbgr
 .. _other: https://www.npmjs.com/package/trepanjs
 .. _trepanning: https://rubygems.org/gems/trepanning
+.. _trepan2:  https://pypi.org/project/trepan2/
+.. _trepanxpy:  http://github.com/rocky/trepan-xpy
+.. _Tutorial:  https://python3-trepan.readthedocs.io/en/latest/entry-exit.html
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: http://bashdb.sourceforge.net/pydb/features.html
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan.svg
@@ -248,8 +250,8 @@ See Also
 .. |license| image:: https://img.shields.io/pypi/l/trepan.svg
    :target: https://pypi.python.org/pypi/trepan
    :alt: License
-.. _step: https://python2-trepan.readthedocs.org/en/latest/commands/running/step.html
-.. _install: http://python2-trepan.readthedocs.org/en/latest/install.html
+.. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
+.. _install: http://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan.svg
    :target: https://pypi.python.org/pypi/trepan/
    :alt: Supported Python versions

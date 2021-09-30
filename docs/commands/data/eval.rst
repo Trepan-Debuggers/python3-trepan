@@ -25,8 +25,8 @@ The above is done via regular expression matching. No fancy parsing is
 done, say, to look to see if *expr* is split across a line or whether
 var an assignment might have multiple variables on the left-hand side.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 

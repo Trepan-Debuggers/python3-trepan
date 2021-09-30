@@ -41,4 +41,4 @@ Indices and tables
 .. _ipython-trepan: https://github.com/rocky/ipython-trepan
 .. _trepan2: https://pypi.python.org/pypi/trepan2
 .. _pydbgr: https://pypi.python.org/pypi/pydbgr
-.. _realgud: https://github.com/realgud/realgud
+.. _realgud: https://elpa.gnu.org/packages/realgud.html

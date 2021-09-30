@@ -32,8 +32,8 @@ blanks (" "), backslashes ("\"), or quotes, in there are a number of
 quoting mechanisms one can use. You can enclose the path in single
 quotes, double quotes or triple double as you would do in Python
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 
@@ -108,8 +108,8 @@ explicitly tag names as a file path or Python module name. We, but not
 *gdb*, make a distinction between functions versus modules and file
 paths.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 

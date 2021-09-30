@@ -11,8 +11,8 @@ must evaluate to *True* before the breakpoint is honored.  If *condition*
 is absent, any existing condition is removed; i.e., the breakpoint is
 made unconditional.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 
