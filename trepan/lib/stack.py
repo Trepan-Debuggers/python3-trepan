@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020-2021 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@ import os.path as osp
 from trepan.lib.deparse import deparse_offset
 from trepan.processor.cmdfns import deparse_fn
 
-from xdis import PYTHON_VERSION, IS_PYPY, get_opcode
+from xdis import IS_PYPY, get_opcode
+from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 format_token = Mformat.format_token
 
@@ -109,11 +110,7 @@ def format_stack_entry(
     s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if "<module>" == funcname and ([], None, None,) == (
-        args,
-        varargs,
-        varkw,
-    ):
+    if "<module>" == funcname and ([], None, None,) == (args, varargs, varkw,):
         is_module = True
         if is_exec_stmt(frame):
             fn_name = format_token(Mformat.Function, "exec", highlight=color)
@@ -246,7 +243,7 @@ def is_exec_stmt(frame):
 
 import dis
 
-opc = get_opcode(PYTHON_VERSION, IS_PYPY)
+opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def get_call_function_name(frame):
@@ -271,7 +268,7 @@ def get_call_function_name(frame):
             # FIXME: put this code in xdis
             extended_arg = 0
             while True:
-                if PYTHON_VERSION >= 3.6:
+                if PYTHON_VERSION_TRIPLE >= (3, 6):
                     if op == opc.EXTENDED_ARG:
                         extended_arg += arg << 8
                         continue

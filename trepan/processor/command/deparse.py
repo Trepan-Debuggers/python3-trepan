@@ -16,13 +16,14 @@
 
 import sys
 
-if (3, 7) <= sys.version_info[:2] <= (3, 8):
-    try:
-        from decompyle3.semantics.fragments import code_deparse
-    except ImportError:
+if sys.version_info[:2] < (3, 9):
+    if sys.version_info[:2] >= (3, 7):
+        try:
+            from decompyle3.semantics.fragments import code_deparse
+        except ImportError:
+            from uncompyle6.semantics.fragments import code_deparse
+    else:
         from uncompyle6.semantics.fragments import code_deparse
-else:
-    from uncompyle6.semantics.fragments import code_deparse
 
 from getopt import getopt, GetoptError
 
@@ -84,6 +85,9 @@ See also:
         self.msg(highlight_string(text, opts).strip("\n"))
 
     def run(self, args):
+        if sys.version_info[:2] > (3, 8):
+            self.errmsg("Deparsing for Python greater than 3.8 not impemented")
+            return
         co = self.proc.curframe.f_code
         name = co.co_name
 
