@@ -11,6 +11,7 @@ owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
+(cd ../python-uncompyle6 && ./admin-tools/setup-master)
 cd $fulldir/..
 git checkout master && pyenv local $PYTHON_VERSION && git pull
 cd $owd

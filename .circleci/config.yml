@@ -1,17 +1,19 @@
 version: 2.1
-
+filters:
+  branches:
+    only: master
 orbs:
   python: circleci/python@0.2.1
 
 jobs:
   build-and-test:
-    executor: python/default
+    parallelism: 1
+    shell: /bin/bash --login
     working_directory: ~/rocky/python3-trepan
+    docker:
+    - image: circleci/python:3.5
     steps:
       - checkout  # checkout source code to working directory
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run:
           command: |  # use pip to install dependencies. FIXME: can we get rid of sudo?
             # sudo pip install -e git://github.com/rocky/python-xdis.git#egg=xdis

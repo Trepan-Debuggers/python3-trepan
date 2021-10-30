@@ -21,8 +21,8 @@ the current stopped location.
 Normally we only allow stopping at lines that we think are
 stoppable. If the command has a `!` suffix, force the breakpoint anyway.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 

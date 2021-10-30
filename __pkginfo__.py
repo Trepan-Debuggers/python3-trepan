@@ -23,15 +23,15 @@
 
 import sys
 
-decompiler = "uncompyle6 >= 3.7.4"
+decompiler = "uncompyle6 >= 3.8.0"
 
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
     pygments_version = ">= 2.2.0"
-    if (3, 7) <= SYS_VERSION <= (3, 8):
-        decompiler = "decompyle3 >= 3.7.4"
+    if (3, 7) <= SYS_VERSION < (3, 9):
+        decompiler = "decompyle3 >= 3.7.7"
 
 
 # Python-version | package  | last-version |
@@ -77,8 +77,8 @@ ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
     "nose>=1.0.0, <= 1.3.7",
-    "pyficache >= 2.2.1",
-    "xdis >= 5.0.8",
+    "pyficache >= 2.3.0",
+    "xdis >= 6.0.0,<6.1.0",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",

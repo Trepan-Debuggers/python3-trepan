@@ -12,7 +12,7 @@ Options are:
 
     -p | --parent        show parent node
     -P | --pretty        show pretty output
-    -A | --tree | --AST  show abstract syntax tree (AST)
+    -A | --tree | --AST  show parse tree
     -o | --offset [num]  show deparse of offset NUM
     -h | --help          give this help
 
@@ -29,8 +29,8 @@ invalid Python code.
 Output is colorized the same as source listing. Use `set highlight plain` to turn
 that off.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 
@@ -39,7 +39,7 @@ Examples:
        deparse .           # deparse current function or main
        deparse --offset 6  # deparse starting at offset 6
        deparse --offsets   # show all exect deparsing offsets
-       deparse --AST       # deparse and show AST
+       deparse --tree      # deparse and show parse tree
 
 .. seealso::
 

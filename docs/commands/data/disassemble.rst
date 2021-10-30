@@ -24,8 +24,8 @@ in addition you can also use:
 With a class, method, function, pyc-file, code or string argument
 disassemble that.
 
-Examples:
-+++++++++
+Examples
+++++++++
 
 ::
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2018, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2018, 2020-2021 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -107,9 +107,7 @@ See also:
     aliases = ("disasm",)  # Note: we will have disable
     short_help = "Disassemble Python bytecode"
 
-    DebuggerCommand.setup(
-        locals(), category="data", max_args=2
-    )
+    DebuggerCommand.setup(locals(), category="data", max_args=2)
 
     def run(self, args):
         proc = self.proc
@@ -124,7 +122,7 @@ See also:
             "start_offset": None,
             "end_offset": None,
             "relative_pos": False,
-            "asm_format" : self.settings["asmfmt"]
+            "asm_format": self.settings["asmfmt"],
         }
 
         curframe = proc.curframe

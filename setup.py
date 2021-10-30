@@ -2,12 +2,17 @@
 import sys
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 1) <= SYS_VERSION <= (3, 9)):
-    mess = "Python Versions 3.1 to 3.9 are supported only in this package."
+if not ((3, 2) <= SYS_VERSION < (3, 6)):
+    mess = "Python Versions 3.2 to 3.10 are supported only in this package."
     if (2, 4) <= SYS_VERSION <= (2, 7):
         mess += "\nFor your Python, version %s, See trepan2" % sys.version[0:3]
     elif SYS_VERSION < (2, 4):
         mess += "\nFor your Python, version %s, see pydb" % sys.version[0:3]
+    if SYS_VERSION >= (3, 6):
+        mess += (
+            "\nFor your Python, version %s, use the master code/branch."
+            % sys.version[0:3]
+        )
     print(mess)
     raise Exception(mess)
 

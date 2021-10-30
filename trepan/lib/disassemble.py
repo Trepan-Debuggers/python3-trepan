@@ -12,9 +12,9 @@ from xdis import (
     get_instructions_bytes,
     get_opcode,
     IS_PYPY,
-    PYTHON_VERSION,
 )
 from xdis.std import distb
+from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 from trepan.lib.format import (
     Arrow,
@@ -33,10 +33,10 @@ _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
 
 def _try_compile(source, name):
     """Attempts to compile the given source, first as an expression and
-       then as a statement if the first approach fails.
+    then as a statement if the first approach fails.
 
-       Utility function to accept strings in functions that otherwise
-       expect code objects
+    Utility function to accept strings in functions that otherwise
+    expect code objects
     """
     try:
         c = compile(source, name, "eval")
@@ -112,7 +112,7 @@ def dis(
             if lasti == -1:
                 lasti = 0
             pass
-        opc = get_opcode(PYTHON_VERSION, IS_PYPY)
+        opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
         x = x.f_code
         if include_header:
             header_lines = Bytecode(x, opc).info().split("\n")
@@ -138,7 +138,7 @@ def dis(
                         start_line=start_line,
                         end_line=end_line,
                         relative_pos=relative_pos,
-                        asm_format=asm_format
+                        asm_format=asm_format,
                     )
                     msg("")
                 except TypeError:
@@ -163,7 +163,7 @@ def dis(
             highlight=highlight,
             start_offset=start_offset,
             end_offset=end_offset,
-            asm_format=asm_format
+            asm_format=asm_format,
         )
     elif isinstance(x, str):  # Source code
         return disassemble_string(msg, msg_nocr, x,)
@@ -215,7 +215,7 @@ def disassemble_string(msg, msg_nocr, source):
     return disassemble_bytes(msg, msg_nocr, _try_compile(source, "<dis>"))
 
 
-opc = get_opcode(PYTHON_VERSION, IS_PYPY)
+opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def disassemble_bytes(
@@ -241,7 +241,7 @@ def disassemble_bytes(
 ):
     """Disassemble byte string of code. If end_line is negative
     it counts the number of statement linestarts to use."""
-    instructions=[]
+    instructions = []
     statement_count = 10000
     if end_line is None:
         end_line = 10000
@@ -321,7 +321,11 @@ def disassemble_bytes(
                 # Must by Python 3.6 or later
                 msg_nocr(" ")
                 if instr.has_arg:
-                    msg_nocr(format_token(Hex, "%02x" % (instr.arg % 256), highlight=highlight))
+                    msg_nocr(
+                        format_token(
+                            Hex, "%02x" % (instr.arg % 256), highlight=highlight
+                        )
+                    )
                 else:
                     msg_nocr(format_token(Hex, "00", highlight=highlight))
             elif instr.inst_size == 3:
@@ -349,20 +353,25 @@ def disassemble_bytes(
                     hasattr(opc, "opcode_extended_fmt")
                     and opc.opname[op] in opc.opcode_extended_fmt
                 ):
-                    new_repr = opc.opcode_extended_fmt[opc.opname[op]](opc, list(reversed(instructions)))
+                    new_repr = opc.opcode_extended_fmt[opc.opname[op]](
+                        opc, list(reversed(instructions))
+                    )
                     if new_repr:
                         argrepr = new_repr
                 pass
         elif asm_format in ("extended", "extended-bytes"):
-           op = instr.opcode
-           if (
+            # Note: instr.arg is also None
+            op = instr.opcode
+            if (
                 hasattr(opc, "opcode_extended_fmt")
                 and opc.opname[op] in opc.opcode_extended_fmt
             ):
-                new_repr = opc.opcode_extended_fmt[opc.opname[op]](opc, list(reversed(instructions)))
+                new_repr = opc.opcode_extended_fmt[opc.opname[op]](
+                    opc, list(reversed(instructions))
+                )
                 if new_repr:
                     argrepr = new_repr
-        if argrepr is None:
+        if argrepr is None or argrepr == "":
             if instr.arg is not None:
                 msg(format_token(Integer, str(instr.arg), highlight=highlight))
             else:
