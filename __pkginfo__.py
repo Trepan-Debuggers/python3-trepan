@@ -23,7 +23,7 @@
 
 import sys
 
-decompiler = "uncompyle6 >= 3.7.4"
+decompiler = "uncompyle6 >= 3.8.0"
 
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
@@ -31,7 +31,7 @@ if SYS_VERSION <= (3, 2):
 else:
     pygments_version = ">= 2.2.0"
     if (3, 7) <= SYS_VERSION < (3, 9):
-        decompiler = "decompyle3 >= 3.7.6"
+        decompiler = "decompyle3 >= 3.7.7"
 
 
 # Python-version | package  | last-version |
