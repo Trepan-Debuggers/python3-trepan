@@ -11,6 +11,8 @@ owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
+(cd ../python-uncompyle6 && ./admin-tools/setup-python-3.3.sh)
+
 cd $fulldir/..
 git checkout python-3.2 && pyenv local $PYTHON_VERSION && git pull
 cd $owd
