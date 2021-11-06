@@ -1,3 +1,13 @@
+1.2.8 2021-11-05
+================
+
+* Convert to use newer xdis (which handles 3.10)
+* sphinx doc updates
+* Generalize subcmdmgr for use in trepan-xpy trepan-xpy has a new class of subcommands Vmstack.
+  So we need to be aable to allow it to set trepanxpy as a base directory to look for
+  subcommands in.
+* Disassembly tweak: Show argval when there is one and argrepr == ''
+
 1.2.7 2021-08-21
 ================
 
