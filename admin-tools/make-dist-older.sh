@@ -17,11 +17,7 @@ if ! source ./setup-python-3.2.sh ; then
     exit $?
 fi
 
-<<<<<<< HEAD
 . ./setup-python-3.2.sh
-=======
-. ./admin-tools/setup-python-3.2.sh
->>>>>>> e16b8a13936c86d7dd194090694fd423456df1bd
 
 cd ..
 source $PACKAGE/version.py
