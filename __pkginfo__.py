@@ -31,7 +31,7 @@ if SYS_VERSION <= (3, 2):
 else:
     pygments_version = ">= 2.2.0"
     if (3, 7) <= SYS_VERSION < (3, 9):
-        decompiler = "decompyle3 >= 3.7.7"
+        decompiler = "decompyle3 >= 3.8.0"
 
 
 # Python-version | package  | last-version |
@@ -55,11 +55,12 @@ classifiers = [
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5 ",
-    "Programming Language :: Python :: 3.6 ",
-    "Programming Language :: Python :: 3.7 ",
-    "Programming Language :: Python :: 3.8 ",
-    "Programming Language :: Python :: 3.9 ",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
 
 # The rest in alphabetic order

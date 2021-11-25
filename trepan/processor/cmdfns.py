@@ -18,8 +18,7 @@ counts, to parse a string for an integer, or check a string for an
 on/off setting value.
 """
 import os, sys, tempfile
-import pyficache
-from xdis import IS_PYPY, PYTHON_VERSION
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 
 def source_tempfile_remap(prefix, text, tempdir=None):
@@ -35,7 +34,7 @@ def source_tempfile_remap(prefix, text, tempdir=None):
 
 def deparse_fn(code):
     try:
-        if 3.7 <= PYTHON_VERSION <= 3.8:
+        if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
             from uncompyle6.semantics.linemap import (
                 deparse_code_with_fragments_and_map as deparse_code,
             )
@@ -46,10 +45,8 @@ def deparse_fn(code):
 
     except ImportError:
         return None
-    sys_version = sys.version[:5]
     try:
-        float_version = py_str2float(sys_version)
-        deparsed = deparse_code(float_version, code, is_pypy=IS_PYPY)
+        deparsed = deparse_code(PYTHON_VERSION_TRIPLE, code, is_pypy=IS_PYPY)
         return deparsed
     except:
         raise
