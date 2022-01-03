@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2021 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2022 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -100,7 +100,12 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         if Mfile.is_compiled_py(mainpyfile):
             try:
-                from xdis import load_module, PYTHON_VERSION, IS_PYPY
+                from xdis import (
+                    load_module,
+                    PYTHON_VERSION_TRIPLE,
+                    IS_PYPY,
+                    version_tuple_to_str,
+                )
 
                 (
                     python_version,
@@ -115,10 +120,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
-                if python_version != PYTHON_VERSION:
+                if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
                     print(
                         "Bytecode is for version %s but we are version %s."
-                        % (python_version, PYTHON_VERSION)
+                        % (python_version, version_tuple_to_str())
                     )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
@@ -147,7 +152,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             except IOError:
                 decompiler = "uncompyle6"
                 try:
-                    if 3.7 <= PYTHON_VERSION <= 3.8:
+                    if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
                         from uncompyle6 import decompile_file
                     else:
                         from decompyle3 import decompile_file
