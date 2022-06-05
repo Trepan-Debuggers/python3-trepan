@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -35,8 +35,9 @@ def set_break(
     offset=None,
 ):
     if lineno is None and offset is None:
-        part1 = "I don't understand '%s' as a line number, offset, or function name," % " ".join(
-            args[1:]
+        part1 = (
+            "I don't understand '%s' as a line number, offset, or function name,"
+            % " ".join(args[1:])
         )
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
@@ -82,7 +83,8 @@ def set_break(
         offset=offset,
         temporary=temporary,
         condition=condition,
-        func=func)
+        func=func,
+    )
     if func and inspect.isfunction(func):
         cmd_obj.msg(
             "Breakpoint %d set on calling function %s()" % (bp.number, func.__name__)
@@ -93,8 +95,7 @@ def set_break(
         )
         cmd_obj.msg(msg)
     else:
-        part1 = ("Breakpoint %d set at line %d of file" %
-                 (bp.number, lineno))
+        part1 = "Breakpoint %d set at line %d of file" % (bp.number, lineno)
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -104,7 +105,7 @@ def set_break(
         else:
             func_str = ""
         if offset is not None and offset >= 0:
-            cmd_obj.msg("Breakpoint is at offset %d%s "% (offset, func_str))
+            cmd_obj.msg("Breakpoint is at offset %d%s " % (offset, func_str))
         pass
     return True
 
@@ -141,7 +142,12 @@ def parse_break_cmd(proc, args):
         location = bp_expr.location
         condition = bp_expr.condition
 
-    location = resolve_location(proc, location)
+    try:
+        location = resolve_location(proc, location)
+    except ValueError as e:
+        proc.errmsg(str(e))
+        return INVALID_PARSE_BREAK
+
     if location:
         return (
             location.method,
