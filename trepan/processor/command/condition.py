@@ -21,21 +21,21 @@ from trepan.processor.complete import complete_bpnumber
 class ConditionCommand(DebuggerCommand):
     """**condition** *bp_number* *condition*
 
-*bp_number* is a breakpoint number. *condition* is an expression which
-must evaluate to *True* before the breakpoint is honored.  If *condition*
-is absent, any existing condition is removed; i.e., the breakpoint is
-made unconditional.
+    *bp_number* is a breakpoint number. *condition* is an expression which
+    must evaluate to *True* before the breakpoint is honored.  If *condition*
+    is absent, any existing condition is removed; i.e., the breakpoint is
+    made unconditional.
 
-Examples:
----------
+    Examples:
+    ---------
 
-   condition 5 x > 10  # Breakpoint 5 now has condition x > 10
-   condition 5         # Remove above condition
+       condition 5 x > 10  # Breakpoint 5 now has condition x > 10
+       condition 5         # Remove above condition
 
-See also:
----------
+    See also:
+    ---------
 
-`break`, `tbreak`."""
+    `break`, `tbreak`."""
 
     aliases = ("cond",)
     short_help = "Specify breakpoint number N to break only if COND is True"

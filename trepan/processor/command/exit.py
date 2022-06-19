@@ -22,17 +22,16 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class ExitCommand(DebuggerCommand):
     """**exit** [*exitcode*]
 
-Hard exit of the debugged program.
+    Hard exit of the debugged program.
 
-The program being debugged is exited via *sys.exit()*. If a return code
-is given, that is the return code passed to *sys.exit()*, the
-return code that will be passed back to the OS.
+    The program being debugged is exited via *sys.exit()*. If a return code
+    is given, that is the return code passed to *sys.exit()*, the
+    return code that will be passed back to the OS.
 
-See also:
----------
+    See also:
+    ---------
 
-See `quit` and `kill`.
-"""
+    See `quit` and `kill`."""
 
     short_help = "Exit program via sys.exit()"
 

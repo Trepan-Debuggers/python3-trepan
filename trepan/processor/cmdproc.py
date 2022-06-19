@@ -541,7 +541,7 @@ class CommandProcessor(Processor):
         return self.event_processor
 
     def forget(self):
-        """ Remove memory of state variables set in the command processor """
+        """Remove memory of state variables set in the command processor"""
         self.stack = []
         self.curindex = 0
         self.curframe = None
@@ -986,7 +986,7 @@ class CommandProcessor(Processor):
         return
 
     def _populate_commands(self):
-        """ Create an instance of each of the debugger
+        """Create an instance of each of the debugger
         commands. Commands are found by importing files in the
         directory 'command'. Some files are excluded via an array set
         in __init__.  For each of the remaining files, we import them
@@ -1012,7 +1012,11 @@ class CommandProcessor(Processor):
             if imp.__name__ == base_name:
                 command_mod = imp.processor.command
             else:
-                if mod_name in ("info_sub", "set_sub", "show_sub",):
+                if mod_name in (
+                    "info_sub",
+                    "set_sub",
+                    "show_sub",
+                ):
                     pass
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
@@ -1058,7 +1062,11 @@ class CommandProcessor(Processor):
         cmd_instances = []
 
         for mod_name in Mcommand.__modules__:
-            if mod_name in ("info_sub", "set_sub", "show_sub",):
+            if mod_name in (
+                "info_sub",
+                "set_sub",
+                "show_sub",
+            ):
                 pass
             import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
@@ -1094,8 +1102,8 @@ class CommandProcessor(Processor):
         return cmd_instances
 
     def _populate_cmd_lists(self):
-        """ Populate self.lists and hashes:
-        self.commands, and self.aliases, self.category """
+        """Populate self.lists and hashes:
+        self.commands, and self.aliases, self.category"""
         self.commands = {}
         self.aliases = {}
         self.category = {}

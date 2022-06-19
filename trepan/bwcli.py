@@ -86,7 +86,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
 
 def _postprocess_options(dbg, opts):
-    """ Handle options (`opts') that feed into the debugger (`dbg')"""
+    """Handle options (`opts') that feed into the debugger (`dbg')"""
     # Set dbg.settings['printset']
     print_events = []
     if opts.fntrace:
@@ -141,12 +141,19 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             if is_readable is None:
                 print(
                     "%s: Python script file '%s' does not exist"
-                    % (__title__, mainpyfile,)
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
             elif not is_readable:
                 print(
-                    "%s: Can't read Python script file '%s'" % (__title__, mainpyfile,)
+                    "%s: Can't read Python script file '%s'"
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
                 return
@@ -158,7 +165,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             print("%s: Compiled Python script given and we can't use that." % __title__)
             print(
                 "%s: Substituting non-compiled name: %s"
-                % (__title__, mainpyfile_noopt,)
+                % (
+                    __title__,
+                    mainpyfile_noopt,
+                )
             )
             mainpyfile = mainpyfile_noopt
             pass

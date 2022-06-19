@@ -27,60 +27,65 @@ from trepan.inout.base import DebuggerInOutBase
 class TCPServer(DebuggerInOutBase):
     """Debugger Server Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS = {'open': True, 'socket': None}
+    DEFAULT_INIT_OPTS = {"open": True, "socket": None}
 
     def __init__(self, inout=None, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key,
-                                                  self.DEFAULT_INIT_OPTS)
+        get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
         self.inout = None
         self.conn = None
         self.addr = None
-        self.remote_addr = ''
-        self.buf = ''    # Read buffer
+        self.remote_addr = ""
+        self.buf = ""  # Read buffer
         self.line_edit = False  # Our name for GNU readline capability
-        self.state = 'disconnected'
+        self.state = "disconnected"
         self.PORT = None
         self.HOST = None
         if inout:
             self.inout = inout
-        if get_option('socket'):
-            self.inout = opts['socket']
+        if get_option("socket"):
+            self.inout = opts["socket"]
             self.inout.listen(1)
-            self.state = 'listening'
-        elif get_option('open'):
+            self.state = "listening"
+        elif get_option("open"):
             self.open(opts)
             pass
         return
 
     def close(self):
-        """ Closes both socket and server connection. """
-        self.state = 'closing'
+        """Closes both socket and server connection."""
+        self.state = "closing"
         if self.inout:
             self.inout.close()
             pass
-        self.state = 'closing connection'
+        self.state = "closing connection"
         if self.conn:
             self.conn.close()
-        self.state = 'disconnected'
+        self.state = "disconnected"
         return
 
     def open(self, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key,
-                                                  Mdefault.SERVER_SOCKET_OPTS)
+        get_option = lambda key: Mmisc.option_set(
+            opts, key, Mdefault.SERVER_SOCKET_OPTS
+        )
 
-        self.HOST  = get_option('HOST')
-        self.PORT  = get_option('PORT')
-        self.reuse = get_option('reuse')
-        self.search_limit = get_option('search_limit')
+        self.HOST = get_option("HOST")
+        self.PORT = get_option("PORT")
+        self.reuse = get_option("reuse")
+        self.search_limit = get_option("search_limit")
         self.inout = None
 
         this_port = self.PORT - 1
         for i in range(self.search_limit):
             this_port += 1
-            for res in socket.getaddrinfo(self.HOST, this_port, socket.AF_UNSPEC,
-                                          socket.SOCK_STREAM, 0,
-                                          socket.AI_PASSIVE):
+            for res in socket.getaddrinfo(
+                self.HOST,
+                this_port,
+                socket.AF_UNSPEC,
+                socket.SOCK_STREAM,
+                0,
+                socket.AI_PASSIVE,
+            ):
                 af, socktype, proto, canonname, sa = res
                 try:
                     self.inout = socket.socket(af, socktype, proto)
@@ -88,16 +93,15 @@ class TCPServer(DebuggerInOutBase):
                     self.inout = None
                     continue
                 try:
-                    if get_option('reuse'):
+                    if get_option("reuse"):
                         # The following socket option allows the OS to reclaim
                         # The address faster on termination.
-                        self.inout.setsockopt(socket.SOL_SOCKET,
-                                              socket.SO_REUSEADDR, 1)
+                        self.inout.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
                         pass
                     self.inout.bind(sa)
                     self.inout.listen(1)
-                    self.state = 'listening'
+                    self.state = "listening"
                     break
                 except socket.error as exc:
                     if exc.errno in [errno.EADDRINUSE, errno.EINVAL]:
@@ -106,11 +110,13 @@ class TCPServer(DebuggerInOutBase):
                         continue
                     raise
                 pass
-            if self.state == 'listening':
+            if self.state == "listening":
                 break
         if self.inout is None:
-            raise IOError('could not open server socket after trying ports '
-                          '%s..%s' % (self.PORT, this_port))
+            raise IOError(
+                "could not open server socket after trying ports "
+                "%s..%s" % (self.PORT, this_port)
+            )
         self.PORT = this_port
         return
 
@@ -126,54 +132,55 @@ class TCPServer(DebuggerInOutBase):
         have to buffer that for the next read.
         EOFError will be raised on EOF.
         """
-        if self.state != 'connected':
+        if self.state != "connected":
             self.wait_for_connect()
             pass
-        if self.state == 'connected':
+        if self.state == "connected":
             if 0 == len(self.buf):
                 self.buf = self.conn.recv(Mtcpfns.TCP_MAX_PACKET)
                 if 0 == len(self.buf):
-                    self.state = 'disconnected'
+                    self.state = "disconnected"
                     raise EOFError
                 pass
             self.buf, data = Mtcpfns.unpack_msg(self.buf)
-            return data.decode('utf-8')
+            return data.decode("utf-8")
         else:
             raise IOError("read_msg called in state: %s." % self.state)
 
     def wait_for_connect(self):
         self.conn, self.addr = self.inout.accept()
-        self.remote_addr = ':'.join(str(v) for v in self.addr)
-        self.state = 'connected'
+        self.remote_addr = ":".join(str(v) for v in self.addr)
+        self.state = "connected"
         return
 
     def write(self, msg):
-        """ This method the debugger uses to write. In contrast to
+        """This method the debugger uses to write. In contrast to
         writeline, no newline is added to the end to `str'. Also
         msg doesn't have to be a string.
         """
-        if self.state != 'connected':
+        if self.state != "connected":
             self.wait_for_connect()
             pass
         buffer = Mtcpfns.pack_msg(msg)
         while len(buffer) > Mtcpfns.TCP_MAX_PACKET:
-            self.conn.send(buffer[:Mtcpfns.TCP_MAX_PACKET])
-            buffer = buffer[Mtcpfns.TCP_MAX_PACKET:]
+            self.conn.send(buffer[: Mtcpfns.TCP_MAX_PACKET])
+            buffer = buffer[Mtcpfns.TCP_MAX_PACKET :]
         return self.conn.send(buffer)
 
+
 # Demo
-if __name__=='__main__':
-    inout = TCPServer(opts={'open': False})
+if __name__ == "__main__":
+    inout = TCPServer(opts={"open": False})
     import sys
+
     if len(sys.argv) > 1:
         inout.open()
-        print('Listening for connection on %s:%s' %
-              (inout.HOST, inout.PORT))
+        print("Listening for connection on %s:%s" % (inout.HOST, inout.PORT))
         while True:
             try:
-                line = inout.read_msg().rstrip('\n')
+                line = inout.read_msg().rstrip("\n")
                 print(line)
-                inout.writeline('ack: ' + line)
+                inout.writeline("ack: " + line)
             except EOFError:
                 break
             pass

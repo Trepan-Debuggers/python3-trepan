@@ -22,44 +22,45 @@ from trepan.inout import base as Mbase
 
 class StringArrayInput(Mbase.DebuggerInputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
-    even simplier. """
+    even simplier."""
 
     def __init__(self, inp=[], opts=None):
-        self.input  = inp
+        self.input = inp
         self.closed = False
         return
 
     def close(self):
-        'Interface is for compatibility'
+        "Interface is for compatibility"
         self.closed = True
         return
 
     def open(self, inp, opts=None):
-        """Use this to set where to read from.
-        """
+        """Use this to set where to read from."""
         if isinstance(inp, list):
             self.input = inp
         else:
             raise IOError("Invalid input type (%s) for %s" % (type(inp), inp))
         return
 
-    def readline(self, use_raw=None, prompt=''):
+    def readline(self, use_raw=None, prompt=""):
         """Read a line of input. EOFError will be raised on EOF.
 
         Note that we don't support prompting"""
-        if self.closed: raise ValueError
+        if self.closed:
+            raise ValueError
         if 0 == len(self.input):
             self.closed = True
             raise EOFError
         line = self.input[0]
         del self.input[0]
         return line
+
     pass
 
 
 class StringArrayOutput(Mbase.DebuggerInOutBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
-    even simplier. """
+    even simplier."""
 
     def __init__(self, out=[], opts=None):
         self.flush_after_write = False  # For compatibility
@@ -68,12 +69,12 @@ class StringArrayOutput(Mbase.DebuggerInOutBase):
         return
 
     def close(self):
-        'Nothing to do here. Interface is for compatibility'
+        "Nothing to do here. Interface is for compatibility"
         self.closed = True
         return
 
     def flush(self):
-        'Nothing to do here. Interface is for compatibility'
+        "Nothing to do here. Interface is for compatibility"
         return
 
     def open(self, output):
@@ -87,15 +88,15 @@ class StringArrayOutput(Mbase.DebuggerInOutBase):
         if isinstance(output, types.Listype):
             self.output = output
         else:
-            raise IOError("Invalid output type (%s) for %s" % (type(output),
-                                                                 output))
+            raise IOError("Invalid output type (%s) for %s" % (type(output), output))
         return
 
     def write(self, msg):
-        """ This method the debugger uses to write. In contrast to
+        """This method the debugger uses to write. In contrast to
         writeline, no newline is added to the end to `str'.
         """
-        if self.closed: raise ValueError
+        if self.closed:
+            raise ValueError
         if [] == self.output:
             self.output = [msg]
         else:
@@ -104,19 +105,20 @@ class StringArrayOutput(Mbase.DebuggerInOutBase):
         return
 
     def writeline(self, msg):
-        """ used to write to a debugger that is connected to this
+        """used to write to a debugger that is connected to this
         server; Here, we use the null string '' as an indicator of a
         newline.
         """
         self.write(msg)
-        self.output.append('')
+        self.output.append("")
         return
 
     pass
 
+
 # Demo
-if __name__=='__main__':
-    inp= StringArrayInput(['Now is the time', 'for all good men'])
+if __name__ == "__main__":
+    inp = StringArrayInput(["Now is the time", "for all good men"])
     line = inp.readline()
     print(line)
     line = inp.readline()
@@ -124,18 +126,18 @@ if __name__=='__main__':
     try:
         line = inp.readline()
     except EOFError:
-        print('EOF hit on read')
+        print("EOF hit on read")
         pass
     out = StringArrayOutput()
     print(out.output)
-#    line = io.readline("Type some more characters: ")
+    #    line = io.readline("Type some more characters: ")
     out.writeline("Hello, world!")
     print(out.output)
     out.write("Hello")
     print(out.output)
     out.writeline(", again.")
     print(out.output)
-#     io.open_write(sys.stdout)
+    #     io.open_write(sys.stdout)
     out.flush_after_write = True
     out.write("Last hello")
     out.close()

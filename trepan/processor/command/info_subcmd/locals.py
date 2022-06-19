@@ -25,33 +25,32 @@ from trepan.lib import complete as Mcomplete
 # when the "with" statement is used, there
 # can be get variables having names
 # _[1], _[2], etc.
-_with_local_varname = re.compile(r'_\[[0-9+]\]')
+_with_local_varname = re.compile(r"_\[[0-9+]\]")
+
 
 class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
     """**info locals** [-l | --list | | -h --help]
 
-    **info locals** [*var1 ...*]
+        **info locals** [*var1 ...*]
 
-**info locals** *
+    **info locals** *
 
-With no arguments, show all of the local variables of the current stack
-frame. If a list of names is provide limit display to just those
-variables.
+    With no arguments, show all of the local variables of the current stack
+    frame. If a list of names is provide limit display to just those
+    variables.
 
-If `*` is given, just show the variable names, not the values.
+    If `*` is given, just show the variable names, not the values.
 
-See also:
----------
-`info globals`, `info args`, `info frame`
-"""
+    See also:
+    ---------
+    `info globals`, `info args`, `info frame`"""
 
     min_abbrev = 2
     need_stack = True
     short_help = "Show the local variables of current stack frame"
 
     def complete(self, prefix):
-        completions = sorted(['*'] +
-                              self.proc.curframe.f_locals.keys())
+        completions = sorted(["*"] + self.proc.curframe.f_locals.keys())
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
@@ -84,14 +83,13 @@ See also:
             pass
         pass
 
-
         names = list(self.proc.curframe.f_locals.keys())
 
         if list_only:
             for name in names:
                 self.msg(name)
             return
-        if len(args) > 0 and args[0] == '*' :
+        if len(args) > 0 and args[0] == "*":
             self.section("locals")
             self.msg(self.columnize_commands(names))
         elif len(args) == 0:
@@ -105,8 +103,13 @@ See also:
                 else:
                     val = self.proc.getval(name)
                     pass
-                Mpp.pp(val, self.settings['width'], self.msg_nocr, self.msg,
-                       prefix='%s =' % name)
+                Mpp.pp(
+                    val,
+                    self.settings["width"],
+                    self.msg_nocr,
+                    self.msg,
+                    prefix="%s =" % name,
+                )
                 pass
             pass
         else:
@@ -121,26 +124,34 @@ See also:
                     else:
                         val = self.proc.getval(name)
                         pass
-                    Mpp.pp(val, self.settings['width'], self.msg_nocr,
-                           self.msg,
-                           prefix='%s =' % name)
+                    Mpp.pp(
+                        val,
+                        self.settings["width"],
+                        self.msg_nocr,
+                        self.msg,
+                        prefix="%s =" % name,
+                    )
                 else:
                     self.errmsg("%s is not a local variable" % name)
                     pass
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
     from trepan import debugger as Mdebugger
+
     d = Mdebugger.Trepan()
     d, cp = mock.dbg_setup(d)
     i = Minfo.InfoCommand(cp)
     sub = InfoLocals(i)
     l = list(range(30))  # Add a simple array to the local mix printed below.
     import inspect
+
     cp.curframe = inspect.currentframe()
     sub.run([])
-    sub.run(['*'])
-    sub.run(['Minfo'])
+    sub.run(["*"])
+    sub.run(["Minfo"])
     pass

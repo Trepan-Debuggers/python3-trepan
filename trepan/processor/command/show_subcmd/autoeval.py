@@ -21,17 +21,19 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class ShowAutoEval(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """**show autoeval**
 
-Show Python evaluation of unrecognized debugger commands.
+    Show Python evaluation of unrecognized debugger commands.
 
-See also:
----------
+    See also:
+    ---------
 
-`set autoeval`
-"""
-    min_abbrev = len('autoe')
+    `set autoeval`"""
+
+    min_abbrev = len("autoe")
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.show_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(ShowAutoEval)
     pass

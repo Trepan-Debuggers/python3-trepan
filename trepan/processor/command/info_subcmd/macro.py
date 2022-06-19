@@ -24,26 +24,26 @@ from trepan.lib import complete as Mcomplete
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
     """**info macro * ***
 
-**info macro** *macro1* [*macro2* ..]
+    **info macro** *macro1* [*macro2* ..]
 
-In the first form a list of the existing macro names are shown
-in column format.
+    In the first form a list of the existing macro names are shown
+    in column format.
 
-In the second form, all macro names and their definitions are shown.
+    In the second form, all macro names and their definitions are shown.
 
-In the last form the only definitions of the given macro names is shown."""
+    In the last form the only definitions of the given macro names is shown."""
 
     min_abbrev = 1
     need_stack = True
     short_help = "List of defined macros"
 
     def complete(self, prefix):
-        m = sorted(list(self.proc.macros.keys()) + ['*'])
+        m = sorted(list(self.proc.macros.keys()) + ["*"])
         return Mcomplete.complete_token(m, prefix)
 
     def run(self, args):
         if len(args) > 0:
-            if len(args) == 1 and '*' == args[0]:
+            if len(args) == 1 and "*" == args[0]:
                 macro_names = list(self.proc.macros.keys())
             else:
                 macro_names = args
@@ -53,29 +53,32 @@ In the last form the only definitions of the given macro names is shown."""
                 if macro_name in self.proc.macros:
                     self.section("%s:" % macro_name)
                     string = self.proc.macros[macro_name][1]
-                    highlight = self.settings['highlight']
-                    if highlight in ['light', 'dark']:
+                    highlight = self.settings["highlight"]
+                    if highlight in ["light", "dark"]:
                         string = highlight_string(string, highlight)
                         pass
                     self.msg("  %s" % string)
                 else:
-                    self.errmsg('%s is not a defined macro' % macro_name)
+                    self.errmsg("%s is not a defined macro" % macro_name)
                     pass
                 pass
         elif 0 == len(list(self.proc.macros.keys())):
-            self.msg('No macros defined.')
+            self.msg("No macros defined.")
         else:
             self.msg(self.columnize_commands(list(self.proc.macros.keys())))
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Demo it.
     from trepan.processor.command import mock, info as Minfo
+
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoMacro(i)
     sub.run(["u"])
-    print(sub.complete(''))
+    print(sub.complete(""))
     pass

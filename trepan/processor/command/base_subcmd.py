@@ -86,7 +86,7 @@ class DebuggerSubcommand:
         return columnize.columnize(commands, displaywidth=width, lineprefix="    ")
 
     def confirm(self, msg, default=False):
-        """ Convenience short-hand for self.debugger.intf.confirm """
+        """Convenience short-hand for self.debugger.intf.confirm"""
         return self.debugger.intf[-1].confirm(msg, default)
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
@@ -96,15 +96,15 @@ class DebuggerSubcommand:
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg):
-        """ Convenience short-hand for self.debugger.intf[-1].errmsg """
+        """Convenience short-hand for self.debugger.intf[-1].errmsg"""
         return self.debugger.intf[-1].errmsg(msg)
 
     def msg(self, msg):
-        """ Convenience short-hand for self.debugger.intf[-1].msg """
+        """Convenience short-hand for self.debugger.intf[-1].msg"""
         return self.debugger.intf[-1].msg(msg)
 
     def msg_nocr(self, msg):
-        """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
+        """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
         return self.debugger.intf[-1].msg_nocr(msg)
 
     aliases = ()
@@ -115,7 +115,7 @@ class DebuggerSubcommand:
         return self.proc.rst_msg(text)
 
     def run(self):
-        """ The method that implements the debugger command.
+        """The method that implements the debugger command.
         Help on the command comes from the docstring of this method.
         """
         raise NotImplementedError(NotImplementedMessage)

@@ -52,13 +52,15 @@ def pm(frameno=1, dbg=None):
 
 
 def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn=None):
-    if str(exc_type) == str(DebuggerQuit): return
+    if str(exc_type) == str(DebuggerQuit):
+        return
     try:
         if str(exc_type) == str(DebuggerRestart):
-            if ( exc_value and exc_value.sys_argv and
-                 len(exc_value.sys_argv) > 0 ):
-                print("No restart handler - trying restart via execv(%s)" %
-                       repr(exc_value.sys_argv))
+            if exc_value and exc_value.sys_argv and len(exc_value.sys_argv) > 0:
+                print(
+                    "No restart handler - trying restart via execv(%s)"
+                    % repr(exc_value.sys_argv)
+                )
                 os.execvp(exc_value.sys_argv[0], exc_value.sys_argv)
             else:
                 print("No restart handler, no params registered")
@@ -106,13 +108,14 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         # in get_last_or_frame_exception
         exc = get_last_or_frame_exception()
         if exc[0] is None:
-            print("Can't find traceback for post_mortem "
-                  "in sys.last_traceback or sys.exec_info()")
+            print(
+                "Can't find traceback for post_mortem "
+                "in sys.last_traceback or sys.exec_info()"
+            )
             return
         pass
     exc_type, exc_value, exc_tb = exc
-    dbg.core.execution_status = ('Terminated with unhandled exception %s'
-                                 % exc_type)
+    dbg.core.execution_status = "Terminated with unhandled exception %s" % exc_type
 
     # tb has least-recent traceback entry first. We want the most-recent
     # entry. Also we'll pick out a mainpyfile name if it hasn't previously
@@ -120,8 +123,11 @@ def post_mortem(exc=None, frameno=1, dbg=None):
     if exc_tb is not None:
         while exc_tb.tb_next is not None:
             filename = exc_tb.tb_frame.f_code.co_filename
-            if (dbg.mainpyfile and 0 == len(dbg.mainpyfile)
-                and not re_bogus_file.match(filename)):
+            if (
+                dbg.mainpyfile
+                and 0 == len(dbg.mainpyfile)
+                and not re_bogus_file.match(filename)
+            ):
                 dbg.mainpyfile = filename
                 pass
             exc_tb = exc_tb.tb_next
@@ -150,14 +156,16 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         # Possibly a bug in Python 2.5. Why f.f_lineno is
         # not always equal to t.tb_lineno, I don't know.
         f = exc_tb.tb_frame
-        if f and f.f_lineno != exc_tb.tb_lineno : f = f.f_back
-        dbg.core.processor.event_processor(f, 'exception', exc, 'Trepan3k:pm')
+        if f and f.f_lineno != exc_tb.tb_lineno:
+            f = f.f_back
+        dbg.core.processor.event_processor(f, "exception", exc, "Trepan3k:pm")
     except DebuggerRestart:
         while True:
             sys.argv = list(dbg._program_sys_argv)
-            dbg.msg("Restarting %s with arguments:\n\t%s"
-                  % (dbg.filename(dbg.mainpyfile),
-                     " ".join(dbg._program_sys_argv[1:])))
+            dbg.msg(
+                "Restarting %s with arguments:\n\t%s"
+                % (dbg.filename(dbg.mainpyfile), " ".join(dbg._program_sys_argv[1:]))
+            )
             try:
                 dbg.run_script(dbg.mainpyfile)
             except DebuggerRestart:
@@ -167,10 +175,12 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         pass
     return
 
+
 def uncaught_exception(dbg, tb_fn=None):
     exc = sys.exc_info()
     exc_type, exc_value, exc_tb = exc
-    if exc_type == DebuggerQuit: return
+    if exc_type == DebuggerQuit:
+        return
     if exc_type == DebuggerRestart:
         print("restart not done yet - entering post mortem debugging")
     elif exc_tb is None:
@@ -183,14 +193,13 @@ def uncaught_exception(dbg, tb_fn=None):
             traceback.print_exception(exc_type, exc_value, exc_tb)
         print("uncaught exception. entering post mortem debugging")
         pass
-    dbg.core.execution_status = ('Terminated with unhandled exception %s'
-                                 % exc_type)
-    dbg.core.processor.event_processor(exc_tb.tb_frame, 'exception', exc,
-                                       'Trepan3k:pm')
+    dbg.core.execution_status = "Terminated with unhandled exception %s" % exc_type
+    dbg.core.processor.event_processor(exc_tb.tb_frame, "exception", exc, "Trepan3k:pm")
     print("Post mortem debugger finished.")
     return
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         pm()
         pass

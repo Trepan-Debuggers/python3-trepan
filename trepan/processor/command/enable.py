@@ -22,13 +22,12 @@ from trepan.processor.complete import complete_bpnumber
 class EnableCommand(DebuggerCommand):
     """**enable** *bpnumber* [*bpnumber* ...]
 
-Enables the breakpoints given as a space separated list of breakpoint
-numbers. To enable all breakpoints, give no argument. See also `info break` to get a list.
+    Enables the breakpoints given as a space separated list of breakpoint
+    numbers. To enable all breakpoints, give no argument. See also `info break` to get a list.
 
-See also:
----------
-`disable`
-"""
+    See also:
+    ---------
+    `disable`"""
 
     aliases = ("en",)
     short_help = "Enable some breakpoints"

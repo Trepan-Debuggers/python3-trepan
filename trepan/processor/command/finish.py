@@ -23,18 +23,17 @@ from trepan.lib.stack import count_frames
 class FinishCommand(DebuggerCommand):
     """**finish** [*level*]
 
-Continue execution until leaving the current function. When *level* is
-specified, that many frame levels need to be popped. Note that *yield*
-and exceptions raised my reduce the number of stack frames. Also, if a
-thread is switched, we stop ignoring levels.
+    Continue execution until leaving the current function. When *level* is
+    specified, that many frame levels need to be popped. Note that *yield*
+    and exceptions raised my reduce the number of stack frames. Also, if a
+    thread is switched, we stop ignoring levels.
 
-See the `break` command if you want to stop at a particular point in a
+    See the `break` command if you want to stop at a particular point in a
 
-See also:
----------
+    See also:
+    ---------
 
-`continue`, `step`, `next`.
-"""
+    `continue`, `step`, `next`."""
 
     # FIXME: add finish [levels|fn]
     # If fn is given, that's a short-hand way of looking up how many levels
@@ -84,12 +83,20 @@ if __name__ == "__main__":
             ["finish", "0*5+1"],
         ):
             cmd.continue_running = False
-            cmd.proc.stack = [(sys._getframe(0), 14,)]
+            cmd.proc.stack = [
+                (
+                    sys._getframe(0),
+                    14,
+                )
+            ]
             result = cmd.run(c)
             print("Execute result: %s" % result)
             print(
                 "stop_frame %s, continue_running: %s"
-                % (cmd.core.stop_frame, cmd.continue_running,)
+                % (
+                    cmd.core.stop_frame,
+                    cmd.continue_running,
+                )
             )
             pass
         return

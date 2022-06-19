@@ -20,13 +20,12 @@ from trepan.processor.command.base_submgr import SubcommandMgr
 class ShowCommand(SubcommandMgr):
     """**show** *subcommand*
 
-Generic command for showing things about the debugger.  You can
-give unique prefix of the name of a subcommand to get information
-about just that subcommand.
+    Generic command for showing things about the debugger.  You can
+    give unique prefix of the name of a subcommand to get information
+    about just that subcommand.
 
-Type `show` for a list of *show* subcommands and what they do.
-Type `help show *` for just a list of *show* subcommands.
-"""
+    Type `show` for a list of *show* subcommands and what they do.
+    Type `help show *` for just a list of *show* subcommands."""
 
     short_help = "Show parts of the debugger environment"
     SubcommandMgr.setup(locals(), category="status")

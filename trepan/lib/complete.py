@@ -57,7 +57,7 @@ def complete_token_filtered_with_next(aliases, prefix, expanded, commands):
 
 def complete_token_filtered(aliases, prefix, expanded):
     """Find all starting matches in dictionary *aliases* that start
-     with *prefix*, but filter out any matches already in *expanded*"""
+    with *prefix*, but filter out any matches already in *expanded*"""
 
     complete_ary = aliases.keys()
     return [cmd for cmd in complete_ary if cmd.startswith(prefix)]

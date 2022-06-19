@@ -24,17 +24,18 @@ from trepan import vprocessor as Mprocessor
 
 
 class PrintProcessor(Mprocessor.Processor):
-    """ A processor that just prints out events as we see them. This
+    """A processor that just prints out events as we see them. This
     is suitable for example for line/call tracing. We assume that the
     caller is going to filter out which events it wants printed or
     whether it wants any printed at all.
     """
+
     def __init__(self, debugger, opts=None):
         Mprocessor.Processor.__init__(self, debugger)
         return
 
     def event_processor(self, frame, event, arg):
-        'A simple event processor that prints out events.'
+        "A simple event processor that prints out events."
         out = self.debugger.intf[-1].output
         lineno = frame.f_lineno
         filename = self.core.canonic_filename(frame)
@@ -44,9 +45,9 @@ class PrintProcessor(Mprocessor.Processor):
         else:
             out.write("%s - %s:%d" % (event, filename, lineno))
             if arg is not None:
-                out.writeline(', %s ' % repr(arg))
+                out.writeline(", %s " % repr(arg))
             else:
-                out.writeline('')
+                out.writeline("")
                 pass
             pass
         return self.event_processor

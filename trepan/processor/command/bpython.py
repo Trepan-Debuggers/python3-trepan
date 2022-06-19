@@ -18,28 +18,28 @@ import sys
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 
+
 class PythonCommand(DebuggerCommand):
     """**bpython** [**-d**]
 
-Run bpython as a command subshell. The *sys.ps1* prompt will be set to
-`trepan2 >>> `.
+    Run bpython as a command subshell. The *sys.ps1* prompt will be set to
+    `trepan2 >>> `.
 
-If *-d* is passed, you can access debugger state via local variable *debugger*.
+    If *-d* is passed, you can access debugger state via local variable *debugger*.
 
-To issue a debugger command use function *dbgr()*. For example:
+    To issue a debugger command use function *dbgr()*. For example:
 
-  dbgr('info program')
-"""
+      dbgr('info program')"""
 
-    short_help    = 'Run bpython as a command subshell'
+    short_help = "Run bpython as a command subshell"
 
     DebuggerCommand.setup(locals(), category="support", max_args=1)
 
     def dbgr(self, string):
-        '''Invoke a debugger command from inside a python shell called inside
+        """Invoke a debugger command from inside a python shell called inside
         the debugger.
-        '''
-        print('')
+        """
+        print("")
         self.proc.cmd_queue.append(string)
         self.proc.process_command()
         return
@@ -62,15 +62,16 @@ To issue a debugger command use function *dbgr()*. For example:
                 pass
             pass
 
-        banner_tmpl='''trepan2 python shell%s
-Use dbgr(*string*) to issue debugger command: *string*'''
+        banner_tmpl = """trepan2 python shell%s
+Use dbgr(*string*) to issue debugger command: *string*"""
 
-        debug = len(args) > 1 and args[1] == '-d'
+        debug = len(args) > 1 and args[1] == "-d"
         if debug:
-            banner_tmpl += ("\nVariable 'debugger' contains a trepan" +
-                            "debugger object.")
+            banner_tmpl += (
+                "\nVariable 'debugger' contains a trepan" + "debugger object."
+            )
             pass
-        my_locals  = {}
+        my_locals = {}
         # my_globals = None
         if self.proc.curframe:
             # my_globals = self.proc.curframe.f_globals
@@ -80,16 +81,17 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             pass
 
         # Give python and the user a way to get access to the debugger.
-        if debug: my_locals['debugger'] = self.debugger
-        my_locals['dbgr'] = self.dbgr
+        if debug:
+            my_locals["debugger"] = self.debugger
+        my_locals["dbgr"] = self.dbgr
 
         if len(my_locals):
-            banner=(banner_tmpl % ' with locals')
+            banner = banner_tmpl % " with locals"
         else:
-            banner=(banner_tmpl % '')
+            banner = banner_tmpl % ""
             pass
 
-        sys.ps1 = 'trepan2 >>> '
+        sys.ps1 = "trepan2 >>> "
         print(banner)
         try:
             main_bpython([], my_locals)
@@ -97,9 +99,10 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             pass
 
         # restore completion and our history if we can do so.
-        if hasattr(self.proc.intf[-1], 'complete'):
+        if hasattr(self.proc.intf[-1], "complete"):
             try:
                 from readline import set_completer, parse_and_bind
+
                 parse_and_bind("tab: complete")
                 set_completer(self.proc.intf[-1].complete)
             except ImportError:
@@ -110,7 +113,9 @@ Use dbgr(*string*) to issue debugger command: *string*'''
             self.proc.read_history_file()
             pass
         return
+
     pass
+
 
 # if __name__ == '__main__':
 #     from trepan import debugger as Mdebugger

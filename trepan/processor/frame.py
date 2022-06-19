@@ -24,23 +24,28 @@ from trepan.lib import complete as Mcomplete
 def frame_low_high(proc_obj, direction):
     stack_size = len(proc_obj.stack)  # - hide_level
     if direction is None:
-        return [-stack_size, stack_size-1]
+        return [-stack_size, stack_size - 1]
     else:
         frame_index = proc_obj.curindex
-        low, high = [ frame_index * -direction,
-                      (stack_size - frame_index - 1) * direction ]
-        if direction < 0: low, high = [high, low]
+        low, high = [
+            frame_index * -direction,
+            (stack_size - frame_index - 1) * direction,
+        ]
+        if direction < 0:
+            low, high = [high, low]
         return (low, high)
     return
 
 
 def frame_complete(proc_obj, prefix, direction):
     low, high = frame_low_high(proc_obj, direction)
-    ary = [str(low+i) for i in range(high-low+1)]
+    ary = [str(low + i) for i in range(high - low + 1)]
     return Mcomplete.complete_token(ary, prefix)
+
 
 def frame_num(proc_obj, pos):
     return len(proc_obj.stack) - pos - 1
+
 
 def adjust_frame(proc_obj, name, pos, absolute_pos):
     """Adjust stack frame by pos positions. If absolute_pos then
@@ -73,9 +78,9 @@ def adjust_frame(proc_obj, name, pos, absolute_pos):
     proc_obj.curindex = pos
     proc_obj.curframe = proc_obj.stack[proc_obj.curindex][0]
     proc_obj.location()
-    proc_obj.list_lineno   = None
-    proc_obj.list_offset   = proc_obj.curframe.f_lasti
-    proc_obj.list_object   = proc_obj.curframe
+    proc_obj.list_lineno = None
+    proc_obj.list_offset = proc_obj.curframe.f_lasti
+    proc_obj.list_object = proc_obj.curframe
     proc_obj.list_filename = proc_obj.curframe.f_code.co_filename
 
     return
@@ -90,13 +95,17 @@ def adjust_relative(proc_obj, name, args, signum):
     else:
         count_str = args[1]
         low, high = frame_low_high(proc_obj, signum)
-        count = Mcmdfns.get_an_int( proc_obj.errmsg, count_str,
-                                    ("The '%s' command argument must eval to" +
-                                     " an integer. Got: %s") %
-                                     (name, count_str), low, high )
-        if count is None: return
+        count = Mcmdfns.get_an_int(
+            proc_obj.errmsg,
+            count_str,
+            ("The '%s' command argument must eval to" + " an integer. Got: %s")
+            % (name, count_str),
+            low,
+            high,
+        )
+        if count is None:
+            return
         pass
 
-    adjust_frame(proc_obj, name, pos=signum*count,
-                 absolute_pos=False)
+    adjust_frame(proc_obj, name, pos=signum * count, absolute_pos=False)
     return

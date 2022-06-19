@@ -22,16 +22,15 @@ from trepan.processor.complete import complete_bpnumber
 class DeleteCommand(DebuggerCommand):
     """**delete** [*bpnumber* [*bpnumber*...]]
 
-Delete some breakpoints.
+    Delete some breakpoints.
 
-Arguments are breakpoint numbers with spaces in between.  To delete
-all breakpoints, give no argument.  Without
-arguments, clear all breaks (but first ask for confirmation).
+    Arguments are breakpoint numbers with spaces in between.  To delete
+    all breakpoints, give no argument.  Without
+    arguments, clear all breaks (but first ask for confirmation).
 
-See also:
----------
-`clear`
-"""
+    See also:
+    ---------
+    `clear`"""
 
     aliases = ("delete!",)
     short_help = "Delete some breakpoints or auto-display expressions"

@@ -23,15 +23,14 @@ from trepan.lib import bytecode as Mbytecode
 class SkipCommand(DebuggerCommand):
     """**skip** [*count*]
 
-Set the next line that will be executed. The line must be within the
-stopped or bottom-most execution frame.
+    Set the next line that will be executed. The line must be within the
+    stopped or bottom-most execution frame.
 
-See also:
----------
+    See also:
+    ---------
 
-`next`, `step`, `jump`, `continue`, `return` and
-`finish` for other ways to progress execution.
-"""
+    `next`, `step`, `jump`, `continue`, `return` and
+    `finish` for other ways to progress execution."""
 
     aliases = ("sk",)
     execution_set = ["Running"]

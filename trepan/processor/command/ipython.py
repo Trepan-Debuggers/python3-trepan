@@ -24,19 +24,18 @@ from traitlets.config.loader import Config
 class IPythonCommand(DebuggerCommand):
     """**ipython** [**-d**]
 
-Run IPython as a command subshell.
+    Run IPython as a command subshell.
 
-If *-d* is passed, you can access debugger state via local variable *debugger*.
+    If *-d* is passed, you can access debugger state via local variable *debugger*.
 
-To issue a debugger command use function *dbgr()*. For example:
+    To issue a debugger command use function *dbgr()*. For example:
 
-  dbgr('info program')
+      dbgr('info program')
 
-See also:
----------
+    See also:
+    ---------
 
-`python`, `bpython`
-"""
+    `python`, `bpython`"""
 
     short_help = "Run IPython as a command subshell"
 

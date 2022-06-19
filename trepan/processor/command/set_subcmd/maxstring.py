@@ -22,13 +22,12 @@ from trepan.processor import cmdfns as Mcmdfns
 class SetMaxString(DebuggerSubcommand):
     """**set maxstring** *number*
 
-Set the number of characters allowed in showing string values
+    Set the number of characters allowed in showing string values
 
-See also:
----------
+    See also:
+    ---------
 
-`show maxstring`
-"""
+    `show maxstring`"""
 
     in_list = True
     max_args = 1

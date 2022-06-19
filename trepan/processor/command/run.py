@@ -22,16 +22,15 @@ from trepan.exception import DebuggerRestart
 class RunCommand(DebuggerCommand):
     """**run**
 
-Soft restart debugger and program via a *DebuggerRestart*
-exception.
+    Soft restart debugger and program via a *DebuggerRestart*
+    exception.
 
-See also:
----------
+    See also:
+    ---------
 
-`restart` for another way to restart the debugged program.
+    `restart` for another way to restart the debugged program.
 
-See `quit`, `exit` or `kill` for termination commands.
-"""
+    See `quit`, `exit` or `kill` for termination commands."""
 
     aliases = ("R",)
     short_help = "(Soft) restart program via a DebuggerRestart exception"

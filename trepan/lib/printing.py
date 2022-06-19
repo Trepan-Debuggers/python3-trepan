@@ -42,7 +42,7 @@ def print_argspec(obj, obj_name):
 
 
 def print_obj(arg, frame, format=None, short=False):
-    """Return a string representation of an object """
+    """Return a string representation of an object"""
     try:
         if not frame:
             # ?? Should we have set up a dummy globals

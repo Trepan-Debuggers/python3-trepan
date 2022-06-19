@@ -21,17 +21,16 @@ from trepan.processor.command.base_subcmd import DebuggerSubcommand
 class ShowAsmFmt(DebuggerSubcommand):
     """**show asmfmt**
 
-Show the disassembly format style used in the `disassemble` cmmand.
+    Show the disassembly format style used in the `disassemble` cmmand.
 
-See also:
----------
+    See also:
+    ---------
 
-`set asmfmt`"""
+    `set asmfmt`"""
 
     min_abbrev = len("asmf")
     short_help = "Show assembly format style"
     pass
-
 
     def run(self, args):
         if len(args) != 0:
@@ -46,6 +45,8 @@ See also:
         return
 
     pass
+
+
 if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
 

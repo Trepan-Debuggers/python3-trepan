@@ -29,24 +29,24 @@ else:
 
 class DEvalCommand(DebuggerCommand):
     """**deval**
-    **deval?**
+        **deval?**
 
-Run a the current deparsed expression in the context of the current
-frame. Normally we are stopped before an expression so the thing that
-corresponds to the `eval` command is running the parent
-construct. `deval?` will run just the command associated with the next
-piece of code to be run.
+    Run a the current deparsed expression in the context of the current
+    frame. Normally we are stopped before an expression so the thing that
+    corresponds to the `eval` command is running the parent
+    construct. `deval?` will run just the command associated with the next
+    piece of code to be run.
 
-Examples:
----------
+    Examples:
+    ---------
 
-    deval   # Run *parent* of current deparsed code
-    deval?  # Run current deparsed code
+        deval   # Run *parent* of current deparsed code
+        deval?  # Run current deparsed code
 
-See also:
----------
+    See also:
+    ---------
 
-`eval`
+    `eval`
 
     """
 

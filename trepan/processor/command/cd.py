@@ -21,8 +21,8 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class CDCommand(DebuggerCommand):
     """**cd** *directory*
 
-Set working directory to *directory* for debugger and program
-being debugged. """
+    Set working directory to *directory* for debugger and program
+    being debugged."""
 
     aliases = ("chdir",)
     short_help = (
@@ -30,7 +30,10 @@ being debugged. """
     )
 
     DebuggerCommand.setup(
-        locals(), category="files", max_args=1, min_args=1,
+        locals(),
+        category="files",
+        max_args=1,
+        min_args=1,
     )
 
     def run(self, args):

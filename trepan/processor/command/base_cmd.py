@@ -71,7 +71,7 @@ class DebuggerCommand:
         return columnize.columnize(commands, displaywidth=width, lineprefix="    ")
 
     def confirm(self, msg, default=False):
-        """ Convenience short-hand for self.debugger.intf[-1].confirm """
+        """Convenience short-hand for self.debugger.intf[-1].confirm"""
         return self.debugger.intf[-1].confirm(msg, default)
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
@@ -81,7 +81,7 @@ class DebuggerCommand:
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf[-1].errmsg """
+        """Convenience short-hand for self.debugger.intf[-1].errmsg"""
         try:
             return self.debugger.intf[-1].errmsg(msg)
         except EOFError:
@@ -90,7 +90,7 @@ class DebuggerCommand:
         return None
 
     def msg(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf[-1].msg """
+        """Convenience short-hand for self.debugger.intf[-1].msg"""
         try:
             return self.debugger.intf[-1].msg(msg)
         except EOFError:
@@ -99,7 +99,7 @@ class DebuggerCommand:
         return None
 
     def msg_nocr(self, msg: str, opts={}):
-        """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
+        """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
         try:
             return self.debugger.intf[-1].msg_nocr(msg[:1000])
         except EOFError:
@@ -117,7 +117,7 @@ class DebuggerCommand:
         return self.msg(text)
 
     def run(self, args):
-        """ The method that implements the debugger command.
+        """The method that implements the debugger command.
         Help on the command comes from the docstring of this method.
         """
         raise NotImplementedError(NotImplementedMessage)

@@ -19,19 +19,20 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowAutoPython(Mbase_subcmd.DebuggerShowBoolSubcommand):
-    '''**show autopython**
+    """**show autopython**
 
-Show whether we go into a python shell when automatically when the
-debugger is entered.
+    Show whether we go into a python shell when automatically when the
+    debugger is entered.
 
-Change with **set autopython**
-'''
+    Change with **set autopython**"""
+
     short_help = "Show automatic Python shell entry"
-    min_abbrev = len('autopy')
+    min_abbrev = len("autopy")
     pass
 
-if __name__ == '__main__':
-    from trepan.processor.command.show_subcmd \
-      import __demo_helper__ as Mhelper
+
+if __name__ == "__main__":
+    from trepan.processor.command.show_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(ShowAutoPython)
     pass

@@ -21,45 +21,46 @@ from trepan.bwprocessor.command import base_cmd as Mbase_cmd
 
 class StepCommand(Mbase_cmd.DebuggerCommand):
     """
-step statements
+    step statements
 
-**Input Fields:**
+    **Input Fields:**
 
-   { command  => 'step',
-     [count   => <integer>],
-   }
+       { command  => 'step',
+         [count   => <integer>],
+       }
 
-If *count* is given, that many statements will be stepped. If it
-is not given, 1 is used, i.e. stop at the next statement.
+    If *count* is given, that many statements will be stepped. If it
+    is not given, 1 is used, i.e. stop at the next statement.
 
-**Output Fields:**
+    **Output Fields:**
 
-   { name     => 'step',
-     count    => <integer>,
-     [errmsg  => <error-message-array>]
-     [msg     => <message-text array>]
-   }
-"""
+       { name     => 'step',
+         count    => <integer>,
+         [errmsg  => <error-message-array>]
+         [msg     => <message-text array>]
+       }"""
 
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = True
+    name = os.path.basename(__file__).split(".")[0]
+    need_stack = True
 
     def run(self, cmd_hash):
-        if 'step_count' in cmd_hash:
-            step_count = cmd_hash['step_count'] - 1
+        if "step_count" in cmd_hash:
+            step_count = cmd_hash["step_count"] - 1
         else:
             step_count = 0
             pass
         self.proc.debugger.core.step_ignore = 0
-        self.core.stop_level       = None
-        self.core.last_frame       = None
-        self.core.stop_on_finish   = False
+        self.core.stop_level = None
+        self.core.last_frame = None
+        self.core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
-        self.proc.response['step_count'] = step_count + 1
+        self.proc.response["step_count"] = step_count + 1
         return True
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # from mock import MockDebugger
     # d = MockDebugger()
     # cmd = StepCommand(d.core.processor)

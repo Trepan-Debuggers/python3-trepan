@@ -23,21 +23,20 @@ from trepan.processor.complete import complete_identifier
 class PCommand(DebuggerCommand):
     """**print** *expression*
 
-Print the value of the expression. Variables accessible are those of the
-environment of the selected stack frame, plus globals.
+    Print the value of the expression. Variables accessible are those of the
+    environment of the selected stack frame, plus globals.
 
-The expression may be preceded with */fmt* where *fmt* is one of the
-format letters 'c', 'x', 'o', 'f', or 's' for chr, hex, oct,
-float or str respectively.
+    The expression may be preceded with */fmt* where *fmt* is one of the
+    format letters 'c', 'x', 'o', 'f', or 's' for chr, hex, oct,
+    float or str respectively.
 
-If the length output string large, the first part of the value is
-shown and `...` indicates it has been truncated.
+    If the length output string large, the first part of the value is
+    shown and `...` indicates it has been truncated.
 
-See also:
----------
+    See also:
+    ---------
 
- `pp` and `examine` for commands which do more in the way of formatting.
-"""
+     `pp` and `examine` for commands which do more in the way of formatting."""
 
     aliases = ("print", "pr")
     short_help = "Print value of expression EXP"

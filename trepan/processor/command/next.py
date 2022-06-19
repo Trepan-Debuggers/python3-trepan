@@ -22,32 +22,29 @@ from trepan.processor.cmdfns import want_different_line
 class NextCommand(DebuggerCommand):
     """**next**[**+**|**-**] [*count*]
 
-Execute the current simple statement stopping at the next event but
-ignoring steps into function calls at this level,
+    Execute the current simple statement stopping at the next event but
+    ignoring steps into function calls at this level,
 
-With an integer argument, perform `next` that many times. However if
-an exception occurs at this level, or we *return*, *yield* or the
-thread changes, we stop regardless of count.
+    With an integer argument, perform `next` that many times. However if
+    an exception occurs at this level, or we *return*, *yield* or the
+    thread changes, we stop regardless of count.
 
-A suffix of `+` on the command or an alias to the command forces to
-move to another line, while a suffix of `-` does the opposite and
-disables the requiring a move to a new line. If no suffix is given,
-the debugger setting 'different-line' determines this behavior.
+    A suffix of `+` on the command or an alias to the command forces to
+    move to another line, while a suffix of `-` does the opposite and
+    disables the requiring a move to a new line. If no suffix is given,
+    the debugger setting 'different-line' determines this behavior.
 
-See also:
----------
+    See also:
+    ---------
 
-`step`, `skip`, `jump` (there's no `hop` yet), `continue`, and
-`finish` for other ways to progress execution.
-"""
+    `step`, `skip`, `jump` (there's no `hop` yet), `continue`, and
+    `finish` for other ways to progress execution."""
 
     aliases = ("next+", "next-", "n", "n-", "n+")
     execution_set = ["Running"]
     short_help = "Step over"
 
-    DebuggerCommand.setup(
-        locals(), category="running", need_stack=True, max_args=1
-    )
+    DebuggerCommand.setup(locals(), category="running", need_stack=True, max_args=1)
 
     def run(self, args):
         if len(args) <= 1:
@@ -81,7 +78,10 @@ if __name__ == "__main__":
         print("Run result: %s" % result)
         print(
             "step_ignore %d, continue_running: %s"
-            % (d.core.step_ignore, cmd.continue_running,)
+            % (
+                d.core.step_ignore,
+                cmd.continue_running,
+            )
         )
         pass
     for c in (["n"], ["next+"], ["n-"]):

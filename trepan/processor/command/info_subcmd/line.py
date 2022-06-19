@@ -49,25 +49,25 @@ def find_function(funcname, filename):
 class InfoLine(DebuggerSubcommand):
     """**info line* [*location*]
 
-Show line information for location *location*.
+    Show line information for location *location*.
 
-If no location is given, use the the current stopped line.
+    If no location is given, use the the current stopped line.
 
-Examples
---------
+    Examples
+    --------
 
-    (trepan3k) info line
-    Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
-        starts at offset 0 of <module> and contains 2 instructions
-    There are multiple line offsets this line number. Other line offsets: 4 of <module>
+        (trepan3k) info line
+        Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
+            starts at offset 0 of <module> and contains 2 instructions
+        There are multiple line offsets this line number. Other line offsets: 4 of <module>
 
-    (trepan3k) info line 5
-    Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
-        starts at offset 16 of <module> and contains 7 instructions
+        (trepan3k) info line 5
+        Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
+            starts at offset 16 of <module> and contains 7 instructions
 
-See also:
----------
-`info program`, `info frame`"""
+    See also:
+    ---------
+    `info program`, `info frame`"""
 
     min_abbrev = 2
     max_args = 4
@@ -109,7 +109,10 @@ See also:
             pass
 
         line_info = code_line_info(filename, line_number)
-        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
+        msg1 = 'Line %d of "%s"' % (
+            line_number,
+            self.core.filename(filename),
+        )
         if line_info:
             msg2 = "starts at offset %d of %s and contains %d instructions" % (
                 line_info[0].offsets[0],
@@ -123,12 +126,14 @@ See also:
                 % (line_number, self.core.filename(filename))
             )
         if line_info and len(line_info) > 1:
-            self.msg(wrapped_lines(
-                "There are multiple line offsets for line number.",
-                "Other line offsets: %s"
-                % ", ".join(
-                    ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]),
-                self.settings["width"]
+            self.msg(
+                wrapped_lines(
+                    "There are multiple line offsets for line number.",
+                    "Other line offsets: %s"
+                    % ", ".join(
+                        ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]
+                    ),
+                    self.settings["width"],
                 )
             )
         return False

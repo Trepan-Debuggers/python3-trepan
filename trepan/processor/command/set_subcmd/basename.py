@@ -21,18 +21,20 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class SetBasename(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set basename** [ **on** | **off** ]
 
-Set basename (short filenames) in debugger output.
+    Set basename (short filenames) in debugger output.
 
-Setting this causes the debugger output to give just the basename for
-filenames. This is useful in debugger testing or possibly showing
-examples where you don't want to hide specific filesystem and
-installation information."""
+    Setting this causes the debugger output to give just the basename for
+    filenames. This is useful in debugger testing or possibly showing
+    examples where you don't want to hide specific filesystem and
+    installation information."""
 
-    in_list    = True
-    min_abbrev = len('ba')
+    in_list = True
+    min_abbrev = len("ba")
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(SetBasename)
     pass

@@ -80,7 +80,7 @@ class UserInterface(TrepanInterface):
             pass
 
     def close(self):
-        """ Closes both input and output """
+        """Closes both input and output"""
         try:
             self.input.close()
             self.output.close()

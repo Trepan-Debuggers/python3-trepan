@@ -22,9 +22,9 @@ from trepan.processor.complete import complete_identifier
 class DebugCommand(DebuggerCommand):
     """**debug** *python-expression*
 
-Enter a nested debugger that steps through the *python-expression* argument
-which is an arbitrary expression to be executed the current
-environment."""
+    Enter a nested debugger that steps through the *python-expression* argument
+    which is an arbitrary expression to be executed the current
+    environment."""
 
     short_help = "Debug *python-expression"
 

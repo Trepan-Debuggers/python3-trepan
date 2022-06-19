@@ -22,18 +22,18 @@ from trepan.misc import wrapped_lines
 class InfoProgram(DebuggerSubcommand):
     """**info program**
 
-Execution status of the program. Listed are:
+    Execution status of the program. Listed are:
 
-* Program name
+    * Program name
 
-* Instruction PC
+    * Instruction PC
 
-* Reason the program is stopped.
+    * Reason the program is stopped.
 
-See also:
----------
+    See also:
+    ---------
 
-`info line`, `info args`, `info frame`, `info pc`"""
+    `info line`, `info args`, `info frame`, `info pc`"""
 
     min_abbrev = 2  # Need at least "info pr"
     max_args = 0

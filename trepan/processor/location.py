@@ -24,9 +24,9 @@ INVALID_LOCATION = None
 
 def resolve_location(proc, location):
     """Expand fields in Location namedtuple. If:
-       '.':  get fields from stack
-       function/module: get fields from evaluation/introspection
-       location file and line number: use that
+    '.':  get fields from stack
+    function/module: get fields from evaluation/introspection
+    location file and line number: use that
     """
     curframe = proc.curframe
     offset = None
@@ -150,9 +150,9 @@ def resolve_location(proc, location):
 
 def resolve_address_location(proc, location):
     """Expand fields in Location namedtuple. If:
-       '.':  get fields from stack
-       function/module: get fields from evaluation/introspection
-       location file and line number: use that
+    '.':  get fields from stack
+    function/module: get fields from evaluation/introspection
+    location file and line number: use that
     """
     curframe = proc.curframe
     if location == ".":

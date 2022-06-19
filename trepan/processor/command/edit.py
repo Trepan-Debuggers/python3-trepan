@@ -24,20 +24,21 @@ from trepan.processor.cmdlist import parse_location
 class EditCommand(DebuggerCommand):
     """**edit** *location*
 
-Edit specified file or module.
-With no argument, edits file containing most recent line listed.
+    Edit specified file or module.
+    With no argument, edits file containing most recent line listed.
 
-See also:
----------
+    See also:
+    ---------
 
-`list`
-"""
+    `list`"""
 
     aliases = ("ed",)
     short_help = "Edit specified file or module"
 
     DebuggerCommand.setup(
-        locals(), category="files", max_args=1,
+        locals(),
+        category="files",
+        max_args=1,
     )
 
     def run(self, args):

@@ -110,7 +110,11 @@ def format_stack_entry(
     s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if "<module>" == funcname and ([], None, None,) == (args, varargs, varkw,):
+    if "<module>" == funcname and ([], None, None,) == (
+        args,
+        varargs,
+        varkw,
+    ):
         is_module = True
         if is_exec_stmt(frame):
             fn_name = format_token(Mformat.Function, "exec", highlight=color)
@@ -377,7 +381,7 @@ def print_dict(s, obj, title):
 
 
 def eval_print_obj(arg, frame, format=None, short=False):
-    """Return a string representation of an object """
+    """Return a string representation of an object"""
     try:
         if not frame:
             # ?? Should we have set up a dummy globals
@@ -393,7 +397,7 @@ def eval_print_obj(arg, frame, format=None, short=False):
 
 
 def print_obj(arg, val, format=None, short=False):
-    """Return a string representation of an object """
+    """Return a string representation of an object"""
     what = arg
     if format:
         what = format + " " + arg

@@ -23,45 +23,44 @@ from trepan.processor.cmdfns import want_different_line
 class StepCommand(DebuggerCommand):
     """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
 
-Execute the current line, stopping at the next event.
+    Execute the current line, stopping at the next event.
 
-With an integer argument, step that many times.
+    With an integer argument, step that many times.
 
-*event* is list of an event name which is one of: `call`,
-`return`, `line`, `exception` `c-call`, `c-return` or `c-exception`.
-If specified, only those stepping events will be considered. If no
-list of event names is given, then any event triggers a stop when the
-count is 0.
+    *event* is list of an event name which is one of: `call`,
+    `return`, `line`, `exception` `c-call`, `c-return` or `c-exception`.
+    If specified, only those stepping events will be considered. If no
+    list of event names is given, then any event triggers a stop when the
+    count is 0.
 
-There is however another way to specify a *single* event, by
-suffixing one of the symbols `<`, `>`, or `!` after the command or on
-an alias of that.  A suffix of `+` on a command or an alias forces a
-move to another line, while a suffix of `-` disables this requirement.
-A suffix of `>` will continue until the next call. (`finish` will run
-run until the return for that call.)
+    There is however another way to specify a *single* event, by
+    suffixing one of the symbols `<`, `>`, or `!` after the command or on
+    an alias of that.  A suffix of `+` on a command or an alias forces a
+    move to another line, while a suffix of `-` disables this requirement.
+    A suffix of `>` will continue until the next call. (`finish` will run
+    run until the return for that call.)
 
-If no suffix is given, the debugger setting `different-line`
-determines this behavior.
+    If no suffix is given, the debugger setting `different-line`
+    determines this behavior.
 
-Examples:
----------
+    Examples:
+    ---------
 
-  step        # step 1 event, *any* event
-  step 1      # same as above
-  step 5/5+0  # same as above
-  step line   # step only line events
-  step call   # step only call events
-  step>       # same as above
-  step call line # Step line *and* call events
+      step        # step 1 event, *any* event
+      step 1      # same as above
+      step 5/5+0  # same as above
+      step line   # step only line events
+      step call   # step only call events
+      step>       # same as above
+      step call line # Step line *and* call events
 
-Related and similar is the `next` command.
+    Related and similar is the `next` command.
 
-See also:
----------
+    See also:
+    ---------
 
-`next`, `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
-`finish` for other ways to progress execution.
-"""
+    `next`, `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
+    `finish` for other ways to progress execution."""
 
     aliases = (
         "step+",

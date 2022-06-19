@@ -58,7 +58,7 @@ class DebuggerUserOutput(DebuggerInOutBase):
         return
 
     def write(self, msg):
-        """ This method the debugger uses to write. In contrast to
+        """This method the debugger uses to write. In contrast to
         writeline, no newline is added to the end to `str'.
         """
         if self.output.closed:

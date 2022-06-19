@@ -66,50 +66,47 @@ def cache_from_source(path, debug_override=None):
 class DisassembleCommand(DebuggerCommand):
     """**disassemble** [*thing*]
 
-**disassemble** [*address-range*]
+    **disassemble** [*address-range*]
 
-Disassembles bytecode. See `help syntax range` for what can go in a list range.
+    Disassembles bytecode. See `help syntax range` for what can go in a list range.
 
-Without arguments, print lines starting from where the last list left off
-since the last entry to the debugger. We start off at the location indicated
-by the current stack.
+    Without arguments, print lines starting from where the last list left off
+    since the last entry to the debugger. We start off at the location indicated
+    by the current stack.
 
-in addition you can also use:
+    in addition you can also use:
 
-  - a '.' for the location of the current frame
+      - a '.' for the location of the current frame
 
-  - a '-' for the lines before the last list
+      - a '-' for the lines before the last list
 
-  - a '+' for the lines after the last list
+      - a '+' for the lines after the last list
 
-With a class, method, function, pyc-file, code or string argument
-disassemble that.
+    With a class, method, function, pyc-file, code or string argument
+    disassemble that.
 
-Examples:
---------
-::
+    Examples:
+    --------
+    ::
 
-   disassemble    # Possibly current frame
-   disassemble +                    # Same as above
-   disassemble os.path              # Disassemble all of os.path # xxx
-   disassemble os.path.normcase()   # Disaasemble just method os.path.normcase
-   disassemble 3                    # Disassemble starting from line 3
-   disassemble 3, 10                # Disassemble lines 3 to 10
-   disassemble *0, *10              # Disassemble offset 0..10 (10 not included)
-   disassemble myprog.pyc           # Disassemble file myprog.pyc
+       disassemble    # Possibly current frame
+       disassemble +                    # Same as above
+       disassemble os.path              # Disassemble all of os.path # xxx
+       disassemble os.path.normcase()   # Disaasemble just method os.path.normcase
+       disassemble 3                    # Disassemble starting from line 3
+       disassemble 3, 10                # Disassemble lines 3 to 10
+       disassemble *0, *10              # Disassemble offset 0..10 (10 not included)
+       disassemble myprog.pyc           # Disassemble file myprog.pyc
 
-See also:
----------
+    See also:
+    ---------
 
-`help syntax arange`, `deparse`, `list`, `info pc`.
-"""
+    `help syntax arange`, `deparse`, `list`, `info pc`."""
 
     aliases = ("disasm",)  # Note: we will have disable
     short_help = "Disassemble Python bytecode"
 
-    DebuggerCommand.setup(
-        locals(), category="data", max_args=2
-    )
+    DebuggerCommand.setup(locals(), category="data", max_args=2)
 
     def run(self, args):
         proc = self.proc
@@ -124,7 +121,7 @@ See also:
             "start_offset": None,
             "end_offset": None,
             "relative_pos": False,
-            "asm_format" : self.settings["asmfmt"]
+            "asm_format": self.settings["asmfmt"],
         }
 
         curframe = proc.curframe

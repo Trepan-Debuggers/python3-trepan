@@ -21,36 +21,35 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class HandleCommand(DebuggerCommand):
     """**handle** [*signal-name* [*action1* *action2* ...]]
 
-Specify how to handle a signal *signal-name*. *signal-name* can be a
-signal name like `SIGINT` or a signal number like 2. The absolute
-value is used for numbers so -9 is the same as 9 (`SIGKILL`). When
-signal names are used, you can drop off the leading "SIG" if you want. Also
-letter case is not important either.
+    Specify how to handle a signal *signal-name*. *signal-name* can be a
+    signal name like `SIGINT` or a signal number like 2. The absolute
+    value is used for numbers so -9 is the same as 9 (`SIGKILL`). When
+    signal names are used, you can drop off the leading "SIG" if you want. Also
+    letter case is not important either.
 
-Arguments are signals and actions to apply to those signals.
-recognized actions include `stop`, `nostop`, `print`, `noprint`,
-`pass`, `nopass`, `ignore`, or `noignore`.
+    Arguments are signals and actions to apply to those signals.
+    recognized actions include `stop`, `nostop`, `print`, `noprint`,
+    `pass`, `nopass`, `ignore`, or `noignore`.
 
-`stop` means reenter debugger if this signal happens (implies `print` and
-`nopass`).
+    `stop` means reenter debugger if this signal happens (implies `print` and
+    `nopass`).
 
-`Print` means print a message if this signal happens.
+    `Print` means print a message if this signal happens.
 
-`Pass` means let program see this signal; otherwise the program see it.
+    `Pass` means let program see this signal; otherwise the program see it.
 
-`Ignore` is a synonym for `nopass`; `noignore` is a synonym for `pass`.
+    `Ignore` is a synonym for `nopass`; `noignore` is a synonym for `pass`.
 
-Without any action names the current settings are shown.
+    Without any action names the current settings are shown.
 
-**Examples:**
+    **Examples:**
 
-  handle INT         # Show current settings of SIGINT
-  handle SIGINT      # same as above
-  handle int         # same as above
-  handle 2           # Probably the same as above
-  handle -2          # the same as above
-  handle INT nostop  # Don't stop in the debugger on SIGINT
-"""
+      handle INT         # Show current settings of SIGINT
+      handle SIGINT      # same as above
+      handle int         # same as above
+      handle 2           # Probably the same as above
+      handle -2          # the same as above
+      handle INT nostop  # Don't stop in the debugger on SIGINT"""
 
     short_help = "Specify how to handle a signal"
 

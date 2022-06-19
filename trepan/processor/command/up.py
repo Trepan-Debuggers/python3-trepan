@@ -21,12 +21,13 @@ from trepan.processor.frame import adjust_relative, frame_complete
 
 class UpCommand(DebuggerCommand):
 
-    signum        = -1  # This is what distinguishes us from "down"
+    signum = -1  # This is what distinguishes us from "down"
 
     DebuggerCommand.setup(locals(), category="stack", need_stack=True, max_args=1)
 
-    short_help    = 'Move frame in the direction of the caller of ' \
-      'the last-selected frame'
+    short_help = (
+        "Move frame in the direction of the caller of " "the last-selected frame"
+    )
 
     def complete(self, prefix):
         proc_obj = self.proc
@@ -35,39 +36,40 @@ class UpCommand(DebuggerCommand):
     def run(self, args):
         """**up** [*count*]
 
-Move the current frame up in the stack trace (to an older frame). 0 is
-the most recent frame. If no count is given, move up 1.
+        Move the current frame up in the stack trace (to an older frame). 0 is
+        the most recent frame. If no count is given, move up 1.
 
-See also:
----------
+        See also:
+        ---------
 
-`down` and `frame`."""
+        `down` and `frame`."""
         adjust_relative(self.proc, self.name, args, self.signum)
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from trepan.processor import cmdproc as Mcmdproc
     from trepan import debugger as Mdebugger
-    d            = Mdebugger.Trepan()
-    cp           = d.core.processor
+
+    d = Mdebugger.Trepan()
+    cp = d.core.processor
     command = UpCommand(cp)
-    command.run(['up'])
+    command.run(["up"])
 
     def nest_me(cp, command, i):
         import inspect
+
         if i > 1:
             cp.curframe = inspect.currentframe()
-            cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None,
-                                                       cp)
-            command.run(['up'])
-            print('-' * 10)
-            command.run(['up', '-2'])
-            print('-' * 10)
-            command.run(['up', '-3'])
-            print('-' * 10)
+            cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None, cp)
+            command.run(["up"])
+            print("-" * 10)
+            command.run(["up", "-2"])
+            print("-" * 10)
+            command.run(["up", "-3"])
+            print("-" * 10)
         else:
-            nest_me(cp, command, i+1)
+            nest_me(cp, command, i + 1)
         return
 
     cp.forget()

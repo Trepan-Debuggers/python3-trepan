@@ -22,13 +22,12 @@ from trepan.processor.cmdfns import run_set_bool, run_show_bool
 class SetAutoPC(DebuggerSetBoolSubcommand):
     """**set autopc** [ **on** | **off** ]
 
-Run the `info pc` command every time we enter the debugger.
+    Run the `info pc` command every time we enter the debugger.
 
-See also:
----------
+    See also:
+    ---------
 
-`show autopc`
-"""
+    `show autopc`"""
 
     in_list = True
     min_abbrev = len("autop")

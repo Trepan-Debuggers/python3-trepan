@@ -14,12 +14,12 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Communication status codes"""
-PRINT         = '.'
-COMMAND       = 'C'   # read a command
-CONFIRM_TRUE  = 'Y'
-CONFIRM_FALSE = 'N'
-CONFIRM_REPLY = '?'
-QUIT          = 'q'
-PROMPT        = 'p'
-SYNC          = 's'   # Resynchronize communication
-RESTART       = 'r'
+PRINT = "."
+COMMAND = "C"  # read a command
+CONFIRM_TRUE = "Y"
+CONFIRM_FALSE = "N"
+CONFIRM_REPLY = "?"
+QUIT = "q"
+PROMPT = "p"
+SYNC = "s"  # Resynchronize communication
+RESTART = "r"

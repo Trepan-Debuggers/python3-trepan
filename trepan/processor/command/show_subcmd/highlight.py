@@ -23,27 +23,32 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class ShowHighlight(Mbase_subcmd.DebuggerSubcommand):
     """**show highlight**
 
-Show whether we use terminal highlighting.
+    Show whether we use terminal highlighting.
 
-See also:
---------
+    See also:
+    --------
 
-`set highlight`"""
-    short_help = 'Show if we use terminal highlight'
+    `set highlight`"""
+
+    short_help = "Show if we use terminal highlight"
 
     def run(self, args):
-        val = self.settings['highlight']
-        if 'plain' == val:
-            mess = 'output set to not use terminal escape sequences'
-        elif 'light' == val:
-            mess = ('output set for terminal with escape sequences '
-                    'for a light background')
-        elif 'dark' == val:
-            mess = ('output set for terminal with escape sequences '
-                    'for a dark background')
+        val = self.settings["highlight"]
+        if "plain" == val:
+            mess = "output set to not use terminal escape sequences"
+        elif "light" == val:
+            mess = (
+                "output set for terminal with escape sequences "
+                "for a light background"
+            )
+        elif "dark" == val:
+            mess = (
+                "output set for terminal with escape sequences " "for a dark background"
+            )
         else:
-            self.errmsg('Internal error: incorrect highlight setting %s' % val)
+            self.errmsg("Internal error: incorrect highlight setting %s" % val)
             return
         self.msg(mess)
         return
+
     pass

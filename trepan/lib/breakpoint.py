@@ -18,40 +18,44 @@ class BreakpointManager(object):
     well.  Note there may be more than one breakpoint per line which
     may have different conditions associated with them.
     """
+
     def __init__(self):
         self.reset()
         return
 
     def bpnumbers(self):
-        '''Returns a list of strings of breakpoint numbers'''
-        return ["%d" % bp.number for bp in self.bpbynumber if
-                bp is not None]
+        """Returns a list of strings of breakpoint numbers"""
+        return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
     def get_breakpoint(self, i):
         if isinstance(i, str):
             try:
                 i = int(i)
             except ValueError:
-                return(False, 'Breakpoint value %r is not a number.' % i,
-                       None)
+                return (False, "Breakpoint value %r is not a number." % i, None)
             pass
         if 1 == len(self.bpbynumber):
-            return (False, 'No breakpoints set.', None)
+            return (False, "No breakpoints set.", None)
         elif i >= len(self.bpbynumber) or i <= 0:
-            return (False, 'Breakpoint number %d out of range 1..%d.' %
-                    (i, len(self.bpbynumber)-1), None)
+            return (
+                False,
+                "Breakpoint number %d out of range 1..%d."
+                % (i, len(self.bpbynumber) - 1),
+                None,
+            )
         bp = self.bpbynumber[i]
         if bp is None:
-            return (False, 'Breakpoint %d previously deleted.' % i, None)
+            return (False, "Breakpoint %d previously deleted." % i, None)
         return (True, None, bp)
 
-    def add_breakpoint(self, filename, lineno, offset, temporary=False, condition=None,
-                       func=None):
+    def add_breakpoint(
+        self, filename, lineno, offset, temporary=False, condition=None, func=None
+    ):
 
         bpnum = len(self.bpbynumber)
-        if filename: filename  = os.path.realpath(filename)
-        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition,
-                           func, offset)
+        if filename:
+            filename = os.path.realpath(filename)
+        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, func, offset)
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
         if (filename, lineno) in self.bplist:
@@ -75,17 +79,18 @@ class BreakpointManager(object):
                 self.delete_breakpoint(bp)
                 pass
         if not bp_list:
-            return 'There are no breakpoints'
+            return "There are no breakpoints"
         else:
-            return 'Deleted breakpoints %s' % ', '.join(bp_list)
+            return "Deleted breakpoints %s" % ", ".join(bp_list)
         return
 
     def delete_breakpoint(self, bp):
-        " remove breakpoint `bp'"
+        "remove breakpoint `bp'"
         bpnum = bp.number
-        self.bpbynumber[bpnum] = None   # No longer in list
+        self.bpbynumber[bpnum] = None  # No longer in list
         index = (bp.filename, bp.line)
-        if index not in self.bplist: return False
+        if index not in self.bplist:
+            return False
         self.bplist[index].remove(bp)
         if not self.bplist[index]:
             # No more breakpoints for this file:line combo
@@ -98,16 +103,16 @@ class BreakpointManager(object):
         if not success:
             return False, msg
         self.delete_breakpoint(bp)
-        return (True, '')
+        return (True, "")
 
-    def en_disable_all_breakpoints(self,  do_enable=True):
+    def en_disable_all_breakpoints(self, do_enable=True):
         "Enable or disable all breakpoints."
         bp_list = [bp for bp in self.bpbynumber if bp]
         bp_nums = []
         if do_enable:
-            endis = 'en'
+            endis = "en"
         else:
-            endis = 'dis'
+            endis = "dis"
             pass
         if not bp_list:
             return "No breakpoints to %sable" % endis
@@ -115,7 +120,7 @@ class BreakpointManager(object):
             bp.enabled = do_enable
             bp_nums.append(str(bp.number))
             pass
-        return ("Breakpoints %sabled: %s" % (endis, ", ".join(bp_nums)))
+        return "Breakpoints %sabled: %s" % (endis, ", ".join(bp_nums))
 
     def en_disable_breakpoint_by_number(self, bpnum, do_enable=True):
         "Enable or disable a breakpoint given its breakpoint number."
@@ -123,15 +128,23 @@ class BreakpointManager(object):
         if not success:
             return success, msg
         if do_enable:
-            endis = 'en'
+            endis = "en"
         else:
-            endis = 'dis'
+            endis = "dis"
             pass
         if bp.enabled == do_enable:
-            return (False, ('Breakpoint (%r) previously %sabled' %
-                            (str(bpnum), endis,)))
+            return (
+                False,
+                (
+                    "Breakpoint (%r) previously %sabled"
+                    % (
+                        str(bpnum),
+                        endis,
+                    )
+                ),
+            )
         bp.enabled = do_enable
-        return (True, '')
+        return (True, "")
 
     def delete_breakpoints_by_lineno(self, filename, lineno):
         """Removes all breakpoints at a give filename and line number.
@@ -166,7 +179,7 @@ class BreakpointManager(object):
                 # If unconditional, and ignoring, go on to next, else
                 # break
                 if b.ignore > 0:
-                    b.ignore = b.ignore -1
+                    b.ignore = b.ignore - 1
                     continue
                 else:
                     # breakpoint and marker that's ok to delete if
@@ -180,7 +193,7 @@ class BreakpointManager(object):
                     val = eval(b.condition, frame.f_globals, frame.f_locals)
                     if val:
                         if b.ignore > 0:
-                            b.ignore = b.ignore -1
+                            b.ignore = b.ignore - 1
                             # continue
                         else:
                             return (b, True)
@@ -196,17 +209,17 @@ class BreakpointManager(object):
         return (None, None)
 
     def last(self):
-        return len(self.bpbynumber)-1
+        return len(self.bpbynumber) - 1
 
     def reset(self):
-        """ A list of breakpoints by breakpoint number.  Each entry is
+        """A list of breakpoints by breakpoint number.  Each entry is
         None or an instance of Breakpoint.  Index 0 is unused, except
-        for marking an effective break .... see effective(). """
+        for marking an effective break .... see effective()."""
         self.bpbynumber = [None]
 
         # A list of breakpoints indexed by (file, lineno) tuple
         self.bplist = {}
-        self.fnlist  = {}
+        self.fnlist = {}
 
         return
 
@@ -224,28 +237,37 @@ class Breakpoint:
     the first offset in bytecode is 0.
     """
 
-    def __init__(self, number, filename, line, temporary=False,
-                 condition=None, funcname=None, offset=None):
+    def __init__(
+        self,
+        number,
+        filename,
+        line,
+        temporary=False,
+        condition=None,
+        funcname=None,
+        offset=None,
+    ):
 
         self.offset = offset
         self.condition = condition
-        self.enabled   = True
+        self.enabled = True
 
-        self.filename  = filename
-        if filename: self.filename  = os.path.realpath(filename)
+        self.filename = filename
+        if filename:
+            self.filename = os.path.realpath(filename)
 
         # Needed if funcname is not None.
         self.func_first_executable_line = None
-        self.funcname  = funcname
+        self.funcname = funcname
 
         # Number of time breakpoint has been hit
-        self.hits      = 0
+        self.hits = 0
 
         # Number of times to ignore breakpoint before stopping
-        self.ignore    = 0
+        self.ignore = 0
 
-        self.line      = line
-        self.number    = number
+        self.line = line
+        self.number = number
 
         # Delete breakpoint after hitting it.
         self.temporary = temporary
@@ -253,27 +275,34 @@ class Breakpoint:
 
     def __str__(self):
         if self.temporary:
-            disp = 'del  '
+            disp = "del  "
         else:
-            disp = 'keep '
+            disp = "keep "
         if self.enabled:
-            disp = disp + 'yes  '
+            disp = disp + "yes  "
         else:
-            disp = disp + 'no   '
+            disp = disp + "no   "
         if self.offset is None:
             offset_str = " any"
         else:
             offset_str = "%4d" % self.offset
-        msg = '%-4dbreakpoint   %s %s at %s:%d' % (self.number, disp,
-                                                    offset_str, self.filename, self.line)
+        msg = "%-4dbreakpoint   %s %s at %s:%d" % (
+            self.number,
+            disp,
+            offset_str,
+            self.filename,
+            self.line,
+        )
         if self.condition:
-            msg += '\n\tstop only if %s' % self.condition
+            msg += "\n\tstop only if %s" % self.condition
         if self.ignore:
-            msg += msg('\n\tignore next %d hits' % self.ignore)
+            msg += msg("\n\tignore next %d hits" % self.ignore)
         if self.hits:
-            if (self.hits > 1): ss = 's'
-            else: ss = ''
-            msg +='\n\tbreakpoint already hit %d time%s' % self.hits, ss
+            if self.hits > 1:
+                ss = "s"
+            else:
+                ss = ""
+            msg += "\n\tbreakpoint already hit %d time%s" % self.hits, ss
         return msg
 
     def enable(self):
@@ -290,12 +319,16 @@ class Breakpoint:
         'B': enabled breakpoint
         'b': disabled breakpoint
         """
-        if self.temporary : return 't'
-        elif self.enabled:  return 'B'
-        else: return 'b'
+        if self.temporary:
+            return "t"
+        elif self.enabled:
+            return "B"
+        else:
+            return "b"
         return
 
     pass  # end of Breakpoint class
+
 
 def checkfuncname(b, frame):
     """Check whether we should break here because of `b.funcname`."""
@@ -323,12 +356,13 @@ def checkfuncname(b, frame):
         return False
     return True
 
+
 # Demo
 
-if __name__=='__main__':
+if __name__ == "__main__":
     bpmgr = BreakpointManager()
     print(bpmgr.last())
-    bp = bpmgr.add_breakpoint('foo', 0, 5)
+    bp = bpmgr.add_breakpoint("foo", 0, 5)
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
@@ -337,8 +371,16 @@ if __name__=='__main__':
     print(str(bp))
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
-        print("Delete breakpoint %s: %s %s" % (i, status, msg,))
+        print(
+            "Delete breakpoint %s: %s %s"
+            % (
+                i,
+                status,
+                msg,
+            )
+        )
     import inspect
+
     frame = inspect.currentframe()
     print("Stop at bp: %s" % checkfuncname(bp, frame))
 
@@ -347,20 +389,20 @@ if __name__=='__main__':
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint('foo', 0, frame.f_lineno+1)
+        bp3 = bpmgr.add_breakpoint("foo", 0, frame.f_lineno + 1)
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, False, None, 'foo')
+    bp2 = bpmgr.add_breakpoint(None, None, False, None, "foo")
     foo(bp2, bpmgr)
-    bp3 = bpmgr.add_breakpoint('foo', 5, 2, temporary=True)
+    bp3 = bpmgr.add_breakpoint("foo", 5, 2, temporary=True)
     print(bp3.icon_char())
     print(bpmgr.bpnumbers())
 
-    bp = bpmgr.add_breakpoint('bar', 10, 3)
+    bp = bpmgr.add_breakpoint("bar", 10, 3)
     filename = bp.filename
     for i in range(3):
-        bp = bpmgr.add_breakpoint('bar', 2, 6)
+        bp = bpmgr.add_breakpoint("bar", 2, 6)
     print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
     print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
     print(bpmgr.bpnumbers())

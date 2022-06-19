@@ -22,16 +22,15 @@ from trepan.lib import complete as Mcomplete
 class InfoBuiltins(Mbase_subcmd.DebuggerSubcommand):
     """**info builtins**
 
-Show the builtin-functions for the current stack frame."""
+    Show the builtin-functions for the current stack frame."""
 
-    max_args   = 1
+    max_args = 1
     min_abbrev = 2
     need_stack = True
     short_help = "Show the builtins for current stack frame"
 
     def complete(self, prefix):
-        completions = sorted(['*'] +
-                              self.proc.curframe.f_builtins.keys())
+        completions = sorted(["*"] + self.proc.curframe.f_builtins.keys())
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
@@ -39,7 +38,7 @@ Show the builtin-functions for the current stack frame."""
             self.errmsg("No frame selected.")
             return False
         names = list(self.proc.curframe.f_builtins.keys())
-        if len(args) > 0 and args[0] == '*' :
+        if len(args) > 0 and args[0] == "*":
             self.section("builtins")
             self.msg(self.columnize_commands(names))
         elif len(args) == 0:
@@ -47,16 +46,20 @@ Show the builtin-functions for the current stack frame."""
                 self.section("builtins")
                 self.msg(self.columnize_commands(names))
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
     from trepan import debugger as Mdebugger
+
     d = Mdebugger.Debugger()
     d, cp = mock.dbg_setup(d)
     i = Minfo.InfoCommand(cp)
     sub = InfoBuiltins(i)
     import inspect
+
     cp.curframe = inspect.currentframe()
     sub.run([])
     pass

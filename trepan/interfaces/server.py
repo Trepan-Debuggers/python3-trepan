@@ -21,8 +21,8 @@ from trepan import interface as Minterface
 from trepan.inout import tcpserver as Mtcpserver, fifoserver as Mfifoserver
 from trepan.interfaces import comcodes as Mcomcodes
 
-DEFAULT_INIT_CONNECTION_OPTS = {'IO': 'TCP',
-                                'PORT': 1955}
+DEFAULT_INIT_CONNECTION_OPTS = {"IO": "TCP", "PORT": 1955}
+
 
 class ServerInterface(Minterface.TrepanInterface):
     """Interface for debugging a program but having user control
@@ -38,8 +38,8 @@ class ServerInterface(Minterface.TrepanInterface):
         if inout:
             self.inout = inout
         else:
-            self.server_type = opts['IO']
-            if 'FIFO' == self.server_type:
+            self.server_type = opts["IO"]
+            if "FIFO" == self.server_type:
                 self.inout = Mfifoserver.FIFOServer()
             else:
                 self.inout = Mtcpserver.TCPServer(opts=opts)
@@ -47,29 +47,29 @@ class ServerInterface(Minterface.TrepanInterface):
             pass
         # For Compatability
         self.output = self.inout
-        self.input  = self.inout
+        self.input = self.inout
         self.interactive = True  # Or at least so we think initially
         self.histfile = None
         return
 
     def close(self):
-        """ Closes both input and output """
+        """Closes both input and output"""
         if self.inout:
             self.inout.close()
         return
 
     def confirm(self, prompt, default):
-        """ Called when a dangerous action is about to be done to make sure
+        """Called when a dangerous action is about to be done to make sure
         it's okay. `prompt' is printed; user response is returned."""
         while True:
             try:
                 self.write_confirm(prompt, default)
-                reply = self.readline('').strip().lower()
+                reply = self.readline("").strip().lower()
             except EOFError:
                 return default
-            if reply in ('y', 'yes'):
+            if reply in ("y", "yes"):
                 return True
-            elif reply in ('n', 'no'):
+            elif reply in ("n", "no"):
                 return False
             else:
                 self.msg("Please answer y or n.")
@@ -78,9 +78,8 @@ class ServerInterface(Minterface.TrepanInterface):
         return default
 
     def errmsg(self, str, prefix="** "):
-        """Common routine for reporting debugger error messages.
-           """
-        return self.msg("%s%s" %(prefix, str))
+        """Common routine for reporting debugger error messages."""
+        return self.msg("%s%s" % (prefix, str))
 
     def finalize(self, last_wishes=Mcomcodes.QUIT):
         # print exit annotation
@@ -91,21 +90,21 @@ class ServerInterface(Minterface.TrepanInterface):
         return
 
     def is_connected(self):
-        """ Return True if we are connected """
-        return self.inout and 'connected' == self.inout.state
+        """Return True if we are connected"""
+        return self.inout and "connected" == self.inout.state
 
     def msg(self, msg):
-        """ used to write to a debugger that is connected to this
+        """used to write to a debugger that is connected to this
         server; `str' written will have a newline added to it
         """
         self.inout.writeline(Mcomcodes.PRINT + msg)
         return
 
     def msg_nocr(self, msg):
-        """ used to write to a debugger that is connected to this
+        """used to write to a debugger that is connected to this
         server; `str' written will not have a newline added to it
         """
-        self.inout.write(Mcomcodes.PRINT +  msg)
+        self.inout.write(Mcomcodes.PRINT + msg)
         return
 
     def read_command(self, prompt):
@@ -123,7 +122,7 @@ class ServerInterface(Minterface.TrepanInterface):
         return coded_line[1:]
 
     def state(self):
-        """ Return connected """
+        """Return connected"""
         return self.inout.state
 
     def write_prompt(self, prompt):
@@ -139,8 +138,9 @@ class ServerInterface(Minterface.TrepanInterface):
 
     pass
 
+
 # Demo
-if __name__=='__main__':
-    connection_opts={'IO': 'TCP', 'PORT': 1954}
+if __name__ == "__main__":
+    connection_opts = {"IO": "TCP", "PORT": 1954}
     intf = ServerInterface(connection_opts=connection_opts)
     pass

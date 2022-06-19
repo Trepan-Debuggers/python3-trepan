@@ -25,26 +25,26 @@ from trepan.processor.complete import complete_id_and_builtins
 class WhatisCommand(DebuggerCommand):
     """**whatis** *arg*
 
-Prints the information argument which can be a Python expression.
+    Prints the information argument which can be a Python expression.
 
-When possible, we give information about:
+    When possible, we give information about:
 
-* type of argument
+    * type of argument
 
-* doc string for the argument (if a module, class, or function)
+    * doc string for the argument (if a module, class, or function)
 
-* comments around the definition of the argument (module)
+    * comments around the definition of the argument (module)
 
-* the module it was defined in
+    * the module it was defined in
 
-* where the argument was defined
+    * where the argument was defined
 
-We get this most of this information via the *inspect* module.
+    We get this most of this information via the *inspect* module.
 
-See also:
---------
+    See also:
+    --------
 
-the *inspect* module."""
+    the *inspect* module."""
 
     aliases = ()
     min_args = 1

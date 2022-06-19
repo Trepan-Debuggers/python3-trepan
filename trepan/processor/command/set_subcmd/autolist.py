@@ -23,13 +23,12 @@ from trepan.lib.stack import frame2file
 class SetAutoList(DebuggerSetBoolSubcommand):
     """**set autolist** [ **on** | **off** ]
 
-Run the `list` command every time we enter the debugger.
+    Run the `list` command every time we enter the debugger.
 
-See also:
----------
+    See also:
+    ---------
 
-`show autolist`
-"""
+    `show autolist`"""
 
     in_list = True
     min_abbrev = len("autol")

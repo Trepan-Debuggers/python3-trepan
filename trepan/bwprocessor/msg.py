@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
-''' Common I/O routines'''
+""" Common I/O routines"""
 
 # Note for errmsg, msg, and msg_nocr we don't want to simply make
 # an assignment of method names like self.msg = self.debugger.intf.msg,
@@ -10,26 +10,29 @@
 # we wouldn't pick up that change in our self.msg
 def errmsg(proc_obj, message, opts={}):
     response = proc_obj.response
-    if 'set_name' in opts: response['name'] = 'error'
-    return response['errs'].append(message)
+    if "set_name" in opts:
+        response["name"] = "error"
+    return response["errs"].append(message)
 
 
 def msg(proc_obj, message, opts={}):
     response = proc_obj.response
-    return response['msg'].append(message)
+    return response["msg"].append(message)
 
 
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
+
     class Demo:
         def __init__(self):
-            self.response = {'errs': [],
-                             'msg' : []}
+            self.response = {"errs": [], "msg": []}
             pass
+
         pass
 
     import pprint
+
     demo = Demo()
-    msg(demo, 'hi')
+    msg(demo, "hi")
     pp = pprint.PrettyPrinter()
     pp.pprint(demo.response)

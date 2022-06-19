@@ -41,29 +41,28 @@ categories = {
 class HelpCommand(DebuggerCommand):
     """**help** [*command* [*subcommand*]|*expression*]
 
-Without argument, print the list of available debugger commands.
+    Without argument, print the list of available debugger commands.
 
-When an argument is given, it is first checked to see if it is command
-name.
+    When an argument is given, it is first checked to see if it is command
+    name.
 
-If the argument is an expression or object name, you get the same
-help that you would get inside a Python shell running the built-in
-*help()* command.
+    If the argument is an expression or object name, you get the same
+    help that you would get inside a Python shell running the built-in
+    *help()* command.
 
-If the environment variable *$PAGER* is defined, the file is
-piped through that command.  You'll notice this only for long help
-output.
+    If the environment variable *$PAGER* is defined, the file is
+    piped through that command.  You'll notice this only for long help
+    output.
 
-Some commands like `info`, `set`, and `show` can accept an
-additional subcommand to give help just about that particular
-subcommand. For example `help info line` give help about the
-info line command.
+    Some commands like `info`, `set`, and `show` can accept an
+    additional subcommand to give help just about that particular
+    subcommand. For example `help info line` give help about the
+    info line command.
 
-See also:
----------
+    See also:
+    ---------
 
-`examine` and `whatis`.
-"""
+    `examine` and `whatis`."""
 
     aliases = ("?",)
     short_help = "Print commands or give help for command(s)"
@@ -71,7 +70,8 @@ See also:
     RST_EXTENSION = ".rst"
 
     DebuggerCommand.setup(
-        locals(), category="support",
+        locals(),
+        category="support",
     )
 
     def complete(self, prefix):
@@ -143,7 +143,11 @@ See also:
                     )
                 elif len(cmds) == 1:
                     self.msg(
-                        "Pattern '%s' matches command %s..." % (cmd_name, cmds[0],)
+                        "Pattern '%s' matches command %s..."
+                        % (
+                            cmd_name,
+                            cmds[0],
+                        )
                     )
                     args[1] = cmds[0]
                     self.run(args)
@@ -197,7 +201,13 @@ Type `help` followed by command name for full documentation.
         for name in names:  # Foo! iteritems() doesn't do sorting
             if category != n2cmd[name].category:
                 continue
-            self.msg("%-13s -- %s" % (name, n2cmd[name].short_help,))
+            self.msg(
+                "%-13s -- %s"
+                % (
+                    name,
+                    n2cmd[name].short_help,
+                )
+            )
             pass
         return
 

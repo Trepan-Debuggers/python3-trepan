@@ -21,28 +21,27 @@ from trepan.processor.cmdbreak import parse_break_cmd, set_break
 class ContinueCommand(DebuggerCommand):
     """**continue** [*location*]
 
-Leave the debugger read-eval print loop and continue
-execution. Subsequent entry to the debugger however may occur via
-breakpoints or explicit calls, or exceptions.
+    Leave the debugger read-eval print loop and continue
+    execution. Subsequent entry to the debugger however may occur via
+    breakpoints or explicit calls, or exceptions.
 
-If *location* is given, a temporary breakpoint is set at that
-position before continuing.
+    If *location* is given, a temporary breakpoint is set at that
+    position before continuing.
 
-Examples:
----------
+    Examples:
+    ---------
 
-    continue          # Continue execution
-    continue 5        # Continue with a one-time breakpoint at line 5
-    continue basename # Go to os.path.basename if we have basename imported
-    continue /usr/lib/python3.8/posixpath.py:110 # Possibly the same as
-                                                 # the above using file
-                                                 # and line number
+        continue          # Continue execution
+        continue 5        # Continue with a one-time breakpoint at line 5
+        continue basename # Go to os.path.basename if we have basename imported
+        continue /usr/lib/python3.8/posixpath.py:110 # Possibly the same as
+                                                     # the above using file
+                                                     # and line number
 
-See also:
----------
+    See also:
+    ---------
 
-`step` `jump`, `next`, `finish` and `help syntax location`
-"""
+    `step` `jump`, `next`, `finish` and `help syntax location`"""
 
     aliases = ("c",)
     execution_set = ["Running"]
@@ -84,7 +83,10 @@ if __name__ == "__main__":
         print("Run result: %s" % result)
         print(
             "step_ignore %d, continue_running: %s"
-            % (d.core.step_ignore, cmd.continue_running,)
+            % (
+                d.core.step_ignore,
+                cmd.continue_running,
+            )
         )
         pass
     pass

@@ -20,30 +20,32 @@ from trepan.processor.parse.scanner import ScannerError
 from trepan.processor.location import resolve_location
 
 INVALID_PARSE_LIST = (None, None, None)
+
+
 def parse_list_cmd(proc, args, listsize=10):
     """Parses arguments for the "list" command and returns the tuple:
     (filename, first line number, last line number)
     or sets these to None if there was some problem."""
 
-    text = proc.current_command[len(args[0])+1:].strip()
+    text = proc.current_command[len(args[0]) + 1 :].strip()
 
-    if text in frozenset(('', '.', '+', '-')):
-        if text == '.':
-            location = resolve_location(proc, '.')
+    if text in frozenset(("", ".", "+", "-")):
+        if text == ".":
+            location = resolve_location(proc, ".")
             return location.path, location.line_number, listsize
         else:
             if proc.list_lineno is None:
                 proc.errmsg("Don't have previous list location")
                 return INVALID_PARSE_LIST
             filename = proc.list_filename
-            if text == '+':
+            if text == "+":
                 first = max(1, proc.list_lineno + listsize)
-            elif text == '-':
+            elif text == "-":
                 if proc.list_lineno == 1 + listsize:
                     proc.errmsg("Already at start of %s." % proc.list_filename)
                     return INVALID_PARSE_LIST
-                first = max(1, proc.list_lineno - (2*listsize) - 1)
-            elif text == '':
+                first = max(1, proc.list_lineno - (2 * listsize) - 1)
+            elif text == "":
                 # Continue from where we last left off
                 first = proc.list_lineno + 1
         last = first + listsize - 1
@@ -68,16 +70,16 @@ def parse_list_cmd(proc, args, listsize=10):
             location = resolve_location(proc, list_range.last)
             if not location:
                 return INVALID_PARSE_LIST
-            last     = location.line_number
-            first    = max(1, last - listsize)
+            last = location.line_number
+            first = max(1, last - listsize)
             return location.path, first, last
         elif isinstance(list_range.first, int):
-            first    = list_range.first
+            first = list_range.first
             location = resolve_location(proc, list_range.last)
             if not location:
                 return INVALID_PARSE_LIST
             filename = location.path
-            last     = location.line_number
+            last = location.line_number
             if last < first:
                 # Treat as a count rather than an absolute location
                 last = first + last
@@ -88,13 +90,13 @@ def parse_list_cmd(proc, args, listsize=10):
             location = resolve_location(proc, list_range.first)
             if not location:
                 return INVALID_PARSE_LIST
-            first    = location.line_number
-            last     = list_range.last
+            first = location.line_number
+            last = list_range.last
             if location.method:
                 first -= listsize // 2
             if isinstance(last, str):
                 # Is an offset +number
-                assert last[0] == '+'
+                assert last[0] == "+"
                 last = first + int(last[1:])
             elif not last:
                 last = first + listsize
@@ -106,17 +108,20 @@ def parse_list_cmd(proc, args, listsize=10):
         pass
     return
 
-INVALID_PARSE_LOCATION = (None, None)
-def parse_location(proc, args):
-    text = proc.current_command[len(args[0])+1:].strip()
 
-    if text in frozenset(('', '.')):
-        if text == '.':
-            location = resolve_location(proc, '.')
+INVALID_PARSE_LOCATION = (None, None)
+
+
+def parse_location(proc, args):
+    text = proc.current_command[len(args[0]) + 1 :].strip()
+
+    if text in frozenset(("", ".")):
+        if text == ".":
+            location = resolve_location(proc, ".")
             return location.path, location.line_number
         else:
             filename = proc.list_filename
-            if text == '':
+            if text == "":
                 # Continue from where we last left off
                 first = proc.list_lineno + 1
         return filename, first
@@ -135,11 +140,13 @@ def parse_location(proc, args):
             return INVALID_PARSE_LOCATION
         return location
 
+
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
     from trepan.processor.command import mock as Mmock
     from trepan.processor.cmdproc import CommandProcessor
     import sys
+
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)
     # print '-' * 10
@@ -150,22 +157,24 @@ if __name__=='__main__':
 
     def five():
         return 5
+
     import os
+
     for cmd in (
-            # "list",
-            # "list +",
-            # "list -",
-            # "list 15, 10",
-            "list five()",
-            # "list 9 , 5",
-            # "list 7 ,",
-            # "list '''c:\\tmp\\foo.bat''':1",
-            # 'list """/Users/My Documents/foo.py""":2',
-            # 'list build_range()',
-            # 'list os:1 ,',
-            'list os.path:9 ,',
-            ):
-        args = cmd.split(' ')
+        # "list",
+        # "list +",
+        # "list -",
+        # "list 15, 10",
+        "list five()",
+        # "list 9 , 5",
+        # "list 7 ,",
+        # "list '''c:\\tmp\\foo.bat''':1",
+        # 'list """/Users/My Documents/foo.py""":2',
+        # 'list build_range()',
+        # 'list os:1 ,',
+        "list os.path:9 ,",
+    ):
+        args = cmd.split(" ")
         cmdproc.current_command = cmd
         print(parse_list_cmd(cmdproc, args))
     pass
