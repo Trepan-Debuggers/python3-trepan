@@ -3,6 +3,11 @@ How to install
 
 .. toctree::
 
+Requirement
+-----------
+
+`trepan3k` works with python >=3.2. But about the decompilation feature, `trepan3k` supports decompilation only for python >=3.2 and <=3.8, it doesn't support decompilation for python >3.9.
+
 Using pip
 ---------
 
@@ -25,6 +30,12 @@ or:
 
 	  $ su root
 	  # pip install trepan3k
+
+`trepan3k` can also be installed in Python user install directory:
+
+.. code:: console
+
+	  $ pip install --user trepan3k
 
 Using easy_install
 ------------------
