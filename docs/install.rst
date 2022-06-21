@@ -6,7 +6,7 @@ How to install
 Requirement
 -----------
 
-trepan3k works with python >=3.7 and <3.9.
+`trepan3k` works with python >=3.7 and <3.9.
 
 Using pip
 ---------
@@ -30,6 +30,12 @@ or:
 
 	  $ su root
 	  # pip install trepan3k
+
+`trepan3k` can also be installed in Python user install directory:
+
+.. code:: console
+
+	  $ pip install --user trepan3k
 
 Using easy_install
 ------------------
