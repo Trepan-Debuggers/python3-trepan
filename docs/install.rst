@@ -3,6 +3,11 @@ How to install
 
 .. toctree::
 
+Requirement
+-----------
+
+trepan3k works with python >=3.7 and <3.9.
+
 Using pip
 ---------
 
