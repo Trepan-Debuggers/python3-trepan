@@ -6,7 +6,7 @@ How to install
 Requirement
 -----------
 
-`trepan3k` works with python >=3.7 and <3.9.
+`trepan3k` works with python >=3.2. But about the decompilation feature, `trepan3k` supports decompilation only for python >=3.2 and <=3.8, it doesn't support decompilation for python >3.9.
 
 Using pip
 ---------
