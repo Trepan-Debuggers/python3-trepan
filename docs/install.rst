@@ -1,12 +1,14 @@
 How to install
-****************************
+***************
 
 .. toctree::
 
 Requirement
 -----------
 
-`trepan3k` works with python >=3.2. But about the decompilation feature, `trepan3k` supports decompilation only for python >=3.2 and <=3.8, it doesn't support decompilation for python >3.9.
+``trepan3k`` works with Python version 3.2 and above. However the decompilation features are available for Python versions less than 3.9.
+
+In general, runtime decompilation for Python greater than versions 3.8, especially decompilation around a given bytecode offset doesn't exist. See `this link <https://github.com/rocky/python-decompile3/issues/45>`_ for more information.
 
 Using pip
 ---------
