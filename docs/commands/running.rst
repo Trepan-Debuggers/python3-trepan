@@ -22,15 +22,29 @@ When you enable the debugger, it adds overhead and slows down your
 program. The overhead is greater than pdb, because the debugger tries to
 analyze the program in depth. In most cases, this does not diminish the
 debugging experience. But for some instructions, the overhead can be
-very large. For example, if you turn on the debugger and run the
+very large.
+For example, if you turn on the debugger and run the
 \`import pandas\` instruction, it can increase your CPU to 100% for a
 while.
+::
+
+   $ cat tmp.py
+   #!/usr/bin/env python3
+   import pandas as pd
+
+   $ trepan3k tmp.py
+   (trepan3k) next # that increase your CPU to 100% for a while
 
 The debugger overhead only concerns the instructions of the program to
 be debugged, the instructions of the trepan3k interpreter are not
-analyzed, so there is no overhead. For example, in trepan3k, do an
+analyzed, so there is no overhead.
+For example, in trepan3k, do an
 \`import pandas\` and you will probably see that things are
 instantaneous.
+::
+
+   $ trepan3k tmp.py
+   (trepan3k) import pandas as pd # that things are instantaneous
 
 Technique to reduce the overhead costs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
