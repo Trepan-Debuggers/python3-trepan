@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2016 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014, 2016, 2022 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -264,10 +264,11 @@ class SignalManager:
             return False
         # Since the intent is to set a handler, we should pass this
         # signal on to the handler
-        self.sigs[signame].pass_along = True
-        if self.check_and_adjust_sighandler(signame, self.sigs):
-            self.sigs[signame].old_handler = handle
-            return True
+        if signame not in self.ignore_list:
+            self.sigs[signame].pass_along = True
+            if self.check_and_adjust_sighandler(signame, self.sigs):
+                self.sigs[signame].old_handler = handle
+                return True
         return False
 
     def check_and_adjust_sighandler(self, signame, sigs):
