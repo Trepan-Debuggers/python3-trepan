@@ -23,7 +23,7 @@
 import signal
 
 
-def YN(b):
+def yes_or_no(b):
     """Return 'Yes' for True and 'No' for False, and ?? for anything
     else."""
     if type(b) != bool:
@@ -73,7 +73,7 @@ def canonic_signame(name_num):
             signame = lookup_signame(num)
             if signame is None:
                 return None
-        except:
+        except Exception:
             return False
         return signame
 
@@ -351,10 +351,10 @@ class SignalManager:
             self.info_fmt
             % (
                 signame,
-                YN(sig_obj.b_stop),
-                YN(sig_obj.print_method is not None),
-                YN(sig_obj.print_stack),
-                YN(sig_obj.pass_along),
+                yes_or_no(sig_obj.b_stop),
+                yes_or_no(sig_obj.print_method is not None),
+                yes_or_no(sig_obj.print_stack),
+                yes_or_no(sig_obj.pass_along),
                 description,
             )
         )
@@ -554,15 +554,12 @@ class SigHandler:
 
 # When invoked as main program, do some basic tests of a couple of functions
 if __name__ == "__main__":
-    import trepan.inout
-    import trepan.processor.command
-    import trepan.interfaces
 
     for b in (
         True,
         False,
     ):
-        print("YN of %s is %s" % (repr(b), YN(b)))
+        print("yes_or_no of %s is %s" % (repr(b), yes_or_no(b)))
         pass
     for signum in range(signal.NSIG):
         signame = lookup_signame(signum)
