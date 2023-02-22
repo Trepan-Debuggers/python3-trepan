@@ -11,7 +11,7 @@ jobs:
     shell: /bin/bash --login
     working_directory: ~/rocky/python3-trepan
     docker:
-    - image: circleci/python:3.7
+    - image: circleci/python:3.8
     steps:
       - checkout  # checkout source code to working directory
       - run:
