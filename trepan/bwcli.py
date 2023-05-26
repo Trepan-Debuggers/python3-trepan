@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ The hairy command-line interface to the debugger.
 """
-import os, os.path as osp, sys
+import os.path as osp
+import pyficache
+import sys
 
 from optparse import OptionParser
-
-from pyficache import resolve_name_to_path
 
 # Our local modules
 from trepan import clifns as Mclifns
@@ -31,8 +31,8 @@ from trepan.interfaces.bullwinkle import BWInterface
 # The name of the debugger we are currently going by.
 __title__ = "trepan"
 
-# VERSION.py sets variable VERSION.
-from trepan.VERSION import VERSION as __version__
+# version.py sets variable __version__
+from trepan.version import __version__
 
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):

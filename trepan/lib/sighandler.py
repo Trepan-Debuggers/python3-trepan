@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2016, 2022 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014, 2016, 2022, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@
 #
 import signal
 
+from typing import Optional
 
-def yes_or_no(b):
+
+def yes_or_no(b) -> str:
     """Return 'Yes' for True and 'No' for False, and ?? for anything
     else."""
     if type(b) != bool:
@@ -33,7 +35,7 @@ def yes_or_no(b):
     return "No"
 
 
-def lookup_signame(num):
+def lookup_signame(num: int) -> Optional[str]:
     """Find the corresponding signal name for 'num'. Return None
     if 'num' is invalid."""
     signames = signal.__dict__
@@ -57,10 +59,10 @@ def lookup_signum(name):
         if hasattr(signal, uname):
             return getattr(signal, uname)
         return None
-    return  # Not reached
+    return  # noqa
 
 
-def canonic_signame(name_num):
+def canonic_signame(name_num) -> Optional[str]:
     """Return a signal name for a signal name or signal
     number.  Return None is name_num is an int but not a valid signal
     number and False if name_num is a not number. If name_num is a
@@ -211,7 +213,7 @@ class SignalManager:
         self.action("SIGINT stop print nostack nopass")
         return
 
-    def initialize_handler(self, signame):
+    def initialize_handler(self, signame: str):
         if signame in fatal_signals:
             return False
         signum = lookup_signum(signame)
@@ -253,13 +255,13 @@ class SignalManager:
             pass
         return True
 
-    def set_signal_replacement(self, signum, handle):
+    def set_signal_replacement(self, signum: int, handle):
         """A replacement for signal.signal which chains the signal behind
         the debugger's handler"""
         signame = lookup_signame(signum)
         if signame is None:
             self.dbgr.intf[-1].errmsg(
-                ("%s is not a signal number" " I know about.") % signum
+                "%s is not a signal number I know about." % signum
             )
             return False
         # Since the intent is to set a handler, we should pass this
@@ -271,7 +273,7 @@ class SignalManager:
                 return True
         return False
 
-    def check_and_adjust_sighandler(self, signame, sigs):
+    def check_and_adjust_sighandler(self, signame: str, sigs):
         """
         Check to see if a single signal handler that we are interested
         in has changed or has not been set initially. On return

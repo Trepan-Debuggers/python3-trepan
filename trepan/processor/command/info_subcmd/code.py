@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,10 +14,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
 from trepan.processor import frame as Mframe
+
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoCode(Mbase_subcmd.DebuggerSubcommand):
@@ -79,10 +80,10 @@ class InfoCode(Mbase_subcmd.DebuggerSubcommand):
                     return False
                 frame = proc.stack[frame_num][0]
                 code = frame.f_code
-            except:
+            except Exception:
                 try:
                     code = eval(args[0], frame.f_globals, frame.f_locals)
-                except:
+                except Exception:
                     self.errmsg(
                         "%s is not a evaluable as a code object or frame number."
                         % args[0]
@@ -127,7 +128,7 @@ class InfoCode(Mbase_subcmd.DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
