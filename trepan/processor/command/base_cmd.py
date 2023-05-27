@@ -27,7 +27,7 @@ from pygments.console import colorize
 
 from trepan.lib import format as Mformat
 
-NotImplementedMessage = "This method must be overriden in a subclass"
+NotImplementedMessage = "This method must be overridden in a subclass"
 
 __all__ = ["DebuggerCommand"]
 
@@ -80,7 +80,7 @@ class DebuggerCommand:
     # an assignment of method names like self.msg = self.debugger.intf.msg,
     # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
-    # in the course of the program and if we made such an method assignemnt
+    # in the course of the program and if we made such an method assignment
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg, opts={}):
         """Convenience short-hand for self.debugger.intf[-1].errmsg"""

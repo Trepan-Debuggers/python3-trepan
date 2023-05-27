@@ -22,7 +22,7 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoCode(Mbase_subcmd.DebuggerSubcommand):
-    """**info code** [ *frame-number* | *pyton code object* ]
+    """**info code** [ *frame-number* | *python code object* ]
 
     Show the detailed information for the Python code object in
     *frame-number* or the current frame if *frame-number* is not specified.

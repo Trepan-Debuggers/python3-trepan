@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 """ Common I/O routines"""
 
 
@@ -7,7 +7,7 @@
 # an assignment of method names like self.msg = self.debugger.intf.msg,
 # because we want to allow the interface (intf) to change
 # dynamically. That is, the value of self.debugger may change
-# in the course of the program and if we made such an method assignemnt
+# in the course of the program and if we made such an method assignment
 # we wouldn't pick up that change in our self.msg
 def errmsg(proc_obj, message, opts={}):
     response = proc_obj.response

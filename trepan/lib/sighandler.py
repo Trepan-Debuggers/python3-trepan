@@ -21,7 +21,6 @@
 #
 #
 import signal
-
 from typing import Optional
 
 
@@ -178,7 +177,7 @@ class SignalManager:
                 "SIGTERM",
                 "SIGQUIT",
                 "SIGILL",
-                # Wierd stuff from 3.3
+                # Weird stuff from 3.3
                 "SIG_SETMASK",
                 "ITIMER_PROF",
                 "ITIMER_VIRTUAL",
