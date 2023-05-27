@@ -144,7 +144,7 @@ class Trepan(object):
 
         See also `run_eval' if what you want to run is an eval'able
         expression have that result returned and `run' if you want to
-        debug a statment via exec.
+        debug a statement via exec.
         """
         res = None
         self.core.start(opts=start_opts)

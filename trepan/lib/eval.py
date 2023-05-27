@@ -32,17 +32,17 @@ def extract_expression(text):
         text = re.sub(r"^\s*(?:while)\s+", "", text)
         text = re.sub(r":(?:\s+.*$|$)", "", text)
     elif re.search(r"^\s*return\s+", text):
-        # EXPRESION in: return EXPRESSION
+        # EXPRESSION in: return EXPRESSION
         text = re.sub(r"^\s*return\s+", "", text)
     elif re.search(r"^\s*for\s+.+\s+in\s+.*:", text):
-        # EXPRESION in: for VAR in EXPRESSION:
+        # EXPRESSION in: for VAR in EXPRESSION:
         text = re.sub(r"^\s*for\s+.+\s+in\s+", "", text)
         text = re.sub(":.*$", "", text)
     elif re.search(r"^\s*and\s+.*", text):
-        # EXPRESION in: and EXPRESSION
+        # EXPRESSION in: and EXPRESSION
         text = re.sub(r"^\s*and\s+", "", text)
     elif re.search(r"^\s*or\s+.*", text):
-        # EXPRESION in: and EXPRESSION
+        # EXPRESSION in: and EXPRESSION
         text = re.sub(r"^\s*or\s+", "", text)
     elif re.search(r"\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=[^=>]", text):
         # RHS of an assignment statement.

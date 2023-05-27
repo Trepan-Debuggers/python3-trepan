@@ -27,7 +27,7 @@ from trepan.lib import file as Mfile
 
 def default_configfile(base_filename):
     """Return fully expanded configuration filename location for
-    base_filename. python2 and  python3 debuggers share the smae
+    base_filename. python2 and  python3 debuggers share the same
     directory: ~/.config/trepan.py
     """
     file_dir = os.path.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
@@ -61,7 +61,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     another main program and want to extend the existing set of debugger
     options.
 
-    The options dicionary from optparser is returned. sys_argv is
+    The options dictionary from optparser is returned. sys_argv is
     also updated."""
     usage_str = """%prog [debugger-options] [python-script [script-options...]]
 

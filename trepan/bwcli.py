@@ -17,16 +17,20 @@
 """ The hairy command-line interface to the debugger.
 """
 import os.path as osp
-import pyficache
 import sys
-
 from optparse import OptionParser
 
+import pyficache
+
 # Our local modules
-from trepan import clifns as Mclifns
-from trepan import debugger as Mdebugger, exception as Mexcept, misc as Mmisc
-from trepan.lib.file import readable
+from trepan import (
+    clifns as Mclifns,
+    debugger as Mdebugger,
+    exception as Mexcept,
+    misc as Mmisc,
+)
 from trepan.interfaces.bullwinkle import BWInterface
+from trepan.lib.file import readable
 
 # The name of the debugger we are currently going by.
 __title__ = "trepan"
@@ -40,7 +44,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     another main program and want to extend the existing set of debugger
     options.
 
-    The options dicionary from opt_parser is return. sys_argv is
+    The options dictionary from opt_parser is return. sys_argv is
     also updated."""
     usage_str = """%prog [debugger-options] [python-script [script-options...]]
 

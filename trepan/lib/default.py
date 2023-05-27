@@ -43,7 +43,7 @@ DEBUGGER_SETTINGS = {
     # updated information (stack, local variables) without having to
     # poll for it.
     "annotate": 0,
-    # Format style to use in showing disssembly
+    # Format style to use in showing disassembly
     "asmfmt": "extended",
     # Eval as Python the unrecognized debugger commands?
     "autoeval": True,
@@ -58,7 +58,7 @@ DEBUGGER_SETTINGS = {
     # Enter Python every time we enter the debugger?
     "autopython": False,
     # Show basename only on filename output?
-    # This opiton is useful in integration testing and
+    # This option is useful in integration testing and
     # possibly to prepare example output for publication
     "basename": False,
     # Set echoing lines read from debugger?
@@ -103,8 +103,8 @@ DEBUGGER_SETTINGS = {
     "nostartup": False,
     # Reread source file if we determine it has changed?
     "reload": False,
-    # Skip instructions that make clases, functions, and closures?
-    # (In the Python they are "class" and "def" statments)
+    # Skip instructions that make classes, functions, and closures?
+    # (In the Python they are "class" and "def" statements)
     "skip": True,
     "step_ignore": 0,
     # Location to put temporary decompiled python files.
@@ -126,7 +126,7 @@ CLIENT_SOCKET_OPTS = {
 SERVER_SOCKET_OPTS = {
     "HOST": None,  # Symbolic name meaning all available interfaces
     "PORT": 1027,  # Arbitrary non-privileged port
-    "reuse": "posix" == os.name,  # Allow port to be resued on close?
+    "reuse": "posix" == os.name,  # Allow port to be reused on close?
     "skew": +0,  # additional increment on socket tries
     "search_limit": 100,  # max number of ports to try
 }

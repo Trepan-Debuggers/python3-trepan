@@ -237,13 +237,13 @@ if __name__ == "__main__":
     prefix = "-" * 20 + " disassemble "
 
     print(prefix + "os.path")
-    doit(command, ["dissassemble", "cp.errmsg()"])
+    doit(command, ["disassemble", "cp.errmsg()"])
 
     print(prefix + "cp.errmsg()")
-    doit(command, ["dissassemble", "cp.errmsg()"])
+    doit(command, ["disassemble", "cp.errmsg()"])
 
     print(prefix + "cp.errmsg()")
-    doit(command, ["dissassemble", "cp.errmsg()"])
+    doit(command, ["disassemble", "cp.errmsg()"])
 
     # print(prefix)
     # doit(command, ['disassemble']) # no good

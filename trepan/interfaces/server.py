@@ -18,7 +18,7 @@ import atexit
 
 # Our local modules
 from trepan import interface as Minterface
-from trepan.inout import tcpserver as Mtcpserver, fifoserver as Mfifoserver
+from trepan.inout import fifoserver as Mfifoserver, tcpserver as Mtcpserver
 from trepan.interfaces import comcodes as Mcomcodes
 
 DEFAULT_INIT_CONNECTION_OPTS = {"IO": "TCP", "PORT": 1955}
@@ -45,7 +45,7 @@ class ServerInterface(Minterface.TrepanInterface):
                 self.inout = Mtcpserver.TCPServer(opts=opts)
                 pass
             pass
-        # For Compatability
+        # For Compatibility
         self.output = self.inout
         self.input = self.inout
         self.interactive = True  # Or at least so we think initially

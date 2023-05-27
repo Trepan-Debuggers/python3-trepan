@@ -37,7 +37,7 @@ def readline_importable() -> bool:
 class DebuggerUserInput(Mbase.DebuggerInputBase):
     """Debugger input connected to what we think of as a end-user input
     as opposed to a relay mechanism to another process. Input could be
-    interative terminal, but it might be file input."""
+    interactive terminal, but it might be file input."""
 
     def __init__(self, inp=None, opts=None):
         self.input = inp or sys.stdin

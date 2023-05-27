@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2017 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2013-2014, 2017, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,12 +16,12 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Module for client (i.e. user to communication-device) interaction.
-The debugged program is at the other end of the communcation."""
+The debugged program is at the other end of the communication."""
+
+from trepan.inout import fifoclient as Mfifoclient, tcpclient as Mtcpclient
 
 # Our local modules
 from trepan.interfaces import user as Muser
-from trepan.inout import tcpclient as Mtcpclient, fifoclient as Mfifoclient
-
 
 DEFAULT_INIT_CONNECTION_OPTS = {"IO": "TCP"}
 

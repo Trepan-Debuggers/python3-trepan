@@ -25,6 +25,7 @@ if [[ $0 == $bs ]] ; then
 fi
 
 mydir=$(dirname $bs)
+fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && checkout_version python-spark master && checkout_version python-uncompyle6)
 cd $owd
 rm -v */.python-version || true

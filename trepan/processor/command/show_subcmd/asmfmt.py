@@ -21,7 +21,7 @@ from trepan.processor.command.base_subcmd import DebuggerSubcommand
 class ShowAsmFmt(DebuggerSubcommand):
     """**show asmfmt**
 
-    Show the disassembly format style used in the `disassemble` cmmand.
+    Show the disassembly format style used in the `disassemble` command.
 
     See also:
     ---------

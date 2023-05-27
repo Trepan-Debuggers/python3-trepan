@@ -18,7 +18,7 @@ import atexit
 
 # Our local modules
 from trepan import interface as Minterface, misc as Mmisc
-from trepan.inout import scriptin as Mscriptin, output as Moutput
+from trepan.inout import output as Moutput, scriptin as Mscriptin
 
 
 class ScriptInterface(Minterface.TrepanInterface):
@@ -82,7 +82,7 @@ class ScriptInterface(Minterface.TrepanInterface):
 
     def read_command(self, prompt=""):
         """Script interface to read a command. `prompt' is a parameter for
-        compatibilty and is ignored."""
+        compatibility and is ignored."""
         self.input_lineno += 1
         line = self.readline()
         if self.verbose:
@@ -95,7 +95,7 @@ class ScriptInterface(Minterface.TrepanInterface):
     # Could decide make this look for interactive input?
     def readline(self, prompt=""):
         """Script interface to read a line. `prompt' is a parameter for
-        compatibilty and is ignored."""
+        compatibility and is ignored."""
         return self.input.readline()
 
 

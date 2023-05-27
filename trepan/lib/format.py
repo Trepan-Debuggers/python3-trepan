@@ -40,7 +40,7 @@ from pygments.token import (
 )
 from pygments.util import get_choice_opt
 
-# Set up my own color scheme with some addtional definitions
+# Set up my own color scheme with some additional definitions.
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
