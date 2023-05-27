@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2012-2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2012-2013, 2015, 2013 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ and commands.py needs to take care to avoid instantiating this class
 and storing it as a list of known debugger commands.
 """
 
-NotImplementedMessage = "This method must be overriden in a subclass"
+NotImplementedMessage = "This method must be overridden in a subclass"
 
 __all__ = ["DebuggerCommand"]
 
@@ -54,7 +54,7 @@ class DebuggerCommand:
     # an assignment of method names like self.msg = self.debugger.intf.msg,
     # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
-    # in the course of the program and if we made such an method assignemnt
+    # in the course of the program and if we made such an method assignment
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg, opts={}):
         """Convenience short-hand for self.debugger.intf.errmsg"""

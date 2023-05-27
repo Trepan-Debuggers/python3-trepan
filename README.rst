@@ -1,4 +1,4 @@
-|TravisCI| |CircleCI| |Pypi Installs| |license| |Supported Python Versions|
+|CircleCI| |Pypi Installs| |license| |Supported Python Versions|
 
 |packagestatus|
 

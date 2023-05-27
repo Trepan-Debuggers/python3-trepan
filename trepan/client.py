@@ -32,7 +32,7 @@ def process_options(pkg_version, sys_argv, option_list=None):
     another main program and want to extend the existing set of debugger
     options.
 
-    The options dicionary from opt_parser is return. sys_argv is
+    The options dictionary from opt_parser is return. sys_argv is
     also updated."""
     usage_str = """%prog [debugger-options]]
 

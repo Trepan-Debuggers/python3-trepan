@@ -49,5 +49,6 @@ class ShowSubstitute(Mbase_subcmd.DebuggerSubcommand):
 if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
 
-    Mhelper.demo_run(ShowSubstitute)
-    pass
+    sub = Mhelper.demo_run(ShowSubstitute, [])
+    d = sub.proc.debugger
+    sub.run(["show"])

@@ -9,7 +9,7 @@ from trepan.processor.command.base_subcmd import DebuggerSubcommand
 class ShowTempdir(DebuggerSubcommand):
     """**show tempdir**
 
-    Show the temporary directory usind in decompiled python files.
+    Show the temporary directory using in decompiled python files.
 
     See also:
     --------

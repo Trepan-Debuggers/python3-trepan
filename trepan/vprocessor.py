@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2012-2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2010, 2012-2013, 2015, 2020, 2023 Rocky
+#   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,9 +15,9 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-NotImplementedMessage = "This method must be overriden in a subclass"
-
 from pygments.console import colorize
+
+NotImplementedMessage = "This method must be overridden in a subclass"
 
 __all__ = ["Processor"]
 
@@ -35,7 +37,7 @@ class Processor(object):
     # an assignment of method names like self.msg = self.intf.msg,
     # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
-    # in the course of the program and if we made such an method assignemnt
+    # in the course of the program and if we made such an method assignment
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, message, opts={}):
         """Convenience short-hand for self.intf[-1].errmsg"""
