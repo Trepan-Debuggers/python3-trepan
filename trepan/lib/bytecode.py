@@ -73,6 +73,7 @@ def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
     linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
     found_start = False
+    offset = 0
     for offset, start_line in list(linestarts.items()):
         if start_line == lineno:
             found_start = True

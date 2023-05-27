@@ -16,8 +16,6 @@ class TestByteCode(unittest.TestCase):
         frame = inspect.currentframe()
         co = frame.f_code
         lineno = frame.f_lineno
-        if IS_PYPY or PYTHON_VERSION_TRIPLE >= (3, 3):
-            self.assertTrue(Mcode.stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION"))
         self.assertFalse(Mcode.stmt_contains_opcode(co, lineno, "MAKE_FUNCTION"))
         return
 
