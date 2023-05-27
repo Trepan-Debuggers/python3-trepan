@@ -14,9 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.pp import pp
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.pp import pp
 from trepan.processor.complete import complete_identifier
 
 
@@ -51,6 +52,7 @@ class PrettyPrintCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     import inspect
+
     from trepan.processor.command import mock
 
     d, cp = mock.dbg_setup()
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     command.run(["pp", "me"])
     me = list(range(100))
     command.run(["pp", "me"])
-    import sys
+    import sys  # noqa
 
     command.run(["pp", "sys.modules.keys()"])
     me = "fooled you"

@@ -4,8 +4,11 @@ Copyright (c) 2017-2018 Rocky Bernstein
 """
 
 from __future__ import print_function
+
 import re
+
 from spark_parser.scanner import GenericScanner
+
 from trepan.processor.parse.tok import Token
 
 
@@ -72,7 +75,7 @@ class LocationScanner(GenericScanner):
             maybe_funcname = False
         else:
             base = s
-        if maybe_funcname and re.match("[a-zA-Z_][a-zA-Z_.0-9]+\(\)", s):
+        if maybe_funcname and re.match(r"[a-zA-Z_][a-zA-Z_.0-9]+\(\)", s):
             self.add_token("FUNCNAME", base)
         else:
             self.add_token("FILENAME", base)

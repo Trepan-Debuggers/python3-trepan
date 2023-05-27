@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2017, 2021 Rocky Bernstein
+#
+#   Copyright (C) 2009, 2013-2017, 2021, 2023 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,13 +18,12 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
 
-import sys, time
+import sys
+import time
+from optparse import OptionParser
 
 # Our local modules
-from trepan.interfaces import client as Mclient
-from trepan.interfaces import comcodes as Mcomcodes
-
-from optparse import OptionParser
+from trepan.interfaces import client as Mclient, comcodes as Mcomcodes
 from trepan.version import __version__
 
 

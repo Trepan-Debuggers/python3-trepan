@@ -43,7 +43,7 @@ class DisplayMgr:
             return None
         try:
             eval(arg, frame.f_globals, frame.f_locals)
-        except:
+        except Exception:
             return None
         self.next += 1
         display = Display(frame, arg, fmt, self.next)
@@ -114,7 +114,7 @@ class Display:
             return 'No symbol "' + self.arg + '" in current context.'
         try:
             val = eval(self.arg, frame.f_globals, frame.f_locals)
-        except:
+        except Exception:
             return 'No symbol "' + self.arg + '" in current context.'
         s = "%3d: %s" % (self.number, Mstack.print_obj(self.arg, val, self.fmt, True))
         return s

@@ -18,7 +18,8 @@
 import os
 
 if hasattr(os, "mkfifo"):
-    import atexit, tempfile
+    import atexit
+    import tempfile
 
     from trepan import misc as Mmisc
     from trepan.inout.base import DebuggerInOutBase

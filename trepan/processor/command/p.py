@@ -14,9 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.printing import printf
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.printing import printf
 from trepan.processor.complete import complete_identifier
 
 
@@ -59,12 +60,13 @@ class PCommand(DebuggerCommand):
                 val = printf(val, fmt)
                 pass
             self.msg(self.proc._saferepr(val))
-        except:
+        except Exception:
             pass
 
 
 if __name__ == "__main__":
     import inspect
+
     from trepan.processor.command import mock
 
     d, cp = mock.dbg_setup()

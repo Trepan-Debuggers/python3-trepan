@@ -12,7 +12,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # """ Copyright (C) 2008-2009, 2015, 2018 Rocky Bernstein <rocky@gnu.org> """
 
-import glob, os
+import glob
+import os
 
 # FIXME: Is it really helpful to "privatize" variable names below?
 # The below names are not part of the standard pre-defined names like

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2017, 2020-2021 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2017, 2020-2021, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,16 +13,21 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, pyficache, sys
+import inspect
+import linecache
 import os.path as osp
+import sys
+
+import pyficache
 
 # Our local modules
 from pygments.console import colorize
 
+from trepan.lib.deparse import deparse_cache
+from trepan.processor.cmdlist import parse_list_cmd
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.cmdlist import parse_list_cmd
-from trepan.lib.deparse import deparse_cache
 
 
 class ListCommand(DebuggerCommand):
@@ -168,15 +173,14 @@ class ListCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
-
     # FIXME: make sure the below is in a unit test
     def doit(cmd, args):
         proc = cmd.proc
         proc.current_command = " ".join(args)
         cmd.run(args)
 
-    from trepan.processor.command import mock as Mmock
     from trepan.processor.cmdproc import CommandProcessor
+    from trepan.processor.command import mock as Mmock
 
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)

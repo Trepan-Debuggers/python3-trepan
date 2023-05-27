@@ -14,10 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor.parse.semantics import build_arange, Location
+from trepan.processor.location import resolve_address_location
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
-from trepan.processor.location import resolve_address_location
+from trepan.processor.parse.semantics import Location, build_arange
 
 INVALID_PARSE_LIST = (None, None, None, None, None, None)
 
@@ -145,9 +145,10 @@ def parse_addr_list_cmd(proc, args, listsize=40):
 
 # Demo it
 if __name__ == "__main__":
-    from trepan.processor.command import mock as Mmock
-    from trepan.processor.cmdproc import CommandProcessor
     import sys
+
+    from trepan.processor.cmdproc import CommandProcessor
+    from trepan.processor.command import mock as Mmock
 
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)
@@ -160,7 +161,7 @@ if __name__ == "__main__":
     def five():
         return 5
 
-    import os
+    import os  # noqa
 
     for cmd in (
         # "disasm",
@@ -174,7 +175,7 @@ if __name__ == "__main__":
         # "disasm '''c:\\tmp\\foo.bat''':1",
         # 'disasm """/Users/My Documents/foo.py""":2',
         # 'disasm build_range()',
-        # 'disasm os:1 ,',
+        "disasm os:1 ,",
     ):
         args = cmd.split(" ")
         cmdproc.current_command = cmd

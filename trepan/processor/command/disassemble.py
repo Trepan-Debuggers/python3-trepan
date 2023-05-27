@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2018, 2020-2021 Rocky Bernstein
+#
+#  Copyright (C) 2009, 2012-2018, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,15 +15,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, sys
+import inspect
 import os.path as osp
+import sys
+
+from xdis.load import load_module
+
+import trepan.lib.file as Mfile
+from trepan.lib.disassemble import dis
+from trepan.processor.cmd_addrlist import parse_addr_list_cmd
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.disassemble import dis
-import trepan.lib.file as Mfile
-from xdis.load import load_module
-from trepan.processor.cmd_addrlist import parse_addr_list_cmd
 
 # From importlib.util
 DEBUG_BYTECODE_SUFFIXES = [".pyc"]
@@ -138,7 +142,7 @@ class DisassembleCommand(DebuggerCommand):
                 eval_args = args[1]
             try:
                 obj = self.proc.eval(eval_args, show_error=False)
-            except:
+            except Exception:
                 obj = None
             else:
                 if (
@@ -202,7 +206,7 @@ class DisassembleCommand(DebuggerCommand):
                 try:
                     obj = self.proc.eval(args[1])
                     opts["start_line"] = -1
-                except:
+                except Exception:
                     self.errmsg(
                         ("Object '%s' is not something we can" + " disassemble.")
                         % args[1]
@@ -218,7 +222,6 @@ class DisassembleCommand(DebuggerCommand):
 
 # Demo it
 if __name__ == "__main__":
-
     # FIXME: make sure the below is in a unit test
     def doit(cmd, args):
         proc = cmd.proc

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2016 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2010, 2013-2016, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,15 +14,17 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, sys, traceback
-import pyficache
+import inspect
+import linecache
+import sys
+import traceback
 from reprlib import Repr
 
-from trepan import vprocessor as Mprocessor
-from trepan import exception as Mexcept, misc as Mmisc
-from trepan.lib import bytecode as Mbytecode, display as Mdisplay
-from trepan.lib import thred as Mthread
+import pyficache
+
+from trepan import exception as Mexcept, misc as Mmisc, vprocessor as Mprocessor
 from trepan.bwprocessor import location as Mlocation, msg as Mmsg
+from trepan.lib import bytecode as Mbytecode, display as Mdisplay, thred as Mthread
 
 
 def get_stack(f, t, botframe, proc_obj=None):
@@ -224,7 +227,7 @@ class BWProcessor(Mprocessor.Processor):
         """Eval string arg in the current frame context."""
         try:
             return eval(arg, self.curframe.f_globals, self.curframe.f_locals)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if isinstance(t, str):
                 exc_type_name = t
@@ -249,7 +252,7 @@ class BWProcessor(Mprocessor.Processor):
         try:
             code = compile(line + "\n", '"%s"' % line, "single")
             exec(code, global_vars, local_vars)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if isinstance(t, bytes):
                 exc_type_name = t
@@ -265,7 +268,7 @@ class BWProcessor(Mprocessor.Processor):
         if the command has the right number of arguments and so on.
         """
         if hasattr(cmd_obj, "execution_set"):
-            if not (self.core.execution_status in cmd_obj.execution_set):
+            if self.core.execution_status not in cmd_obj.execution_set:
                 part1 = "Command '%s' is not available for execution " "status:" % name
                 Mmsg.errmsg(
                     self,
@@ -357,7 +360,7 @@ class BWProcessor(Mprocessor.Processor):
                 except (Mexcept.DebuggerQuit, Mexcept.DebuggerRestart, SystemExit):
                     # Let these exceptions propagate through
                     raise
-                except:
+                except Exception:
                     Mmsg.errmsg(self, "INTERNAL ERROR: " + traceback.format_exc())
                     pass
                 pass
@@ -433,7 +436,7 @@ class BWProcessor(Mprocessor.Processor):
             import_name = "command." + mod_name
             try:
                 command_mod = getattr(__import__(import_name), mod_name)
-            except:
+            except Exception:
                 print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
                 continue
 
@@ -447,7 +450,7 @@ class BWProcessor(Mprocessor.Processor):
                 try:
                     instance = eval(eval_cmd)
                     cmd_instances.append(instance)
-                except:
+                except Exception:
                     print(
                         "Error loading %s from %s: %s"
                         % (classname, mod_name, sys.exc_info()[0])

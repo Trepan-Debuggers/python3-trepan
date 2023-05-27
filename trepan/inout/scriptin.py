@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2014-2015 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2014-2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger Script input interface. """
 
-import io, types
+import io
 
 from trepan.inout import base as Mbase
 

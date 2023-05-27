@@ -15,7 +15,11 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Post-Mortem interface
 
-import inspect, os, sys, re, traceback
+import inspect
+import os
+import re
+import sys
+import traceback
 
 # Our local modules
 from trepan import debugger as Mdebugger
@@ -74,7 +78,7 @@ def post_mortem_excepthook(exc_type, exc_value, exc_tb, tb_fn=None):
             pass
         post_mortem((exc_type, exc_value, exc_tb))
         print("Post-mortem debugger finished.")
-    except:
+    except Exception:
         pass
     return
 
@@ -150,7 +154,7 @@ def post_mortem(exc=None, frameno=1, dbg=None):
         # # need this. Dunno why though.
         # try:
         #     _pydb_trace.set_trace(t.tb_frame)
-        # except:
+        # except Exception:
         #     pass
 
         # Possibly a bug in Python 2.5. Why f.f_lineno is

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2012-2013, 2015, 2017, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2012-2013, 2015, 2017, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,9 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.eval import extract_expression
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.eval import extract_expression
 
 
 class EvalCommand(DebuggerCommand):
@@ -76,12 +78,13 @@ class EvalCommand(DebuggerCommand):
         text = text.strip()
         try:
             self.proc.exec_line(text)
-        except:
+        except Exception:
             pass
 
 
 if __name__ == "__main__":
     import inspect
+
     from trepan.debugger import Trepan
 
     d = Trepan()

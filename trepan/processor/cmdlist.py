@@ -14,10 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor.parse.semantics import build_location, build_range, Location
+from trepan.processor.location import resolve_location
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
-from trepan.processor.location import resolve_location
+from trepan.processor.parse.semantics import Location, build_location, build_range
 
 INVALID_PARSE_LIST = (None, None, None)
 
@@ -143,9 +143,10 @@ def parse_location(proc, args):
 
 # Demo it
 if __name__ == "__main__":
-    from trepan.processor.command import mock as Mmock
-    from trepan.processor.cmdproc import CommandProcessor
     import sys
+
+    from trepan.processor.cmdproc import CommandProcessor
+    from trepan.processor.command import mock as Mmock
 
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)
@@ -158,7 +159,7 @@ if __name__ == "__main__":
     def five():
         return 5
 
-    import os
+    import os  # noqa
 
     for cmd in (
         # "list",

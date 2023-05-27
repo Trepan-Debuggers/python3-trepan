@@ -1,16 +1,17 @@
 #  Copyright (c) 2017-2018, 2020 by Rocky Bernstein
 
-from trepan.processor.parse.parser import (
-    parse_bp_location,
-    parse_range,
-    parse_arange,
-    parse_location,
-)
-from trepan.processor.parse.parser import LocationError as PLocationError
-from trepan.processor.parse.scanner import ScannerError
+from collections import namedtuple
+
 from spark_parser import GenericASTTraversal  # , DEFAULT_DEBUG as PARSER_DEFAULT_DEBUG
 
-from collections import namedtuple
+from trepan.processor.parse.parser import (
+    LocationError as PLocationError,
+    parse_arange,
+    parse_bp_location,
+    parse_location,
+    parse_range,
+)
+from trepan.processor.parse.scanner import ScannerError
 
 Location = namedtuple("Location", "path line_number is_address method offset")
 BPLocation = namedtuple("BPLocation", "location condition")
@@ -123,8 +124,8 @@ class LocationGrok(GenericASTTraversal, object):
     def n_arange(self, arange_node):
         if arange_node[0] == "range":
             arange_node = arange_node[0]
-        l = len(arange_node)
-        if 1 <= l <= 2:
+        node_len = len(arange_node)
+        if 1 <= node_len <= 2:
             # arange ::= location
             # arange ::= DIRECTION
             # arange ::= FUNCNAME
@@ -157,7 +158,7 @@ class LocationGrok(GenericASTTraversal, object):
                 self.result = ListRange(None, last_node.value)
                 pass
             self.prune()
-        elif l == 3:
+        elif node_len == 3:
             # arange ::= COMMA opt_space location
             # arange ::= location opt_space COMMA
             if arange_node[0] == "COMMA":
@@ -172,7 +173,7 @@ class LocationGrok(GenericASTTraversal, object):
                 self.result = ListRange(arange_node[0].location, None)
                 self.prune()
                 pass
-        elif l == 5:
+        elif node_len == 5:
             # arange ::= location opt_space COMMA opt_space {NUMBER | OFFSET | ADDRESS}
             assert arange_node[2] == "COMMA"
             assert arange_node[-1] in ("NUMBER", "OFFSET", "ADDRESS")
@@ -184,8 +185,8 @@ class LocationGrok(GenericASTTraversal, object):
         return
 
     def n_range(self, range_node):
-        l = len(range_node)
-        if 1 <= l <= 2:
+        node_len = len(range_node)
+        if 1 <= node_len <= 2:
             # range ::= location
             # range ::= DIRECTION
             # range ::= FUNCNAME
@@ -208,7 +209,7 @@ class LocationGrok(GenericASTTraversal, object):
                 self.result = ListRange(None, last_node.value)
                 pass
             self.prune()
-        elif l == 3:
+        elif node_len == 3:
             # range ::= COMMA opt_space location
             # range ::= location opt_space COMMA
             if range_node[0] == "COMMA":
@@ -223,7 +224,7 @@ class LocationGrok(GenericASTTraversal, object):
                 self.result = ListRange(range_node[0].location, None)
                 self.prune()
                 pass
-        elif l == 5:
+        elif node_len == 5:
             # range ::= location opt_space COMMA opt_space {NUMBER|OFFSET}
             assert range_node[2] == "COMMA"
             assert range_node[-1] in ("NUMBER", "OFFSET")

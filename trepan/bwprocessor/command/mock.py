@@ -18,7 +18,7 @@
 """ Not a command. A stub class used by a command in its 'main' for
 demonstrating how the command works."""
 
-import os, sys
+import sys
 
 from trepan.lib import breakpoint, default
 

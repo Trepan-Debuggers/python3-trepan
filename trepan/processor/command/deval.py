@@ -16,15 +16,15 @@
 
 # Our local modules
 from sys import version_info
+
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
+
 from trepan.processor.command.base_cmd import DebuggerCommand
 
 if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
-    from decompyle3.semantics.fragments import deparse_code
-    from decompyle3.semantics.fragments import deparsed_find
+    from decompyle3.semantics.fragments import deparse_code, deparsed_find
 else:
-    from uncompyle6.semantics.fragments import deparse_code
-    from uncompyle6.semantics.fragments import deparsed_find
+    from uncompyle6.semantics.fragments import deparse_code, deparsed_find
 
 
 class DEvalCommand(DebuggerCommand):
@@ -69,7 +69,7 @@ class DEvalCommand(DebuggerCommand):
             if not nodeInfo:
                 self.errmsg("Can't find exact offset %d" % last_i)
                 return
-        except:
+        except Exception:
             self.errmsg("error in deparsing code")
             return
         if "?" == args[0][-1]:
@@ -81,12 +81,13 @@ class DEvalCommand(DebuggerCommand):
         self.msg("Evaluating: %s" % text)
         try:
             self.proc.exec_line(text)
-        except:
+        except Exception:
             pass
 
 
 if __name__ == "__main__":
     import inspect
+
     from trepan import debugger
 
     d = debugger.Trepan()

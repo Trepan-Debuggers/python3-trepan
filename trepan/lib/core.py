@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2016, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2010, 2013-2016, 2020 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,22 +25,24 @@ handling what to do when an event is triggered."""
 
 
 # Common Python packages
-import os, sys, threading
+import os
 import os.path as osp
+import sys
+import threading
 
 # External packages
 import pyficache
 import tracer
 
+import trepan.clifns as Mclifns
+
 # Our local modules
 from trepan.lib import breakpoint, default, stack as Mstack
 from trepan.misc import option_set
-import trepan.clifns as Mclifns
-from trepan.processor import trace as Mtrace, cmdproc as Mcmdproc
+from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
 
 
 class TrepanCore(object):
-
     DEFAULT_INIT_OPTS = {
         "processor": None,
         # How many step events to skip before
@@ -313,7 +317,7 @@ class TrepanCore(object):
         # condition evaluates to true.
         try:
             val = eval(self.until_condition, frame.f_globals, frame.f_locals)
-        except:
+        except Exception:
             # if eval fails, most conservative thing is to
             # stop on breakpoint regardless of ignore count.
             # Don't delete temporary, as another hint to user.
@@ -447,7 +451,7 @@ class TrepanCore(object):
         finally:
             try:
                 self.debugger_lock.release()
-            except:
+            except Exception:
                 pass
             pass
         pass

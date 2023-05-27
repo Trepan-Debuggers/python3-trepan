@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2012-2015 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2012-2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,31 +22,31 @@ import re
 
 
 def extract_expression(text):
-    if re.search("^\s*(?:if|elif)\s+", text):
-        text = re.sub("^\s*(?:if|elif)\s+", "", text)
-        text = re.sub(":(?:\s+.*$|$)", "", text)
-    elif re.search("^\s*assert\s+.*", text):
+    if re.search(r"^\s*(?:if|elif)\s+", text):
+        text = re.sub(r"^\s*(?:if|elif)\s+", "", text)
+        text = re.sub(r":(?:\s+.*$|$)", "", text)
+    elif re.search(r"^\s*assert\s+.*", text):
         # EXPR in : assert EXPRESSION:
-        text = re.sub("^\s*assert\s+", "", text)
-    elif re.search("^\s*(?:while)\s+", text):
-        text = re.sub("^\s*(?:while)\s+", "", text)
-        text = re.sub(":(?:\s+.*$|$)", "", text)
-    elif re.search("^\s*return\s+", text):
+        text = re.sub(r"^\s*assert\s+", "", text)
+    elif re.search(r"^\s*(?:while)\s+", text):
+        text = re.sub(r"^\s*(?:while)\s+", "", text)
+        text = re.sub(r":(?:\s+.*$|$)", "", text)
+    elif re.search(r"^\s*return\s+", text):
         # EXPRESION in: return EXPRESSION
-        text = re.sub("^\s*return\s+", "", text)
-    elif re.search("^\s*for\s+.+\s+in\s+.*:", text):
+        text = re.sub(r"^\s*return\s+", "", text)
+    elif re.search(r"^\s*for\s+.+\s+in\s+.*:", text):
         # EXPRESION in: for VAR in EXPRESSION:
-        text = re.sub("^\s*for\s+.+\s+in\s+", "", text)
+        text = re.sub(r"^\s*for\s+.+\s+in\s+", "", text)
         text = re.sub(":.*$", "", text)
-    elif re.search("^\s*and\s+.*", text):
+    elif re.search(r"^\s*and\s+.*", text):
         # EXPRESION in: and EXPRESSION
-        text = re.sub("^\s*and\s+", "", text)
-    elif re.search("^\s*or\s+.*", text):
+        text = re.sub(r"^\s*and\s+", "", text)
+    elif re.search(r"^\s*or\s+.*", text):
         # EXPRESION in: and EXPRESSION
-        text = re.sub("^\s*or\s+", "", text)
-    elif re.search("\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=[^=>]", text):
+        text = re.sub(r"^\s*or\s+", "", text)
+    elif re.search(r"\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=[^=>]", text):
         # RHS of an assignment statement.
-        text = re.sub("^\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=\s*", "", text)
+        text = re.sub(r"^\s*[A-Za-z_][A-Za-z0-9_\[\]]*\s*=\s*", "", text)
         pass
     return text
 
