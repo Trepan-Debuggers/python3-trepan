@@ -15,9 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 
+from trepan.processor.cmdbreak import parse_break_cmd, set_break
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.cmdbreak import parse_break_cmd, set_break
 from trepan.processor.complete import complete_break_linenumber
 
 
@@ -66,7 +67,7 @@ class TempBreakCommand(DebuggerCommand):
 
     def run(self, args):
         func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
-        if not (func == None and filename == None):
+        if not (func is None and filename is None):
             set_break(self, func, filename, lineno, condition, True, args)
         return
 

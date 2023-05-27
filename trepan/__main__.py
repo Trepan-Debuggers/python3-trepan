@@ -111,8 +111,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     load_module,
                     PYTHON_VERSION_TRIPLE,
                     IS_PYPY,
-                    version_tuple_to_str,
                 )
+                from xdis.version_info import version_tuple_to_str
 
                 (
                     python_version,
@@ -197,7 +197,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 # linemap_io = StringIO()
                 try:
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
-                except:
+                except Exception:
                     print(
                         "%s: error decompiling '%s'" % (__title__, mainpyfile),
                         file=sys.stderr,

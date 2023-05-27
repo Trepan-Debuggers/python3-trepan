@@ -158,7 +158,7 @@ if __name__ == "__main__":
     def five():
         return 5
 
-    import os
+    import os  # noqa
 
     for cmd in (
         # "list",

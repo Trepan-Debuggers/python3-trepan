@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2007-2010, 2015, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2007-2010, 2015, 2020, 2023 Rocky Bernstein
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@ def print_argspec(obj, obj_name):
     """A slightly decorated version of inspect.format_argspec"""
     try:
         return obj_name + inspect.formatargspec(*inspect.getargspec(obj))
-    except:
+    except Exception:
         return None
     return  # Not reached
 

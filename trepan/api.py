@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2017, 2019-2021 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023 Rocky
+#   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -69,7 +71,7 @@ def run_eval(
         return dbg.run_eval(
             expression, start_opts=start_opts, globals_=globals_, locals_=locals_
         )
-    except:
+    except Exception:
         dbg.core.trace_hook_suspend = True
         if start_opts and "tb_fn" in start_opts:
             tb_fn = start_opts["tb_fn"]
@@ -92,7 +94,7 @@ def run_call(func, *args, **kwds):
     dbg = Trepan()
     try:
         return dbg.run_call(func, *args, **kwds)
-    except:
+    except Exception:
         uncaught_exception(dbg)
         pass
     return
@@ -119,7 +121,7 @@ def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_
         return dbg.run_exec(
             statement, start_opts=start_opts, globals_=globals_, locals_=locals_
         )
-    except:
+    except Exception:
         uncaught_exception(dbg)
         pass
     return

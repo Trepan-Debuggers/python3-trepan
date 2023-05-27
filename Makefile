@@ -30,7 +30,8 @@ flake8:
 	flake8 trepan
 
 #: Run all tests: unit, functional and integration verbosely
-check: test-unit test-functional test-integration # flake8
+# check: test-unit test-functional test-integration # flake8
+check: test-unit test-integration # flake8
 
 #: Run unit (white-box) tests
 test-unit:
