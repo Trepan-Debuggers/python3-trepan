@@ -22,23 +22,23 @@ from trepan.processor import cmdfns as Mcmdfns, cmdproc as Mcmdproc
 class SetAutoPython(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set** **autopython** [ **on** | **off** ]
 
-Go into a Python shell on debugger entry.
+    Go into a Python shell on debugger entry.
 
-See also:
----------
+    See also:
+    ---------
 
-`python`
-"""
-    in_list    = True
-    min_abbrev = len('autopy')  # Need at least "set autopy"
+    `python`"""
+
+    in_list = True
+    min_abbrev = len("autopy")  # Need at least "set autopy"
 
     python_cmd = None
 
     def run(self, args):
         Mcmdfns.run_set_bool(self, args)
-        if self.settings['autopython']:
+        if self.settings["autopython"]:
             if self.python_cmd is None:
-                self.python_cmd = self.proc.commands['python'].run
+                self.python_cmd = self.proc.commands["python"].run
                 pass
             self.proc.add_preloop_hook(self.run_python, -1)
         else:
@@ -48,13 +48,16 @@ See also:
         return
 
     def run_python(self, args):
-        leave_loop = self.python_cmd(['python'])
-        if not leave_loop: Mcmdproc.print_location(self.proc)
+        leave_loop = self.python_cmd(["python"])
+        if not leave_loop:
+            Mcmdproc.print_location(self.proc)
         return leave_loop
 
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(SetAutoPython)
     pass

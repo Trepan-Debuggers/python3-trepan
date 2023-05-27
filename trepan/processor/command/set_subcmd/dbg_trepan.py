@@ -24,13 +24,12 @@ from trepan.processor import cmdfns as Mcmdfns, cmdproc as Mcmdproc
 class SetCmdDbgTrepan(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """Set the ability to debug the debugger.
 
-Setting this allows visibility and access to some of the debugger's
-internals. Specifically variable "frame" contains the current frame and
-variable "debugger" contains the top-level debugger object.
-"""
+    Setting this allows visibility and access to some of the debugger's
+    internals. Specifically variable "frame" contains the current frame and
+    variable "debugger" contains the top-level debugger object."""
 
-    in_list    = True
-    min_abbrev = len('dbg')    # Need at least "set dbg"
+    in_list = True
+    min_abbrev = len("dbg")  # Need at least "set dbg"
 
     def run(self, args):
         Mcmdfns.run_set_bool(self, args)
@@ -39,8 +38,9 @@ variable "debugger" contains the top-level debugger object.
             # something to inspect.
             frame = inspect.currentframe()
             # Also give access to the top-level debugger
-            self.proc.stack, self.proc.curindex = \
-                Mcmdproc.get_stack(frame, None, self.proc)
+            self.proc.stack, self.proc.curindex = Mcmdproc.get_stack(
+                frame, None, self.proc
+            )
             self.proc.curframe = self.proc.stack[self.proc.curindex][0]
             # Remove ignored debugger functions.
             self.save_ignore_filter = self.core.ignore_filter
@@ -50,4 +50,5 @@ variable "debugger" contains the top-level debugger object.
             pass
 
         return
+
     pass

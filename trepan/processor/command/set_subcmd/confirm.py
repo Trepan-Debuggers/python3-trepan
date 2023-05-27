@@ -21,24 +21,25 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class SetConfirm(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set confirm** [ **on* | **off** ]
 
-Set confirmation of potentially dangerous operations.
+    Set confirmation of potentially dangerous operations.
 
-Some operations are a bit disruptive like terminating the program.
-To guard against running this accidentally, by default we ask for
-confirmation. Commands can also be exempted from confirmation by suffixing
-them with an exclamation mark (!).
+    Some operations are a bit disruptive like terminating the program.
+    To guard against running this accidentally, by default we ask for
+    confirmation. Commands can also be exempted from confirmation by suffixing
+    them with an exclamation mark (!).
 
-See Also:
----------
+    See Also:
+    ---------
 
-`show confirm`
-"""
+    `show confirm`"""
 
-    in_list    = True
-    min_abbrev = len('co')
+    in_list = True
+    min_abbrev = len("co")
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(SetConfirm)
     pass

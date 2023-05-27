@@ -23,11 +23,11 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
     """**info args**
 
-Show parameters of the current stack frame.
+    Show parameters of the current stack frame.
 
-See also:
----------
-`info locals`, `info globals`, `info frame`"""
+    See also:
+    ---------
+    `info locals`, `info globals`, `info frame`"""
 
     min_abbrev = 1
     need_stack = True
@@ -43,8 +43,10 @@ See also:
         # args, varargs, varkw, f_locals = getargvalues(f)
         d = f.f_locals
         n = co.co_argcount
-        if co.co_flags & inspect.CO_VARARGS: n += 1
-        if co.co_flags & inspect.CO_VARKEYWORDS: n += 1
+        if co.co_flags & inspect.CO_VARARGS:
+            n += 1
+        if co.co_flags & inspect.CO_VARKEYWORDS:
+            n += 1
 
         if n == 0:
             self.msg("no parameters")
@@ -52,7 +54,7 @@ See also:
             self.section("Argument parameters")
             for i in range(n):
                 name = co.co_varnames[i]
-                self.msg_nocr("%d: %s = " % (i+1, name))
+                self.msg_nocr("%d: %s = " % (i + 1, name))
                 if name in d:
                     self.msg(str(d[name]))
                 else:
@@ -61,10 +63,13 @@ See also:
                 pass
             pass
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
+
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoArgs(i)
@@ -76,8 +81,9 @@ if __name__ == '__main__':
         cp.curframe = inspect.currentframe()
         print(sub.run([]))
         return
-    print('-' * 10)
+
+    print("-" * 10)
     nest_me(sub, cp, 3)
-    print('-' * 10)
+    print("-" * 10)
     nest_me(sub, cp)
     pass

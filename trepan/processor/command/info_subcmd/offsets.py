@@ -22,22 +22,22 @@ from pyficache import cache_code_lines
 class InfoOffsets(DebuggerSubcommand):
     """**info offsets** [*function-file-or-module*]
 
-Show line offset information for a function, module, or a file.
+    Show line offset information for a function, module, or a file.
 
-If no location is given, use the the current frame.
+    If no location is given, use the the current frame.
 
-Examples
---------
+    Examples
+    --------
 
-    (trepan3k) info offsets
-    Offset - line number table for offsets.py
-           0:  16    40:  23    72:  94   108:  98   136: 101   164: 104   188: 107
-          16:  19    48:  45    84:  95   114:  99   144: 102   174: 105
-          28:  20    64:  93    96:  96   128: 100   154: 103   184: 106
+        (trepan3k) info offsets
+        Offset - line number table for offsets.py
+               0:  16    40:  23    72:  94   108:  98   136: 101   164: 104   188: 107
+              16:  19    48:  45    84:  95   114:  99   144: 102   174: 105
+              28:  20    64:  93    96:  96   128: 100   154: 103   184: 106
 
-See also:
----------
-`info line`, `info program`, `info frame`"""
+    See also:
+    ---------
+    `info line`, `info program`, `info frame`"""
 
     min_abbrev = 2
     max_args = 2
@@ -55,21 +55,25 @@ See also:
 
             # No line number. Use current frame line number
             filename = curframe.f_code.co_filename
-            file_info = cache_code_lines(filename, toplevel_only=False, include_offsets=True)
+            file_info = cache_code_lines(
+                filename, toplevel_only=False, include_offsets=True
+            )
             if file_info:
                 self.section("Offset - line number table for %s" % filename)
-                offsets = ["@%4d:%4d" % (offset, line) for offset, line in file_info.linestarts.items()]
+                offsets = [
+                    "@%4d:%4d" % (offset, line)
+                    for offset, line in file_info.linestarts.items()
+                ]
                 m = self.columnize_commands(list(sorted(offsets)))
                 self.msg(m)
             else:
-                self.errmsg(
-                    "haven't recorded info for offset file %s" % filename
-                )
+                self.errmsg("haven't recorded info for offset file %s" % filename)
                 pass
             pass
         else:
             self.errmsg("Passing a filename, function, or module not completed yet...")
         return
+
     pass
 
 
@@ -83,6 +87,7 @@ if __name__ == "__main__":
     i = InfoCommand(cp)
     sub = InfoOffsets(i)
     import inspect
+
     cp.curframe = inspect.currentframe()
     for width in (80, 200):
         sub.settings["width"] = width

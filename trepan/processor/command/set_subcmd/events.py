@@ -24,26 +24,26 @@ class SetEvents(Mbase_subcmd.DebuggerSubcommand):
 
     """**set events** [*event* ...]
 
-Sets the events that the debugger will stop on. Event names are:
-`c_call`, `c_exception`, `c_return`, `call`, `exception`, `line`,
-or `return`.
+    Sets the events that the debugger will stop on. Event names are:
+    `c_call`, `c_exception`, `c_return`, `call`, `exception`, `line`,
+    or `return`.
 
-`all` can be used as an abbreviation for listing all event names.
+    `all` can be used as an abbreviation for listing all event names.
 
-Changing trace event filters works independently of turning on or off
-tracing-event printing.
+    Changing trace event filters works independently of turning on or off
+    tracing-event printing.
 
-Examples:
----------
+    Examples:
+    ---------
 
-  set events line        # Set trace filter for line events only.
-  set events call return # Trace calls and returns only
-  set events all         # Set trace filter to all events.
+      set events line        # Set trace filter for line events only.
+      set events call return # Trace calls and returns only
+      set events all         # Set trace filter to all events.
 
-See also:
----------
+    See also:
+    ---------
 
-`set trace`, `show trace`, and `show events`. `help step` lists event names.
+    `set trace`, `show trace`, and `show events`. `help step` lists event names.
     """
 
     in_list = True

@@ -28,13 +28,13 @@ class DownCommand(UpCommand):
     def run(self, args):
         """**down** [*count*]
 
-Move the current frame down in the stack trace (to a newer frame). 0
-is the most recent frame. If no count is given, move down 1.
+        Move the current frame down in the stack trace (to a newer frame). 0
+        is the most recent frame. If no count is given, move down 1.
 
-See also:
----------
+        See also:
+        ---------
 
-`up` and `frame`."""
+        `up` and `frame`."""
 
         adjust_relative(self.proc, self.name, args, self.signum)
         return False

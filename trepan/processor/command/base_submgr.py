@@ -21,7 +21,10 @@ from trepan.lib.complete import complete_token, complete_token_with_next
 
 
 def abbrev_stringify(name, min_abbrev):
-    return "(%s)%s" % (name[:min_abbrev], name[min_abbrev:],)
+    return "(%s)%s" % (
+        name[:min_abbrev],
+        name[min_abbrev:],
+    )
 
 
 def capitalize(s):
@@ -172,7 +175,11 @@ class SubcommandMgr(DebuggerCommand):
                 )
             else:
                 self.section(
-                    'Subcommand(s) of "%s" matching /^%s/:' % (self.name, subcmd_name,)
+                    'Subcommand(s) of "%s" matching /^%s/:'
+                    % (
+                        self.name,
+                        subcmd_name,
+                    )
                 )
                 self.msg_nocr(self.columnize_commands(cmds))
                 pass

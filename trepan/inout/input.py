@@ -24,6 +24,7 @@ from trepan.inout import base as Mbase
 def readline_importable():
     try:
         import readline  # NOQA
+
         return True
     except ImportError:
         return False
@@ -36,7 +37,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
     interative terminal, but it might be file input."""
 
     def __init__(self, inp=None, opts=None):
-        self.input     = inp or sys.stdin
+        self.input = inp or sys.stdin
         self.line_edit = None  # Our name for GNU readline capability
         self.open(self.input, opts)
         return
@@ -47,9 +48,9 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         return
 
     DEFAULT_OPEN_READ_OPTS = {
-        'use_raw'      : True,
-        'try_readline' : True,
-        }
+        "use_raw": True,
+        "try_readline": True,
+    }
 
     def use_history(self):
         return self.use_raw and readline_importable()
@@ -68,28 +69,31 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         will assume no raw output. Note that an individual readline
         may override the setting.
         """
-        get_option = lambda key: Mmisc.option_set(opts, key,
-                                                  self.DEFAULT_OPEN_READ_OPTS)
-        if (isinstance(inp, io.TextIOWrapper) or
-            isinstance(inp, io.StringIO) or
-            hasattr(inp, 'isatty') and inp.isatty()):
-            self.use_raw = get_option('use_raw')
-        elif isinstance(inp, 'string'.__class__):  # FIXME
+        get_option = lambda key: Mmisc.option_set(
+            opts, key, self.DEFAULT_OPEN_READ_OPTS
+        )
+        if (
+            isinstance(inp, io.TextIOWrapper)
+            or isinstance(inp, io.StringIO)
+            or hasattr(inp, "isatty")
+            and inp.isatty()
+        ):
+            self.use_raw = get_option("use_raw")
+        elif isinstance(inp, "string".__class__):  # FIXME
             if opts is None:
                 self.use_raw = False
             else:
-                self.use_raw = get_option('use_raw')
+                self.use_raw = get_option("use_raw")
                 pass
-            inp = open(inp, 'r')
+            inp = open(inp, "r")
         else:
-            raise IOError("Invalid input type (%s) for %s" % (type(inp),
-                                                                inp))
-        self.input     = inp
-        self.line_edit = get_option('try_readline') and readline_importable()
+            raise IOError("Invalid input type (%s) for %s" % (type(inp), inp))
+        self.input = inp
+        self.line_edit = get_option("try_readline") and readline_importable()
         self.closed = False
         return
 
-    def readline(self, use_raw=None, prompt=''):
+    def readline(self, use_raw=None, prompt=""):
         """Read a line of input. EOFError will be raised on EOF.
 
         Note: some user interfaces may decide to arrange to call
@@ -114,19 +118,22 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
         else:
             line = self.input.readline()
-            if not line: raise EOFError
+            if not line:
+                raise EOFError
             return line.rstrip("\n")
         pass
+
     pass
 
+
 # Demo
-if __name__=='__main__':
-    print('readline importable: ', readline_importable())
+if __name__ == "__main__":
+    print("readline importable: ", readline_importable())
     inp = DebuggerUserInput(__file__)
     line = inp.readline()
     print(line)
     inp.close()
-    inp.open('input.py', opts={'use_raw': False})
+    inp.open("input.py", opts={"use_raw": False})
     while True:
         try:
             inp.readline()
@@ -136,18 +143,18 @@ if __name__=='__main__':
     try:
         inp.readline()
     except EOFError:
-        print('EOF handled correctly')
+        print("EOF handled correctly")
     pass
 
     if len(sys.argv) > 1:
         inp = DebuggerUserInput()
         try:
-            print("Type some characters:", end=' ')
+            print("Type some characters:", end=" ")
             line = inp.readline()
             print("You typed: %s" % line)
-            print("Type some more characters (raw):", end=' ')
+            print("Type some more characters (raw):", end=" ")
             line = inp.readline(True)
-            print("Type even more characters (not raw):", end=' ')
+            print("Type even more characters (not raw):", end=" ")
             line = inp.readline(True)
             print("You also typed: %s" % line)
         except EOFError:

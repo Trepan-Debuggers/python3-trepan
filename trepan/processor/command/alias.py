@@ -20,26 +20,26 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class AliasCommand(DebuggerCommand):
     """**alias** *alias-name* *debugger-command*
 
-Add alias *alias-name* for a debugger command *debugger-command*.  You
-might do this if you want shorter command names or more commands that
-have more familiar meanings.
+    Add alias *alias-name* for a debugger command *debugger-command*.  You
+    might do this if you want shorter command names or more commands that
+    have more familiar meanings.
 
-Another related use is as a command abbreviation for a command that
-would otherwise be ambiguous. For example, by default we make `s` be
-an alias of `step` to force it to be used. Without the alias, `s`
-might be `step`, `show`, or `set` among others.
+    Another related use is as a command abbreviation for a command that
+    would otherwise be ambiguous. For example, by default we make `s` be
+    an alias of `step` to force it to be used. Without the alias, `s`
+    might be `step`, `show`, or `set` among others.
 
-Examples:
---------
+    Examples:
+    --------
 
-    alias cat list   # "cat prog.py" is the same as "list prog.py"
-    alias s   step   # "s" is now an alias for "step".
-                     # The above example is done by default.
+        alias cat list   # "cat prog.py" is the same as "list prog.py"
+        alias s   step   # "s" is now an alias for "step".
+                         # The above example is done by default.
 
-See also:
----------
+    See also:
+    ---------
 
-`unalias` and `show alias`.
+    `unalias` and `show alias`.
     """
 
     name = "alias"

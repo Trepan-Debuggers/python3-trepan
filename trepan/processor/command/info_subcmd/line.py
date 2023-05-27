@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,15 +15,18 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, re
+import inspect
 import os.path as osp
+import re
 
-# Our local modules
-from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from pyficache import code_line_info
+
 from trepan.clifns import search_file
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
-from pyficache import code_line_info
+
+# Our local modules
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 
 def find_function(funcname, filename):
@@ -49,25 +54,25 @@ def find_function(funcname, filename):
 class InfoLine(DebuggerSubcommand):
     """**info line* [*location*]
 
-Show line information for location *location*.
+    Show line information for location *location*.
 
-If no location is given, use the the current stopped line.
+    If no location is given, use the the current stopped line.
 
-Examples
---------
+    Examples
+    --------
 
-    (trepan3k) info line
-    Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
-        starts at offset 0 of <module> and contains 2 instructions
-    There are multiple line offsets this line number. Other line offsets: 4 of <module>
+        (trepan3k) info line
+        Line 3 of "/tmp/python3-trepan/test/example/multi-line.py"
+            starts at offset 0 of <module> and contains 2 instructions
+        There are multiple line offsets this line number. Other line offsets: 4 of <module>
 
-    (trepan3k) info line 5
-    Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
-        starts at offset 16 of <module> and contains 7 instructions
+        (trepan3k) info line 5
+        Line 5 of "/tmp/python3-trepan/test/example/multi-line.py"
+            starts at offset 16 of <module> and contains 7 instructions
 
-See also:
----------
-`info program`, `info frame`"""
+    See also:
+    ---------
+    `info program`, `info frame`"""
 
     min_abbrev = 2
     max_args = 4
@@ -78,7 +83,7 @@ See also:
         (func, filename, lineno, condition, offset) = parse_break_cmd(
             self.proc, ["info args"]
         )
-        if filename != None and lineno != None:
+        if filename is not None and lineno is not None:
             return lineno, filename
         else:
             return None, None
@@ -123,12 +128,14 @@ See also:
                 % (line_number, self.core.filename(filename))
             )
         if line_info and len(line_info) > 1:
-            self.msg(wrapped_lines(
-                "There are multiple line offsets for line number.",
-                "Other line offsets: %s"
-                % ", ".join(
-                    ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]),
-                self.settings["width"]
+            self.msg(
+                wrapped_lines(
+                    "There are multiple line offsets for line number.",
+                    "Other line offsets: %s"
+                    % ", ".join(
+                        ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]
+                    ),
+                    self.settings["width"],
                 )
             )
         return False
@@ -137,9 +144,9 @@ See also:
 
 
 if __name__ == "__main__":
+    from trepan.debugger import Trepan
     from trepan.processor.command import mock
     from trepan.processor.command.info import InfoCommand
-    from trepan.debugger import Trepan
 
     d = Trepan()
     d, cp = mock.dbg_setup(d)

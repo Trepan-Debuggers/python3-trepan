@@ -47,7 +47,7 @@ class DebuggerInputBase(metaclass=ABCMeta):
         return False
 
     def open(self, inp, opts=None):
-        """Use this to set where to read from. """
+        """Use this to set where to read from."""
         raise NotImplementedError(NotImplementedMessage)
 
     def readline(self, use_raw=None):
@@ -66,7 +66,7 @@ class DebuggerInputBase(metaclass=ABCMeta):
 
 
 class DebuggerInOutBase(metaclass=ABCMeta):
-    """ This is an abstract class that specifies debugger output. """
+    """This is an abstract class that specifies debugger output."""
 
     def __init__(self, out=None, opts=None):
         self.output = None
@@ -88,7 +88,7 @@ class DebuggerInOutBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     def writeline(self, msg):
-        """ used to write to a debugger that is connected to this
+        """used to write to a debugger that is connected to this
         server; `str' written will have a newline added to it
         """
         self.write("%s\n" % msg)
@@ -98,7 +98,7 @@ class DebuggerInOutBase(metaclass=ABCMeta):
 
 
 class TrepanInOutBase(metaclass=ABCMeta):
-    """ This is an abstract class that specifies debugger input output when
+    """This is an abstract class that specifies debugger input output when
     handled by the same channel, e.g. a socket or tty.
     """
 
@@ -116,7 +116,7 @@ class TrepanInOutBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     def open(self, inp, opts=None):
-        """Use this to set where to read from. """
+        """Use this to set where to read from."""
         raise NotImplementedError(NotImplementedMessage)
 
     def readline(self, use_raw=None):
@@ -138,7 +138,7 @@ class TrepanInOutBase(metaclass=ABCMeta):
         raise NotImplementedError(NotImplementedMessage)
 
     def writeline(self, msg):
-        """ used to write to a debugger that is connected to this
+        """used to write to a debugger that is connected to this
         server; `str' written will have a newline added to it
         """
         self.write("%s\n" % msg)

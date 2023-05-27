@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ The hairy command-line interface to the debugger.
 """
-import os, os.path as osp, sys
+import os.path as osp
+import pyficache
+import sys
 
 from optparse import OptionParser
-
-from pyficache import resolve_name_to_path
 
 # Our local modules
 from trepan import clifns as Mclifns
@@ -31,8 +31,8 @@ from trepan.interfaces.bullwinkle import BWInterface
 # The name of the debugger we are currently going by.
 __title__ = "trepan"
 
-# VERSION.py sets variable VERSION.
-from trepan.VERSION import VERSION as __version__
+# version.py sets variable __version__
+from trepan.version import __version__
 
 
 def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
@@ -86,7 +86,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
 
 def _postprocess_options(dbg, opts):
-    """ Handle options (`opts') that feed into the debugger (`dbg')"""
+    """Handle options (`opts') that feed into the debugger (`dbg')"""
     # Set dbg.settings['printset']
     print_events = []
     if opts.fntrace:
@@ -141,12 +141,19 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             if is_readable is None:
                 print(
                     "%s: Python script file '%s' does not exist"
-                    % (__title__, mainpyfile,)
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
             elif not is_readable:
                 print(
-                    "%s: Can't read Python script file '%s'" % (__title__, mainpyfile,)
+                    "%s: Can't read Python script file '%s'"
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
                 return
@@ -158,7 +165,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             print("%s: Compiled Python script given and we can't use that." % __title__)
             print(
                 "%s: Substituting non-compiled name: %s"
-                % (__title__, mainpyfile_noopt,)
+                % (
+                    __title__,
+                    mainpyfile_noopt,
+                )
             )
             mainpyfile = mainpyfile_noopt
             pass

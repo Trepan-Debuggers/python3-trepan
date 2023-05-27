@@ -22,25 +22,26 @@ class SetTrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
 
     """**set trace** [ **on** | **off** ]
 
-Set event tracing.
+    Set event tracing.
 
-See also:
----------
+    See also:
+    ---------
 
-`set events`, and `show trace`.
-"""
+    `set events`, and `show trace`."""
 
-    in_list    = True
-    min_abbrev = len('trace')  # Must use at least "set trace"
+    in_list = True
+    min_abbrev = len("trace")  # Must use at least "set trace"
     short_help = "Set event tracing"
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     sub = Mhelper.demo_run(SetTrace)
     d = sub.proc.debugger
-    for args in (['on'], ['off']):
+    for args in (["on"], ["off"]):
         sub.run(args)
-        print(d.settings['trace'])
+        print(d.settings["trace"])
         pass
     pass

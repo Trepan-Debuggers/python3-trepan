@@ -9,7 +9,7 @@ class TestLibSigHandle(unittest.TestCase):
 
     def test_YN(self):
         for expect, b in (('Yes', True), ('No', False)):
-            self.assertEqual(expect, Msig.YN(b))
+            self.assertEqual(expect, Msig.yes_or_no(b))
             pass
         return
 

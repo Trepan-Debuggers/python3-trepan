@@ -17,9 +17,10 @@
 
 
 class Subcmd:
-    """Gdb-like subcommand handling """
+    """Gdb-like subcommand handling"""
+
     def __init__(self, name, cmd_obj):
-        self.name    = name
+        self.name = name
         self.cmd_obj = cmd_obj
         self.subcmds = {}
         self.cmdlist = []
@@ -28,9 +29,10 @@ class Subcmd:
     def lookup(self, subcmd_prefix):
         """Find subcmd in self.subcmds"""
         for subcmd_name in list(self.subcmds.keys()):
-            if subcmd_name.startswith(subcmd_prefix) \
-               and len(subcmd_prefix) >= \
-               self.subcmds[subcmd_name].__class__.min_abbrev:
+            if (
+                subcmd_name.startswith(subcmd_prefix)
+                and len(subcmd_prefix) >= self.subcmds[subcmd_name].__class__.min_abbrev
+            ):
                 return self.subcmds[subcmd_name]
             pass
         return None
@@ -42,10 +44,11 @@ class Subcmd:
             if label:
                 prefix = entry.name
             else:
-                prefix = ''
+                prefix = ""
                 pass
-            if hasattr(entry, 'short_help'):
-                if prefix: prefix += ' -- '
+            if hasattr(entry, "short_help"):
+                if prefix:
+                    prefix += " -- "
                 self.cmd_obj.msg(prefix + entry.short_help)
                 pass
             pass
@@ -71,9 +74,9 @@ class Subcmd:
 
     def run(self, subcmd_name, arg):
         """Run subcmd_name with args using obj for the environent"""
-        entry=self.lookup(subcmd_name)
+        entry = self.lookup(subcmd_name)
         if entry:
-            entry['callback'](arg)
+            entry["callback"](arg)
         else:
             self.cmdproc.undefined_cmd(entry.__class__.name, subcmd_name)
             pass
@@ -87,19 +90,23 @@ class Subcmd:
         subcmd_prefix = args[0]
         if not subcmd_prefix or len(subcmd_prefix) == 0:
             self.msg(self.doc)
-            self.msg("""
+            self.msg(
+                """
 List of %s subcommands:
-""" % (self.name))
+"""
+                % (self.name)
+            )
             for subcmd_name in self.list():
                 self._subcmd_helper(subcmd_name, self, True, True)
             return
 
         entry = self.lookup(subcmd_prefix)
-        if entry and hasattr(entry, 'help'):
+        if entry and hasattr(entry, "help"):
             entry.help(args)
         else:
-            self.cmd_obj.errmsg("Unknown 'help %s' subcommand %s"
-                                % (self.name, subcmd_prefix))
+            self.cmd_obj.errmsg(
+                "Unknown 'help %s' subcommand %s" % (self.name, subcmd_prefix)
+            )
 
     def list(self):
         l = list(self.subcmds.keys())
@@ -108,65 +115,77 @@ List of %s subcommands:
 
     def undefined_subcmd(self, cmd, subcmd):
         """Error message when a subcommand doesn't exist"""
-        self.cmd_obj.errmsg('Undefined "%s" command: "%s". Try "help".' %
-                         (cmd, subcmd,))
+        self.cmd_obj.errmsg(
+            'Undefined "%s" command: "%s". Try "help".'
+            % (
+                cmd,
+                subcmd,
+            )
+        )
         return
+
     pass
 
+
 # When invoked as main program, invoke the debugger on a script
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     from trepan.processor.command import mock as Mmock
     from trepan.processor.command import base_cmd as Mbase_cmd
 
     class TestCommand(Mbase_cmd.DebuggerCommand):
-        '''Doc string for testing'''
+        """Doc string for testing"""
 
-        category = 'data'
+        category = "data"
         min_args = 0
         max_args = 5
-        name = 'test'
+        name = "test"
 
         def __init__(self):
-            self.name  = 'test'
+            self.name = "test"
             return
 
-        def run(self, args): print('test command run')
+        def run(self, args):
+            print("test command run")
 
     class TestTestingSubcommand:
-        '''Doc string for test testing subcommand'''
+        """Doc string for test testing subcommand"""
 
         def __init__(self):
-            self.name  = 'testing'
+            self.name = "testing"
             return
 
-        short_help = 'This is short help for test testing'
+        short_help = "This is short help for test testing"
         min_abbrev = 4
-        in_list    = True
+        in_list = True
 
-        def run(self, args): print('test testing run')
+        def run(self, args):
+            print("test testing run")
+
         pass
 
     d = Mmock.MockDebugger()
-    testcmd    = TestCommand()
+    testcmd = TestCommand()
     testcmd.debugger = d
-    testcmd.proc     = d.core.processor
-    testcmdMgr = Subcmd('test', testcmd)
+    testcmd.proc = d.core.processor
+    testcmdMgr = Subcmd("test", testcmd)
     testsub = TestTestingSubcommand()
     testcmdMgr.add(testsub)
 
-    for prefix in ['tes', 'test', 'testing', 'testing1']:
+    for prefix in ["tes", "test", "testing", "testing1"]:
         x = testcmdMgr.lookup(prefix)
-        if x: print(x.name)
-        else: print('None')
+        if x:
+            print(x.name)
+        else:
+            print("None")
         pass
 
-    testcmdMgr.short_help(testcmd, 'testing')
-    testcmdMgr.short_help(testcmd, 'test', True)
-    testcmdMgr.short_help(testcmd, 'tes')
+    testcmdMgr.short_help(testcmd, "testing")
+    testcmdMgr.short_help(testcmd, "test", True)
+    testcmdMgr.short_help(testcmd, "tes")
     print(testcmdMgr.list())
     testsub2 = TestTestingSubcommand()
-    testsub2.name = 'foobar'
+    testsub2.name = "foobar"
     testcmdMgr.add(testsub2)
     print(testcmdMgr.list())
     pass

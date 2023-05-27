@@ -21,17 +21,19 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class ShowConfirm(Mbase_subcmd.DebuggerShowBoolSubcommand):
     """**show confirm**
 
-Show confirmation of potentially dangerous operations
+    Show confirmation of potentially dangerous operations
 
-See also:
----------
+    See also:
+    ---------
 
-`set confirm`"""
-    min_abbrev = 3    # Need at least "show con"
+    `set confirm`"""
+
+    min_abbrev = 3  # Need at least "show con"
     pass
 
-if __name__ == '__main__':
-    from trepan.processor.command.show_subcmd \
-      import __demo_helper__ as Mhelper
+
+if __name__ == "__main__":
+    from trepan.processor.command.show_subcmd import __demo_helper__ as Mhelper
+
     Mhelper.demo_run(ShowConfirm)
     pass

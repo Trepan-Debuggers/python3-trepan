@@ -50,48 +50,45 @@ def ctype_async_raise(thread_obj, exception):
 class QuitCommand(DebuggerCommand):
     """**quit** [**unconditionally**]
 
-Gently terminate the debugged program.
+    Gently terminate the debugged program.
 
-The program being debugged is aborted via a *DebuggerQuit*
-exception.
+    The program being debugged is aborted via a *DebuggerQuit*
+    exception.
 
-When the debugger from the outside (e.g. via a `trepan` command), the
-debugged program is contained inside a try block which handles the
-*DebuggerQuit* exception.  However if you called the debugger was
-started in the middle of a program, there might not be such an
-exception handler; the debugged program still terminates but generally
-with a traceback showing that exception.
+    When the debugger from the outside (e.g. via a `trepan` command), the
+    debugged program is contained inside a try block which handles the
+    *DebuggerQuit* exception.  However if you called the debugger was
+    started in the middle of a program, there might not be such an
+    exception handler; the debugged program still terminates but generally
+    with a traceback showing that exception.
 
-If the debugged program is threaded, we raise an exception in each of
-the threads ending with our own. However this might not quit the
-program.
+    If the debugged program is threaded, we raise an exception in each of
+    the threads ending with our own. However this might not quit the
+    program.
 
-See also:
----------
+    See also:
+    ---------
 
-See `exit` or `kill` for more forceful termination commands.
+    See `exit` or `kill` for more forceful termination commands.
 
-`run` and `restart` are other ways to restart the debugged program.
-"""
+    `run` and `restart` are other ways to restart the debugged program."""
 
     aliases = ("q", "quit!")
     category = "support"
     max_args = 0
     short_help = "Terminate the program - gently"
 
-    DebuggerCommand.setup(
-        locals(), category="support", max_args=0
-    )
+    DebuggerCommand.setup(locals(), category="support", max_args=0)
 
     def nothread_quit(self, arg):
-        """ quit command when there's just one thread. """
+        """quit command when there's just one thread."""
 
         self.debugger.core.stop()
         self.debugger.core.execution_status = "Quit command"
         raise DebuggerQuit
 
     def threaded_quit(self, arg):
-        """ quit command when several threads are involved. """
+        """quit command when several threads are involved."""
         threading_list = threading.enumerate()
         mythread = threading.currentThread()
         for t in threading_list:

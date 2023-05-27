@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,47 +17,49 @@
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
-import columnize
 
 
 class InfoSignals(Mbase_subcmd.DebuggerSubcommand):
-    '''**info signals** [*signal-name*]
+    r"""**info signals** [*signal-name*]
 
-**info signals** \*
+    **info signals** *
 
-Show information about how debugger treats signals to the program.
-Here are the boolean actions we can take:
+    Show information about how debugger treats signals to the program.
+    Here are the boolean actions we can take:
 
- * Stop: enter the debugger when the signal is sent to the debugged program
+     * Stop: enter the debugger when the signal is sent to the debugged program
 
- * Print: print that the signal was received
+     * Print: print that the signal was received
 
- * Stack: show a call stack
+     * Stack: show a call stack
 
- * Pass: pass the signal onto the program
+     * Pass: pass the signal onto the program
 
-If *signal-name* is not given, we the above show information for all
-signals. If '*' is given we just give a list of signals.
- '''
+    If *signal-name* is not given, we the above show information for all
+    signals. If '*' is given we just give a list of signals.
+    """
 
     min_abbrev = 3  # info sig
     need_stack = False
-    short_help = 'What debugger does when program gets various signals'
+    short_help = "What debugger does when program gets various signals"
 
     def complete(self, prefix):
-        completions = sorted(['*'] + self.debugger.sigmgr.siglist)
+        completions = sorted(["*"] + self.debugger.sigmgr.siglist)
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
-        if len(args) > 0 and args[0] == '*' :
+        if len(args) > 0 and args[0] == "*":
             self.msg(self.columnize_commands(self.debugger.sigmgr.siglist))
         else:
-            self.debugger.sigmgr.info_signal(['signal'] + args)
+            self.debugger.sigmgr.info_signal(["signal"] + args)
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
+
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoSignals(i)

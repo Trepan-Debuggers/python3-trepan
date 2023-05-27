@@ -31,14 +31,13 @@ from trepan.misc import wrapped_lines
 class InfoPC(DebuggerSubcommand):
     """**info pc**
 
-List the current program counter or bytecode offset,
-and disassemble the instructions around that.
+    List the current program counter or bytecode offset,
+    and disassemble the instructions around that.
 
-See also:
----------
+    See also:
+    ---------
 
-`info line`, `info program`
-"""
+    `info line`, `info program`"""
 
     min_abbrev = 2  # Need at least info 'pc'
     max_args = 0
@@ -60,11 +59,11 @@ See also:
                 disassemble_bytes(
                     self.msg,
                     self.msg_nocr,
-                    code = co_code,
-                    lasti = offset,
-                    cur_line = line_no,
-                    start_line = line_no - 1,
-                    end_line = line_no + 1,
+                    code=co_code,
+                    lasti=offset,
+                    cur_line=line_no,
+                    start_line=line_no - 1,
+                    end_line=line_no + 1,
                     varnames=code.co_varnames,
                     names=code.co_names,
                     constants=code.co_consts,

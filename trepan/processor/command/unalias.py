@@ -21,20 +21,18 @@ from trepan.lib.complete import complete_token
 class UnaliasCommand(DebuggerCommand):
     """**unalias** *alias-name*
 
-Remove alias *alias-name*
+    Remove alias *alias-name*
 
-See also:
----------
+    See also:
+    ---------
 
-'alias'
-"""
+    'alias'"""
 
-    min_args      = 1
-    short_help    = 'Remove an alias'
+    min_args = 1
+    short_help = "Remove an alias"
 
-    DebuggerCommand.setup(
-        locals(), category="support", max_args=1
-    )
+    DebuggerCommand.setup(locals(), category="support", max_args=1)
+
     def complete(self, prefix):
         return complete_token(self.proc.aliases.keys(), prefix)
 
@@ -42,23 +40,26 @@ See also:
     def run(self, args):
         for arg in args[1:]:
             if arg in self.proc.aliases:
-                del(self.proc.aliases[arg])
+                del self.proc.aliases[arg]
                 self.msg("Alias for %s removed." % arg)
             else:
                 self.msg("No alias found for %s" % arg)
                 pass
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Demo it.
     from trepan import debugger
-    d            = debugger.Trepan()
-    cp           = d.core.processor
-    command      = UnaliasCommand(cp)
-    command.run(['unalias', 's'])
-    command.run(['unalias', 's'])
-    command.run(['unalias', 'foo', 'n'])
-    print(command.complete(''))
+
+    d = debugger.Trepan()
+    cp = d.core.processor
+    command = UnaliasCommand(cp)
+    command.run(["unalias", "s"])
+    command.run(["unalias", "s"])
+    command.run(["unalias", "foo", "n"])
+    print(command.complete(""))
     pass

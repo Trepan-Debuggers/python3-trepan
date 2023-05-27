@@ -48,9 +48,12 @@ debugger_obj = None
 try:
     from readline import get_line_buffer
 except ImportError:
+
     def get_line_buffer():
         return None
+
     pass
+
 
 class Trepan(object):
 
@@ -60,7 +63,7 @@ class Trepan(object):
     # FIXME DRY run, run_exec, run_eval.
 
     def run(self, cmd, start_opts=None, globals_=None, locals_=None):
-        """ Run debugger on string `cmd' using builtin function eval
+        """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
         are the dictionaries to use for local and global variables. By
         default, the value of globals is globals(), the current global
@@ -80,7 +83,7 @@ class Trepan(object):
             locals_ = globals_
         if not isinstance(cmd, types.CodeType):
             self.eval_string = cmd
-            cmd = cmd+'\n'
+            cmd = cmd + "\n"
             pass
         retval = None
         self.core.start(start_opts)
@@ -101,7 +104,7 @@ class Trepan(object):
         return retval
 
     def run_exec(self, cmd, start_opts=None, globals_=None, locals_=None):
-        """ Run debugger on string `cmd' which will executed via the
+        """Run debugger on string `cmd' which will executed via the
         builtin function exec. Arguments `globals_' and `locals_' are
         the dictionaries to use for local and global variables. By
         default, the value of globals is globals(), the current global
@@ -120,7 +123,7 @@ class Trepan(object):
         if locals_ is None:
             locals_ = globals_
         if not isinstance(cmd, types.CodeType):
-            cmd = cmd+'\n'
+            cmd = cmd + "\n"
             pass
         self.core.start(start_opts)
         try:
@@ -132,7 +135,7 @@ class Trepan(object):
         return
 
     def run_call(self, func, start_opts=None, *args, **kwds):
-        """ Run debugger on function call: `func(*args, **kwds)'
+        """Run debugger on function call: `func(*args, **kwds)'
 
         See also `run_eval' if what you want to run is an eval'able
         expression have that result returned and `run' if you want to
@@ -149,7 +152,7 @@ class Trepan(object):
         return res
 
     def run_eval(self, expr, start_opts=None, globals_=None, locals_=None):
-        """ Run debugger on string `expr' which will executed via the
+        """Run debugger on string `expr' which will executed via the
         built-in Python function: eval; `globals_' and `locals_' are
         the dictionaries to use for local and global variables. If
         `globals' is not given, __main__.__dict__ (the current global
@@ -165,7 +168,7 @@ class Trepan(object):
             locals_ = globals_
         if not isinstance(expr, types.CodeType):
             self.eval_string = expr
-            expr = expr+'\n'
+            expr = expr + "\n"
             pass
         retval = None
         self.core.start(start_opts)
@@ -174,13 +177,12 @@ class Trepan(object):
         except DebuggerQuit:
             pass
         finally:
-            pyficache.remove_remap_file('<string>')
+            pyficache.remove_remap_file("<string>")
             self.core.stop()
         return retval
 
-    def run_script(self, filename, start_opts=None, globals_=None,
-                   locals_=None):
-        """ Run debugger on Python script `filename'. The script may
+    def run_script(self, filename, start_opts=None, globals_=None, locals_=None):
+        """Run debugger on Python script `filename'. The script may
         inspect sys.argv for command arguments. `globals_' and
         `locals_' are the dictionaries to use for local and global
         variables. If `globals' is not given, globals() (the current
@@ -202,24 +204,28 @@ class Trepan(object):
         # the debugger namespace.
         if globals_ is None:
             import __main__  # NOQA
-            globals_ = {"__name__" : "__main__",
-                       "__file__" : self.mainpyfile,
-                       "__builtins__" : __builtins__
-                       }  # NOQA
+
+            globals_ = {
+                "__name__": "__main__",
+                "__file__": self.mainpyfile,
+                "__builtins__": __builtins__,
+            }  # NOQA
         if locals_ is None:
             locals_ = globals_
         retval = False
-        self.core.execution_status = 'Running'
+        self.core.execution_status = "Running"
         try:
-            compiled = compile(open(self.mainpyfile).read(),
-                               self.mainpyfile, 'exec')
+            compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
         except (SyntaxError):
             self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
             self.intf[0].errmsg(sys.exc_info()[1])
             retval = False
             pass
         except UnicodeDecodeError:
-            self.intf[0].errmsg("File %s can't be read as a text file. Is it Python source?" % self.mainpyfile)
+            self.intf[0].errmsg(
+                "File %s can't be read as a text file. Is it Python source?"
+                % self.mainpyfile
+            )
             self.intf[0].errmsg(sys.exc_info()[1])
             retval = False
             pass
@@ -229,57 +235,51 @@ class Trepan(object):
             retval = False
             pass
         except DebuggerRestart:
-            self.core.execution_status = 'Restart requested'
+            self.core.execution_status = "Restart requested"
             raise DebuggerRestart
         else:
             self.core.start(start_opts)
             exec(compiled, globals_, locals_)
             retval = True
         finally:
-            self.core.stop(options={'remove': True})
+            self.core.stop(options={"remove": True})
         return retval
 
     def restart_argv(self):
-        '''Return an array that would be execv-ed  to restart the program'''
+        """Return an array that would be execv-ed  to restart the program"""
         return self.orig_sys_argv or self.program_sys_argv
 
     # Note: has to come after functions listed in ignore_filter.
     DEFAULT_INIT_OPTS = {
         # What routines will we not trace into?
-        'ignore_filter': tracefilter.TraceFilter(
-            [tracer.start, tracer.stop,
-             run_eval, run_call, run_eval, run_script]),
-
+        "ignore_filter": tracefilter.TraceFilter(
+            [tracer.start, tracer.stop, run_eval, run_call, run_eval, run_script]
+        ),
         # sys.argv when not None contains sys.argv *before* debugger
         # command processing. So sys.argv contains debugger options as
         # well as debugged-program options. These options are used to
         # do a "hard" or execv() restart.
-
         # program_sys_argv is set by option save_sys_argv and contains
         # sys.argv that we see now which may have debugger options
         # stripped, or it may be that we were not called from a
         # debugger front end but from inside the running
         # program. These options are suitable for a "soft" or
         # exception-handling DebuggerRestart kind of restart.
-        'orig_sys_argv' : None,
-        'save_sys_argv' : True,
-
+        "orig_sys_argv": None,
+        "save_sys_argv": True,
         # How is I/O for this debugger handled?
-        'activate'    : False,
-        'interface'   : None,
-        'input'       : None,
-        'output'      : None,
-        'processor'   : None,
-
+        "activate": False,
+        "interface": None,
+        "input": None,
+        "output": None,
+        "processor": None,
         # Setting contains lots of debugger settings - a whole file
         # full of them!
-        'settings'    : Mdefault.DEBUGGER_SETTINGS,
-
-        'start_opts'  : Mdefault.START_OPTS,
-        'step_ignore' : 0,
-
-        'from_ipython' : False
-        }
+        "settings": Mdefault.DEBUGGER_SETTINGS,
+        "start_opts": Mdefault.START_OPTS,
+        "step_ignore": 0,
+        "from_ipython": False,
+    }
 
     def __init__(self, opts=None):
         """Create a debugger object. But depending on the value of
@@ -291,41 +291,44 @@ class Trepan(object):
 
         import trepan.lib.core as Mcore
 
-        self.mainpyfile  = None
-        self.thread      = None
+        self.mainpyfile = None
+        self.thread = None
         self.eval_string = None
-        get_option = lambda key: option_set(opts, key,
-                                            self.DEFAULT_INIT_OPTS)
-        completer  = lambda text, state: self.complete(text, state)
+        get_option = lambda key: option_set(opts, key, self.DEFAULT_INIT_OPTS)
+        completer = lambda text, state: self.complete(text, state)
 
         # set the instance variables that come directly from options.
-        for opt in ('settings', 'orig_sys_argv', 'from_ipython'):
+        for opt in ("settings", "orig_sys_argv", "from_ipython"):
             setattr(self, opt, get_option(opt))
             pass
 
         core_opts = {}
-        for opt in ('ignore_filter', 'proc_opts', 'processor', 'step_ignore',
-                    'processor',):
+        for opt in (
+            "ignore_filter",
+            "proc_opts",
+            "processor",
+            "step_ignore",
+            "processor",
+        ):
             core_opts[opt] = get_option(opt)
             pass
 
         # How is I/O for this debugger handled? This should
         # be set before calling DebuggerCore.
-        interface_opts={
+        interface_opts = {
             "complete": completer,
             "debugger_name": "trepan3k",
         }
         # FIXME when I pass in opts=opts things break
-        interface = (get_option('interface') or
-                     Muser.UserInterface(opts=interface_opts))
+        interface = get_option("interface") or Muser.UserInterface(opts=interface_opts)
         self.intf = [interface]
 
-        inp = get_option('input')
+        inp = get_option("input")
         if inp:
             self.intf[-1].input = inp
             pass
 
-        out = get_option('output')
+        out = get_option("output")
         if out:
             self.intf[-1].output = out
             pass
@@ -337,7 +340,7 @@ class Trepan(object):
         # This gives us a way to prevent or allow self debugging.
         self.core.trace_hook_suspend = False
 
-        if get_option('save_sys_argv'):
+        if get_option("save_sys_argv"):
             # Save the debugged program's sys.argv? We do this so that
             # when the debugged script munges these, we have a good
             # copy to use for an exec restart
@@ -349,66 +352,73 @@ class Trepan(object):
         self.sigmgr = Msig.SignalManager(self)
 
         # Were we requested to activate immediately?
-        if get_option('activate'):
-            self.core.start(get_option('start_opts'))
+        if get_option("activate"):
+            self.core.start(get_option("start_opts"))
             pass
         return
 
     def complete(self, last_token, state):
-        if hasattr(self.core.processor, 'completer'):
+        if hasattr(self.core.processor, "completer"):
             str = get_line_buffer() or last_token
             results = self.core.processor.completer(str, state)
             return results[state]
         else:
             return [None]
+
     pass
 
+
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
+
     def foo():
         y = 2
         for i in range(2):
-            print("%d %d" % (i, y) )
+            print("%d %d" % (i, y))
             pass
         return 3
+
     import debugger
+
     d = debugger.Trepan()
-    d.settings['trace'] = True
-    d.settings['printset'] = tracer.ALL_EVENTS
+    d.settings["trace"] = True
+    d.settings["printset"] = tracer.ALL_EVENTS
     d.core.step_ignore = -1
     print('Issuing: run_eval("1+2")')
-    print(d.run_eval('1+2'))
+    print(d.run_eval("1+2"))
     print('Issuing: run_exec("x=1; y=2")')
-    d.run_exec('x=1; y=2')
+    d.run_exec("x=1; y=2")
 
     print('Issuing: run("3*4")')
-    print(d.run('3*4'))
+    print(d.run("3*4"))
     print('Issuing: run("x=3; y=4")')
-    d.run('x=3; y=4')
+    d.run("x=3; y=4")
 
-    print('Issuing: run_call(foo)')
+    print("Issuing: run_call(foo)")
     d.run_call(foo)
     if len(sys.argv) > 1:
         while True:
             try:
-                print('started')
+                print("started")
                 d.core.step_ignore = 0
                 d.core.start()
                 x = 4
                 x = foo()
                 for i in range(2):
-                    print("%d" % (i+1)*10)
+                    print("%d" % (i + 1) * 10)
                     pass
                 d.core.stop()
 
-                def square(x): return x*x
-                print('calling: run_call(square,2)')
+                def square(x):
+                    return x * x
+
+                print("calling: run_call(square,2)")
                 d.run_call(square, 2)
             except DebuggerQuit:
                 print("That's all Folks!...")
                 break
             except DebuggerRestart:
-                print('Restarting...')
+                print("Restarting...")
                 pass
             pass
         pass

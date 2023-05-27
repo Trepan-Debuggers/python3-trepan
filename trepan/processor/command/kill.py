@@ -96,42 +96,39 @@ else:
 class KillCommand(DebuggerCommand):
     """**kill** [ *signal-number* ] [unconditional]
 
-Send this process a POSIX signal ('9' for 'SIGKILL' or 'kill -SIGKILL')
+    Send this process a POSIX signal ('9' for 'SIGKILL' or 'kill -SIGKILL')
 
-9 is a non-maskable interrupt that terminates the program. If program
-is threaded it may be expedient to use this command to terminate the program.
+    9 is a non-maskable interrupt that terminates the program. If program
+    is threaded it may be expedient to use this command to terminate the program.
 
-However other signals, such as those that allow for the debugged to
-handle them can be sent.
+    However other signals, such as those that allow for the debugged to
+    handle them can be sent.
 
-Giving a negative number is the same as using its
-positive value.
+    Giving a negative number is the same as using its
+    positive value.
 
-Examples:
---------
+    Examples:
+    --------
 
-    kill                # non-interuptable, nonmaskable kill
-    kill 9              # same as above
-    kill -9             # same as above
-    kill!               # same as above, but no confirmation
-    kill unconditional  # same as above
-    kill 15             # nicer, maskable TERM signal
-    kill! 15            # same as above, but no confirmation
+        kill                # non-interuptable, nonmaskable kill
+        kill 9              # same as above
+        kill -9             # same as above
+        kill!               # same as above, but no confirmation
+        kill unconditional  # same as above
+        kill 15             # nicer, maskable TERM signal
+        kill! 15            # same as above, but no confirmation
 
-See also:
----------
+    See also:
+    ---------
 
-`quit` for less a forceful termination command; `exit` for another way to force termination.
+    `quit` for less a forceful termination command; `exit` for another way to force termination.
 
-`run` and `restart` are ways to restart the debugged program.
-"""
+    `run` and `restart` are ways to restart the debugged program."""
 
     aliases = ("kill!",)
     short_help = 'Send this process a POSIX signal ("9" for "kill -9")'
 
-    DebuggerCommand.setup(
-        locals(), category="running", max_args=1
-    )
+    DebuggerCommand.setup(locals(), category="running", max_args=1)
 
     def complete(self, prefix):
         names = [sig for sig in signal.__dict__.keys() if sig.startswith("SIG")]

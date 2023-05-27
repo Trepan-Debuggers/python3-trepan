@@ -22,14 +22,14 @@ and storing it as a list of known debugger commands.
 
 NotImplementedMessage = "This method must be overriden in a subclass"
 
-__all__ = ['DebuggerCommand']
+__all__ = ["DebuggerCommand"]
 
 
 class DebuggerCommand:
     """Base Class for Debugger commands. We pull in some helper
     functions for command from module cmdfns."""
 
-    category = 'misc'
+    category = "misc"
 
     def __init__(self, proc):
         """proc contains the command processor object that this
@@ -42,13 +42,13 @@ class DebuggerCommand:
         # execution like errmsg(), msg(), and msg_nocr() might. (See
         # the note below on these latter 3 methods.)
         #
-        self.core     = proc.core
+        self.core = proc.core
         self.debugger = proc.debugger
         self.settings = self.debugger.settings
         return
 
     aliases = ()
-    name    = 'YourCommandName'
+    name = "YourCommandName"
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
     # an assignment of method names like self.msg = self.debugger.intf.msg,
@@ -57,42 +57,44 @@ class DebuggerCommand:
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf.errmsg """
+        """Convenience short-hand for self.debugger.intf.errmsg"""
         try:
-            return(self.debugger.intf[-1].errmsg(msg))
+            return self.debugger.intf[-1].errmsg(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
         return None
 
     def msg(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf.msg """
+        """Convenience short-hand for self.debugger.intf.msg"""
         try:
-            return(self.debugger.intf[-1].msg(msg))
+            return self.debugger.intf[-1].msg(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
         return None
 
     def msg_nocr(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf.msg_nocr """
+        """Convenience short-hand for self.debugger.intf.msg_nocr"""
         try:
-            return(self.debugger.intf[-1].msg_nocr(msg))
+            return self.debugger.intf[-1].msg_nocr(msg)
         except EOFError:
             # FIXME: what do we do here?
             pass
         return None
 
     def run(self, args):
-        """ The method that implements the debugger command.
+        """The method that implements the debugger command.
         Help on the command comes from the docstring of this method.
         """
         raise NotImplementedError(NotImplementedMessage)
 
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.bwprocessor.command import mock
+
     d, cp = mock.dbg_setup()
     dd = DebuggerCommand(cp)
     dd.msg("hi")

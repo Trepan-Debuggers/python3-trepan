@@ -26,22 +26,21 @@ def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
     """
     line = linecache.getline(filename, lineno)
     if not line:
-        errmsg_fn('End of file')
+        errmsg_fn("End of file")
         return False
     line = line.strip()
     # Don't allow setting breakpoint at a blank line
-    if (not line or (line[0] == '#') or
-         (line[:3] == '"""') or line[:3] == "'''"):
-        errmsg_fn('Blank or comment')
+    if not line or (line[0] == "#") or (line[:3] == '"""') or line[:3] == "'''":
+        errmsg_fn("Blank or comment")
         return False
     return True
 
 
 def file2module(filename):
-    """Given a file name, extract the most likely module name. """
+    """Given a file name, extract the most likely module name."""
     basename = osp.basename(filename)
-    if '.' in basename:
-        pos = basename.rfind('.')
+    if "." in basename:
+        pos = basename.rfind(".")
         return basename[:pos]
     else:
         return basename
@@ -56,8 +55,10 @@ def search_file(filename, directories, cdir):
     for trydir in directories:
 
         # Handle $cwd and $cdir
-        if trydir =='$cwd': trydir='.'
-        elif trydir == '$cdir': trydir = cdir
+        if trydir == "$cwd":
+            trydir = "."
+        elif trydir == "$cdir":
+            trydir = cdir
 
         tryfile = osp.realpath(osp.join(trydir, filename))
         if osp.isfile(tryfile):
@@ -72,7 +73,7 @@ def whence_file(py_script, dirnames=None):
         # Don't search since this name has path separator components
         return py_script
     if dirnames is None:
-        dirnames = os.environ['PATH'].split(os.pathsep)
+        dirnames = os.environ["PATH"].split(os.pathsep)
     for dirname in dirnames:
         py_script_try = osp.join(dirname, py_script)
         if osp.exists(py_script_try):
@@ -80,12 +81,15 @@ def whence_file(py_script, dirnames=None):
     # Failure
     return py_script
 
+
 def path_expanduser_abs(filename):
     return os.path.abspath(os.path.expanduser(filename))
 
+
 # Demo
-if __name__=='__main__':
+if __name__ == "__main__":
     import sys
+
     print(file2module(sys.argv[0]), sys.argv[0])
     ok = is_ok_line_for_breakpoint(__file__, 1, sys.stdout.write)
     print("\nCan stop at line 1? ", ok)

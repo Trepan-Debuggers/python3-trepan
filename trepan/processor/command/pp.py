@@ -23,17 +23,16 @@ from trepan.processor.complete import complete_identifier
 class PrettyPrintCommand(DebuggerCommand):
     """**pp** *expression*
 
-Pretty-print the value of the expression.
+    Pretty-print the value of the expression.
 
-Simple arrays are shown columnized horizontally. Other values are printed
-via *pprint.pformat()*.
+    Simple arrays are shown columnized horizontally. Other values are printed
+    via *pprint.pformat()*.
 
-See also:
----------
+    See also:
+    ---------
 
-`pr` and `examine` for commands which do more in the way of
-formatting.
-"""
+    `pr` and `examine` for commands which do more in the way of
+    formatting."""
 
     short_help = "Pretty print value of expression EXP"
 

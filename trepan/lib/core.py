@@ -49,7 +49,7 @@ class TrepanCore(object):
     }
 
     def __init__(self, debugger, opts=None):
-        """ Create a debugger object. But depending on the value of
+        """Create a debugger object. But depending on the value of
         key 'start' inside hash `opts', we may or may not initially
         start tracing events (i.e. enter the debugger).
 
@@ -139,7 +139,7 @@ class TrepanCore(object):
         return rc
 
     def canonic(self, filename):
-        """ Turns `filename' into its canonic representation and returns this
+        """Turns `filename' into its canonic representation and returns this
         string. This allows a user to refer to a given file in one of several
         equivalent ways.
 
@@ -181,7 +181,7 @@ class TrepanCore(object):
 
     def canonic_filename(self, frame):
         """Picks out the file name from `frame' and returns its
-         canonic() value, a string."""
+        canonic() value, a string."""
         return self.canonic(frame.f_code.co_filename)
 
     def filename(self, filename=None):
@@ -213,7 +213,7 @@ class TrepanCore(object):
         return self.ignore_filter.remove_include(frame_or_fn)
 
     def start(self, opts=None):
-        """ We've already created a debugger object, but here we start
+        """We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
 
@@ -321,7 +321,7 @@ class TrepanCore(object):
         return val
 
     def is_stop_here(self, frame, event):
-        """ Does the magic to determine if we stop here and run a
+        """Does the magic to determine if we stop here and run a
         command processor or not. If so, return True and set
         self.stop_reason; if not, return False.
 

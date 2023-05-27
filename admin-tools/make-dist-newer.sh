@@ -34,9 +34,18 @@ for pyversion in $PYVERSIONS; do
     first_two_dot=$(echo $pyversion | cut -d'.' -f 1-2 )
     first_two=$(echo $pyversion | cut -d'.' -f 1-2 | sed -e 's/\.//')
     rm -fr build
+    # We can't use a universal wheel because depdencies on the decompiler changes
+    # for 3.7 and 3.8
     python setup.py bdist_egg bdist_wheel
-    # mv -v dist/${PACKAGE}-$VERSION-py${first_two_dot}.egg dist/${PACKAGE}3k-$VERSION-py${first_two_dot}.egg
-    mv -v dist/${PACKAGE}-$VERSION-py3-none-any.whl dist/${PACKAGE}-$VERSION-py${first_two}-none-any.whl
+    if [[ $first_two =~ py* ]]; then
+	if [[ $first_two =~ pypy* ]]; then
+	    # For PyPy, remove the what is after the dash, e.g. pypy37-none-any.whl instead of pypy37-7-none-any.whl
+	    first_two=${first_two%-*}
+	fi
+	mv -v dist/${PACKAGE}-$__version__-{py3,$first_two}-none-any.whl
+    else
+	mv -v dist/${PACKAGE}-$__version__-{py3,py$first_two}-none-any.whl
+    fi
 done
 
 python ./setup.py sdist

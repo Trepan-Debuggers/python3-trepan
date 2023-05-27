@@ -17,7 +17,7 @@
 
 import os
 
-if hasattr(os, 'mkfifo'):
+if hasattr(os, "mkfifo"):
     import atexit, tempfile
 
     from trepan import misc as Mmisc
@@ -27,27 +27,26 @@ if hasattr(os, 'mkfifo'):
     class FIFOServer(DebuggerInOutBase):
         """Debugger Server Input/Output Socket."""
 
-        DEFAULT_INIT_OPTS = {'open': True}
+        DEFAULT_INIT_OPTS = {"open": True}
 
         def __init__(self, opts=None):
-            get_option = lambda key: Mmisc.option_set(opts, key,
-                                                      self.DEFAULT_INIT_OPTS)
+            get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)
             atexit.register(self.close)
             self.flush_after_write = True
             self.line_edit = False  # Our name for GNU readline capability
-            self.in_name   = None   # String: input file name
-            self.input     = None   # File Descriptor
-            self.out_name  = None   # String: output file name
-            self.output    = None   # String: output file name
-            self.state     = 'disconnected'
-            if get_option('open'):
+            self.in_name = None  # String: input file name
+            self.input = None  # File Descriptor
+            self.out_name = None  # String: output file name
+            self.output = None  # String: output file name
+            self.state = "disconnected"
+            if get_option("open"):
                 self.open(opts)
                 pass
             return
 
         def close(self):
-            """ Closes both input and output. """
-            self.state = 'closing'
+            """Closes both input and output."""
+            self.state = "closing"
             if self.input:
                 self.input.close()
                 pass
@@ -60,23 +59,23 @@ if hasattr(os, 'mkfifo'):
             if self.out_name and os.path.exists(self.out_name):
                 os.unlink(self.out_name)
                 pass
-            self.state = 'disconnnected'
+            self.state = "disconnnected"
             return
 
         def flush(self):
             return self.output.flush()
 
         def open(self, opts=None):
-            d              = tempfile.gettempdir()
-            pid            = os.getpid()
-            self.out_name  = os.path.join(d, ('trepan-%s.out' % pid))
-            self.in_name   = os.path.join(d, ('trepan-%s.in' % pid))
+            d = tempfile.gettempdir()
+            pid = os.getpid()
+            self.out_name = os.path.join(d, ("trepan-%s.out" % pid))
+            self.in_name = os.path.join(d, ("trepan-%s.in" % pid))
             try:
                 os.mkfifo(self.in_name)
                 os.mkfifo(self.out_name)
-                self.state     = 'active'
+                self.state = "active"
             except OSError:
-                self.state = 'error'
+                self.state = "error"
                 pass
             return
 
@@ -86,13 +85,13 @@ if hasattr(os, 'mkfifo'):
             Note that we don't support prompting"""
             # FIXME: do we have to create and check a buffer for
             # lines?
-            if self.state == 'active':
+            if self.state == "active":
                 if not self.input:
-                    self.input = open(self.in_name, 'r')
+                    self.input = open(self.in_name, "r")
                     pass
                 line = self.input.readline()
                 if not line:
-                    self.state = 'disconnected'
+                    self.state = "disconnected"
                     raise EOFError
                 return line.rstrip("\n")
             else:
@@ -100,33 +99,36 @@ if hasattr(os, 'mkfifo'):
             return  # Not reached
 
         def write(self, msg):
-            """ This method the debugger uses to write. In contrast to
+            """This method the debugger uses to write. In contrast to
             writeline, no newline is added to the end to `str'.
             """
-            if self.state == 'active':
+            if self.state == "active":
                 if not self.output:
-                    self.output = open(self.out_name, 'w')
+                    self.output = open(self.out_name, "w")
                     pass
                 pass
             else:
                 raise EOFError
             self.output.write(msg)
-            if self.flush_after_write: self.flush()
+            if self.flush_after_write:
+                self.flush()
             return
+
     # Demo
-    if __name__=='__main__':
-        fifo = FIFOServer(opts={'open': False})
+    if __name__ == "__main__":
+        fifo = FIFOServer(opts={"open": False})
         import sys
+
         if len(sys.argv) > 1:
             fifo.open()
             print('Looking for input on %s"...' % fifo.in_name)
             while True:
                 try:
-                    fifo.write('nu?')
-                    fifo.writeline(' ')
+                    fifo.write("nu?")
+                    fifo.writeline(" ")
                     line = fifo.readline()
                     print(line)
-                    fifo.writeline('ack: ' + line)
+                    fifo.writeline("ack: " + line)
                 except EOFError:
                     break
                 pass

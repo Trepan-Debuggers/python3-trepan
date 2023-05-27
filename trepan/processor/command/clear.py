@@ -24,13 +24,12 @@ from trepan.processor.complete import complete_bpnumber
 class ClearCommand(DebuggerCommand):
     """**clear** [*linenumber*]
 
-Clear some breakpoints by line number.
+    Clear some breakpoints by line number.
 
-See also:
----------
-`delete`
-
-"""
+    See also:
+    ---------
+    `delete`
+    """
 
     short_help = "Delete some breakpoints on a line"
 

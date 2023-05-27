@@ -4,9 +4,9 @@
 import sys, tempfile
 from io import StringIO
 from hashlib import sha1
-from xdis import PYTHON_VERSION
+from xdis import PYTHON_VERSION_TRIPLE
 
-if 3.7 <= PYTHON_VERSION <= 3.8:
+if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
     try:
         from decompyle3.semantics.linemap import code_deparse_with_map
         from decompyle3.semantics.fragments import deparsed_find, code_deparse

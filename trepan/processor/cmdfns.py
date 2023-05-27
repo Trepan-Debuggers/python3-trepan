@@ -194,7 +194,13 @@ def show_onoff(b):
 def run_show_val(obj, name):
     """Generic subcommand value display"""
     val = obj.debugger.settings[obj.name]
-    obj.msg("%s is %s." % (obj.name, obj.cmd.proc._saferepr(val),))
+    obj.msg(
+        "%s is %s."
+        % (
+            obj.name,
+            obj.cmd.proc._saferepr(val),
+        )
+    )
     return False
 
 

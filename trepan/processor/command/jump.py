@@ -23,20 +23,21 @@ from trepan.processor import cmdproc as Mcmdproc
 class JumpCommand(DebuggerCommand):
     """**jump** *lineno*
 
-Set the next line that will be executed. The line must be within the
-stopped or bottom-most execution frame."""
+    Set the next line that will be executed. The line must be within the
+    stopped or bottom-most execution frame."""
 
-    aliases       = ('j',)
-    category      = 'running'
-    execution_set = ['Running']
-    min_args      = 1
-    max_args      = 1
-    name          = os.path.basename(__file__).split('.')[0]
-    need_stack    = False
-    short_help    = 'Set the next line to be executed'
+    aliases = ("j",)
+    category = "running"
+    execution_set = ["Running"]
+    min_args = 1
+    max_args = 1
+    name = os.path.basename(__file__).split(".")[0]
+    need_stack = False
+    short_help = "Set the next line to be executed"
 
     def run(self, args):
-        if not self.core.is_running(): return False
+        if not self.core.is_running():
+            return False
 
         if self.proc.curindex + 1 != len(self.proc.stack):
             self.errmsg("You can only jump within the bottom frame")
@@ -46,33 +47,39 @@ stopped or bottom-most execution frame."""
             self.errmsg("Sigh - operation can't be done here.")
             return False
 
-        lineno = self.proc.get_an_int(args[1],
-                                      ("jump: a line number is required, " +
-                                       "got %s.") % args[1])
-        if lineno is None: return False
+        lineno = self.proc.get_an_int(
+            args[1], ("jump: a line number is required, " + "got %s.") % args[1]
+        )
+        if lineno is None:
+            return False
         try:
             # Set to change position, update our copy of the stack,
             # and display the new position
             print(self.proc.curframe.f_trace)
             self.proc.curframe.f_lineno = lineno
-            self.proc.stack[self.proc.curindex] = \
-                self.proc.stack[self.proc.curindex][0], lineno
+            self.proc.stack[self.proc.curindex] = (
+                self.proc.stack[self.proc.curindex][0],
+                lineno,
+            )
             Mcmdproc.print_location(self.proc)
         except ValueError as e:
-            self.errmsg('jump failed: %s' % e)
+            self.errmsg("jump failed: %s" % e)
         return False
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock
+
     d, cp = mock.dbg_setup()
     command = JumpCommand(cp)
-    print('jump when not running: ', command.run(['jump', '1']))
-    command.core.execution_status = 'Running'
+    print("jump when not running: ", command.run(["jump", "1"]))
+    command.core.execution_status = "Running"
     cp.curframe = inspect.currentframe()
     cp.curindex = 0
     cp.stack = Mcmdproc.get_stack(cp.curframe, None, None)
-    command.run(['jump', '1'])
-    cp.curindex = len(cp.stack)-1
-    command.run(['jump', '1'])
+    command.run(["jump", "1"])
+    cp.curindex = len(cp.stack) - 1
+    command.run(["jump", "1"])
     pass

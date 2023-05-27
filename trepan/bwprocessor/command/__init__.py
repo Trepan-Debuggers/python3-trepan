@@ -11,7 +11,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # """ Copyright (C) 2008, 2009, 2013 Rocky Bernstein <rocky@gnu.org> """
-__import__('pkg_resources').declare_namespace(__name__)
+__import__("pkg_resources").declare_namespace(__name__)
 
 import glob, os
 
@@ -23,13 +23,15 @@ import glob, os
 __command_dir__ = os.path.dirname(__file__)
 
 # A glob pattern that will get all *.py files but not __init__.py
-__py_files__    = glob.glob(os.path.join(__command_dir__, '[a-z]*.py'))
+__py_files__ = glob.glob(os.path.join(__command_dir__, "[a-z]*.py"))
 
 # Take the basename of the filename and drop off '.py'. That minus the
 # files in exclude_files and tha becomes the list of modules that
 # commands.py will use to import
-exclude_files = ['mock.py']
-__modules__ = [ os.path.basename(filename[0:-3]) for
-                filename in __py_files__
-                if os.path.basename(filename) not in exclude_files]
-__all__ =  __modules__  + exclude_files
+exclude_files = ["mock.py"]
+__modules__ = [
+    os.path.basename(filename[0:-3])
+    for filename in __py_files__
+    if os.path.basename(filename) not in exclude_files
+]
+__all__ = __modules__ + exclude_files

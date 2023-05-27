@@ -20,34 +20,41 @@ from trepan.processor.parse.scanner import ScannerError
 from trepan.processor.location import resolve_address_location
 
 INVALID_PARSE_LIST = (None, None, None, None, None, None)
+
+
 def parse_addr_list_cmd(proc, args, listsize=40):
     """Parses arguments for the "list" command and returns the tuple:
     (filename, first line number, last line number)
     or sets these to None if there was some problem."""
 
-    text = proc.current_command[len(args[0])+1:].strip()
+    text = proc.current_command[len(args[0]) + 1 :].strip()
 
-    if text in frozenset(('', '.', '+', '-')):
-        if text == '.':
-            location = resolve_address_location(proc, '.')
-            return (location.path, location.line_number, True,
-                    location.line_number + listsize, True,
-                    location.method)
+    if text in frozenset(("", ".", "+", "-")):
+        if text == ".":
+            location = resolve_address_location(proc, ".")
+            return (
+                location.path,
+                location.line_number,
+                True,
+                location.line_number + listsize,
+                True,
+                location.method,
+            )
 
         if proc.list_offset is None:
             proc.errmsg("Don't have previous list location")
             return INVALID_PARSE_LIST
 
         filename = proc.list_filename
-        if text == '+':
-            first = max(0, proc.list_offset-1)
-        elif text == '-':
+        if text == "+":
+            first = max(0, proc.list_offset - 1)
+        elif text == "-":
             # FIXME: not quite right for offsets
             if proc.list_lineno == 1 + listsize:
                 proc.errmsg("Already at start of %s." % proc.list_filename)
                 return INVALID_PARSE_LIST
-            first = max(1, proc.list_lineno - (2*listsize) - 1)
-        elif text == '':
+            first = max(1, proc.list_lineno - (2 * listsize) - 1)
+        elif text == "":
             # Continue from where we last left off
             first = proc.list_offset + 1
             last = first + listsize - 1
@@ -74,38 +81,45 @@ def parse_addr_list_cmd(proc, args, listsize=40):
             location = resolve_address_location(proc, list_range.last)
             if not location:
                 return INVALID_PARSE_LIST
-            last     = location.line_number
+            last = location.line_number
             if location.is_address:
                 raise RuntimeError("We don't handle ending offsets")
             else:
-                first    = max(1, last - listsize)
+                first = max(1, last - listsize)
             return location.path, first, False, last, False, location.method
         elif isinstance(list_range.first, int):
-            first    = list_range.first
+            first = list_range.first
             location = resolve_address_location(proc, list_range.last)
             if not location:
                 return INVALID_PARSE_LIST
             filename = location.path
-            last     = location.line_number
+            last = location.line_number
 
             if not location.is_address and last < first:
                 # Treat as a count rather than an absolute location
                 last = first + last
-            return location.path, first, False, last, location.is_address, location.method
+            return (
+                location.path,
+                first,
+                False,
+                last,
+                location.is_address,
+                location.method,
+            )
         else:
             # First is location. Last may be empty or a number/address
             assert isinstance(list_range.first, Location)
             location = resolve_address_location(proc, list_range.first)
             if not location:
                 return INVALID_PARSE_LIST
-            first    = location.line_number
+            first = location.line_number
             first_is_addr = location.is_address
-            last_is_addr  = False
-            last     = list_range.last
+            last_is_addr = False
+            last = list_range.last
             if isinstance(last, str):
                 # Is an offset +number
-                assert last[0] in ('+', '*')
-                last_is_addr = last[0] == '*'
+                assert last[0] in ("+", "*")
+                last_is_addr = last[0] == "*"
                 if last_is_addr:
                     last = int(last[1:])
                 else:
@@ -117,15 +131,24 @@ def parse_addr_list_cmd(proc, args, listsize=40):
                 # Treat as a count rather than an absolute location
                 last = first + last
 
-            return location.path, first, first_is_addr, last, last_is_addr, location.method
+            return (
+                location.path,
+                first,
+                first_is_addr,
+                last,
+                last_is_addr,
+                location.method,
+            )
         pass
     return
 
+
 # Demo it
-if __name__=='__main__':
+if __name__ == "__main__":
     from trepan.processor.command import mock as Mmock
     from trepan.processor.cmdproc import CommandProcessor
     import sys
+
     d = Mmock.MockDebugger()
     cmdproc = CommandProcessor(d.core)
     # print '-' * 10
@@ -136,22 +159,24 @@ if __name__=='__main__':
 
     def five():
         return 5
+
     import os
+
     for cmd in (
-            # "disasm",
-            # "disasm +",
-            # "disasm -",
-            "disasm *5, *10",
-            "disasm *15, 10",
-            "disasm five(), *10",
-            # "disasm 9 , 5",
-            # "disasm 7 ,",
-            # "disasm '''c:\\tmp\\foo.bat''':1",
-            # 'disasm """/Users/My Documents/foo.py""":2',
-            # 'disasm build_range()',
-            # 'disasm os:1 ,',
-            ):
-        args = cmd.split(' ')
+        # "disasm",
+        # "disasm +",
+        # "disasm -",
+        "disasm *5, *10",
+        "disasm *15, 10",
+        "disasm five(), *10",
+        # "disasm 9 , 5",
+        # "disasm 7 ,",
+        # "disasm '''c:\\tmp\\foo.bat''':1",
+        # 'disasm """/Users/My Documents/foo.py""":2',
+        # 'disasm build_range()',
+        # 'disasm os:1 ,',
+    ):
+        args = cmd.split(" ")
         cmdproc.current_command = cmd
         print(parse_addr_list_cmd(cmdproc, args))
     pass

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2021 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2022 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -88,19 +88,31 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             if is_readable is None:
                 print(
                     "%s: Python script file '%s' does not exist"
-                    % (__title__, mainpyfile,)
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
             elif not is_readable:
                 print(
-                    "%s: Can't read Python script file '%s'" % (__title__, mainpyfile,)
+                    "%s: Can't read Python script file '%s'"
+                    % (
+                        __title__,
+                        mainpyfile,
+                    )
                 )
                 sys.exit(1)
                 return
 
         if Mfile.is_compiled_py(mainpyfile):
             try:
-                from xdis import load_module, PYTHON_VERSION, IS_PYPY
+                from xdis import (
+                    load_module,
+                    PYTHON_VERSION_TRIPLE,
+                    IS_PYPY,
+                    version_tuple_to_str,
+                )
 
                 (
                     python_version,
@@ -115,10 +127,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
-                if python_version != PYTHON_VERSION:
+                if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
                     print(
                         "Bytecode is for version %s but we are version %s."
-                        % (python_version, PYTHON_VERSION)
+                        % (python_version, version_tuple_to_str())
                     )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
@@ -147,7 +159,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             except IOError:
                 decompiler = "uncompyle6"
                 try:
-                    if 3.7 <= PYTHON_VERSION <= 3.8:
+                    if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
                         from uncompyle6 import decompile_file
                     else:
                         from decompyle3 import decompile_file
@@ -222,7 +234,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             print("%s: Compiled Python script given and we can't use that." % __title__)
             print(
                 "%s: Substituting non-compiled name: %s"
-                % (__title__, mainpyfile_noopt,)
+                % (
+                    __title__,
+                    mainpyfile_noopt,
+                )
             )
             mainpyfile = mainpyfile_noopt
             pass

@@ -166,7 +166,11 @@ def dis(
             asm_format=asm_format,
         )
     elif isinstance(x, str):  # Source code
-        return disassemble_string(msg, msg_nocr, x,)
+        return disassemble_string(
+            msg,
+            msg_nocr,
+            x,
+        )
     else:
         errmsg("Don't know how to disassemble %s objects." % type(x).__name__)
     return None, None

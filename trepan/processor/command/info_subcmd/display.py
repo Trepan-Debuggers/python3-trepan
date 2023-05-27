@@ -20,37 +20,41 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoDisplay(Mbase_subcmd.DebuggerSubcommand):
-    '''**info display**
+    """**info display**
 
-Show the display expression evaluated when the program stops.
+    Show the display expression evaluated when the program stops.
 
-See also:
----------
-`display`, `undisplay`'''
+    See also:
+    ---------
+    `display`, `undisplay`"""
 
     min_abbrev = 2  # info di
     need_stack = True
-    short_help = 'Expressions to display when program stops'
+    short_help = "Expressions to display when program stops"
 
     def run(self, args):
         lines = self.proc.display_mgr.all()
         if 0 == len(lines):
-            self.errmsg('There are no auto-display expressions now.')
+            self.errmsg("There are no auto-display expressions now.")
             return
         for line in lines:
             self.msg(line)
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
+
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoDisplay(i)
     import inspect
+
     cp.curframe = inspect.currentframe()
     sub.run([])
-    sub.proc.display_mgr.add(cp.curframe, '/x i')
-    sub.proc.display_mgr.add(cp.curframe, 'd')
+    sub.proc.display_mgr.add(cp.curframe, "/x i")
+    sub.proc.display_mgr.add(cp.curframe, "d")
     sub.run([])

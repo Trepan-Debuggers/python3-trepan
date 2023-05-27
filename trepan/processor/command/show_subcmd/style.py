@@ -19,13 +19,12 @@ def complete(self, prefix):
 class ShowStyle(DebuggerSubcommand):
     """**show style* *pygments-style*
 
-Show the pygments style used in formatting 256-color terminal text.
+    Show the pygments style used in formatting 256-color terminal text.
 
-See also:
----------
+    See also:
+    ---------
 
-`set style`, `show highlight`
-"""
+    `set style`, `show highlight`"""
 
     in_list = True
     min_abbrev = len("sty")

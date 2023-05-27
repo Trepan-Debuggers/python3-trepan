@@ -30,6 +30,7 @@ class InfoSource(Mbase_subcmd.DebuggerSubcommand):
             self.errmsg("No current source file.")
             return
         filename = self.core.canonic_filename(self.proc.curframe)
-        self.msg('Current Python file is %s' % self.core.filename(filename))
+        self.msg("Current Python file is %s" % self.core.filename(filename))
         return False
+
     pass

@@ -25,29 +25,29 @@ from trepan.lib.file import file_list
 class InfoFiles(DebuggerSubcommand):
     min_abbrev = 2
     need_stack = False
-    short_help = 'Show information about an imported or loaded Python file'
+    short_help = "Show information about an imported or loaded Python file"
 
     def complete(self, prefix):
-        completions = sorted(['.'] + file_list())
+        completions = sorted(["."] + file_list())
         return Mcomplete.complete_token(completions, prefix)
 
     def run(self, args):
         """**info files** [*filename* [**all** | **brkpts** | **lines** | **sha1** | **size**]]
 
-Show information about the current file. If no filename is
-given and the program is running then the current file associated
-with the current stack entry is used. Sub options which can be
-shown about a file are:
+        Show information about the current file. If no filename is
+        given and the program is running then the current file associated
+        with the current stack entry is used. Sub options which can be
+        shown about a file are:
 
-* **brkpts** Line numbers where there are statement boundaries. These lines can be used in breakpoint commands.
+        * **brkpts** Line numbers where there are statement boundaries. These lines can be used in breakpoint commands.
 
-* **sha1**	A SHA1 hash of the source text.
+        * **sha1**	A SHA1 hash of the source text.
 
-The following may be useful in comparing source code.
+        The following may be useful in comparing source code.
 
-* **size**	The number of lines in the file.
+        * **size**	The number of lines in the file.
 
-* **all** All of the above information.
+        * **all** All of the above information.
         """
         if len(args) == 0:
             if not self.proc.curframe:
@@ -58,64 +58,66 @@ The following may be useful in comparing source code.
             filename = args[0]
             pass
 
-        m = filename + ' is'
+        m = filename + " is"
         filename_cache = self.core.filename_cache
         if filename in filename_cache:
             m += " cached in debugger"
             if filename_cache[filename] != filename:
-                m += ' as:'
-                m = Mmisc.wrapped_lines(m, filename_cache[filename] + '.',
-                                        self.settings['width'])
+                m += " as:"
+                m = Mmisc.wrapped_lines(
+                    m, filename_cache[filename] + ".", self.settings["width"]
+                )
             else:
-                m += '.'
+                m += "."
                 pass
             self.msg(m)
         else:
-            matches = [file for file in file_list() if
-                       file.endswith(filename)]
-            if (len(matches) > 1):
+            matches = [file for file in file_list() if file.endswith(filename)]
+            if len(matches) > 1:
                 self.msg("Multiple files found ending filename string:")
                 for match_file in matches:
                     self.msg("\t%s" % match_file)
                     pass
             elif len(matches) == 1:
                 canonic_name = pyficache.unmap_file(matches[0])
-                m += " matched debugger cache file:\n  "  + canonic_name
+                m += " matched debugger cache file:\n  " + canonic_name
                 self.msg(m)
             else:
-                self.msg(m + ' not cached in debugger.')
+                self.msg(m + " not cached in debugger.")
             pass
         canonic_name = self.core.canonic(filename)
-        self.msg(Mmisc.wrapped_lines('Canonic name:', canonic_name,
-                                     self.settings['width']))
+        self.msg(
+            Mmisc.wrapped_lines("Canonic name:", canonic_name, self.settings["width"])
+        )
         for name in (canonic_name, filename):
             if name in sys.modules:
-                for key in [k for k, v in list(sys.modules.items())
-                            if name == v]:
+                for key in [k for k, v in list(sys.modules.items()) if name == v]:
                     self.msg("module: %s", key)
                     pass
                 pass
             pass
         for arg in args[1:]:
             processed_arg = False
-            if arg in ['all', 'size']:
+            if arg in ["all", "size"]:
                 if pyficache.size(canonic_name):
-                    self.msg("File has %d lines." %
-                             pyficache.size(canonic_name))
+                    self.msg("File has %d lines." % pyficache.size(canonic_name))
                     pass
                 processed_arg = True
                 pass
-            if arg in ['all', 'sha1']:
+            if arg in ["all", "sha1"]:
                 self.msg("SHA1 is %s." % pyficache.sha1(canonic_name))
                 processed_arg = True
                 pass
-            if arg in ['all', 'brkpts']:
+            if arg in ["all", "brkpts"]:
                 lines = pyficache.trace_line_numbers(canonic_name)
                 if lines:
                     self.section("Possible breakpoint line numbers:")
-                    fmt_lines = columnize.columnize(list(lines), ljust = False,
-                                                    arrange_vertical = False,
-                                                    lineprefix='  ')
+                    fmt_lines = columnize.columnize(
+                        list(lines),
+                        ljust=False,
+                        arrange_vertical=False,
+                        lineprefix="  ",
+                    )
                     self.msg(fmt_lines)
                     pass
                 processed_arg = True
@@ -125,22 +127,25 @@ The following may be useful in comparing source code.
                 pass
             pass
         return
+
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command import mock, info as Minfo
+
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
     sub = InfoFiles(i)
     sub.run([])
     cp.curframe = inspect.currentframe()
-    sub.run(['file.py', 'foo'])
+    sub.run(["file.py", "foo"])
     for width in (200, 80):
-        sub.settings['width'] = width
-        sub.run(['file.py', 'lines'])
+        sub.settings["width"] = width
+        sub.run(["file.py", "lines"])
         print(sub.run([]))
         pass
-    sub.run(['file.py', 'all'])
-    print(sub.complete(''))
+    sub.run(["file.py", "all"])
+    print(sub.complete(""))
     # sub.run(['file.py', 'lines', 'sha1'])
     pass

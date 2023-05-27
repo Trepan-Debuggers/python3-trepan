@@ -9,13 +9,12 @@ from trepan.processor.cmdfns import run_set_int
 class SetWidth(DebuggerSubcommand):
     """**set width** *number*
 
-Set the number of characters the debugger thinks are in a line.
+    Set the number of characters the debugger thinks are in a line.
 
-See also:
---------
+    See also:
+    --------
 
-`show width`
-"""
+    `show width`"""
 
     in_list = True
     min_abbrev = len("wid")

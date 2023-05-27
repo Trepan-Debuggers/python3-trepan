@@ -23,22 +23,21 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class SetSubstitute(Mbase_subcmd.DebuggerSubcommand):
     """**set substitute** *from-name* *to-path*
 
-Add a substitution rule replacing *from-name* into *to-path* in source file names.
-If a substitution rule was previously set for *from-name*, the old rule
-is replaced by the new one.
+    Add a substitution rule replacing *from-name* into *to-path* in source file names.
+    If a substitution rule was previously set for *from-name*, the old rule
+    is replaced by the new one.
 
-Spaces in "filenames" like `<frozen importlib._bootstrap>` messes up our normal shell
-tokenization, so we have added a hack to ignore `<frozen .. >`.
+    Spaces in "filenames" like `<frozen importlib._bootstrap>` messes up our normal shell
+    tokenization, so we have added a hack to ignore `<frozen .. >`.
 
-So, for frozen files like `<frozen importlib._bootstrap>`, `use importlib._bootstrap`
+    So, for frozen files like `<frozen importlib._bootstrap>`, `use importlib._bootstrap`
 
-Examples:
----------
+    Examples:
+    ---------
 
-    set substitute importlib._bootstrap /usr/lib/python3.4/importlib/_bootstrap.py
-    set substitute ./gcd.py /tmp/gcd.py
-
-"""
+        set substitute importlib._bootstrap /usr/lib/python3.4/importlib/_bootstrap.py
+        set substitute ./gcd.py /tmp/gcd.py
+    """
 
     in_list = True
     max_args = 2

@@ -22,12 +22,12 @@ from trepan.processor.cmdfns import run_set_int
 class SetListSize(DebuggerSubcommand):
     """**set listsize** *number-of-lines*
 
-Set the number lines printed in a *list* command by default
+    Set the number lines printed in a *list* command by default
 
-See also:
----------
+    See also:
+    ---------
 
-`show listsize`"""
+    `show listsize`"""
 
     in_list = True
     min_abbrev = len("lis")  # Need at least "set lis"

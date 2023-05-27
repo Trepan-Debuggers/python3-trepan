@@ -38,38 +38,37 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class DeparseCommand(DebuggerCommand):
     """**deparse** [options] [ . ]
 
-Options:
-------
+    Options:
+    ------
 
-    -p | --parent        show parent node
-    -t | --tree          show parse tree
-    -o | --offset [num]  show deparse of offset NUM
-    -h | --help          give this help
+        -p | --parent        show parent node
+        -t | --tree          show parse tree
+        -o | --offset [num]  show deparse of offset NUM
+        -h | --help          give this help
 
-deparse around where the program is currently stopped. If no offset is given,
-we use the current frame offset. If `-p` is given, include parent information.
+    deparse around where the program is currently stopped. If no offset is given,
+    we use the current frame offset. If `-p` is given, include parent information.
 
-If an '.' argument is given, deparse the entire function or main
-program you are in.
+    If an '.' argument is given, deparse the entire function or main
+    program you are in.
 
-Output is colorized the same as source listing. Use `set highlight plain` to turn
-that off.
+    Output is colorized the same as source listing. Use `set highlight plain` to turn
+    that off.
 
-Examples:
---------
+    Examples:
+    --------
 
-    deparse             # deparse current location
-    deparse --parent    # deparse current location enclosing context
-    deparse .           # deparse current function or main
-    deparse --offset 6  # deparse starting at offset 6
-    deparse --offsets   # show all exect deparsing offsets
-    deparse --tree      # deparse and show parse tree
+        deparse             # deparse current location
+        deparse --parent    # deparse current location enclosing context
+        deparse .           # deparse current function or main
+        deparse --offset 6  # deparse starting at offset 6
+        deparse --offsets   # show all exect deparsing offsets
+        deparse --tree      # deparse and show parse tree
 
-See also:
----------
+    See also:
+    ---------
 
-`disassemble`, `list`, and `set highlight`
-"""
+    `disassemble`, `list`, and `set highlight`"""
 
     short_help = "Deparse source via uncompyle6/decompyle3"
     DebuggerCommand.setup(locals(), category="data", max_args=10, need_stack=True)
@@ -116,7 +115,10 @@ See also:
                 show_offsets = True
             elif o in ("-p", "--parent"):
                 show_parent = True
-            elif o in ("-t", "--tree",):
+            elif o in (
+                "-t",
+                "--tree",
+            ):
                 show_tree = True
             elif o in ("-o", "--offset"):
                 offset = a

@@ -20,18 +20,18 @@ from trepan.processor.command.base_submgr import SubcommandMgr
 class SetCommand(SubcommandMgr):
     """**set** *set subcommand*
 
-Modifies parts of the debugger environment.
+    Modifies parts of the debugger environment.
 
-You can give unique prefix of the name of a subcommand to get
-information about just that subcommand.
+    You can give unique prefix of the name of a subcommand to get
+    information about just that subcommand.
 
-Type `set` for a list of *set* subcommands and what they do.
-Type `help set *` for just the list of *set* subcommands.
-"""
+    Type `set` for a list of *set* subcommands and what they do.
+    Type `help set *` for just the list of *set* subcommands."""
 
     short_help = "Modify parts of the debugger environment"
 
     SubcommandMgr.setup(locals(), category="data")
+
 
 if __name__ == "__main__":
     from trepan.processor.command import mock

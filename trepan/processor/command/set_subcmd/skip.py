@@ -22,27 +22,29 @@ class SetSkip(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """**set skip** [ **on** | **off** ]
 
 
-Set stopping before *def* or *class* (function or class) statements.
+    Set stopping before *def* or *class* (function or class) statements.
 
-Classes may have many methods and stand-alone programs may have many
-functions. Often there isn't much value to stopping before defining a
-new function or class into Python's symbol table. (More to the point,
-it can be an annoyance.) However if you do want this, for example
-perhaps you want to debug methods is over-writing one another, then
-set this off
+    Classes may have many methods and stand-alone programs may have many
+    functions. Often there isn't much value to stopping before defining a
+    new function or class into Python's symbol table. (More to the point,
+    it can be an annoyance.) However if you do want this, for example
+    perhaps you want to debug methods is over-writing one another, then
+    set this off
 
-See also:
----------
+    See also:
+    ---------
 
-`show skip`"""
+    `show skip`"""
 
-    in_list    = True
-    min_abbrev = len('sk')    # Min 'set sk'
+    in_list = True
+    min_abbrev = len("sk")  # Min 'set sk'
     short_help = "Set stopping before def or class statements"
     # FIXME allow individual setting for class and skip.
     pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
+
     sub = Mhelper.demo_run(SetSkip)
     pass

@@ -21,19 +21,19 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 class SetPatSub(Mbase_subcmd.DebuggerSubcommand):
     """**set patsub** *from-re* *replace-string*
 
-Add a substitution pattern rule replacing *patsub* with
-*replace-string* anywhere it is found in source file names.  If a
-substitution rule was previously set for *from-re*, the old rule is
-replaced by the new one.
+    Add a substitution pattern rule replacing *patsub* with
+    *replace-string* anywhere it is found in source file names.  If a
+    substitution rule was previously set for *from-re*, the old rule is
+    replaced by the new one.
 
-In the following example, suppose in a docker container /mnt/project is
-the mount-point for /home/rocky/project. You are running the code
-from the docker container, but debugging this from outside of that.
+    In the following example, suppose in a docker container /mnt/project is
+    the mount-point for /home/rocky/project. You are running the code
+    from the docker container, but debugging this from outside of that.
 
-Example:
---------
+    Example:
+    --------
 
-    set patsub ^/mmt/project /home/rocky/project
+        set patsub ^/mmt/project /home/rocky/project
 
     """
 

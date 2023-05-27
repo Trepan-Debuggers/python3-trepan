@@ -2,6 +2,7 @@ import os, sys
 
 # FIXME: DRY with other demo_helper's
 
+
 def get_name():
     """Get the name caller's caller.
     NB: f_code.co_filenames and thus this code kind of broken for
@@ -12,11 +13,14 @@ def get_name():
     filename = os.path.normcase(os.path.basename(filename))
     return os.path.splitext(filename)[0]
 
+
 def demo_setup():
     from trepan.processor.command import mock as Mmock, show as Mshow
+
     d, cp = Mmock.dbg_setup()
     mgr = Mshow.ShowCommand(cp)
     return mgr
+
 
 def demo_run(subcmd):
     mgr = demo_setup()

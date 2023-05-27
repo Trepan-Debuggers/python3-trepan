@@ -13,8 +13,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Copyright (C) 2008, 2009, 2013, 2015 Rocky Bernstein <rocky@gnu.org> """
 
-__docformat__ = 'restructuredtext'
+__docformat__ = "restructuredtext"
 
 from trepan.misc import pyfiles
+
 __all__ = pyfiles(__file__)
-__package__ = 'trepan.lib'
+__package__ = "trepan.lib"

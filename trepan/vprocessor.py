@@ -17,7 +17,7 @@ NotImplementedMessage = "This method must be overriden in a subclass"
 
 from pygments.console import colorize
 
-__all__ = ['Processor']
+__all__ = ["Processor"]
 
 
 class Processor(object):
@@ -25,6 +25,7 @@ class Processor(object):
     the debugger.  It has it's own I/O mechanism and a way to handle
     the events.
     """
+
     def __init__(self, core_obj):
         self.core = core_obj
         self.debugger = core_obj.debugger
@@ -37,19 +38,19 @@ class Processor(object):
     # in the course of the program and if we made such an method assignemnt
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, message, opts={}):
-        """ Convenience short-hand for self.intf[-1].errmsg """
-        if 'plain' != self.debugger.settings['highlight']:
-            message = colorize('standout', message)
+        """Convenience short-hand for self.intf[-1].errmsg"""
+        if "plain" != self.debugger.settings["highlight"]:
+            message = colorize("standout", message)
             pass
-        return(self.intf[-1].errmsg(message))
+        return self.intf[-1].errmsg(message)
 
     def msg(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf[-1].msg """
-        return(self.intf[-1].msg(msg))
+        """Convenience short-hand for self.debugger.intf[-1].msg"""
+        return self.intf[-1].msg(msg)
 
     def msg_nocr(self, msg, opts={}):
-        """ Convenience short-hand for self.debugger.intf[-1].msg_nocr """
-        return(self.intf[-1].msg_nocr(msg))
+        """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
+        return self.intf[-1].msg_nocr(msg)
 
     def event_processor(self, frame, event, arg):
         raise NotImplementedError(NotImplementedMessage)
@@ -57,17 +58,21 @@ class Processor(object):
     def rst_msg(self, text, opts={}):
         """Convert ReStructuredText and run through msg()"""
         from trepan.lib.format import rst_text
-        text = rst_text(text,
-                        'plain' == self.debugger.settings['highlight'],
-                        self.debugger.settings['width'])
+
+        text = rst_text(
+            text,
+            "plain" == self.debugger.settings["highlight"],
+            self.debugger.settings["width"],
+        )
         return self.msg(text)
 
     def section(self, message, opts={}):
-        if 'plain' != self.settings('highlight'):
-            message = colorize('bold', message)
+        if "plain" != self.settings("highlight"):
+            message = colorize("bold", message)
             pass
         return self.msg(message, opts)
 
     def settings(self, setting):
         return self.core.debugger.settings[setting]
+
     pass

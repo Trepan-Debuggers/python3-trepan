@@ -11,5 +11,5 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Copyright (C) 2008, 2013-2014, 2016 Rocky Bernstein <rocky@gnu.org> """
-__package__ = 'trepan.interfaces'
-__docformat__ = 'restructuredtext'
+__package__ = "trepan.interfaces"
+__docformat__ = "restructuredtext"

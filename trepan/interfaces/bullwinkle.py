@@ -28,20 +28,19 @@ class BWInterface(Minterface.TrepanInterface):
 
     def __init__(self, inp=None, out=None, opts=None):
         atexit.register(self.finalize)
-        self.input       = inp or Minput.DebuggerUserInput()
-        self.output      = out or Moutput.DebuggerUserOutput()
-        self.pp          = pprint.PrettyPrinter()
+        self.input = inp or Minput.DebuggerUserInput()
+        self.output = out or Moutput.DebuggerUserOutput()
+        self.pp = pprint.PrettyPrinter()
         return
 
     def close(self):
-        """ Closes both input and output """
+        """Closes both input and output"""
         self.input.close()
         self.output.close()
         return
 
     def errmsg(self, msg):
-        """Common routine for reporting debugger error messages.
-           """
+        """Common routine for reporting debugger error messages."""
         return self.msg(msg)
 
     def finalize(self, last_wishes=None):
@@ -55,7 +54,7 @@ class BWInterface(Minterface.TrepanInterface):
         return
 
     def read_command(self):
-        line = self.readline('Bullwinkle read: ')
+        line = self.readline("Bullwinkle read: ")
         try:
             command = eval(line)
         except:
@@ -63,15 +62,18 @@ class BWInterface(Minterface.TrepanInterface):
         pass
         return command
 
-    def readline(self, prompt=''):
+    def readline(self, prompt=""):
         return self.input.readline(prompt=prompt)
+
     pass
 
+
 # Demo
-if __name__=='__main__':
+if __name__ == "__main__":
     intf = BWInterface()
     intf.msg("Testing1, 2, 3")
     import sys
+
     if len(sys.argv) > 1:
         try:
             entry = intf.read_command()

@@ -20,17 +20,17 @@ from trepan.processor.command.base_submgr import SubcommandMgr
 class InfoCommand(SubcommandMgr):
     """Generic command for showing things about the program being debugged.
 
-You can give unique prefix of the name of a subcommand to get
-information about just that subcommand.
+    You can give unique prefix of the name of a subcommand to get
+    information about just that subcommand.
 
-Type `info` for a list of *info* subcommands and what they do.
-Type `help info *` for just a list of *info* subcommands.
-"""
+    Type `info` for a list of *info* subcommands and what they do.
+    Type `help info *` for just a list of *info* subcommands."""
 
     aliases = ("i",)
     short_help = "Information about debugged program and its environment"
 
     SubcommandMgr.setup(locals(), category="status")
+
 
 if __name__ == "__main__":
     from trepan.processor.command import mock

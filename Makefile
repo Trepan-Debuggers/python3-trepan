@@ -65,7 +65,7 @@ clean:
 
 #: Create source (tarball) and binary (egg) distribution
 dist: check-rst
-	bash ./admin-tools/make-dist.sh
+	bash ./admin-tools/make-dist-newer.sh
 
 #: Create source tarball
 sdist: check-rst

@@ -21,26 +21,25 @@ from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class ShowAliases(Mbase_subcmd.DebuggerShowIntSubcommand):
-    '''**show aliases** [*alias* ...| *]
+    """**show aliases** [*alias* ...| *]
 
-Show command aliases. If parameters are given a list of all aliases and
-the command they run are printed. Alternatively one can list specific
-alias names for the commands those specific aliases are attached to.
-If instead of an alias `*` appears anywhere as an alias then just a list
-of aliases is printed, not what commands they are attached to.
+    Show command aliases. If parameters are given a list of all aliases and
+    the command they run are printed. Alternatively one can list specific
+    alias names for the commands those specific aliases are attached to.
+    If instead of an alias `*` appears anywhere as an alias then just a list
+    of aliases is printed, not what commands they are attached to.
 
-See also:
----------
-`alias`
-'''
+    See also:
+    ---------
+    `alias`"""
 
-    min_abbrev = len('al')
+    min_abbrev = len("al")
     short_help = "Show command aliases"
-    run_cmd    = False
+    run_cmd = False
 
     def _alias_header(self):
-        self.section("%-10s : %s" % ('Alias', 'Command'))
-        self.msg("%-10s : %s" % ('-' * 10, '-' * 11))
+        self.section("%-10s : %s" % ("Alias", "Command"))
+        self.msg("%-10s : %s" % ("-" * 10, "-" * 11))
         return
 
     def _alias_line(self, alias):
@@ -56,9 +55,9 @@ See also:
                 self._alias_line(alias)
                 pass
             return
-        if '*' in args:
+        if "*" in args:
             self.section("Current aliases:")
-            self.msg(columnize.columnize(aliases, lineprefix='    '))
+            self.msg(columnize.columnize(aliases, lineprefix="    "))
         else:
             self._alias_header()
             for alias in args:
@@ -71,9 +70,11 @@ See also:
             return
         return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from trepan.processor.command.show_subcmd import __demo_helper__ as Mhelper
+
     sub = Mhelper.demo_run(ShowAliases)
-    sub.run(['*'])
-    sub.run(['s+', "n+"])
+    sub.run(["*"])
+    sub.run(["s+", "n+"])
     pass

@@ -22,28 +22,30 @@ from trepan.lib.printing import print_obj
 class ExamineCommand(DebuggerCommand):
     """**examine** *expr1* [*expr2* ...]
 
-Examine value, type and object attributes of an expression.
+    Examine value, type and object attributes of an expression.
 
-In contrast to normal Python expressions, expressions should not have
-blanks which would cause shlex to see them as different tokens.
+    In contrast to normal Python expressions, expressions should not have
+    blanks which would cause shlex to see them as different tokens.
 
-Examples:
----------
+    Examples:
+    ---------
 
-    examine x+1   # ok
-    examine x + 1 # not ok
+        examine x+1   # ok
+        examine x + 1 # not ok
 
-See also:
----------
+    See also:
+    ---------
 
-`pr`, `pp`, and `whatis`.
-"""
+    `pr`, `pp`, and `whatis`."""
 
     aliases = ("x",)
     short_help = "Examine value, type, and object attributes " "of an expression"
 
     DebuggerCommand.setup(
-        locals(), category="data", need_stack=True, min_args=1,
+        locals(),
+        category="data",
+        need_stack=True,
+        min_args=1,
     )
 
     def run(self, args):

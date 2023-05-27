@@ -21,15 +21,17 @@ from trepan.processor import cmdfns as Mcmdfns
 
 class SetCmdtrace(Mbase_subcmd.DebuggerSetBoolSubcommand):
     """Set echoing lines read from debugger command files"""
-    in_list    = True
-    min_abbrev = len('cmdt')    # Need at least "set cmdt"
+
+    in_list = True
+    min_abbrev = len("cmdt")  # Need at least "set cmdt"
     pass
 
     def run(self, args):
         Mcmdfns.run_set_bool(self, args)
         dbg = self.debugger
-        if hasattr(dbg.intf[-1], 'verbose'):
+        if hasattr(dbg.intf[-1], "verbose"):
             dbg.intf[-1].verbose = dbg.settings[self.name]
             pass
         return
+
     pass
