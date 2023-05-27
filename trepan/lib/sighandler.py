@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2016, 2022, 2023 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2013-2014, 2016, 2022, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,8 +24,6 @@
 #
 import signal
 
-from typing import Optional
-
 
 def yes_or_no(b) -> str:
     """Return 'Yes' for True and 'No' for False, and ?? for anything
@@ -35,7 +35,7 @@ def yes_or_no(b) -> str:
     return "No"
 
 
-def lookup_signame(num: int) -> Optional[str]:
+def lookup_signame(num: int):
     """Find the corresponding signal name for 'num'. Return None
     if 'num' is invalid."""
     signames = signal.__dict__
@@ -62,7 +62,7 @@ def lookup_signum(name):
     return  # noqa
 
 
-def canonic_signame(name_num) -> Optional[str]:
+def canonic_signame(name_num):
     """Return a signal name for a signal name or signal
     number.  Return None is name_num is an int but not a valid signal
     number and False if name_num is a not number. If name_num is a

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2017-2018, 2020-2021 Rocky Bernstein
+#  Copyright (C) 2017-2018, 2020-2021, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 
 # Our local modules
 from sys import version_info
-from xdis import IS_PYPY, PYTHON_VERSION
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 from trepan.processor.command.base_cmd import DebuggerCommand
 
-if 3.7 <= PYTHON_VERSION <= 3.8:
+if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
     from decompyle3.semantics.fragments import deparse_code
     from decompyle3.semantics.fragments import deparsed_find
 else:
