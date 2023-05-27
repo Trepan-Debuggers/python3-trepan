@@ -144,7 +144,7 @@ if __name__ == "__main__":
     print(out.output)
     try:
         out.writeline("You won't see me")
-    except:
+    except Exception:
         pass
     # Closing after already closed is okay
     out.close()

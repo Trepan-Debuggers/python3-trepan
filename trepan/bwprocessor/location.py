@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 """ Location routines"""
 
-import pyficache, linecache, tempfile
+import linecache
+import tempfile
+
+import pyficache
+
 from trepan.lib import stack as Mstack
 
 

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021 Rocky Bernstein
+#
+#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021, 2023 Rocky
+#  Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,12 +22,12 @@ and commands.py needs to take care to avoid instantiating this class
 and storing it as a list of known debugger commands.
 """
 
-NotImplementedMessage = "This method must be overriden in a subclass"
-
 import columnize
 from pygments.console import colorize
 
 from trepan.lib import format as Mformat
+
+NotImplementedMessage = "This method must be overriden in a subclass"
 
 __all__ = ["DebuggerCommand"]
 
@@ -37,12 +39,12 @@ class DebuggerCommand:
     category = "misc"
 
     @staticmethod
-    def setup(l, category="misc", min_args=0, max_args=None, need_stack=False):
-        l["name"] = l["__module__"].split(".")[-1]
-        l["category"] = category
-        l["min_args"] = min_args
-        l["max_args"] = max_args
-        l["need_stack"] = need_stack
+    def setup(local_dict, category="misc", min_args=0, max_args=None, need_stack=False):
+        local_dict["name"] = local_dict["__module__"].split(".")[-1]
+        local_dict["category"] = category
+        local_dict["min_args"] = min_args
+        local_dict["max_args"] = max_args
+        local_dict["need_stack"] = need_stack
         return
 
     def __init__(self, proc):

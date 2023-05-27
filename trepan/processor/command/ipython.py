@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023 Rocky
+#  Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,12 +15,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import code, sys
+import code
+import sys
+
+from traitlets.config.loader import Config
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-
-from traitlets.config.loader import Config
 
 
 class IPythonCommand(DebuggerCommand):
@@ -118,7 +121,7 @@ Use dbgr(*string*) to issue non-continuing debugger command: *string*"""
         # restore completion and our history if we can do so.
         if hasattr(self.proc.intf[-1], "complete"):
             try:
-                from readline import set_completer, parse_and_bind
+                from readline import parse_and_bind, set_completer
 
                 parse_and_bind("tab: complete")
                 set_completer(self.proc.intf[-1].complete)
@@ -156,11 +159,6 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     setattr(console, "globals", my_globals)
     if readfunc is not None:
         console.raw_input = readfunc
-    else:
-        try:
-            import readline
-        except ImportError:
-            pass
     console.interact(banner)
     pass
 
@@ -183,7 +181,7 @@ def runcode(obj, code_obj):
         exec(code_obj, obj.locals, obj.globals)
     except SystemExit:
         raise
-    except:
+    except Exception:
         obj.showtraceback()
     else:
         if code.softspace(sys.stdout, 0):

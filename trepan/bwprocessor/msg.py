@@ -2,6 +2,7 @@
 #   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
 """ Common I/O routines"""
 
+
 # Note for errmsg, msg, and msg_nocr we don't want to simply make
 # an assignment of method names like self.msg = self.debugger.intf.msg,
 # because we want to allow the interface (intf) to change

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015, 2018 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -29,19 +31,23 @@ user or client-side code for connecting to server'd debugged program.
 
 # Our local modules
 
-from trepan.exception import DebuggerQuit, DebuggerRestart
+# Common Python packages
+import sys
+import types
+
+import pyficache
+import tracefilter
+
+# External Egg packages
+import tracer
+
+import trepan.interfaces.user as Muser
 
 # Default settings used here
 import trepan.lib.default as Mdefault
-import trepan.interfaces.user as Muser
-from trepan.misc import option_set
 import trepan.lib.sighandler as Msig
-
-# Common Python packages
-import sys, types
-
-# External Egg packages
-import tracer, tracefilter, pyficache
+from trepan.exception import DebuggerQuit, DebuggerRestart
+from trepan.misc import option_set
 
 debugger_obj = None
 
@@ -56,7 +62,6 @@ except ImportError:
 
 
 class Trepan(object):
-
     # The following functions have to be defined before
     # DEFAULT_INIT_OPTS which includes references to these.
 
@@ -216,7 +221,7 @@ class Trepan(object):
         self.core.execution_status = "Running"
         try:
             compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
-        except (SyntaxError):
+        except SyntaxError:
             self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
             self.intf[0].errmsg(sys.exc_info()[1])
             retval = False

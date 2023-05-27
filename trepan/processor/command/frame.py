@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,14 +14,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, sys, threading
+import inspect
+import sys
+import threading
+
+from trepan.lib import thred as Mthread
+from trepan.lib.complete import complete_token
+from trepan.processor.cmdproc import get_stack
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.frame import frame_low_high, adjust_frame
-from trepan.processor.cmdproc import get_stack
-from trepan.lib.complete import complete_token
-from trepan.lib import thred as Mthread
+from trepan.processor.frame import adjust_frame, frame_low_high
 
 
 class FrameCommand(DebuggerCommand):

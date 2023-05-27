@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2012-2013, 2015, 2017, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2012-2013, 2015, 2017, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -76,7 +77,7 @@ class EvalCommand(DebuggerCommand):
         text = text.strip()
         try:
             self.proc.exec_line(text)
-        except:
+        except Exception:
             pass
 
 

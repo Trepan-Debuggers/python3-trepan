@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2013-2015, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,11 +17,12 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger FIFO Input/Output interface. """
 
-import tempfile, os
+import os
+import tempfile
 
-from trepan.lib import default as Mdefault, file as Mfile
 from trepan import misc as Mmisc
 from trepan.inout.base import DebuggerInOutBase
+from trepan.lib import default as Mdefault, file as Mfile
 
 
 class FIFOClient(DebuggerInOutBase):

@@ -69,7 +69,7 @@ class DEvalCommand(DebuggerCommand):
             if not nodeInfo:
                 self.errmsg("Can't find exact offset %d" % last_i)
                 return
-        except:
+        except Exception:
             self.errmsg("error in deparsing code")
             return
         if "?" == args[0][-1]:
@@ -81,7 +81,7 @@ class DEvalCommand(DebuggerCommand):
         self.msg("Evaluating: %s" % text)
         try:
             self.proc.exec_line(text)
-        except:
+        except Exception:
             pass
 
 

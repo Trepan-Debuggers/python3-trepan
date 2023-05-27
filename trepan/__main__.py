@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2022 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2023 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,12 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """The command-line interface to the debugger.
 """
-import os, pyficache, sys, tempfile
+import os
 import os.path as osp
+import sys
+import tempfile
+
+import pyficache
 
 package = "trepan"
 
@@ -27,10 +31,10 @@ import trepan.client as Mclient
 import trepan.clifns as Mclifns
 import trepan.debugger as Mdebugger
 import trepan.exception as Mexcept
-import trepan.options as Moptions
 import trepan.interfaces.server as Mserver
 import trepan.lib.file as Mfile
 import trepan.misc as Mmisc
+import trepan.options as Moptions
 
 # The name of the debugger we are currently going by.
 __title__ = package
@@ -107,11 +111,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         if Mfile.is_compiled_py(mainpyfile):
             try:
-                from xdis import (
-                    load_module,
-                    PYTHON_VERSION_TRIPLE,
-                    IS_PYPY,
-                )
+                from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
                 from xdis.version_info import version_tuple_to_str
 
                 (
@@ -256,7 +256,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     #     pass
 
     while True:
-
         # Run the debugged script over and over again until we get it
         # right.
 

@@ -90,7 +90,7 @@ install_requires = [
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
 modname = "trepan3k"
-py_modules = None
+py_modules = []
 short_desc = "GDB-like Python Debugger in the Trepan family"
 
 import os.path as osp

@@ -13,7 +13,8 @@
 # """ Copyright (C) 2008, 2009, 2013 Rocky Bernstein <rocky@gnu.org> """
 __import__("pkg_resources").declare_namespace(__name__)
 
-import glob, os
+import glob
+import os
 
 # FIXME: Is it really helpful to "privatize" variable names below?
 # The below names are not part of the standard pre-defined names like

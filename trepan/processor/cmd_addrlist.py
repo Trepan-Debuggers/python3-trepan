@@ -160,7 +160,7 @@ if __name__ == "__main__":
     def five():
         return 5
 
-    import os
+    import os  # noqa
 
     for cmd in (
         # "disasm",
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         # "disasm '''c:\\tmp\\foo.bat''':1",
         # 'disasm """/Users/My Documents/foo.py""":2',
         # 'disasm build_range()',
-        # 'disasm os:1 ,',
+        "disasm os:1 ,",
     ):
         args = cmd.split(" ")
         cmdproc.current_command = cmd

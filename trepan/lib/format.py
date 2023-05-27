@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#   Copyright (C) 2013, 2015, 2017, 2019, 2020,2023
+#   Copyright (C) 2013, 2015, 2017, 2019, 2020, 2023
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Pygments-related terminal formatting"""
 
-import re, sys
+import re
+import sys
+
 import pyficache
 from pygments import highlight, lex
 from pygments.console import ansiformat
@@ -37,7 +39,6 @@ from pygments.token import (
     Token,
 )
 from pygments.util import get_choice_opt
-
 
 # Set up my own color scheme with some addtional definitions
 color_scheme = TERMINAL_COLORS.copy()

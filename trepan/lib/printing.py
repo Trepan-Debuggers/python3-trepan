@@ -15,7 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, types
+import inspect
+import types
 
 
 def print_dict(s, obj, title):
@@ -52,7 +53,7 @@ def print_obj(arg, frame, format=None, short=False):
         else:
             obj = eval(arg, frame.f_globals, frame.f_locals)
             pass
-    except:
+    except Exception:
         return 'No symbol "' + arg + '" in current context.'
     # format and print
     what = arg
@@ -117,7 +118,7 @@ def printf(val, fmt):
     if f in pconvert.keys():
         try:
             return pconvert[f](val)
-        except:
+        except Exception:
             return str(val)
     # binary (t is from 'twos')
     if f == "t":
@@ -127,7 +128,7 @@ def printf(val, fmt):
                 res = twos[val & 0xF] + res
                 val = val >> 4
             return res
-        except:
+        except Exception:
             return str(val)
     return str(val)
 

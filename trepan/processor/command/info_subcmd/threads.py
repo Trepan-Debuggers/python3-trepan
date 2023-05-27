@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2014 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2014, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,11 +14,13 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import sys, threading
+import sys
+import threading
+
+from trepan.lib import stack as Mstack, thred as Mthread
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import stack as Mstack, thred as Mthread
 
 
 # FIXME turn into yet another subcommand thingy.
@@ -188,7 +191,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)

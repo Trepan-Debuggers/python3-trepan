@@ -60,7 +60,7 @@ if __name__ == "__main__":
     command.run(["pp", "me"])
     me = list(range(100))
     command.run(["pp", "me"])
-    import sys
+    import sys  # noqa
 
     command.run(["pp", "sys.modules.keys()"])
     me = "fooled you"

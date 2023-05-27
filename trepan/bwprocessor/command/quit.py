@@ -11,11 +11,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import os, threading
+import os
+import threading
+
+from trepan import exception as Mexcept
 
 # Our local modules
 from trepan.bwprocessor.command import base_cmd as Mbase_cmd
-from trepan import exception as Mexcept
 
 
 class QuitCommand(Mbase_cmd.DebuggerCommand):

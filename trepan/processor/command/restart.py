@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,11 +13,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import atexit, os
+import atexit
+import os
+
+from trepan.misc import wrapped_lines
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.misc import wrapped_lines
 
 
 class RestartCommand(DebuggerCommand):
@@ -51,7 +53,7 @@ class RestartCommand(DebuggerCommand):
                 # http://mail.python.org/pipermail/python-dev/2009-February/085791.html # NOQA
                 try:
                     atexit._run_exitfuncs()
-                except:
+                except Exception:
                     pass
                 os.execvp(sys_argv[0], sys_argv)
                 pass

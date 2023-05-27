@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+#
 #   Copyright (C) 2009-2010, 2013-2015,
-#   2017-2018, 2020 Rocky Bernstein <rocky@gnu.org>
+#   2017-2018, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +17,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Interface when communicating with the user in the same process as
     the debugged program."""
-import atexit, os.path as osp
+import atexit
+import os.path as osp
 
 # Our local modules
 from trepan.interface import TrepanInterface
@@ -30,8 +32,13 @@ DEFAULT_USER_SETTINGS = {
 }
 
 try:
-    from readline import read_history_file, set_completer, set_history_length
-    from readline import write_history_file, parse_and_bind
+    from readline import (
+        parse_and_bind,
+        read_history_file,
+        set_completer,
+        set_history_length,
+        write_history_file,
+    )
 except ImportError:
     pass
 
@@ -41,7 +48,6 @@ class UserInterface(TrepanInterface):
     process as the debugged program."""
 
     def __init__(self, inp=None, out=None, opts={}):
-
         user_opts = DEFAULT_USER_SETTINGS.copy()
         user_opts.update(opts)
 
@@ -65,7 +71,7 @@ class UserInterface(TrepanInterface):
                     read_history_file(histfile)
                 except IOError:
                     pass
-                except:
+                except Exception:
                     # PyPy read_history_file fails
                     return
                 set_history_length(50)
@@ -76,7 +82,7 @@ class UserInterface(TrepanInterface):
     def user_write_history_file(self):
         try:
             write_history_file(self.histfile)
-        except:
+        except Exception:
             pass
 
     def close(self):
@@ -84,7 +90,7 @@ class UserInterface(TrepanInterface):
         try:
             self.input.close()
             self.output.close()
-        except:
+        except Exception:
             pass
         return
 
@@ -135,7 +141,7 @@ class UserInterface(TrepanInterface):
         # We hard-code the close() function here.
         try:
             self.msg("%s: That's all, folks..." % self.debugger_name)
-        except:
+        except Exception:
             pass
         else:
             self.close()

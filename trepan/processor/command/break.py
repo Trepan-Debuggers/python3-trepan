@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020, 2023 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -14,9 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.processor.cmdbreak import parse_break_cmd, set_break
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.cmdbreak import parse_break_cmd, set_break
 from trepan.processor.complete import complete_break_linenumber
 
 
@@ -74,7 +75,7 @@ class BreakCommand(DebuggerCommand):
         force = True if args[0][-1] == "!" else False
 
         (func, filename, lineno, condition, offset) = parse_break_cmd(self.proc, args)
-        if not (func == None and filename == None):
+        if not (func is None and filename is None):
             set_break(
                 self,
                 func,
@@ -103,6 +104,7 @@ if __name__ == "__main__":
         cmd.run([name] + a)
 
     import sys
+
     from trepan.debugger import Trepan
 
     d = Trepan()

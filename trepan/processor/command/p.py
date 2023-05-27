@@ -59,7 +59,7 @@ class PCommand(DebuggerCommand):
                 val = printf(val, fmt)
                 pass
             self.msg(self.proc._saferepr(val))
-        except:
+        except Exception:
             pass
 
 

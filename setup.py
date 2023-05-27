@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import sys
 
+from setuptools import find_packages, setup
+
 SYS_VERSION = sys.version_info[0:2]
 if not ((3, 1) <= SYS_VERSION <= (3, 10)):
     mess = "Python Versions 3.1 to 3.10 are supported only in this package."
@@ -13,6 +15,7 @@ if not ((3, 1) <= SYS_VERSION <= (3, 10)):
 
 # Get the package information used in setup().
 from __pkginfo__ import (
+    __version__,
     author,
     author_email,
     classifiers,
@@ -23,14 +26,11 @@ from __pkginfo__ import (
     modname,
     py_modules,
     short_desc,
-    __version__,
     web,
     zip_safe,
 )
 
 __import__("pkg_resources")
-
-from setuptools import setup, find_packages
 
 packages = find_packages()
 
