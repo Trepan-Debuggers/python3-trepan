@@ -74,7 +74,7 @@ class Subcmd:
         self.cmdlist.append(subcmd_name)
 
     def run(self, subcmd_name, arg):
-        """Run subcmd_name with args using obj for the environent"""
+        """Run subcmd_name with args using obj for the environment"""
         entry = self.lookup(subcmd_name)
         if entry:
             entry["callback"](arg)

@@ -24,7 +24,7 @@ from trepan.inout.base import DebuggerInOutBase
 
 class DebuggerUserOutput(DebuggerInOutBase):
     """Debugger output shown directly to what we think of as end-user
-    ouptut as opposed to a relay mechanism to another process. Output
+    output as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
 
     def __init__(self, out=None, opts=None):

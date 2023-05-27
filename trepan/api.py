@@ -42,7 +42,7 @@ from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
 
 def debugger_on_post_mortem():
-    """Call debugger on an exeception that terminates a program"""
+    """Call debugger on an exception that terminates a program"""
     sys.excepthook = post_mortem_excepthook
     return
 

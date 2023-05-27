@@ -64,7 +64,7 @@ def resolve_location(proc, location):
         try:
             # Check if the converted string is a function or instance
             # method.  We don't want to test on attributes and not use
-            # `inspect.isfunction()` so that we can accomadate
+            # `inspect.isfunction()` so that we can accommodate
             # trepan-xpy() which has it's own type of compatible
             # Function, that would fail an `inspect.isfunction()`
             # test.

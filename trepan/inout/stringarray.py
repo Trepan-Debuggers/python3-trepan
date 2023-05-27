@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2013-2014, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,7 +24,7 @@ from trepan.inout import base as Mbase
 
 class StringArrayInput(Mbase.DebuggerInputBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
-    even simplier."""
+    even simpler."""
 
     def __init__(self, inp=[], opts=None):
         self.input = inp
@@ -60,7 +62,7 @@ class StringArrayInput(Mbase.DebuggerInputBase):
 
 class StringArrayOutput(Mbase.DebuggerInOutBase):
     """Simulate I/O using an array of strings. Sort of like StringIO, but
-    even simplier."""
+    even simpler."""
 
     def __init__(self, out=[], opts=None):
         self.flush_after_write = False  # For compatibility
