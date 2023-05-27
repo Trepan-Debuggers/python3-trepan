@@ -69,7 +69,7 @@ def next_linestart(co, offset, count=1):
     return -1000
 
 
-def stmt_contains_opcode(co, lineno, query_opcode):
+def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
     linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
     found_start = False
@@ -84,7 +84,7 @@ def stmt_contains_opcode(co, lineno, query_opcode):
         if -1000 == offset or linestarts.get(offset):
             return False
         opcode = opname[op]
-        # debug: print opcode
+        # print(opcode)  # debug
         if query_opcode == opcode:
             return True
         pass

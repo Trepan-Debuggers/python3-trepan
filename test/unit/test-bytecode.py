@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 "Unit test for trepan.bytecode"
-import inspect, unittest
+import inspect
+import unittest
+
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 from trepan.lib import bytecode as Mcode
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 
 class TestByteCode(unittest.TestCase):
@@ -14,7 +16,8 @@ class TestByteCode(unittest.TestCase):
         frame = inspect.currentframe()
         co = frame.f_code
         lineno = frame.f_lineno
-        self.assertTrue(Mcode.stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION"))
+        if IS_PYPY or PYTHON_VERSION_TRIPLE >= (3, 3):
+            self.assertTrue(Mcode.stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION"))
         self.assertFalse(Mcode.stmt_contains_opcode(co, lineno, "MAKE_FUNCTION"))
         return
 
