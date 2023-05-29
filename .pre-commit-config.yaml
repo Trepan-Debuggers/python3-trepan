@@ -4,6 +4,11 @@ repos:
     hooks:
     - id: debug-statements
     - id: end-of-file-fixer
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        stages: [commit]
 -   repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:

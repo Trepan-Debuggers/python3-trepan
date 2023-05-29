@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2021 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2010, 2013-2021, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,31 +15,35 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, linecache, sys, shlex, tempfile, traceback, re
-import os.path as osp
-import pyficache
 import importlib
-from trepan.processor import cmdfns
-from trepan.lib.deparse import deparse_and_cache
+import inspect
+import linecache
+import os.path as osp
+import re
+import shlex
+import sys
+import tempfile
+import traceback
 
 # Note: the module name pre 3.2 is repr
 from reprlib import Repr
 
+import pyficache
 from pygments.console import colorize
-
 from tracer import EVENT2SHORT
 
-from trepan.vprocessor import Processor
-from trepan.lib.bytecode import is_def_stmt, is_class_def
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
-import trepan.misc as Mmisc
 import trepan.lib.file as Mfile
 import trepan.lib.stack as Mstack
 import trepan.lib.thred as Mthread
+import trepan.misc as Mmisc
 import trepan.processor.complete as Mcomplete
-
+from trepan.lib.bytecode import is_class_def, is_def_stmt
+from trepan.lib.deparse import deparse_and_cache
+from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
+from trepan.vprocessor import Processor
 
 warned_file_mismatches = set()
 
@@ -81,11 +87,18 @@ def get_stack(f, t, botframe, proc_obj=None):
     that are really around may be excluded unless we are debugging the
     sebugger. Also we will add traceback frame on top if that
     exists."""
-    exclude_frame = lambda f: False
+
+    def false_fn(f):
+        return false_fn
+
+    def fn_is_ignored(f):
+        return proc_obj.core.ignore_filter.is_included(f)
+
+    exclude_frame = false_fn
     if proc_obj:
         settings = proc_obj.debugger.settings
         if not settings["dbg_trepan"]:
-            exclude_frame = lambda f: proc_obj.core.ignore_filter.is_included(f)
+            exclude_frame = fn_is_ignored
             pass
         pass
     stack = []
@@ -127,7 +140,7 @@ def resolve_name(obj, command_name):
         pass
     try:
         return command_name.lower()
-    except:
+    except Exception:
         return None
     return
 
@@ -327,7 +340,7 @@ def print_location(proc_obj):
                 if filename not in warned_file_mismatches:
                     proc_obj.errmsg(reason)
                     warned_file_mismatches.add(filename)
-        except:
+        except Exception:
             pass
 
         fn_name = frame.f_code.co_name
@@ -360,7 +373,7 @@ def print_location(proc_obj):
     ):
         try:
             proc_obj.commands["info"].run(["info", "locals"])
-        except:
+        except Exception:
             pass
     return True
 
@@ -376,7 +389,10 @@ DEFAULT_PROC_OPTS = {
 
 class CommandProcessor(Processor):
     def __init__(self, core_obj, opts=None):
-        get_option = lambda key: Mmisc.option_set(opts, key, DEFAULT_PROC_OPTS)
+        def get_option_fn(key):
+            return Mmisc.option_set(opts, key, DEFAULT_PROC_OPTS)
+
+        get_option = get_option_fn
         super().__init__(core_obj)
 
         self.continue_running = False  # True if we should leave command loop
@@ -553,7 +569,7 @@ class CommandProcessor(Processor):
         """Eval string arg in the current frame context."""
         try:
             return eval(arg, self.curframe.f_globals, self.curframe.f_locals)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if isinstance(t, str):
                 exc_type_name = t
@@ -579,7 +595,7 @@ class CommandProcessor(Processor):
         try:
             code = compile(line + "\n", '"%s"' % line, "single")
             exec(code, global_vars, local_vars)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if type(t) == bytes:
                 exc_type_name = t
@@ -619,13 +635,13 @@ class CommandProcessor(Processor):
         return None"""
         if self.curframe:
             g = self.curframe.f_globals
-            l = self.curframe.f_locals
+            locals_dict = self.curframe.f_locals
         else:
             g = globals()
-            l = locals()
+            locals_dict = locals()
             pass
         try:
-            val = int(eval(arg, g, l))
+            val = int(eval(arg, g, locals_dict))
         except (SyntaxError, NameError, ValueError, TypeError):
             return None
         return val
@@ -681,7 +697,7 @@ class CommandProcessor(Processor):
             locals = self.curframe.f_locals
         try:
             return eval(arg, self.curframe.f_globals, locals)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if isinstance(t, str):
                 exc_type_name = t
@@ -784,7 +800,7 @@ class CommandProcessor(Processor):
             return False
         try:
             args_list = arg_split(current_command)
-        except:
+        except Exception:
             self.errmsg("bad parse %s: %s" % sys.exc_info()[0:2])
             return False
 
@@ -859,7 +875,7 @@ class CommandProcessor(Processor):
                         ):
                             # Let these exceptions propagate through
                             raise
-                        except:
+                        except Exception:
                             self.errmsg("INTERNAL ERROR: " + traceback.format_exc())
                             pass
                         pass
@@ -1009,7 +1025,7 @@ class CommandProcessor(Processor):
                 continue
             import_name = "trepan.processor.command." + mod_name
             imp = __import__(import_name)
-            if imp.__name__ == base_name:
+            if imp.__name__ == mod_name:
                 command_mod = imp.processor.command
             else:
                 if mod_name in (
@@ -1020,7 +1036,7 @@ class CommandProcessor(Processor):
                     pass
                 try:
                     command_mod = getattr(__import__(import_name), mod_name)
-                except:
+                except Exception:
                     # Don't need to warn about optional modules
                     if mod_name not in self.optional_modules:
                         print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
@@ -1042,7 +1058,7 @@ class CommandProcessor(Processor):
                     try:
                         instance = eval(eval_cmd)
                         cmd_instances.append(instance)
-                    except:
+                    except Exception:
                         print(
                             "Error loading %s from %s: %s"
                             % (classname, mod_name, sys.exc_info()[0])
@@ -1071,7 +1087,7 @@ class CommandProcessor(Processor):
             import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
                 command_mod = importlib.import_module(import_name)
-            except:
+            except Exception:
                 if mod_name not in self.optional_modules:
                     print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
                     pass
@@ -1090,7 +1106,7 @@ class CommandProcessor(Processor):
                     try:
                         instance = getattr(command_mod, classname)(self)
                         cmd_instances.append(instance)
-                    except:
+                    except Exception:
                         print(
                             "Error loading %s from %s: %s"
                             % (classname, mod_name, sys.exc_info()[0])

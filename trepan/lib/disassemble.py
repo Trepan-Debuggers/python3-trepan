@@ -3,15 +3,17 @@
 # FIXME: see if we can use more of Lib/dis in Python3
 """Disassembly Routines"""
 
-import inspect, sys, types
+import inspect
+import sys
+import types
 
 from xdis import (
+    IS_PYPY,
     Bytecode,
     findlabels,
     findlinestarts,
     get_instructions_bytes,
     get_opcode,
-    IS_PYPY,
 )
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,17 +15,19 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, sys, codecs
-
+import codecs
+import os
+import sys
 from optparse import OptionParser
-from trepan import debugger as Mdebugger, api as Mapi, clifns as Mclifns
-from trepan.lib import file as Mfile
+
+from trepan import api as Mapi, clifns as Mclifns, debugger as Mdebugger
 from trepan.inout import output as Moutput
+from trepan.lib import file as Mfile
 
 
 def default_configfile(base_filename):
     """Return fully expanded configuration filename location for
-    base_filename. python2 and  python3 debuggers share the smae
+    base_filename. python2 and  python3 debuggers share the same
     directory: ~/.config/trepan.py
     """
     file_dir = os.path.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
@@ -59,7 +61,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     another main program and want to extend the existing set of debugger
     options.
 
-    The options dicionary from optparser is returned. sys_argv is
+    The options dictionary from optparser is returned. sys_argv is
     also updated."""
     usage_str = """%prog [debugger-options] [python-script [script-options...]]
 
@@ -338,7 +340,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
             (errno, strerror) = xxx_todo_changeme.args
             print("I/O in opening debugger output file %s" % opts.output)
             print("error(%s): %s" % (errno, strerror))
-        except:
+        except Exception:
             print("Unexpected error in opening debugger output file %s" % opts.output)
             print(sys.exc_info()[0])
             sys.exit(2)
@@ -392,7 +394,7 @@ def _postprocess_options(dbg, opts):
     #             print "error(%s): %s" % (errno, strerror)
     #         except ValueError:
     #             print "Could not convert data to an integer."
-    #         except:
+    #         except Exception:
     #             print "Unexpected error in opening debugger output "
     #                   "file %s" % opts.errors
     #             print sys.exc_info()[0]

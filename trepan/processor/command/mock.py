@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013-2015, 2020, 2023 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
 """ Not a command. A stub class used by a command in its 'main' for
 demonstrating how the command works."""
 
-import trepan.lib
-import trepan.inout
-import trepan.interfaces
-import trepan.processor.command
 
-import os, sys
+import sys
+
+# External Egg packages
+import tracefilter
+
 from trepan.lib import breakpoint, default
 
 
@@ -31,7 +31,7 @@ class MockIO(object):
         return "quit"
 
     def output(self):
-        print
+        print()
 
     pass
 
@@ -87,10 +87,6 @@ class MockProcessor(object):
         return
 
     pass
-
-
-# External Egg packages
-import tracefilter
 
 
 class MockDebuggerCore(object):

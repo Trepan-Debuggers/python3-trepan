@@ -15,19 +15,22 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
 
-import inspect, linecache, os, re, xdis
-
-import trepan.lib.bytecode as Mbytecode
-import trepan.lib.printing as Mprint
-import trepan.lib.format as Mformat
-import trepan.lib.pp as Mpp
-
+import inspect
+import linecache
+import os
 import os.path as osp
-from trepan.lib.deparse import deparse_offset
-from trepan.processor.cmdfns import deparse_fn
+import re
 
+import xdis
 from xdis import IS_PYPY, get_opcode
 from xdis.version_info import PYTHON_VERSION_TRIPLE
+
+import trepan.lib.bytecode as Mbytecode
+import trepan.lib.format as Mformat
+import trepan.lib.pp as Mpp
+import trepan.lib.printing as Mprint
+from trepan.lib.deparse import deparse_offset
+from trepan.processor.cmdfns import deparse_fn
 
 format_token = Mformat.format_token
 
@@ -87,7 +90,7 @@ def deparse_source_from_code(code):
         if len(source_lines) > 1:
             source_text += "..."
         source_text = '"%s"' % source_text
-    except:
+    except Exception:
         pass
     return source_text
 
@@ -137,7 +140,7 @@ def format_stack_entry(
         is_module = False
         try:
             parms = inspect.formatargvalues(args, varargs, varkw, local_vars)
-        except:
+        except Exception:
             pass
         else:
             maxargstrsize = dbg_obj.settings["maxargstrsize"]
@@ -390,7 +393,7 @@ def eval_print_obj(arg, frame, format=None, short=False):
         else:
             val = eval(arg, frame.f_globals, frame.f_locals)
             pass
-    except:
+    except Exception:
         return 'No symbol "' + arg + '" in current context.'
 
     return print_obj(arg, val, format, short)

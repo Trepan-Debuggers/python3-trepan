@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2010, 2013, 2015, 2020-2021 Rocky Bernstein
+#
+#  Copyright (C) 2009, 2010, 2013, 2015, 2020-2021, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,11 +14,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, re, sys, importlib
+import importlib
+import inspect
+import re
+import sys
 
+from trepan.lib.complete import complete_token, complete_token_with_next
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.subcmd import Subcmd
-from trepan.lib.complete import complete_token, complete_token_with_next
 
 
 def abbrev_stringify(name, min_abbrev):
@@ -114,7 +118,7 @@ class SubcommandMgr(DebuggerCommand):
                 try:
                     instance = eval(eval_cmd)
                     self.cmds.add(instance)
-                except:
+                except Exception:
                     print("Error eval'ing class %s" % classname)
                     pass
                 pass

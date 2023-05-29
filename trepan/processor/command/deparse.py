@@ -25,11 +25,11 @@ if sys.version_info[:2] < (3, 9):
     else:
         from uncompyle6.semantics.fragments import code_deparse
 
-from getopt import getopt, GetoptError
+from getopt import GetoptError, getopt
 
+from pyficache import getlines, highlight_string
 
 from trepan.lib.deparse import deparse_and_cache, deparse_offset
-from pyficache import highlight_string, getlines
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -85,7 +85,7 @@ class DeparseCommand(DebuggerCommand):
 
     def run(self, args):
         if sys.version_info[:2] > (3, 8):
-            self.errmsg("Deparsing for Python greater than 3.8 not impemented")
+            self.errmsg("Deparsing for Python greater than 3.8 not implemented")
             return
         co = self.proc.curframe.f_code
         name = co.co_name
@@ -208,6 +208,7 @@ class DeparseCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     import sys
+
     from trepan import debugger
 
     d = debugger.Trepan()

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2012-2013, 2020, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,8 +17,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Bytecode instruction routines"""
 
-import xdis, re
-from opcode import opname, HAVE_ARGUMENT
+import re
+
+import xdis
+from opcode import HAVE_ARGUMENT, opname
 
 
 def op_at_code_loc(code, loc):
@@ -65,10 +69,11 @@ def next_linestart(co, offset, count=1):
     return -1000
 
 
-def stmt_contains_opcode(co, lineno, query_opcode):
+def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
     linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
     found_start = False
+    offset = 0
     for offset, start_line in list(linestarts.items()):
         if start_line == lineno:
             found_start = True

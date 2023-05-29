@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015, 2018, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2009, 2013, 2015, 2018, 2020, 2023 Rocky
+#   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -147,7 +149,6 @@ if __name__ == "__main__":
     d, cp = mock.dbg_setup(d)
     i = Minfo.InfoCommand(cp)
     sub = InfoLocals(i)
-    l = list(range(30))  # Add a simple array to the local mix printed below.
     import inspect
 
     cp.curframe = inspect.currentframe()

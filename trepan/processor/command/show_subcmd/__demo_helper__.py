@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 # FIXME: DRY with other demo_helper's
 

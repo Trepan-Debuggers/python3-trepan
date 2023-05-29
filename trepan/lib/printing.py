@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2007-2010, 2015, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2007-2010, 2015, 2020, 2023 Rocky Bernstein
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,7 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, types
+import inspect
+import types
 
 
 def print_dict(s, obj, title):
@@ -36,7 +38,7 @@ def print_argspec(obj, obj_name):
     """A slightly decorated version of inspect.format_argspec"""
     try:
         return obj_name + inspect.formatargspec(*inspect.getargspec(obj))
-    except:
+    except Exception:
         return None
     return  # Not reached
 
@@ -51,7 +53,7 @@ def print_obj(arg, frame, format=None, short=False):
         else:
             obj = eval(arg, frame.f_globals, frame.f_locals)
             pass
-    except:
+    except Exception:
         return 'No symbol "' + arg + '" in current context.'
     # format and print
     what = arg
@@ -116,7 +118,7 @@ def printf(val, fmt):
     if f in pconvert.keys():
         try:
             return pconvert[f](val)
-        except:
+        except Exception:
             return str(val)
     # binary (t is from 'twos')
     if f == "t":
@@ -126,7 +128,7 @@ def printf(val, fmt):
                 res = twos[val & 0xF] + res
                 val = val >> 4
             return res
-        except:
+        except Exception:
             return str(val)
     return str(val)
 

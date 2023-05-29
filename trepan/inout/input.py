@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2015, 2017 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009-2010, 2013-2015, 2017, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,13 +17,14 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger input possibly attached to a user or interactive. """
 
-import io, sys
+import io
+import sys
 
 from trepan import misc as Mmisc
 from trepan.inout import base as Mbase
 
 
-def readline_importable():
+def readline_importable() -> bool:
     try:
         import readline  # NOQA
 
@@ -34,7 +37,7 @@ def readline_importable():
 class DebuggerUserInput(Mbase.DebuggerInputBase):
     """Debugger input connected to what we think of as a end-user input
     as opposed to a relay mechanism to another process. Input could be
-    interative terminal, but it might be file input."""
+    interactive terminal, but it might be file input."""
 
     def __init__(self, inp=None, opts=None):
         self.input = inp or sys.stdin

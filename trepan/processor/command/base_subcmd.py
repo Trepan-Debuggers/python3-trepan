@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020 Rocky Bernstein
+#
+#   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020, 2023 Rocky
+#   Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,9 +22,15 @@ and commands.py needs to take care to avoid instantiating this class
 and storing it as a list of known debugger commands.
 """
 
-NotImplementedMessage = "This method must be overriden in a subclass"
-import columnize, re
+import re
+
+import columnize
 from pygments.console import colorize
+
+from trepan.lib.complete import complete_token
+from trepan.processor.cmdfns import run_set_bool, run_show_bool, run_show_int
+
+NotImplementedMessage = "This method must be overridden in a subclass"
 
 
 # Note: don't end classname with Command (capital C) since cmdproc
@@ -93,7 +101,7 @@ class DebuggerSubcommand:
     # an assignment of method names like self.msg = self.debugger.intf.msg,
     # because we want to allow the interface (intf) to change
     # dynamically. That is, the value of self.debugger may change
-    # in the course of the program and if we made such an method assignemnt
+    # in the course of the program and if we made such an method assignment
     # we wouldn't pick up that change in our self.msg
     def errmsg(self, msg):
         """Convenience short-hand for self.debugger.intf[-1].errmsg"""
@@ -129,10 +137,6 @@ class DebuggerSubcommand:
         self.msg(message)
 
     pass
-
-
-from trepan.processor.cmdfns import run_set_bool, run_show_bool, run_show_int
-from trepan.lib.complete import complete_token
 
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):

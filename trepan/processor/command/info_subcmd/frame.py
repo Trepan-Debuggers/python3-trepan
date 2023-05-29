@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -90,10 +90,10 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
                     )
                     return False
                 frame = proc.stack[frame_num][0]
-            except:
+            except Exception:
                 try:
                     frame = eval(args[0], frame.f_globals, frame.f_locals)
-                except:
+                except Exception:
                     self.errmsg(
                         "%s is not a evaluable as a frame object or frame number."
                         % args[0]
@@ -107,7 +107,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         mess = (
             "Frame %d" % Mframe.frame_num(proc, frame_num)
-            if frame_num is not None
+            if frame_num is not None and proc.stack is not None
             else "Frame Info"
         )
         self.section(mess)

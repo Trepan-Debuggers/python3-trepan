@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2012-2013, 2015 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2009, 2012-2013, 2015, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,13 +15,18 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import columnize, inspect, pyficache, sys
+import inspect
+import sys
 
-# Our local modules
-from trepan.processor.command.base_subcmd import DebuggerSubcommand
+import columnize
+import pyficache
+
 from trepan import misc as Mmisc
 from trepan.lib import complete as Mcomplete
 from trepan.lib.file import file_list
+
+# Our local modules
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 
 class InfoFiles(DebuggerSubcommand):
@@ -132,7 +139,7 @@ class InfoFiles(DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2015, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,13 +17,12 @@
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
-import columnize
 
 
 class InfoSignals(Mbase_subcmd.DebuggerSubcommand):
-    """**info signals** [*signal-name*]
+    r"""**info signals** [*signal-name*]
 
-    **info signals** \*
+    **info signals** *
 
     Show information about how debugger treats signals to the program.
     Here are the boolean actions we can take:

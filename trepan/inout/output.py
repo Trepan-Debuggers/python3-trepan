@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2013, 2015, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,14 +16,15 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger output. """
 
-import io, sys
+import io
+import sys
 
 from trepan.inout.base import DebuggerInOutBase
 
 
 class DebuggerUserOutput(DebuggerInOutBase):
     """Debugger output shown directly to what we think of as end-user
-    ouptut as opposed to a relay mechanism to another process. Output
+    output as opposed to a relay mechanism to another process. Output
     could be an interactive terminal, but it might also be file output"""
 
     def __init__(self, out=None, opts=None):

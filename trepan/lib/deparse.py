@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 """Deparsing Routines"""
 
-import sys, tempfile
-from io import StringIO
+import sys
+import tempfile
 from hashlib import sha1
+from io import StringIO
+
 from xdis import PYTHON_VERSION_TRIPLE
 
 if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
     try:
+        from decompyle3.semantics.fragments import code_deparse, deparsed_find
         from decompyle3.semantics.linemap import code_deparse_with_map
-        from decompyle3.semantics.fragments import deparsed_find, code_deparse
     except ImportError:
+        from uncompyle6.semantics.fragments import code_deparse, deparsed_find
         from uncompyle6.semantics.linemap import code_deparse_with_map
-        from uncompyle6.semantics.fragments import deparsed_find, code_deparse
 else:
     from uncompyle6.semantics.linemap import code_deparse_with_map
     from uncompyle6.semantics.fragments import deparsed_find, code_deparse
@@ -31,7 +33,7 @@ def deparse_and_cache(co, errmsg_fn, tempdir=None):
     if not deparsed or not hasattr(deparsed, "source_linemap"):
         try:
             deparsed = code_deparse_with_map(co, out)
-        except:
+        except Exception:
             errmsg_fn(str(sys.exc_info()[0]))
             errmsg_fn("error in deparsing code: %s" % co.co_filename)
             return None, None
@@ -70,7 +72,7 @@ def deparse_offset(co, name, last_i, errmsg_fn):
         try:
             # FIXME: cache co
             deparsed = code_deparse(co, out)
-        except:
+        except Exception:
             print(sys.exc_info()[1])
             if errmsg_fn:
                 errmsg_fn(sys.exc_info()[1])
@@ -78,7 +80,7 @@ def deparse_offset(co, name, last_i, errmsg_fn):
         deparse_cache[co] = deparsed
     try:
         nodeInfo = deparsed_find((name, last_i), deparsed, co)
-    except:
+    except Exception:
         if errmsg_fn:
             errmsg_fn(sys.exc_info()[1])
             errmsg_fn("error in deparsing code at offset %d" % last_i)

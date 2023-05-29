@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2014-2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2009, 2014-2015, 2020, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,14 +16,14 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """classes to support communication to and from the debugger.  This
-communcation might be to/from another process or another computer.
+communication might be to/from another process or another computer.
 And reading may be from a debugger command script.
 
 For example, we'd like to support Sockets, and serial lines and file
 reading, as well a readline-type input. Encryption and Authentication
 methods might decorate some of the communication channels.
 
-Some ideas originiated as part of Matt Fleming's 2006 Google Summer of
+Some ideas originated as part of Matt Fleming's 2006 Google Summer of
 Code project.
 """
 

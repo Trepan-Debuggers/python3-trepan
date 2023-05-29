@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015, 2020 Rocky Bernstein <rocky@gnu.org>
+#
+#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023 Rocky Bernstein
+#   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,15 +15,18 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import inspect, re
+import inspect
 import os.path as osp
+import re
 
-# Our local modules
-from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from pyficache import code_line_info
+
 from trepan.clifns import search_file
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
-from pyficache import code_line_info
+
+# Our local modules
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 
 def find_function(funcname, filename):
@@ -78,7 +83,7 @@ class InfoLine(DebuggerSubcommand):
         (func, filename, lineno, condition, offset) = parse_break_cmd(
             self.proc, ["info args"]
         )
-        if filename != None and lineno != None:
+        if filename is not None and lineno is not None:
             return lineno, filename
         else:
             return None, None
@@ -109,10 +114,7 @@ class InfoLine(DebuggerSubcommand):
             pass
 
         line_info = code_line_info(filename, line_number)
-        msg1 = 'Line %d of "%s"' % (
-            line_number,
-            self.core.filename(filename),
-        )
+        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
         if line_info:
             msg2 = "starts at offset %d of %s and contains %d instructions" % (
                 line_info[0].offsets[0],
@@ -142,9 +144,9 @@ class InfoLine(DebuggerSubcommand):
 
 
 if __name__ == "__main__":
+    from trepan.debugger import Trepan
     from trepan.processor.command import mock
     from trepan.processor.command.info import InfoCommand
-    from trepan.debugger import Trepan
 
     d = Trepan()
     d, cp = mock.dbg_setup(d)

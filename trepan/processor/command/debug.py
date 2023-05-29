@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2010, 2012-2015, 2020 Rocky Bernstein
+#
+#  Copyright (C) 2010, 2012-2015, 2020, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,7 +15,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, threading
+import sys
+import threading
+
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.complete import complete_identifier
 
@@ -63,7 +66,7 @@ class DebugCommand(DebuggerCommand):
         try:
             ret = sys.call_tracing(eval, (arg, global_vars, local_vars))
             self.msg("R=> %s" % self.proc._saferepr(ret))
-        except:
+        except Exception:
             pass
         self.section("LEAVING NESTED DEBUGGER")
 
@@ -85,8 +88,9 @@ class DebugCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     import inspect
-    from trepan.processor import cmdproc as Mcmdproc
+
     from trepan import debugger
+    from trepan.processor import cmdproc as Mcmdproc
 
     d = debugger.Trepan()
     cp = d.core.processor

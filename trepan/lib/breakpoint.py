@@ -199,7 +199,7 @@ class BreakpointManager(object):
                             return (b, True)
                     # else:
                     #   continue
-                except:
+                except Exception:
                     # if eval fails, most conservative thing is to
                     # stop on breakpoint regardless of ignore count.
                     # Don't delete temporary, as another hint to user.

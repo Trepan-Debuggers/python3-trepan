@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#
+#    Copyright (C) 2009, 2013, 2015, 2020, 2023 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
-import inspect, sys
+import inspect
+import sys
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -64,7 +66,7 @@ class WhatisCommand(DebuggerCommand):
                 value = eval(arg, None, None)
             else:
                 value = eval(arg, proc.curframe.f_globals, proc.curframe.f_locals)
-        except:
+        except Exception:
             t, v = sys.exc_info()[:2]
             if type(t) == str:
                 exc_type_name = t
@@ -113,11 +115,11 @@ class WhatisCommand(DebuggerCommand):
             m = inspect.getmodule(value)
             if m:
                 self.msg("  module:\t%s" % m)
-        except:
+        except Exception:
             try:
                 f = inspect.getfile(value)
                 self.msg("  file: %s" % f)
-            except:
+            except Exception:
                 pass
             pass
         return False

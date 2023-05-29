@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2006-2010, 2013-2015 Rocky Bernstein
+#
+#   Copyright (C) 2006-2010, 2013-2015, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -73,7 +74,7 @@ class Subcmd:
         self.cmdlist.append(subcmd_name)
 
     def run(self, subcmd_name, arg):
-        """Run subcmd_name with args using obj for the environent"""
+        """Run subcmd_name with args using obj for the environment"""
         entry = self.lookup(subcmd_name)
         if entry:
             entry["callback"](arg)
@@ -109,9 +110,9 @@ List of %s subcommands:
             )
 
     def list(self):
-        l = list(self.subcmds.keys())
-        l.sort()
-        return l
+        sorted_keys = list(self.subcmds.keys())
+        sorted_keys.sort()
+        return sorted_keys
 
     def undefined_subcmd(self, cmd, subcmd):
         """Error message when a subcommand doesn't exist"""
@@ -130,8 +131,7 @@ List of %s subcommands:
 # When invoked as main program, invoke the debugger on a script
 if __name__ == "__main__":
 
-    from trepan.processor.command import mock as Mmock
-    from trepan.processor.command import base_cmd as Mbase_cmd
+    from trepan.processor.command import base_cmd as Mbase_cmd, mock as Mmock
 
     class TestCommand(Mbase_cmd.DebuggerCommand):
         """Doc string for testing"""

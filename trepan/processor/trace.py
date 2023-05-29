@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2014, 2023 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 #    02110-1301 USA.
 # 'Helper' function for Processor. Put here so we
 # can use this in a couple of processors.
-
-from tracer import EVENT2SHORT
 
 from trepan import vprocessor as Mprocessor
 

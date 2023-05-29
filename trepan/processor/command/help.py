@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015, 2020 Rocky Bernstein
+#
+#    Copyright (C) 2009, 2012-2013, 2015, 2020, 2023 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,16 +16,16 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #    02110-1301 USA.
-import glob, re
-
+import glob
 import os.path as osp
+import re
+
+from trepan import misc as Mmisc
+from trepan.lib import complete as Mcomplete
+from trepan.processor import cmdproc as Mcmdproc
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor import cmdproc as Mcmdproc
-from trepan.lib import complete as Mcomplete
-from trepan import misc as Mmisc
-
 
 categories = {
     "breakpoints": "Making the program stop at certain points",

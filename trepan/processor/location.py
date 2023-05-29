@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017, 2020 Rocky Bernstein
+#  Copyright (C) 2017, 2020, 2023 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -14,9 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import inspect, pyficache
-from trepan.lib.stack import frame2file
+import inspect
 import os.path as osp
+
+import pyficache
+
+from trepan.lib.stack import frame2file
 from trepan.processor.parse.semantics import Location
 
 INVALID_LOCATION = None
@@ -43,25 +46,25 @@ def resolve_location(proc, location):
     is_address = location.is_address
     if proc.curframe:
         g = curframe.f_globals
-        l = curframe.f_locals
+        locals_dict = curframe.f_locals
     else:
         g = globals()
-        l = locals()
+        locals_dict = locals()
         pass
     if location.method:
         # Validate arguments that can't be done in parsing
         filename = lineno = None
         msg = "Object %s is not known yet as a function, " % location.method
         try:
-            modfunc = eval(location.method, g, l)
-        except:
+            modfunc = eval(location.method, g, locals_dict)
+        except Exception:
             proc.errmsg(msg)
             return INVALID_LOCATION
 
         try:
             # Check if the converted string is a function or instance
             # method.  We don't want to test on attributes and not use
-            # `inspect.isfunction()` so that we can accomadate
+            # `inspect.isfunction()` so that we can accommodate
             # trepan-xpy() which has it's own type of compatible
             # Function, that would fail an `inspect.isfunction()`
             # test.
@@ -70,7 +73,7 @@ def resolve_location(proc, location):
             else:
                 proc.errmsg(msg)
                 return INVALID_LOCATION
-        except:
+        except Exception:
             proc.errmsg(msg)
             return INVALID_LOCATION
         filename = proc.core.canonic(modfunc.__code__.co_filename)
@@ -85,8 +88,8 @@ def resolve_location(proc, location):
         if not osp.isfile(filename):
             # See if argument is a module
             try:
-                modfunc = eval(location.path, g, l)
-            except:
+                modfunc = eval(location.path, g, locals_dict)
+            except Exception:
                 msg = (
                     "Don't see '%s' as a existing file or as an module" % location.path
                 )
@@ -165,18 +168,18 @@ def resolve_address_location(proc, location):
     is_address = True
     if proc.curframe:
         g = curframe.f_globals
-        l = curframe.f_locals
+        locals_dict = curframe.f_locals
     else:
         g = globals()
-        l = locals()
+        locals_dict = locals()
         pass
     if location.method:
         # Validate arguments that can't be done in parsing
         filename = offset = None
         msg = "Object %s is not known yet as a function, " % location.method
         try:
-            modfunc = eval(location.method, g, l)
-        except:
+            modfunc = eval(location.method, g, locals_dict)
+        except Exception:
             proc.errmsg(msg)
             return INVALID_LOCATION
 
@@ -187,7 +190,7 @@ def resolve_address_location(proc, location):
             else:
                 proc.errmsg(msg)
                 return INVALID_LOCATION
-        except:
+        except Exception:
             proc.errmsg(msg)
             return INVALID_LOCATION
         filename = proc.core.canonic(modfunc.func_code.co_filename)
@@ -203,8 +206,8 @@ def resolve_address_location(proc, location):
         if not osp.isfile(filename):
             # See if argument is a module
             try:
-                modfunc = eval(location.path, g, l)
-            except:
+                modfunc = eval(location.path, g, locals_dict)
+            except Exception:
                 msg = (
                     "Don't see '%s' as a existing file or as an module" % location.path
                 )

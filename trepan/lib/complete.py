@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -73,14 +73,14 @@ def next_token(str, start_pos):
     str.size if this is the last token. Tokens are delimited by
     white space."""
     look_at = str[start_pos:]
-    match = re.search("\S", look_at)
+    match = re.search(r"\S", look_at)
     if match:
         pos = match.start()
     else:
         pos = 0
         pass
     next_nonblank_pos = start_pos + pos
-    next_match = re.search("\s", str[next_nonblank_pos:])
+    next_match = re.search(r"\s", str[next_nonblank_pos:])
     if next_match:
         next_blank_pos = next_nonblank_pos + next_match.start()
     else:

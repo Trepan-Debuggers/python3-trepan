@@ -1,4 +1,5 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023 Rocky Bernstein
+# <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 # less elegant than having it here with reduced code, albeit there
 # still is some room for improvement.
 
+import os.path as osp
 import sys
 
 decompiler = "uncompyle6 >= 3.8.0"
@@ -42,7 +44,7 @@ else:
 # 3.4            | pip      | 19.1.1       |
 
 # Things that change more often go here.
-copyright = """Copyright (C) 2013, 2015-2021 Rocky Bernstein <rocky@gnu.org>."""
+copyright = """Copyright (C) 2013, 2015-2021, 2023 Rocky Bernstein <rocky@gnu.org>."""
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -90,10 +92,8 @@ install_requires = [
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
 modname = "trepan3k"
-py_modules = None
+py_modules = []
 short_desc = "GDB-like Python Debugger in the Trepan family"
-
-import os.path as osp
 
 
 def get_srcdir():

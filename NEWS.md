@@ -1,3 +1,19 @@
+1.2.9 2023-05-27
+================
+
+Commands that are useful in remote envionments and docker:
+
+* Add "set tempdir" to set location of TEMPDIR (useful docker)
+* Add "set/show substitute"
+
+Other changes:
+
+* Blacken, and isort, codespell, and lint many files
+* ignore ignored signal
+* specialize decompiler to decompyle for 3.7 and 3.8
+* fix incorrect tagging in install doc and update decompilation info
+* Squelch traceback on break in unparsable file
+
 1.2.8 2021-11-05
 ================
 
