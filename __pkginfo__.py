@@ -34,6 +34,8 @@ else:
     pygments_version = ">= 2.2.0"
     if (3, 7) <= SYS_VERSION < (3, 9):
         decompiler = "decompyle3 >= 3.8.0"
+    else:
+        decompiler = None
 
 
 # Python-version | package  | last-version |
@@ -87,8 +89,11 @@ install_requires = [
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
     "term-background >= 1.0.1",
-    decompiler,
 ]
+
+if decompiler is not None:
+    install_requires.append(decompiler)
+
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
 modname = "trepan3k"

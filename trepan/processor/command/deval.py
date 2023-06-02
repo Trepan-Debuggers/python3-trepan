@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2017-2018, 2020-2021 Rocky Bernstein
+#  Copyright (C) 2017-2018, 2020-2021, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,77 +16,79 @@
 
 # Our local modules
 from sys import version_info
-from xdis import IS_PYPY, PYTHON_VERSION
+
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
+
 from trepan.processor.command.base_cmd import DebuggerCommand
 
-if 3.7 <= PYTHON_VERSION <= 3.8:
-    from decompyle3.semantics.fragments import deparse_code
-    from decompyle3.semantics.fragments import deparsed_find
+if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
+    from decompyle3.semantics.fragments import deparse_code, deparsed_find
+elif PYTHON_VERSION_TRIPLE < (3, 7):
+    from uncompyle6.semantics.fragments import deparse_code, deparsed_find
+
 else:
-    from uncompyle6.semantics.fragments import deparse_code
-    from uncompyle6.semantics.fragments import deparsed_find
 
+    class DEvalCommand(DebuggerCommand):
+        """**deval**
+            **deval?**
 
-class DEvalCommand(DebuggerCommand):
-    """**deval**
-        **deval?**
+        Run a the current deparsed expression in the context of the current
+        frame. Normally we are stopped before an expression so the thing that
+        corresponds to the `eval` command is running the parent
+        construct. `deval?` will run just the command associated with the next
+        piece of code to be run.
 
-    Run a the current deparsed expression in the context of the current
-    frame. Normally we are stopped before an expression so the thing that
-    corresponds to the `eval` command is running the parent
-    construct. `deval?` will run just the command associated with the next
-    piece of code to be run.
+        Examples:
+        ---------
 
-    Examples:
-    ---------
+            deval   # Run *parent* of current deparsed code
+            deval?  # Run current deparsed code
 
-        deval   # Run *parent* of current deparsed code
-        deval?  # Run current deparsed code
+        See also:
+        ---------
 
-    See also:
-    ---------
+        `eval`
 
-    `eval`
+        """
 
-    """
+        aliases = ("deval?",)
+        short_help = "Print value of deparsed expression"
 
-    aliases = ("deval?",)
-    short_help = "Print value of deparsed expression"
+        DebuggerCommand.setup(locals(), category="data", need_stack=True, max_args=0)
 
-    DebuggerCommand.setup(locals(), category="data", need_stack=True, max_args=0)
+        def run(self, args):
+            co = self.proc.curframe.f_code
+            name = co.co_name
+            last_i = self.proc.curframe.f_lasti
+            if last_i == -1:
+                last_i = 0
 
-    def run(self, args):
-        co = self.proc.curframe.f_code
-        name = co.co_name
-        last_i = self.proc.curframe.f_lasti
-        if last_i == -1:
-            last_i = 0
-
-        sys_version = version_info[0] + (version_info[1] / 10.0)
-        try:
-            deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
-            nodeInfo = deparsed_find((name, last_i), deparsed, co)
-            if not nodeInfo:
-                self.errmsg("Can't find exact offset %d" % last_i)
+            sys_version = version_info[0] + (version_info[1] / 10.0)
+            try:
+                deparsed = deparse_code(sys_version, co, is_pypy=IS_PYPY)
+                nodeInfo = deparsed_find((name, last_i), deparsed, co)
+                if not nodeInfo:
+                    self.errmsg("Can't find exact offset %d" % last_i)
+                    return
+            except Exception:
+                self.errmsg("error in deparsing code")
                 return
-        except Exception:
-            self.errmsg("error in deparsing code")
-            return
-        if "?" == args[0][-1]:
-            extractInfo = deparsed.extract_node_info(nodeInfo.node)
-        else:
-            extractInfo, _ = deparsed.extract_parent_info(nodeInfo.node)
-        text = extractInfo.selectedText
-        text = text.strip()
-        self.msg("Evaluating: %s" % text)
-        try:
-            self.proc.exec_line(text)
-        except Exception:
-            pass
+            if "?" == args[0][-1]:
+                extractInfo = deparsed.extract_node_info(nodeInfo.node)
+            else:
+                extractInfo, _ = deparsed.extract_parent_info(nodeInfo.node)
+            text = extractInfo.selectedText
+            text = text.strip()
+            self.msg("Evaluating: %s" % text)
+            try:
+                self.proc.exec_line(text)
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
     import inspect
+
     from trepan import debugger
 
     d = debugger.Trepan()
