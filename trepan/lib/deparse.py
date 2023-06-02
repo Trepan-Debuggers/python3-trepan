@@ -6,22 +6,22 @@ import tempfile
 from hashlib import sha1
 from io import StringIO
 
+import pyficache
 from xdis import PYTHON_VERSION_TRIPLE
 
-if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
-    try:
-        from decompyle3.semantics.fragments import code_deparse, deparsed_find
-        from decompyle3.semantics.linemap import code_deparse_with_map
-    except ImportError:
+if PYTHON_VERSION_TRIPLE >= (3, 9):
+    pass
+else:
+    if (3, 7) <= PYTHON_VERSION_TRIPLE:
+        try:
+            from decompyle3.semantics.fragments import code_deparse, deparsed_find
+            from decompyle3.semantics.linemap import code_deparse_with_map
+        except ImportError:
+            from uncompyle6.semantics.fragments import code_deparse, deparsed_find
+            from uncompyle6.semantics.linemap import code_deparse_with_map
+    else:
         from uncompyle6.semantics.fragments import code_deparse, deparsed_find
         from uncompyle6.semantics.linemap import code_deparse_with_map
-elif PYTHON_VERSION_TRIPLE < (3, 7):
-    from uncompyle6.semantics.fragments import code_deparse, deparsed_find
-    from uncompyle6.semantics.linemap import code_deparse_with_map
-
-else:
-
-    import pyficache
 
     # FIXME remap filename to a short name.
 

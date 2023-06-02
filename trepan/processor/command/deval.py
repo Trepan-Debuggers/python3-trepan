@@ -21,12 +21,13 @@ from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 from trepan.processor.command.base_cmd import DebuggerCommand
 
-if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
-    from decompyle3.semantics.fragments import deparse_code, deparsed_find
-elif PYTHON_VERSION_TRIPLE < (3, 7):
-    from uncompyle6.semantics.fragments import deparse_code, deparsed_find
-
+if PYTHON_VERSION_TRIPLE >= (3, 9):
+    pass
 else:
+    if (3, 7) <= PYTHON_VERSION_TRIPLE:
+        from decompyle3.semantics.fragments import deparse_code, deparsed_find
+    else:
+        from uncompyle6.semantics.fragments import deparse_code, deparsed_find
 
     class DEvalCommand(DebuggerCommand):
         """**deval**
