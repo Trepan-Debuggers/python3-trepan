@@ -31,10 +31,20 @@ import trepan.lib.bytecode as Mbytecode
 import trepan.lib.format as Mformat
 import trepan.lib.pp as Mpp
 import trepan.lib.printing as Mprint
-from trepan.lib.deparse import deparse_offset
 from trepan.processor.cmdfns import deparse_fn
 
 format_token = Mformat.format_token
+
+try:
+    from trepan.lib.deparse import deparse_offset
+
+    have_deparser = True
+except ImportError:
+
+    def deparse_offset(code, name, list_i: int, _):
+        return None, None
+
+    have_deparser = False
 
 _with_local_varname = re.compile(r"_\[[0-9+]\]")
 
@@ -323,13 +333,16 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
             last_i = 0
         else:
             last_i = frame.f_lasti
-        deparsed, nodeInfo = deparse_offset(frame.f_code, name, last_i, None)
+
         if name == "<module>":
-            name == "module"
-        if nodeInfo:
-            extractInfo = deparsed.extract_node_info(nodeInfo)
-            intf.msg(extractInfo.selectedLine)
-            intf.msg(extractInfo.markerLine)
+            name = "module"
+
+        if have_deparser:
+            deparsed, nodeInfo = deparse_offset(frame.f_code, name, last_i, None)
+            if nodeInfo:
+                extractInfo = deparsed.extract_node_info(nodeInfo)
+                intf.msg(extractInfo.selectedLine)
+                intf.msg(extractInfo.markerLine)
         pass
     if opts.get("full", False):
         names = list(frame.f_locals.keys())
