@@ -273,6 +273,14 @@ def disassemble_bytes(
         if end_offset and offset > end_offset:
             break
 
+        # Python 3.11 introduces "CACHE" and the convention seems to be
+        # to not print these normally.
+        if instr.opname == "CACHE" and asm_format not in (
+            "extended_bytes",
+            "bytes",
+        ):
+            continue
+
         # Column: Source code line number
         if instr.starts_line:
             if offset:
