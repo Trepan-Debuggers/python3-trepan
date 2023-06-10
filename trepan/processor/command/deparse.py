@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015-2018, 2020-2021 Rocky Bernstein
+#  Copyright (C) 2015-2018, 2020-2021, 2023 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,11 @@
 
 import sys
 
+from getopt import GetoptError, getopt
+
+from pyficache import getlines, highlight_string
+
+
 if sys.version_info[:2] < (3, 9):
     if sys.version_info[:2] >= (3, 7):
         try:
@@ -25,11 +30,8 @@ if sys.version_info[:2] < (3, 9):
     else:
         from uncompyle6.semantics.fragments import code_deparse
 
-from getopt import GetoptError, getopt
+    from trepan.lib.deparse import deparse_and_cache, deparse_offset
 
-from pyficache import getlines, highlight_string
-
-from trepan.lib.deparse import deparse_and_cache, deparse_offset
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -129,7 +131,7 @@ class DeparseCommand(DebuggerCommand):
         nodeInfo = None
 
         if len(args) >= 1 and args[0] == ".":
-            temp_filename, name_for_code = deparse_and_cache(
+            temp_filename, _ = deparse_and_cache(
                 co, self.errmsg, tempdir=self.settings["tempdir"]
             )
             if not temp_filename:
