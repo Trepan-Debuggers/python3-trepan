@@ -40,10 +40,14 @@ import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
 import trepan.processor.complete as Mcomplete
 from trepan.lib.bytecode import is_class_def, is_def_stmt
-from trepan.lib.deparse import deparse_and_cache
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 from trepan.vprocessor import Processor
+
+try:
+    from trepan.lib.deparse import deparse_and_cache
+except ImportError:
+    pass
 
 warned_file_mismatches = set()
 

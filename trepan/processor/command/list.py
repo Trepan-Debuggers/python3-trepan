@@ -23,11 +23,17 @@ import pyficache
 # Our local modules
 from pygments.console import colorize
 
-from trepan.lib.deparse import deparse_cache
 from trepan.processor.cmdlist import parse_list_cmd
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
+
+try:
+    from trepan.lib.deparse import deparse_cache
+
+    have_deparse = True
+except ImportError:
+    have_deparse = False
 
 
 class ListCommand(DebuggerCommand):
@@ -89,7 +95,7 @@ class ListCommand(DebuggerCommand):
 
         # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
-        if max_line is None:
+        if max_line is None and have_deparse:
             bytecode = curframe.f_code
 
             if bytecode not in deparse_cache.keys():
