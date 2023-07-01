@@ -28,7 +28,6 @@ else:
         from decompyle3.semantics.fragments import deparse_code, deparsed_find
     else:
         from uncompyle6.semantics.fragments import deparse_code, deparsed_find
->>>>>>> master
 
     class DEvalCommand(DebuggerCommand):
         """**deval**
