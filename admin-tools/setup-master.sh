@@ -25,5 +25,6 @@ fulldir=$(readlink -f $mydir)
 cd $fulldir/..
 (cd $fulldir/.. && \
      checkout_version python-filecache
-    )
+)
+git checkout master
 cd $owd
