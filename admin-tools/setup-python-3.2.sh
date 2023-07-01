@@ -28,6 +28,7 @@ mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
      checkout_version python-spark master && \
+     checkout_version python-xdis && \
      checkout_version python-filecache python-3.1-to-3.2 && \
      checkout_version python-uncompyle6 \
     )
