@@ -24,7 +24,7 @@ fulldir=$(readlink -f $mydir)
 (cd ../python-uncompyle6 && ./admin-tools/setup-master.sh)
 cd $fulldir/..
 (cd $fulldir/.. && \
-     checkout_version python-filecache
+     checkout_version python-filecache && \
+     checkout_version python3-trepan
 )
-git checkout master
 cd $owd
