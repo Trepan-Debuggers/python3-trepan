@@ -26,7 +26,11 @@ fi
 
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
-(cd $fulldir/.. && checkout_version python-spark master && checkout_version python-uncompyle6)
+(cd $fulldir/.. && \
+     checkout_version python-spark master && \
+     checkout_version python-filecache python-3.1-to-3.2 && \
+     checkout_version python-uncompyle6 \
+    )
 cd $owd
 rm -v */.python-version || true
 
