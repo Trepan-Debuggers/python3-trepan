@@ -70,6 +70,9 @@ def format_token(ttype, token, colorscheme=color_scheme, highlight="light"):
     color = colorscheme.get(ttype)
     if color:
         color = color[dark_bg]
+        if isinstance(token, tuple):
+            # have (token, start offset)
+            token = token[0]
         return ansiformat(color, token)
         pass
     return token
