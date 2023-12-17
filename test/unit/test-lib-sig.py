@@ -20,7 +20,7 @@ class TestLibSigHandle(unittest.TestCase):
                                  ('SIGTERM', 'sigterm'),
                                  ('SIGTERM', 'TERM'),
                                  (None, '300'),
-                                 (False, 'bogus')):
+                                 (None, 'bogus')):
             self.assertEqual(expect, Msig.canonic_signame(name_num),
                              'name_num: %s' % name_num)
             pass

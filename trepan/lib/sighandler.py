@@ -27,7 +27,7 @@ from typing import Optional
 def yes_or_no(b) -> str:
     """Return 'Yes' for True and 'No' for False, and ?? for anything
     else."""
-    if type(b) != bool:
+    if not isinstance(b, bool):
         return "??"
     if b:
         return "Yes"
@@ -75,7 +75,7 @@ def canonic_signame(name_num) -> Optional[str]:
             if signame is None:
                 return None
         except Exception:
-            return False
+            return None
         return signame
 
     signame = name_num.upper()
