@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023 Rocky
-#  Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023-2024
+#  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class PythonCommand(DebuggerCommand):
 
     `ipython`, `bpython`"""
 
-    aliases = ("py", "shell")
+    aliases = ("py", "interact", "shell")
     short_help = "Run Python as a command subshell"
 
     DebuggerCommand.setup(locals(), category="data", max_args=1)
