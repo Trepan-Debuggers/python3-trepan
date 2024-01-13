@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2012-2013, 2020, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2020, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,10 @@
 
 import re
 
-import xdis
 from opcode import HAVE_ARGUMENT, opname
+from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
+
+opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
 
 
 def op_at_code_loc(code, loc):
@@ -55,8 +57,9 @@ def next_opcode(code, offset):
 
 
 def next_linestart(co, offset, count=1):
-    linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
+
+    linestarts = dict(opcode_module.findlinestarts(co))
     # n = len(code)
     # contains_cond_jump = False
     for op, offset in next_opcode(code, offset):
@@ -66,11 +69,12 @@ def next_linestart(co, offset, count=1):
                 return linestarts[offset]
             pass
         pass
+
     return -1000
 
 
 def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
-    linestarts = dict(xdis.findlinestarts(co))
+    linestarts = dict(opcode_module.findlinestarts(co))
     code = co.co_code
     found_start = False
     offset = 0
