@@ -2,7 +2,7 @@
 "Unit test for trepan.processor.command.list"
 
 import os  # NOQA
-from test.unit.cmdhelper import setup_unit_test_debugger  # NOQA
+from test.unit.cmdhelper import setup_unit_test_debugger
 
 from trepan.processor.command import list as Mlist
 
