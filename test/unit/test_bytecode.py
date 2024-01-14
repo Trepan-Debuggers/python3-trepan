@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"Unit test for trepan.bytecode"
+"Unit test for trepan.lib.bytecode"
 import inspect
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
-from trepan.lib import bytecode as Mcode
+from trepan.lib.bytecode import is_def_stmt, op_at_frame, stmt_contains_opcode
 
 
 def test_contains_make_function():
@@ -14,7 +14,7 @@ def test_contains_make_function():
     frame = inspect.currentframe()
     co = frame.f_code
     lineno = frame.f_lineno
-    assert not Mcode.stmt_contains_opcode(co, lineno, "MAKE_FUNCTION")
+    assert not stmt_contains_opcode(co, lineno, "MAKE_FUNCTION")
     return
 
 
@@ -25,12 +25,12 @@ def test_op_at_frame():
     else:
         call_opcode = "CALL_FUNCTION"
 
-    call_opcode == Mcode.op_at_frame(frame)
+    call_opcode == op_at_frame(frame)
     return
 
 
 def test_is_def_frame():
     # Not a "def" statement because frame is wrong spot
     frame = inspect.currentframe()
-    assert not Mcode.is_def_stmt("foo(): pass", frame)
+    assert not is_def_stmt("foo(): pass", frame)
     return

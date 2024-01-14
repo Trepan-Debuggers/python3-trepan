@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-"Unit test for trepan.processor.command.pr"
+"Unit test for trepan.processor.command.p"
 
-import inspect
+from test.unit.cmdhelper import setup_unit_test_debugger
 
-from trepan import debugger
 from trepan.processor.command.p import PCommand
 
 
@@ -17,12 +16,9 @@ def test_p():
 
     def msg(msg_text: str):
         msgs.append(msg_text)
+        return
 
-    return
-
-    d = debugger.Trepan()
-    cp = d.core.processor
-    cp.curframe = inspect.currentframe()
+    d, cp = setup_unit_test_debugger()
     cmd = PCommand(cp)
     cmd.msg = msg
     cmd.errmsg = errmsg

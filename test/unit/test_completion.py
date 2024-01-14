@@ -6,6 +6,9 @@ from test.unit.cmdhelper import setup_unit_test_debugger
 import pytest
 from xdis import IS_PYPY
 
+from trepan.processor import complete as mComplete
+from trepan.processor.command import base_cmd as mBaseCmd
+
 line_buffer = ""
 
 
@@ -29,9 +32,6 @@ def run_complete(dbgr, line_str: str):
 
 
 def test_complete_identifier():
-    from trepan.processor import complete as mComplete
-    from trepan.processor.command import base_cmd as mBaseCmd
-
     _, cmdproc = setup_unit_test_debugger()
     cmd = mBaseCmd.DebuggerCommand(cmdproc)
 

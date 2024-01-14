@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"Unit test for pydbgr.processor.cmdproc"
+"Unit test for trepan.processor.cmdproc"
 import os.path as osp
 import sys
 from test.unit.cmdhelper import setup_unit_test_debugger
