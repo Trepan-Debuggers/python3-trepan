@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 "Unit test for trepan.processor.command.list"
 
-import inspect
 import os  # NOQA
-import sys  # NOQA
+from test.unit.cmdhelper import setup_unit_test_debugger  # NOQA
 
-from trepan import debugger
 from trepan.processor.command import list as Mlist
 
 
@@ -63,10 +61,7 @@ def test_list_command():
         assert listsize == len(msgs) - 1
         return
 
-    d = debugger.Trepan()
-    cp = d.core.processor
-    cp.curframe = inspect.currentframe()
-    cp.list_filename = cp.curframe.f_code.co_filename
+    d, cp = setup_unit_test_debugger()
     cmd = Mlist.ListCommand(cp)
     cmd.msg = msg
     cmd.errmsg = errmsg
