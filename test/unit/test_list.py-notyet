@@ -88,21 +88,29 @@ def test_list_command():
     msgs = []
     clear_run_check(["list", "-"], list(range(1, 1 + listsize)))
 
-    # BUG Simple arithmetic expression
+    # With the roll in of a parser, we no longer support
+    # expression arithmetic
     # clear_run_check(['list', '4+1'], range(4+1, 4+1+listsize))
+    # clear_run_check(['list', __file__+':3', ',4'], list(range(3, 5)))
 
     # List first last
-    # clear_run_check(['list', '10', ',', '20'], list(range(10, 21)))
+    msgs = []
+    clear_run_check(["list", "10", ",", "20"], list(range(10, 21)))
+
     # List first count
-    # clear_run_check(['list', '10', ',',  '5'], list(range(10, 16)))
+    msgs = []
+    clear_run_check(["list", "10", ",", "5"], list(range(10, 16)))
 
     # Module
     # BUG? without '1' below the default starts with listsize+1
     msgs = []
     clear_run_check(["os.path", "1"], list(range(1, listsize + 2)))
 
-    # # Function
+    ## Function
+    # msgs = []
     # clear_run_checksize(['list', 'os.path.join()'])
+
+    # msgs = []
     # clear_run_checksize(['list', 'setUp()'])
 
     def foo():
@@ -112,14 +120,11 @@ def test_list_command():
     clear_run_checksize(["list", "foo()"])
 
     # BUG
-    # clear_run_check(['os.path:1'], range(1, listsize+1))
     # clear_run_check(['os.path', '10', ',5'], list(range(10, 16)))
     # Use a file name
 
-    # if 'APPVEYOR' not in os.environ:
-    #     clear_run_check(['list', __file__+':3', ',4'], list(range(3, 5)))
-
     # BUGS - but possibly the windowing thing is happening?
+    # msgs = []
     # clear_run_check(['list', __file__, '3'], list(range(3, 5)))
     # clear_run_check(['list', __file__, '20', '4'], list(range(20, 24)))
     # clear_run_check(['list', __file__, '3', '4'], list(range(3, 5)))
