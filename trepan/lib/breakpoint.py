@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -7,9 +7,10 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path
+from typing import Optional
 
 
-class BreakpointManager(object):
+class BreakpointManager:
     """Manages the list of Breakpoints.
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
@@ -49,12 +50,32 @@ class BreakpointManager(object):
         return (True, None, bp)
 
     def add_breakpoint(
-        self, filename, lineno, offset, temporary=False, condition=None, func=None
+        self,
+        filename: Optional[str],
+        lineno: Optional[int] = None,
+        offset: int = -1,
+        temporary: bool = False,
+        condition: Optional[str] = None,
+        func: Optional[str] = None,
     ):
-
+        """
+        Add a breakpoint in ``filename`` at line number ``lineno``.
+        If ``offset`` is given and not -1, then it we must also be at that offset in order to stop.
+        ``temporary`` specifies whether the breakpoint will be removed once it is hit.
+        `condition`` specifies that a string Python expression to be evaluated to determine
+        whether the breakpoint is hit or not.
+        """
         bpnum = len(self.bpbynumber)
         if filename:
             filename = os.path.realpath(filename)
+
+        assert (
+            isinstance(lineno, int) or func is not None
+        ), "You must either supply a function name or give a line number"
+
+        assert (
+            isinstance(filename, str) or func is not None
+        ), "You must either supply a filename or give a line number"
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, func, offset)
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
@@ -146,7 +167,7 @@ class BreakpointManager(object):
         bp.enabled = do_enable
         return (True, "")
 
-    def delete_breakpoints_by_lineno(self, filename, lineno):
+    def delete_breakpoints_by_lineno(self, filename: str, lineno: int):
         """Removes all breakpoints at a give filename and line number.
         Returns a list of breakpoints numbers deleted.
         """
@@ -247,7 +268,6 @@ class Breakpoint:
         funcname=None,
         offset=None,
     ):
-
         self.offset = offset
         self.condition = condition
         self.enabled = True
