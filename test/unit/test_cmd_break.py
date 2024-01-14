@@ -39,7 +39,6 @@ def test_cmd_break():
     cp.setup()
 
     # WARNING: magic number after f_lineno is fragile on the number of tests!
-    # FIXME: can reduce by using .format() before test?
     break_lineno = cp.frame.f_lineno + 7
     for expect, cmd in (
         ((None, osp.basename(__file__), break_lineno, None), "break"),

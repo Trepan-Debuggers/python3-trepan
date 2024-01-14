@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-"Unit test for debugger command completion"
+"""Unit test for debugger command completion"""
 
 from test.unit.cmdhelper import setup_unit_test_debugger
 
 import pytest
 from xdis import IS_PYPY
 
-from trepan.processor import complete as mComplete
-from trepan.processor.command import base_cmd as mBaseCmd
+from trepan.processor import complete as module_complete
+from trepan.processor.command import base_cmd as module_base_command
 
 line_buffer = ""
 
@@ -33,10 +33,10 @@ def run_complete(dbgr, line_str: str):
 
 def test_complete_identifier():
     _, cmdproc = setup_unit_test_debugger()
-    cmd = mBaseCmd.DebuggerCommand(cmdproc)
+    cmd = module_base_command.DebuggerCommand(cmdproc)
 
-    assert mComplete.complete_id_and_builtins(cmd, "ma") == ["map", "max"]
-    assert mComplete.complete_identifier(cmd, "m") == ["mBaseCmd", "mComplete"]
+    assert module_complete.complete_id_and_builtins(cmd, "ma") == ["map", "max"]
+    assert module_complete.complete_identifier(cmd, "m") == ["module_base_command", "module_complete"]
 
 
 @pytest.mark.skipif(IS_PYPY, reason="Does not work with PyPy")
