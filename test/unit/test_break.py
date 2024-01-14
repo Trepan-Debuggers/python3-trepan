@@ -50,7 +50,7 @@ def test_parse_break_cmd():
 
         fn, fi, li, cond, offset = parse_break_cmd(proc, brk_cmd)
 
-    assert (None, True, 8) == (fn, isinstance(fi, str), li)
+    assert ("<module>", True, 8) == (fn, isinstance(fi, str), li)
 
     def foo():
         return "bar"

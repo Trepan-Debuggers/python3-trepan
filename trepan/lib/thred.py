@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2014, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2014, 2020, 2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +20,7 @@ import threading
 
 
 def current_thread_name():
-    return threading.currentThread().getName()
+    return threading.current_thread().name
 
 
 def find_debugged_frame(frame):
@@ -48,7 +49,7 @@ def find_debugged_frame(frame):
 
 
 def id2thread_name(thread_id):
-    return threading.Thread.getName(threading._active[thread_id])
+    return threading._active[thread_id].name
 
 
 def map_thread_names():
@@ -56,7 +57,7 @@ def map_thread_names():
     name2id = {}
     for thread_id in list(threading._active.keys()):
         thread = threading._active[thread_id]
-        name = thread.getName()
+        name = thread.name
         if name not in list(name2id.keys()):
             name2id[name] = thread_id
             pass
