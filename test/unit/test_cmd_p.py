@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"Unit test for trepan.processor.command.p"
+"""Unit test for trepan.processor.command.p"""
 
 from test.unit.cmdhelper import setup_unit_test_debugger
 

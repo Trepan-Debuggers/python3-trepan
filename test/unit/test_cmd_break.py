@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"Unit test for trepan.processor.cmdproc"
+"""Unit test for trepan.processor.cmdproc.break"""
+import inspect
 import os.path as osp
-import sys
 from test.unit.cmdhelper import setup_unit_test_debugger
 
 from trepan.processor.cmdbreak import parse_break_cmd
@@ -18,21 +18,8 @@ def canonic_tuple(t):
     return t
 
 
-def test_cmdbreakpoint():
-    errors = []
-    msgs = []
-
-    def errmsg(msg_str: str):
-        errors.append(msg_str)
-        return
-
-    def msg(msg: str):
-        msgs.append(msg)
-        return
-
+def test_cmd_break():
     d, cp = setup_unit_test_debugger()
-    cp.frame = sys._getframe()
-    cp.setup()
     for expect, cmd in (
         ((None, None, None), "break '''c:\\tmp\\foo.bat''':1"),
         ((None, None, None), 'break """/Users/My Documents/foo.py""":2'),
@@ -48,7 +35,7 @@ def test_cmdbreakpoint():
         assert expect == tuple(got[: len(expect)]), cmd
         # print(got)
 
-    cp.frame = sys._getframe()
+    cp.frame = inspect.currentframe()
     cp.setup()
 
     # WARNING: magic number after f_lineno is fragile on the number of tests!
