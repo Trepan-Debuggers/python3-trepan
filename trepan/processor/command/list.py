@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2017, 2020-2021, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2017, 2020-2021, 2023-2024
+#  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -63,10 +64,9 @@ class ListCommand(DebuggerCommand):
         list foo()           # List starting from function foo
         list os.path:5       # List starting from line 5 of module os.path
         list os.path:5, 6    # list lines 5 and 6 of os.path
-        list os.path:5, +1   # Same as above. +1 is an offset
+        list os.path:5, +1   #  Same as above. +1 is an offset
         list os.path:5, 1    # Same as above, since 1 < 5.
         list os.path:5, +6   # list lines 5-11
-        list os.path.join()  # List lines centered around the os.join.path function.
         list .               # List lines centered from where we currently are stopped
         list -               # List lines previous to those just shown
         list                 # List continuing from where we last left off
@@ -95,16 +95,19 @@ class ListCommand(DebuggerCommand):
 
         # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
-        if max_line is None and have_deparse:
-            bytecode = curframe.f_code
+        if max_line is None:
+            if have_deparse:
+                bytecode = curframe.f_code
 
-            if bytecode not in deparse_cache.keys():
-                self.errmsg(
-                    'No file %s found; using "deparse" command instead to show source'
-                    % filename
-                )
-            proc.commands["deparse"].run(["deparse"])
-            return
+                if bytecode not in deparse_cache.keys():
+                    self.errmsg(
+                        'No file %s found; using "deparse" command instead to show source'
+                        % filename
+                    )
+                proc.commands["deparse"].run(["deparse"])
+                return
+            else:
+                return
 
         canonic_filename = osp.realpath(osp.normcase(filename))
 

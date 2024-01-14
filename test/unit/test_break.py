@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
-"Unit test for trepan.processor.command.break"
+"""Unit test for trepan.processor.command.break"""
 
 import os
 import platform
 from test.unit.cmdhelper import setup_unit_test_debugger
 
-from trepan.processor import cmdbreak as Mcmdbreak
+from trepan.processor.cmdbreak import parse_break_cmd
 
-Mbreak = __import__("trepan.processor.command.break", None, None, ["*"])
+# We have to use this subterfuge because "break" is Python reserved word,
+# so it can't be used as a module-name component.
+# Python "import" irregularities strike again!
+break_module = __import__("trepan.processor.command.break", None, None, ["*"])
 
 
-def parse_break_cmd(proc, cmd):
+def parse_break_cmd_wrapper(proc, cmd):
     proc.current_command = cmd
     args = cmd.split(" ")
-    return Mcmdbreak.parse_break_cmd(proc, args)
+    return parse_break_cmd(proc, args)
 
 
 def test_parse_break_cmd():
     errors = []
     msgs = []
 
-    def errmsg(msg):
-        errors.append(msg)
+    def errmsg(msg_str: str):
+        errors.append(msg_str)
         return
 
     def msg(msg_str: str):
@@ -29,18 +32,18 @@ def test_parse_break_cmd():
         return
 
     d, cp = setup_unit_test_debugger()
-    cmd = Mbreak.BreakCommand(cp)
+    cmd = break_module.BreakCommand(cp)
     cmd.msg = msg
     cmd.errmsg = errmsg
     proc = cmd.proc
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "break")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break")
     assert fi.endswith("test_break.py")
     assert (None, None, True, True) == (fn, cond, li > 1, offset > 0)
 
     assert fi.endswith("test_break.py")
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "break 11")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break 11")
     assert (None, None, 11, None) == (fn, cond, li, offset)
 
     if platform.system() == "Windows":
@@ -48,32 +51,32 @@ def test_parse_break_cmd():
     else:
         brk_cmd = "b %s:8" % __file__
 
-        fn, fi, li, cond, offset = parse_break_cmd(proc, brk_cmd)
+        fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
 
     assert ("<module>", True, 8) == (fn, isinstance(fi, str), li)
 
     def foo():
         return "bar"
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "break foo()")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break foo()")
     assert (foo, True, True) == (fn, fi.endswith("test_break.py"), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "break food()")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break food()")
     assert (None, None, None, None) == (fn, fi, li, cond)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "b os.path:5")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path:5")
     assert (os.path, True, 5) == (fn, isinstance(fi, str), li)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "b os.path.join()")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path.join()")
     assert (os.path.join, True, True) == (fn, isinstance(fi, str), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "break if True")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break if True")
     assert (None, True, True) == (fn, fi.endswith("test_break.py"), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "b foo() if True")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b foo() if True")
     assert (foo, True, True) == (fn, fi.endswith("test_break.py"), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd(proc, "br os.path:10 if True")
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "br os.path:10 if True")
     assert (True, 10) == (isinstance(fi, str), li)
 
     # FIXME:

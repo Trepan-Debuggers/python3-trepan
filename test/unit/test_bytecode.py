@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"Unit test for trepan.lib.bytecode"
+"""Unit test for trepan.lib.bytecode"""
 import inspect
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
@@ -8,9 +8,6 @@ from trepan.lib.bytecode import is_def_stmt, op_at_frame, stmt_contains_opcode
 
 
 def test_contains_make_function():
-    def sqr(x):
-        return x * x
-
     frame = inspect.currentframe()
     co = frame.f_code
     lineno = frame.f_lineno
@@ -21,11 +18,14 @@ def test_contains_make_function():
 def test_op_at_frame():
     frame = inspect.currentframe()
     if IS_PYPY or PYTHON_VERSION_TRIPLE >= (3, 7):
-        call_opcode = "CALL_METHOD"
+        if PYTHON_VERSION_TRIPLE >= (3, 12):
+            call_opcode = "CACHE"
+        else:
+            call_opcode = "CALL_METHOD"
     else:
         call_opcode = "CALL_FUNCTION"
 
-    call_opcode == op_at_frame(frame)
+    assert call_opcode == op_at_frame(frame)
     return
 
 
