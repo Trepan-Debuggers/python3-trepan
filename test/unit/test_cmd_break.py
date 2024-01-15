@@ -1,55 +1,89 @@
 #!/usr/bin/env python3
-"""Unit test for trepan.processor.cmdproc.break"""
-import inspect
-import os.path as osp
+"""Unit test for trepan.processor.command.break"""
+
+import os
+import platform
 from test.unit.cmdhelper import setup_unit_test_debugger
 
 from trepan.processor.cmdbreak import parse_break_cmd
 
-
-def canonic_tuple(t):
-    fname = t[1]
-    if fname:
-        if fname.endswith(".pyc"):
-            fname = fname[:-1]
-        got = list(t)
-        got[1] = osp.basename(fname)
-        t = tuple(got)
-    return t
+# We have to use this subterfuge because "break" is Python reserved word,
+# so it can't be used as a module-name component.
+# Python "import" irregularities strike again!
+break_module = __import__("trepan.processor.command.break", None, None, ["*"])
 
 
-def test_cmd_break():
+def parse_break_cmd_wrapper(proc, cmd):
+    proc.current_command = cmd
+    args = cmd.split(" ")
+    return parse_break_cmd(proc, args)
+
+
+def test_parse_break_cmd():
+    errors = []
+    msgs = []
+
+    def errmsg(msg_str: str):
+        errors.append(msg_str)
+        return
+
+    def msg(msg_str: str):
+        msgs.append(msg_str)
+        return
+
     d, cp = setup_unit_test_debugger()
-    for expect, cmd in (
-        ((None, None, None), "break '''c:\\tmp\\foo.bat''':1"),
-        ((None, None, None), 'break """/Users/My Documents/foo.py""":2'),
-        (("<module>", osp.basename(__file__), 10), "break 10"),
-        ((None, None, None), "break cmdproc.py:5"),
-        ((None, None, None), "break set_break()"),
-        (("<module>", osp.basename(__file__), 4, "i==5"), "break 4 if i==5"),
-        ((None, None, None), "break cmdproc.setup()"),
-    ):
-        args = cmd.split(" ")
-        cp.current_command = cmd
-        got = canonic_tuple(parse_break_cmd(cp, args))
-        assert expect == tuple(got[: len(expect)]), cmd
-        # print(got)
+    cmd = break_module.BreakCommand(cp)
+    cmd.msg = msg
+    cmd.errmsg = errmsg
+    proc = cmd.proc
 
-    cp.frame = inspect.currentframe()
-    cp.setup()
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break")
+    assert fi.endswith("test_cmd_break.py")
+    assert (None, None, True, True) == (fn, cond, li > 1, offset > 0)
 
-    # WARNING: magic number after f_lineno is fragile on the number of tests!
-    break_lineno = cp.frame.f_lineno + 7
-    for expect, cmd in (
-        ((None, osp.basename(__file__), break_lineno, None), "break"),
-        ((None, osp.basename(__file__), break_lineno, "True"), "break if True"),
-    ):
-        args = cmd.split(" ")
-        cp.current_command = cmd
-        got = canonic_tuple(parse_break_cmd(cp, args))
-        print(parse_break_cmd(cp, args))
-        assert expect == got[: len(expect)], cmd
+    assert fi.endswith(__file__)
 
-    print(break_lineno)
-    pass
-    return
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break 11")
+    assert (None, None, 11, None) == (fn, cond, li, offset)
+
+    if platform.system() == "Windows":
+        brk_cmd = f'b ""\"{__file__}""\":8'
+    else:
+        brk_cmd = f"b {__file__}:8"
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
+
+    assert ("<module>", True, 8) == (fn, isinstance(fi, str), li)
+
+    def foo():
+        return "bar"
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break foo()")
+    assert (foo, True, True) == (fn, fi.endswith(__file__), li > 1)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break food()")
+    assert (None, None, None, None) == (fn, fi, li, cond)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path:5")
+    assert (os.path, True, 5) == (fn, isinstance(fi, str), li)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path.join()")
+    assert (os.path.join, True, True) == (fn, isinstance(fi, str), li > 1)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break if True")
+    assert (None, True, True) == (fn, fi.endswith(__file__), li > 1)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b foo() if True")
+    assert (foo, True, True) == (fn, fi.endswith(__file__), li > 1)
+
+    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "br os.path:10 if True")
+    assert (True, 10) == (isinstance(fi, str), li)
+
+    # FIXME:
+    # Try:
+    #  a breakpoint with a symlink in the filename.
+    #  breakpoint with a single quotes and embedded black
+    #  breakpoint with a double quotes and embedded \,
+    #  Triple quote things
+    #
+    # Also, add a unit test for canonic.

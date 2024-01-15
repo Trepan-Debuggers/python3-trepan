@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015-2017, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015-2017, 2023-2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -90,7 +91,7 @@ def parse_position(errmsg, arg):
         filename = arg[:colon].rstrip()
         m, f = lookupmodule(filename)
         if not f:
-            errmsg("'%s' not found using sys.path" % filename)
+            errmsg(f"'{filename}' not found using sys.path")
             return (None, None, None)
         else:
             filename = pyficache.resolve_name_to_path(f)
@@ -109,15 +110,15 @@ def parse_position(errmsg, arg):
 if __name__ == "__main__":
     import tempfile
 
-    print('readable("fdafsa"): %s' % readable("fdafdsa"))
+    print(f"readable(\"fdafsa\"): {readable('fdafdsa')}")
     for mode, can_read in [(stat.S_IRUSR, True), (stat.S_IWUSR, False)]:
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
-        print("readable('%s'): %s" % (f.name, readable(f.name)))
+        print(f"readable('{f.name}'): {readable(f.name)}")
         f.close()
         pass
-    print("lookupmodule('os.path'): %s" % repr(lookupmodule("os.path")))
-    print("lookupmodule(__file__): %s" % repr(lookupmodule(__file__)))
-    print("lookupmodule('fafdsadsa'): %s" % repr(lookupmodule("fafdsafdsa")))
+    print(f"lookupmodule('os.path'): {repr(lookupmodule('os.path'))}")
+    print(f"lookupmodule(__file__): {repr(lookupmodule(__file__))}")
+    print(f"lookupmodule('fafdsadsa'): {repr(lookupmodule('fafdsafdsa'))}")
 
     pass

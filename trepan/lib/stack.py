@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-#   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020-2021, 2023
-#   Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020-2021,
+#   2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -22,15 +22,16 @@ import linecache
 import os
 import os.path as osp
 import re
+from typing import Optional
 
 import xdis
 from xdis import IS_PYPY, get_opcode
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
-import trepan.lib.bytecode as Mbytecode
 import trepan.lib.format as Mformat
 import trepan.lib.pp as Mpp
 import trepan.lib.printing as Mprint
+from trepan.lib.bytecode import op_at_frame
 from trepan.processor.cmdfns import deparse_fn
 
 format_token = Mformat.format_token
@@ -46,11 +47,11 @@ except ImportError:
 
     have_deparser = False
 
-_with_local_varname = re.compile(r"_\[[0-9+]\]")
+_with_local_varname = re.compile(r"_\[[0-9+]]")
 
 
 def count_frames(frame, count_start=0):
-    "Return a count of the number of frames"
+    """Return a count of the number of frames"""
     count = -count_start
     while frame:
         count += 1
@@ -66,9 +67,9 @@ _re_pseudo_file = re.compile(r"^<.+>")
 # Taken from 3.7 inspect.py. However instead of an object name, we
 # start with the filename. Also, oddly getsourcefile wasn't
 # stripping out __pycache__. Finally, we've adapted this
-# so it works back to 3.0.
+# so that it works back to 3.0.
 #
-def getsourcefile(filename):
+def getsourcefile(filename: str) -> Optional[str]:
     """Return the filename that can be used to locate an object's source.
     Return None if no way can be identified to get the source.
     """
@@ -101,7 +102,7 @@ def deparse_source_from_code(code):
                 break
         if len(source_lines) > 1:
             source_text += "..."
-        source_text = '"%s"' % source_text
+        source_text = f'"{source_text}"'
     except Exception:
         pass
     return source_text
@@ -125,7 +126,11 @@ def format_stack_entry(
     s = format_token(Mformat.Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
-    if "<module>" == funcname and ([], None, None,) == (
+    if "<module>" == funcname and (
+        [],
+        None,
+        None,
+    ) == (
         args,
         varargs,
         varkw,
@@ -157,7 +162,7 @@ def format_stack_entry(
         else:
             maxargstrsize = dbg_obj.settings["maxargstrsize"]
             if len(parms) >= maxargstrsize:
-                parms = "%s...)" % parms[0:maxargstrsize]
+                parms = f"{parms[0:maxargstrsize]}...)"
                 pass
             s += parms
         pass
@@ -199,7 +204,7 @@ def format_stack_entry(
             pass
 
         if add_quotes_around_file:
-            filename = "'%s'" % filename
+            filename = f"'{filename}'"
         s += " %s at line %s" % (
             format_token(Mformat.Filename, filename, highlight=color),
             format_token(Mformat.LineNumber, "%r" % lineno, highlight=color),
@@ -267,11 +272,11 @@ opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 def get_call_function_name(frame):
     """If f_back is looking at a call function, return
-    the name for it. Otherwise return None"""
+    the name for it. Otherwise, return None"""
     f_back = frame.f_back
     if not f_back:
         return None
-    if "CALL_FUNCTION" != Mbytecode.op_at_frame(f_back):
+    if "CALL_FUNCTION" != op_at_frame(f_back):
         return None
 
     co = f_back.f_code
@@ -338,11 +343,11 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
             name = "module"
 
         if have_deparser:
-            deparsed, nodeInfo = deparse_offset(frame.f_code, name, last_i, None)
-            if nodeInfo:
-                extractInfo = deparsed.extract_node_info(nodeInfo)
-                intf.msg(extractInfo.selectedLine)
-                intf.msg(extractInfo.markerLine)
+            deparsed, node_info = deparse_offset(frame.f_code, name, last_i, None)
+            if node_info:
+                extract_info = deparsed.extract_node_info(node_info)
+                intf.msg(extract_info.selectedLine)
+                intf.msg(extract_info.markerLine)
         pass
     if opts.get("full", False):
         names = list(frame.f_locals.keys())
@@ -353,16 +358,16 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
                 val = proc_obj.getval(name, frame.f_locals)
                 pass
             width = opts.get("width", 80)
-            Mpp.pp(val, width, intf.msg_nocr, intf.msg, prefix="%s =" % name)
+            Mpp.pp(val, width, intf.msg_nocr, intf.msg, prefix=f"{name} =")
             pass
 
-        deparsed, nodeInfo = deparse_offset(frame.f_code, name, frame.f_lasti, None)
+        deparsed, node_info = deparse_offset(frame.f_code, name, frame.f_lasti, None)
         if name == "<module>":
-            name == "module"
-        if nodeInfo:
-            extractInfo = deparsed.extract_node_info(nodeInfo)
-            intf.msg(extractInfo.selectedLine)
-            intf.msg(extractInfo.markerLine)
+            name = "module"
+        if node_info:
+            extract_info = deparsed.extract_node_info(node_info)
+            intf.msg(extract_info.selectedLine)
+            intf.msg(extract_info.markerLine)
         pass
 
 
@@ -386,12 +391,12 @@ def print_dict(s, obj, title):
         if isinstance(d, dict):
             keys = list(d.keys())
             if len(keys) == 0:
-                s += "\n  No %s" % title
+                s += f"\n  No {title}"
             else:
-                s += "\n  %s:\n" % title
+                s += f"\n  {title}:\n"
             keys.sort()
             for key in keys:
-                s += "    '%s':\t%s\n" % (key, d[key])
+                s += f"    '{key}':\t{d[key]}\n"
                 pass
             pass
         pass
@@ -421,9 +426,9 @@ def print_obj(arg, val, format=None, short=False):
         what = format + " " + arg
         val = Mprint.printf(val, format)
         pass
-    s = "%s = %s" % (what, val)
+    s = f"{what} = {val}"
     if not short:
-        s += "\n  type = %s" % type(val)
+        s += f"\n  type = {type(val)}"
         # Try to list the members of a class.
         # Not sure if this is correct or the
         # best way to do.
@@ -468,9 +473,9 @@ if __name__ == "__main__":
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))
-    # print("def statement: x=5?: %s" % repr(Mbytecode.is_def_stmt("x=5", frame)))
+    # print("def statement: x=5?: %s" % repr(is_def_stmt("x=5", frame)))
     # # Not a "def" statement because frame is wrong spot
-    # print(Mbytecode.is_def_stmt("def foo():", frame))
+    # print(is_def_stmt("def foo():", frame))
 
     # def sqr(x):
     #     x * x

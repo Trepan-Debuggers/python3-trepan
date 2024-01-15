@@ -24,20 +24,20 @@ def print_dict(s, obj, title):
         obj = obj.__dict__
         pass
     if isinstance(obj, dict):
-        s += "\n%s:\n" % title
+        s += f"\n{title}:\n"
         keys = list(obj.keys())
         keys.sort()
         for key in keys:
-            s += "  %s:\t%s\n" % (repr(key), obj[key])
+            s += f"  {repr(key)}:\t{obj[key]}\n"
             pass
         pass
     return s
 
 
-def print_argspec(obj, obj_name):
+def print_argspec(obj, obj_name: str):
     """A slightly decorated version of inspect.format_argspec"""
     try:
-        return obj_name + inspect.formatargspec(*inspect.getargspec(obj))
+        return f"{obj_name}{inspect.formatargspec(*inspect.getargspec(obj))}"
     except Exception:
         return None
     return  # Not reached
@@ -60,9 +60,9 @@ def print_obj(arg, frame, format=None, short=False):
     if format:
         what = format + " " + arg
         obj = printf(obj, format)
-    s = "%s = %s" % (what, obj)
+    s = f"{what} = {obj}"
     if not short:
-        s += "\ntype = %s" % type(obj)
+        s += f"\ntype = {type(obj)}"
         if callable(obj):
             argspec = print_argspec(obj, arg)
             if argspec:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015-2016, 2020-2021 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015-2016, 2020-2021, 2024
+#  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,7 +34,7 @@ def truncate_length(obj, length=MAX_PP_COUNT):
     """
     if isinstance(obj, dict):
         new_obj = dict((k[:length], v) for k, v in sorted(obj.items()))
-        # We hope zzz will be appear at the end of the sorted list.
+        # We hope zzz will appear at the end of the sorted list.
         new_obj.update({"zzz...": "..."})
         return new_obj
     elif hasattr(obj, "__getitem__"):
@@ -125,6 +126,6 @@ if __name__ == "__main__":
     x = [i for i in range(30)]
     ll = locals().keys()
     for k in sorted(ll):
-        pp(eval(k), 80, msg_nocr, msg, prefix="%s =" % k)
+        pp(eval(k), 80, msg_nocr, msg, prefix=f"{k} =")
         pass
     pass
