@@ -96,7 +96,7 @@ def test_list_command():
 
     # Function
     msgs = []
-    clear_run_checksize(['list', 'test_list_command()'])
+    clear_run_checksize(["list", "test_list_command()"])
 
     def foo():  # NOQA
         pass
@@ -110,20 +110,20 @@ def test_list_command():
     # my_file = os.path.realpath(__file__)
 
     msgs = []
-    clear_run_check(['list', f"{__file__}:3, 2"], list(range(3, 3+2+1)))
+    clear_run_check(["list", f"{__file__}:3, 2"], list(range(3, 3 + 2 + 1)))
 
     msgs = []
-    clear_run_check(['list', f"{__file__}:3, 2"], list(range(3, 3+2+1)))
+    clear_run_check(["list", f"{__file__}:3, 2"], list(range(3, 3 + 2 + 1)))
 
     msgs = []
     # 4 < 20, so "4" is a length
-    clear_run_check(['list', f"{__file__}:20,", '4'], list(range(20, 20+4+1)))
+    clear_run_check(["list", f"{__file__}:20,", "4"], list(range(20, 20 + 4 + 1)))
 
     # 4 > 3, so "4" is a last line number
     msgs = []
-    clear_run_check(['list', f"{__file__}:3 ,", '4'], list(range(3, 4+1)))
+    clear_run_check(["list", f"{__file__}:3 ,", "4"], list(range(3, 4 + 1)))
 
     msgs = []
     # Explicit length
-    clear_run_check(['list', f"{__file__}:3 ,", '+4'], list(range(3, 3+4+1)))
+    clear_run_check(["list", f"{__file__}:3 ,", "+4"], list(range(3, 3 + 4 + 1)))
     return

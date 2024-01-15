@@ -13,6 +13,16 @@ from trepan.processor.command import mock
 dbg_setup = mock.dbg_setup
 
 
+def errmsg(msg_str: str):
+    errors.append(msg_str)
+    return
+
+
+def msg(msg_str: str):
+    msg.append(msg_str)
+    return
+
+
 def setup_unit_test_debugger(
     input_string: str = "", debugger_name: str = "trepan3k-unit-pytest"
 ) -> tuple:

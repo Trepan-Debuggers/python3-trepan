@@ -1,5 +1,6 @@
 """Unit test for trepan.processor.cmdproc"""
 
+import inspect
 from test.unit.cmdhelper import setup_unit_test_debugger
 
 from trepan.processor.cmdproc import arg_split, resolve_name
@@ -113,4 +114,38 @@ def test_preloop_hooks():
     assert cp.remove_preloop_hook(fn)
     assert 0 == len(cp.preloop_hooks), "Should be back to no preloop hooks"
     # FIXME try adding and running a couple of hooks.
+    return
+
+
+def test_populate_commands():
+    """Test that we are creating instances for all of classes of files
+    in the command directory ."""
+    _, cp = setup_unit_test_debugger()
+    for i in cp.cmd_instances:
+        if hasattr(i, "aliases"):
+            assert isinstance(i.aliases, tuple), f"not tuple {repr(i.aliases)}."
+
+            assert [] == [
+                item for item in i.aliases if str != type(item)
+            ], f"elements of tuple should be strings {repr(i.aliases)}"
+            pass
+        pass
+    return
+
+
+def test_get_commands_aliases():
+    """Test that the command processor finds a command, alias, and method"""
+    _, cp = setup_unit_test_debugger()
+    assert "quit" in list(cp.commands.keys())
+    assert "quit" == cp.aliases["q"]
+    assert inspect.ismethod(cp.commands["quit"].run)
+    return
+
+
+def test_resolve_name():
+    """Test that the command processor finds a command, alias, and method"""
+
+    _, cp = setup_unit_test_debugger()
+    assert resolve_name(cp, "quit")
+    assert resolve_name(cp, "q")
     return

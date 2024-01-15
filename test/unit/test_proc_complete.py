@@ -36,7 +36,10 @@ def test_complete_identifier():
     cmd = module_base_command.DebuggerCommand(cmdproc)
 
     assert module_complete.complete_id_and_builtins(cmd, "ma") == ["map", "max"]
-    assert module_complete.complete_identifier(cmd, "m") == ["module_base_command", "module_complete"]
+    assert module_complete.complete_identifier(cmd, "m") == [
+        "module_base_command",
+        "module_complete",
+    ]
 
 
 @pytest.mark.skipif(IS_PYPY, reason="Does not work with PyPy")
