@@ -22,7 +22,7 @@ def test_run():
             command.run([cmd])
 
     # Now try with  "no" prompt using run!
-    def confirm_no(prompt, default) -> bool:
+    def confirm_no(_, default) -> bool:
         return False
 
     command.confirm = confirm_no
