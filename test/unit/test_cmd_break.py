@@ -31,7 +31,7 @@ def test_parse_break_cmd():
         msgs.append(msg_str)
         return
 
-    d, cp = setup_unit_test_debugger()
+    _, cp = setup_unit_test_debugger()
     cmd = break_module.BreakCommand(cp)
     cmd.msg = msg
     cmd.errmsg = errmsg
@@ -47,7 +47,7 @@ def test_parse_break_cmd():
     assert (None, None, 11, None) == (fn, cond, li, offset)
 
     if platform.system() == "Windows":
-        brk_cmd = f'b ""\"{__file__}""\":8'
+        brk_cmd = f'b """{__file__}""":8'
     else:
         brk_cmd = f"b {__file__}:8"
 

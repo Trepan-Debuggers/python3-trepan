@@ -95,7 +95,7 @@ class UserInterface(TrepanInterface):
             pass
         return
 
-    def confirm(self, prompt, default):
+    def confirm(self, prompt: str, default: bool) -> bool:
         """Called when a dangerous action is about to be done, to make
         sure it's okay. Expect a yes/no answer to `prompt' which is printed,
         suffixed with a question mark and the default value.  The user

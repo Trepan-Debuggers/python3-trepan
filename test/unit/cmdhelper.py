@@ -38,3 +38,11 @@ def setup_unit_test_debugger(
     cp.curframe = inspect.currentframe().f_back
     cp.list_filename = cp.curframe.f_code.co_filename
     return d, cp
+
+
+def readline_yes(prompt=None) -> str:
+    return "Y"
+
+
+def readline_no(prompt=None) -> str:
+    return "N"
