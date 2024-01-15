@@ -22,19 +22,25 @@ import linecache
 import os
 import os.path as osp
 import re
+from reprlib import repr
 from typing import Optional
 
 import xdis
 from xdis import IS_PYPY, get_opcode
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
-import trepan.lib.format as Mformat
-import trepan.lib.pp as Mpp
-import trepan.lib.printing as Mprint
 from trepan.lib.bytecode import op_at_frame
+from trepan.lib.format import (
+    Arrow,
+    Filename,
+    Function,
+    LineNumber,
+    Return,
+    format_token,
+)
+from trepan.lib.pp import pp
+from trepan.lib.printing import printf
 from trepan.processor.cmdfns import deparse_fn
-
-format_token = Mformat.format_token
 
 try:
     from trepan.lib.deparse import deparse_offset
@@ -42,7 +48,7 @@ try:
     have_deparser = True
 except ImportError:
 
-    def deparse_offset(code, name, list_i: int, _):
+    def deparse_offset(code, name: str, list_i: int, _) -> tuple:
         return None, None
 
     have_deparser = False
@@ -58,8 +64,6 @@ def count_frames(frame, count_start=0):
         frame = frame.f_back
     return count
 
-
-import reprlib as Mrepr
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
@@ -123,7 +127,7 @@ def format_stack_entry(
     else:
         funcname = "<lambda>"
         pass
-    s = format_token(Mformat.Function, funcname, highlight=color)
+    s = format_token(Function, funcname, highlight=color)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
     if "<module>" == funcname and (
@@ -137,21 +141,15 @@ def format_stack_entry(
     ):
         is_module = True
         if is_exec_stmt(frame):
-            fn_name = format_token(Mformat.Function, "exec", highlight=color)
+            fn_name = format_token(Function, "exec", highlight=color)
             source_text = deparse_source_from_code(frame.f_code)
-            s += " %s(%s)" % (
-                format_token(Mformat.Function, fn_name, highlight=color),
-                source_text,
-            )
+            s += f" {format_token(Function, fn_name, highlight=color)}({source_text})"
         else:
             fn_name = get_call_function_name(frame)
             if fn_name:
                 source_text = deparse_source_from_code(frame.f_code)
                 if fn_name:
-                    s += " %s(%s)" % (
-                        format_token(Mformat.Function, fn_name, highlight=color),
-                        source_text,
-                    )
+                    s += f" {format_token(Function, fn_name, highlight=color)}({source_text})"
             pass
     else:
         is_module = False
@@ -175,7 +173,7 @@ def format_stack_entry(
     if "__return__" in frame.f_locals:
         rv = frame.f_locals["__return__"]
         s += "->"
-        s += format_token(Mformat.Return, Mrepr.repr(rv), highlight=color)
+        s += format_token(Return, repr(rv), highlight=color)
         pass
 
     if include_location:
@@ -206,8 +204,8 @@ def format_stack_entry(
         if add_quotes_around_file:
             filename = f"'{filename}'"
         s += " %s at line %s" % (
-            format_token(Mformat.Filename, filename, highlight=color),
-            format_token(Mformat.LineNumber, "%r" % lineno, highlight=color),
+            format_token(Filename, filename, highlight=color),
+            format_token(LineNumber, "%r" % lineno, highlight=color),
         )
     return s
 
@@ -319,7 +317,7 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
     frame, lineno = frame_lineno
     intf = proc_obj.intf[-1]
     if frame is proc_obj.curframe:
-        intf.msg_nocr(format_token(Mformat.Arrow, "->", highlight=color))
+        intf.msg_nocr(format_token(Arrow, "->", highlight=color))
     else:
         intf.msg_nocr("##")
     intf.msg(
@@ -358,7 +356,7 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
                 val = proc_obj.getval(name, frame.f_locals)
                 pass
             width = opts.get("width", 80)
-            Mpp.pp(val, width, intf.msg_nocr, intf.msg, prefix=f"{name} =")
+            pp(val, width, intf.msg_nocr, intf.msg, prefix=f"{name} =")
             pass
 
         deparsed, node_info = deparse_offset(frame.f_code, name, frame.f_lasti, None)
@@ -424,7 +422,7 @@ def print_obj(arg, val, format=None, short=False):
     what = arg
     if format:
         what = format + " " + arg
-        val = Mprint.printf(val, format)
+        val = printf(val, format)
         pass
     s = f"{what} = {val}"
     if not short:

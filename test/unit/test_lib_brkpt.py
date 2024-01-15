@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"Unit test for the debugger lib breakpoint"
+"""Unit test for the debugger lib breakpoint"""
 
 import inspect
 import os
@@ -9,7 +9,7 @@ from trepan.lib.breakpoint import BreakpointManager, checkfuncname
 
 
 def test_breakpoint():
-    "Test breakpoint"
+    """Test breakpoint"""
     bpmgr = BreakpointManager()
     assert 0 == bpmgr.last()
     bp = bpmgr.add_breakpoint("foo", 10, 5)
@@ -50,23 +50,23 @@ def test_breakpoint():
 
 
 def test_checkfuncname():
-    "Test breakpoint.checkfuncname()"
+    """Test breakpoint.checkfuncname()"""
 
     bpmgr = BreakpointManager()
     frame = inspect.currentframe()
     bp = bpmgr.add_breakpoint("test_funcname", frame.f_lineno + 1, -1)
     assert checkfuncname(bp, frame)
 
-    def foo(bp, bpmgr):
-        frame = inspect.currentframe()
-        assert checkfuncname(bp, frame)
-        # frame.f_lineno is constantly updated. So adjust for line
+    def foo(brkpt, bpmgr):
+        current_frame = inspect.currentframe()
+        assert checkfuncname(brkpt, current_frame)
+        # current_frame.f_lineno is constantly updated. So adjust for line
         # the difference between the add_breakpoint and the check.
         bp3 = bpmgr.add_breakpoint(
-            os.path.realpath(__file__), frame.f_lineno + 2, -1, False, None
+            os.path.realpath(__file__), current_frame.f_lineno + 2, -1, False, None
         )
-        assert checkfuncname(bp3, frame), str(bp3)
-        assert not checkfuncname(bp3, frame)
+        assert checkfuncname(bp3, current_frame), str(bp3)
+        assert not checkfuncname(bp3, current_frame)
         return
 
     bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, "foo")

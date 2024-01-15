@@ -84,7 +84,7 @@ def test_info_files():
         sub.settings["width"] = width
         i = 0
 
-        # Try running with all non-compount options.
+        # Try running with all non-compound options.
         # Accumulate all messages to compare with option "all"
         all_msgs = []
         first_msg_length = 0
@@ -107,7 +107,7 @@ def test_info_files():
                 all_msgs += msgs
                 first_msg_length = len(msgs)
             else:
-                all_msgs += msgs[first_msg_length - 1 :]
+                all_msgs += msgs[first_msg_length - 1:]
             i += 1
             pass
 

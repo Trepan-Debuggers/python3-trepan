@@ -1,4 +1,4 @@
-"Unit test for trepan.processor.command.step"
+"""Unit test for trepan.processor.command.step"""
 
 
 from test.unit.cmdhelper import setup_unit_test_debugger

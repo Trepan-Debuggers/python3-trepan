@@ -22,9 +22,6 @@ def test_confirm():
     user_input.use_history = no_history
     u = UserInterface(inp=user_input, opts={"debugger_name": "trepan-pytest"})
 
-    def readlinelno_history():
-        return False
-
     for s in ["y", "Y", "Yes", "  YES  "]:
 
         def readline_with_prompt(prompt=None):
