@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
 """Unit test for trepan.processor.command.break"""
 
 import os
 import platform
-from test.unit.cmdhelper import setup_unit_test_debugger
+from test.unit.cmdhelper import errmsg, msg, reset_output, setup_unit_test_debugger
+
+from xdis import PYTHON_VERSION_TRIPLE
 
 from trepan.processor.cmdbreak import parse_break_cmd
 
@@ -20,16 +21,7 @@ def parse_break_cmd_wrapper(proc, cmd):
 
 
 def test_parse_break_cmd():
-    errors = []
-    msgs = []
-
-    def errmsg(msg_str: str):
-        errors.append(msg_str)
-        return
-
-    def msg(msg_str: str):
-        msgs.append(msg_str)
-        return
+    reset_output()
 
     _, cp = setup_unit_test_debugger()
     cmd = break_module.BreakCommand(cp)
@@ -53,7 +45,8 @@ def test_parse_break_cmd():
 
     fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
 
-    assert ("<module>", True, 8) == (fn, isinstance(fi, str), li)
+    assert (True, 8) == (isinstance(fi, str), li)
+    assert "<module>" == fn
 
     def foo():
         return "bar"

@@ -4,6 +4,7 @@ trepan.processor.command.mock """
 
 import inspect
 from io import StringIO
+from typing import List
 
 from trepan import debugger
 from trepan.inout.input import DebuggerUserInput
@@ -12,15 +13,38 @@ from trepan.processor.command import mock
 
 dbg_setup = mock.dbg_setup
 
+errmsgs: List[str] = []
+
 
 def errmsg(msg_str: str):
-    errors.append(msg_str)
+    """
+    error message collection routine for unit testing.
+    """
+    global errmsgs
+    errmsgs.append(msg_str)
     return
+
+
+msgs: List[str] = []
 
 
 def msg(msg_str: str):
-    msg.append(msg_str)
+    """
+    message collection routine for unit testing.
+    """
+    global msgs
+    msgs.append(msg_str)
     return
+
+
+def reset_output():
+    """
+    Reset error messages and messages in advance of testing.
+    """
+    global errmsgs
+    errmsgs = []
+    global msgs
+    msgs = []
 
 
 def setup_unit_test_debugger(
