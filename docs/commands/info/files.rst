@@ -4,7 +4,7 @@
 Info Files
 ----------
 
-**info files** [ *filename* [ **all** | **brkpts** | **lines** | **sha1** | **size** ]]
+**info files** [ *filename* [ **all** | **brkpts** | **sha1** | **size** ]]
 
 Show information about the current file. If no filename is given and
 the program is running then the current file associated with the

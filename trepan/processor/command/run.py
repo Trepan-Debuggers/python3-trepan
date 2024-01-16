@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,9 +14,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.exception import DebuggerRestart
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.exception import DebuggerRestart
 
 
 class RunCommand(DebuggerCommand):
@@ -32,13 +33,19 @@ class RunCommand(DebuggerCommand):
 
     See `quit`, `exit` or `kill` for termination commands."""
 
-    aliases = ("R",)
+    aliases = ("R", "restart!")
     short_help = "(Soft) restart program via a DebuggerRestart exception"
 
     DebuggerCommand.setup(locals(), category="support", max_args=0)
 
     def run(self, args):
-        confirmed = self.confirm("Soft restart", False)
+        confirmed = False
+        if len(args) <= 1:
+            if "!" != args[0][-1]:
+                confirmed = self.confirm("Soft restart", False)
+            else:
+                confirmed = True
+            pass
         if confirmed:
             self.core.step_ignore = 0
             self.core.step_events = None

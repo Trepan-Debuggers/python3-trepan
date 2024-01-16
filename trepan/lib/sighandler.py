@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2016, 2022, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2014, 2016, 2022, 2023-2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,7 +14,9 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """Signal handlers."""
+
 # TODO:
 #  - Doublecheck handle_pass and other routines.
 #  - can remove signal handler altogether when
@@ -57,8 +60,7 @@ def lookup_signum(name):
         uname = "SIG" + uname
         if hasattr(signal, uname):
             return getattr(signal, uname)
-        return None
-    return  # noqa
+    return None
 
 
 def canonic_signame(name_num) -> Optional[str]:
@@ -260,7 +262,7 @@ class SignalManager:
         signame = lookup_signame(signum)
         if signame is None:
             self.dbgr.intf[-1].errmsg(
-                "%s is not a signal number I know about." % signum
+                f"{signum} is not a signal number I know about."
             )
             return False
         # Since the intent is to set a handler, we should pass this
@@ -523,7 +525,7 @@ class SigHandler:
     def handle(self, signum, frame):
         """This method is called when a signal is received."""
         if self.print_method:
-            self.print_method("\nProgram received signal %s." % self.signame)
+            self.print_method(f"\nProgram received signal {self.signame}.")
         if self.print_stack:
             import traceback
 
@@ -560,7 +562,7 @@ if __name__ == "__main__":
         True,
         False,
     ):
-        print("yes_or_no of %s is %s" % (repr(b), yes_or_no(b)))
+        print(f"yes_or_no of {repr(b)} is {yes_or_no(b)}")
         pass
     for signum in range(signal.NSIG):
         signame = lookup_signame(signum)
@@ -579,11 +581,11 @@ if __name__ == "__main__":
         pass
 
     for i in ("term", "TERM", "NotThere"):
-        print("lookup_signum(%s): %s" % (i, repr(lookup_signum(i))))
+        print(f"lookup_signum({i}): {repr(lookup_signum(i))}")
         pass
 
     for i in ("15", "-15", "term", "sigterm", "TERM", "300", "bogus"):
-        print("canonic_signame(%s): %s" % (i, canonic_signame(i)))
+        print(f"canonic_signame({i}): {canonic_signame(i)}")
         pass
 
     from trepan import debugger as Mdebugger

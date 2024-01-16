@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2009-2010, 2013-2015,
-#   2017-2018, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
+#   2017-2018, 2020, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
     the debugged program."""
 import atexit
 import os.path as osp
+
+from trepan.inout.input import DebuggerUserInput
+from trepan.inout.output import DebuggerUserOutput
 
 # Our local modules
 from trepan.interface import TrepanInterface
@@ -51,12 +54,10 @@ class UserInterface(TrepanInterface):
         user_opts = DEFAULT_USER_SETTINGS.copy()
         user_opts.update(opts)
 
-        from trepan.inout import input as Minput, output as Moutput
-
         atexit.register(self.finalize)
         self.interactive = True  # Or at least so we think initially
-        self.input = inp or Minput.DebuggerUserInput()
-        self.output = out or Moutput.DebuggerUserOutput()
+        self.input = inp or DebuggerUserInput()
+        self.output = out or DebuggerUserOutput()
         self.debugger_name = user_opts.get("debugger_name", "trepan3k")
 
         if self.input.use_history():
@@ -94,7 +95,7 @@ class UserInterface(TrepanInterface):
             pass
         return
 
-    def confirm(self, prompt, default):
+    def confirm(self, prompt: str, default: bool) -> bool:
         """Called when a dangerous action is about to be done, to make
         sure it's okay. Expect a yes/no answer to `prompt' which is printed,
         suffixed with a question mark and the default value.  The user

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#   Copyright (C) 2013, 2015, 2017, 2019, 2020, 2023
+#   Copyright (C) 2013, 2015, 2017, 2019, 2020, 2023-2024
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -126,7 +126,7 @@ class RstFilter(Filter):
                 # That is remove:
                 # Header
                 # ------ <- remove this line
-                if last_was_heading_title and re.match(r"^(?:[=]|[-])+$", value):
+                if last_was_heading_title and re.match(r'^(?:=|-)+$', value):
                     value = ""
                     last_was_heading_title = ""
                 else:
@@ -330,10 +330,10 @@ class MonoRSTTerminalFormatter(RSTTerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
             if ttype is Token.Name.Variable:
-                text = '"%s"' % text
+                text = f'"{text}"'
                 pass
             elif ttype is Token.Generic.Emph:
-                text = "*%s*" % text
+                text = f"*{text}*"
                 pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
@@ -349,11 +349,10 @@ class MonoTerminalFormatter(TerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
             if ttype is Token.Name.Variable:
-                text = '"%s"' % text
+                text = f'"{text}"'
                 pass
             elif ttype is Token.Generic.Emph:
-                type
-                text = "*%s*" % text
+                text = f"*{text}*"
                 pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()

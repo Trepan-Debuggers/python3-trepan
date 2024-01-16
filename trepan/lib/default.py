@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2017, 2020-2021, 2023 Rocky
-#   Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015, 2017, 2020-2021, 2023-2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ width = computed_displaywidth()
 # change, in contrast to settings that the debugger decides to set in
 # the course of operation. For example, the maximum print width
 # (width) is user settable, whereas whether the debugging program is
-# running (execution_status), or traceback frame isn't user settable
-# so it doesn't appear below.  Some settings like the current frame
+# running (execution_status), or traceback frame isn't user settable.
+# Therefore, it doesn't appear below.  Some settings like the current frame
 # (curframe) or the number of steps to skip before entering a command
 # processor (step_ignore) are shared between the two.  They also don't
 # generally appear as settings.
@@ -98,7 +98,7 @@ DEBUGGER_SETTINGS = {
     # tracing. See tracer.ALL_EVENT_NAMES and ALL_EVENTS. This only
     # has an effect if trace is set True.
     "printset": tracer.ALL_EVENTS,
-    # If this is set True, debugger startup file, e.g. .trepanrc will
+    # If this is set True, debugger startup file, e.g. ".trepanrc" will
     # not be read/run.
     "nostartup": False,
     # Reread source file if we determine it has changed?
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     import pprint
 
     for val in ["DEBUGGER_SETTINGS", "START_OPTS", "STOP_OPTS"]:
-        print("%s:" % val)
+        print(f"{val}:")
         print(pprint.pformat(eval(val)))
         print("-" * 10)
         pass

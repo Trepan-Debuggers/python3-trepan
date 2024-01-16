@@ -13,12 +13,13 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import threading
 import ctypes
+import threading
+
+from trepan.exception import DebuggerQuit
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.exception import DebuggerQuit
 
 
 def ctype_async_raise(thread_obj, exception):
@@ -90,7 +91,7 @@ class QuitCommand(DebuggerCommand):
     def threaded_quit(self, arg):
         """quit command when several threads are involved."""
         threading_list = threading.enumerate()
-        mythread = threading.currentThread()
+        mythread = threading.current_thread()
         for t in threading_list:
             if t != mythread:
                 ctype_async_raise(t, DebuggerQuit)
@@ -110,7 +111,7 @@ class QuitCommand(DebuggerCommand):
             threading_list = threading.enumerate()
             if (
                 len(threading_list) == 1 or self.debugger.from_ipython
-            ) and threading_list[0].getName() == "MainThread":
+            ) and threading_list[0].name == "MainThread":
                 # We are in a main thread and either there is one thread or
                 # we or are in ipython, so that's safe to quit.
                 return self.nothread_quit(args)

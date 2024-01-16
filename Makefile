@@ -35,7 +35,7 @@ check: test-unit test-integration # flake8
 
 #: Run unit (white-box) tests
 test-unit:
-	$(PYTHON) ./setup.py nosetests
+	$(PYTHON) -m pytest test/unit/test_*.py && $(PYTHON) ./setup.py nosetests
 
 #: Run unit (white-box) tests
 test-unit-short:
