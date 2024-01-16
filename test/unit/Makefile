@@ -4,7 +4,7 @@ PHONY=all check check-short test-unit test-unit-short
 
 #: Run unit tests reduced verbosity
 test check:
-	$(PYTHON) -m pytest test_*.py
+	$(PYTHON) -m pytest lib processor test_*.py
 
 #: Remove derived files
 clean:
