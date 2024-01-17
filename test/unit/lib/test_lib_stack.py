@@ -1,4 +1,4 @@
-"""Unit test for trepan.frame"""
+"""Unit test for "trepan.frame" """
 import inspect
 
 from trepan.lib.stack import count_frames
@@ -16,7 +16,7 @@ def test_count_frames():
 # FIXME fix up is_exec_stmt() ?
 # def test_stack_misc():
 #     f = inspect.currentframe()
-#     # self.assertEqual('SkipTest', Mstack.get_call_function_name(f))
+#     # assert "test_stack_misc" == get_call_function_name(f))
 #     assert not is_exec_stmt(f)
 #     result = False
 #     exec("result = is_exec_stmt(inspect.currentframe())")

@@ -12,9 +12,9 @@ from trepan.lib.thred import (
 
 
 class BgThread(threading.Thread):
-    def __init__(self, id_name_checker):
+    def __init__(self, name_checker):
         threading.Thread.__init__(self)
-        self.id_name_checker = id_name_checker
+        self.id_name_checker = name_checker
         return
 
     def run(self):
@@ -40,7 +40,7 @@ def test_current_thread_name():
 
 
 def test_id2thread_name():
-    """Test map_thread_names and id2thread"""
+    """Test ``map_thread_names`` and ``id2thread``. """
     thread_id = _thread.get_ident()
     assert "MainThread" == id2thread_name(thread_id)
     id_name_checker()
