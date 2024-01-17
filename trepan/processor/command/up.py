@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ from trepan.processor.frame import adjust_relative, frame_complete
 
 
 class UpCommand(DebuggerCommand):
-
     signum = -1  # This is what distinguishes us from "down"
 
     DebuggerCommand.setup(locals(), category="stack", need_stack=True, max_args=1)
@@ -48,28 +47,30 @@ class UpCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor import cmdproc as Mcmdproc
-    from trepan import debugger as Mdebugger
+    from trepan.debugger import Trepan
+    from trepan.processor.cmdproc import get_stack
 
-    d = Mdebugger.Trepan()
+    d = Trepan()
     cp = d.core.processor
     command = UpCommand(cp)
     command.run(["up"])
 
-    def nest_me(cp, command, i):
+    def nest_me(command_proc, my_command, i):
         import inspect
 
         if i > 1:
-            cp.curframe = inspect.currentframe()
-            cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None, cp)
-            command.run(["up"])
+            command_proc.curframe = inspect.currentframe()
+            command_proc.stack, command_proc.curindex = get_stack(
+                command_proc.curframe, None, None, command_proc
+            )
+            my_command.run(["up"])
             print("-" * 10)
-            command.run(["up", "-2"])
+            my_command.run(["up", "-1"])
             print("-" * 10)
-            command.run(["up", "-3"])
+            my_command.run(["up", "-3"])
             print("-" * 10)
         else:
-            nest_me(cp, command, i + 1)
+            nest_me(command_proc, my_command, i + 1)
         return
 
     cp.forget()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 
 
 class UndisplayCommand(DebuggerCommand):
@@ -39,7 +39,7 @@ class UndisplayCommand(DebuggerCommand):
 
     def complete(self, prefix):
         completions = [str(disp.number) for disp in self.proc.display_mgr.list]
-        return Mcomplete.complete_token(completions, prefix)
+        return complete_token(completions, prefix)
 
     def run(self, args):
 
@@ -60,15 +60,15 @@ class UndisplayCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
-    from trepan import debugger as Mdebugger
-    from trepan.processor import cmdproc as Mcmdproc
+    from trepan.debugger import Trepan
+    from trepan.processor.cmdproc import get_stack
     import inspect
 
-    d = Mdebugger.Trepan()
+    d = Trepan()
     cp = d.core.processor
     command = UndisplayCommand(d.core.processor)
     cp.curframe = inspect.currentframe()
-    cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None, cp)
+    cp.stack, cp.curindex = get_stack(cp.curframe, None, None, cp)
     command.run(["undisplay", "z"])
     command.run(["undisplay", "1", "10"])
     pass
