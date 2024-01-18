@@ -211,7 +211,8 @@ def debug(
     `dbg_opts' is an optional "options" dictionary that gets fed
     trepan.Debugger(); `start_opts' are the optional "options"
     dictionary that gets fed to trepan.Debugger.core.start()."""
-    if not isinstance(debugger_obj, Trepan):
+    global debugger_obj
+    if debugger_obj is None:
         debugger_obj = Trepan(dbg_opts)
         debugger_obj.core.add_ignore(debug, stop)
         pass
