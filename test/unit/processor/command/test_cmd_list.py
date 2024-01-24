@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Unit test for trepan.processor.command.list"""
 
 import os  # NOQA
