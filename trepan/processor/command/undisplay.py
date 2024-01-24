@@ -14,8 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.lib.complete import complete_token
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
 class UndisplayCommand(DebuggerCommand):
@@ -42,7 +42,6 @@ class UndisplayCommand(DebuggerCommand):
         return complete_token(completions, prefix)
 
     def run(self, args):
-
         if len(args) == 1:
             self.proc.display_mgr.clear()
             return
@@ -60,15 +59,21 @@ class UndisplayCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
+    import inspect
+
     from trepan.debugger import Trepan
     from trepan.processor.cmdproc import get_stack
-    import inspect
 
     d = Trepan()
     cp = d.core.processor
-    command = UndisplayCommand(d.core.processor)
-    cp.curframe = inspect.currentframe()
-    cp.stack, cp.curindex = get_stack(cp.curframe, None, None, cp)
-    command.run(["undisplay", "z"])
-    command.run(["undisplay", "1", "10"])
+    if cp is not None:
+        command = UndisplayCommand(d.core.processor)
+        cp.curframe = inspect.currentframe()
+        if cp.curframe is None:
+            print("Can't get current frame - no demo done")
+        else:
+            cp.stack, cp.curindex = get_stack(cp.curframe, None, None, cp)
+            command.run(["undisplay", "z"])
+            command.run(["undisplay", "1", "10"])
+        pass
     pass

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#    Copyright (C) 2009, 2012-2013, 2015, 2020, 2023 Rocky Bernstein
+#    Copyright (C) 2009, 2012-2013, 2015, 2020, 2023-2024
+#    Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,8 +21,8 @@ import glob
 import os.path as osp
 import re
 
-from trepan import misc as Mmisc
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token, complete_token_filtered
+from trepan.misc import wrapped_lines
 from trepan.processor import cmdproc as Mcmdproc
 
 # Our local modules
@@ -77,11 +78,11 @@ class HelpCommand(DebuggerCommand):
 
     def complete(self, prefix):
         proc_obj = self.proc
-        matches = Mcomplete.complete_token(
+        matches = complete_token(
             list(categories.keys()) + ["*", "all"] + list(proc_obj.commands.keys()),
             prefix,
         )
-        aliases = Mcomplete.complete_token_filtered(proc_obj.aliases, prefix, matches)
+        aliases = complete_token_filtered(proc_obj.aliases, prefix, matches)
         return sorted(matches + aliases)
 
     def run(self, args):
@@ -126,7 +127,7 @@ class HelpCommand(DebuggerCommand):
                     ]
                     if len(aliases) > 0:
                         self.msg("")
-                        msg = Mmisc.wrapped_lines(
+                        msg = wrapped_lines(
                             "Aliases:", ", ".join(aliases) + ".", self.settings["width"]
                         )
                         self.msg(msg)
@@ -140,20 +141,14 @@ class HelpCommand(DebuggerCommand):
                 ]
                 if cmds is None:
                     self.errmsg(
-                        "No commands found matching /^%s/. " 'Try "help".' % cmd_name
+                        f'No commands found matching /^{cmd_name}/. Try "help".'
                     )
                 elif len(cmds) == 1:
-                    self.msg(
-                        "Pattern '%s' matches command %s..."
-                        % (
-                            cmd_name,
-                            cmds[0],
-                        )
-                    )
+                    self.msg(f"Pattern '{cmd_name}' matches command {cmds[0]}...")
                     args[1] = cmds[0]
                     self.run(args)
                 else:
-                    self.section("Command names matching /^%s/:" % cmd_name)
+                    self.section(f"Command names matching /^{cmd_name}/:")
                     self.msg_nocr(self.columnize_commands(cmds))
                     pass
             return
@@ -190,13 +185,13 @@ Type `help` followed by command name for full documentation.
         n2cmd = self.proc.commands
         names = list(n2cmd.keys())
         if len(args) == 1 and args[0] == "*":
-            self.section("Commands in class %s:" % category)
+            self.section(f"Commands in class {category}:")
             cmds = [cmd for cmd in names if category == n2cmd[cmd].category]
             cmds.sort()
             self.msg_nocr(self.columnize_commands(cmds))
             return
 
-        self.msg("%s.\n" % categories[category])
+        self.msg(f"{categories[category]}.\n")
         self.section("List of commands:")
         names.sort()
         for name in names:  # Foo! iteritems() doesn't do sorting
@@ -213,7 +208,7 @@ Type `help` followed by command name for full documentation.
         return
 
     def syntax_files(self):
-        path = osp.join(self.HELP_DIR, ("*%s" % self.RST_EXTENSION))
+        path = osp.join(self.HELP_DIR, (f"*{self.RST_EXTENSION}"))
         files = glob.glob(path)
         return [osp.basename(name).split(".")[0] for name in files]
 
@@ -231,7 +226,7 @@ Type `help` followed by command name for full documentation.
         self.syntax_summary_help = {}
         self.syntax_help = {}
         for name in self.syntax_files():
-            path = osp.join(self.HELP_DIR, "%s%s" % (name, self.RST_EXTENSION))
+            path = osp.join(self.HELP_DIR, f"{name}{self.RST_EXTENSION}")
             self.syntax_help[name] = "".join(open(path).readlines())
             self.syntax_summary_help[name] = open(path).readline().strip()
             pass
@@ -251,7 +246,7 @@ Type `help` followed by command name for full documentation.
                 if name in self.syntax_files():
                     self.rst_msg(self.syntax_help[name])
                 else:
-                    self.errmsg("No syntax help for %s" % name)
+                    self.errmsg(f"No syntax help for {name}")
                 pass
             pass
         return
@@ -260,23 +255,26 @@ Type `help` followed by command name for full documentation.
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock
+    # Demo it.
+    from trepan import debugger
 
-    d, cp = mock.dbg_setup()
+    d = debugger.Trepan()
+    cp = d.core.processor
+
     command = HelpCommand(cp)
-    # print('-' * 20)
-    # command.run(['help'])
-    # print('-' * 20)
-    # command.run(['help', '*'])
-    # print('-' * 20)
-    # command.run(['help', 'quit'])
+    print("-" * 20)
+    command.run(["help"])
+    print("-" * 20)
+    command.run(["help", "*"])
+    print("-" * 20)
+    command.run(["help", "quit"])
     # print('-' * 20)
     # command.run(['help', 'stack'])
     # print('-' * 20)
     # command.run(['help', 'breakpoints'])
-    # print('-' * 20)
-    # command.run(['help', 'breakpoints', '*'])
-    # print('-' * 20)
+    print("-" * 20)
+    command.run(["help", "breakpoints", "*"])
+    print("-" * 20)
     # command.run(['help', 'c.*'])
     # print('-' * 20)
     command.show_command_syntax(["help", "syntax"])

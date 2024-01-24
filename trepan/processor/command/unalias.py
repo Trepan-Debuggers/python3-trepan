@@ -1,4 +1,4 @@
-#  Copyright (C) 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.complete import complete_token
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.complete import complete_token
 
 
 class UnaliasCommand(DebuggerCommand):
@@ -41,9 +42,9 @@ class UnaliasCommand(DebuggerCommand):
         for arg in args[1:]:
             if arg in self.proc.aliases:
                 del self.proc.aliases[arg]
-                self.msg("Alias for %s removed." % arg)
+                self.msg(f"Alias for {arg} removed.")
             else:
-                self.msg("No alias found for %s" % arg)
+                self.msg(f"No alias found for {arg}")
                 pass
             pass
         return
