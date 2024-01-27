@@ -20,6 +20,8 @@ import os.path as osp
 import sys
 from optparse import OptionParser
 
+from pygments.styles import STYLE_MAP
+
 import trepan.api
 from trepan.api import debugger_on_post_mortem
 from trepan.clifns import path_expanduser_abs
@@ -380,10 +382,16 @@ def postprocess_options(dbg, opts):
     else:
         dbg.settings["highlight"] = "plain"
 
+    dbg.settings["style"] = None
     if getattr(opts, "style") and opts.style != "none":
-        dbg.settings["style"] = opts.style
-    else:
-        dbg.settings["style"] = None
+        style_names = sorted(list(STYLE_MAP.keys()))
+        if opts.style in style_names:
+            dbg.settings["style"] = opts.style
+        else:
+            sys.stderr.write(
+                f"""Pygments style "{opts.style}" listed. --style option ignored.\n"""
+                f"""Use 'set style" to see valid style and change style.\n"""
+            )
 
     # Normally we want to set trepan.api.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
