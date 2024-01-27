@@ -16,6 +16,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pprint
+from typing import Callable
+
 from columnize import columnize
 
 # Maximum length of strings
@@ -44,18 +46,21 @@ def truncate_length(obj, length=MAX_PP_COUNT):
 
 class SafePP(pprint.PrettyPrinter):
     def _format(self, obj, *args, **kwargs):
-        if isinstance(obj, str):
-            if len(obj) > MAX_PP_STRLEN:
-                obj = obj[:MAX_PP_STRLEN] + "..."
+        try:
+            if isinstance(obj, str):
+                if len(obj) > MAX_PP_STRLEN:
+                    obj = obj[:MAX_PP_STRLEN] + "..."
+                    pass
                 pass
+            elif hasattr(obj, "__len__") and len(obj) > MAX_PP_COUNT:
+                obj = truncate_length(obj)
+        except Exception:
             pass
-        elif hasattr(obj, "__len__") and len(obj) > MAX_PP_COUNT:
-            obj = truncate_length(obj)
 
         return pprint.PrettyPrinter._format(self, obj, *args, **kwargs)
 
 
-def pp(val, display_width, msg_nocr, msg, prefix=None):
+def pp(val, display_width, msg_nocr: Callable, msg: Callable, prefix=None):
     if prefix is not None:
         val_len = len(repr(val))
         if val_len + len(prefix) < display_width - 1:
@@ -77,7 +82,9 @@ def pp(val, display_width, msg_nocr, msg, prefix=None):
 
 # Actually... code like this should go in pformat.
 # Possibly some will go into columnize.
-def pprint_simple_array(val, displaywidth, msg_nocr, msg, lineprefix=""):
+def pprint_simple_array(
+    val, displaywidth, msg_nocr: Callable, msg: Callable, lineprefix=""
+) -> bool:
     """Try to pretty print a simple case where a list is not nested.
     Return True if we can do it and False if not."""
 
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     def msg(m):
         print(m)
 
-    pprint_simple_array(range(50), 50, msg_nocr, msg)
+    assert pprint_simple_array(range(50), 50, msg_nocr, msg) is False
     pp([i for i in range(10)], 50, msg_nocr, msg)
     pp(locals(), 50, msg_nocr, msg)
     x = [i for i in range(10)]
