@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2015, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,12 +16,16 @@
 
 import codecs
 import os
+import os.path as osp
 import sys
 from optparse import OptionParser
+from typing import List
 
-from trepan import api as Mapi, clifns as Mclifns, debugger as Mdebugger
+import trepan.api
+from trepan.api import debugger_on_post_mortem
+from trepan.clifns import path_expanduser_abs
 from trepan.inout import output as Moutput
-from trepan.lib import file as Mfile
+from trepan.lib.file import readable
 
 
 def default_configfile(base_filename):
@@ -30,12 +33,12 @@ def default_configfile(base_filename):
     base_filename. python2 and  python3 debuggers share the same
     directory: ~/.config/trepan.py
     """
-    file_dir = os.path.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
-    file_dir = Mclifns.path_expanduser_abs(file_dir)
+    file_dir = osp.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
+    file_dir = path_expanduser_abs(file_dir)
 
-    if not os.path.isdir(file_dir):
+    if not osp.isdir(file_dir):
         os.makedirs(file_dir, mode=0o755)
-    return os.path.join(file_dir, base_filename)
+    return osp.join(file_dir, base_filename)
 
 
 def add_startup_file(dbg_initfiles):
@@ -44,35 +47,41 @@ def add_startup_file(dbg_initfiles):
 
     startup_python_file = default_configfile("profile.py")
 
-    if Mfile.readable(startup_python_file):
+    if readable(startup_python_file):
         with codecs.open(startup_python_file, "r", encoding="utf8") as fp:
             exec(fp.read())
 
     startup_trepan_file = default_configfile("profile")
-    if Mfile.readable(startup_trepan_file):
+    if readable(startup_trepan_file):
         if startup_trepan_file not in dbg_initfiles:
             dbg_initfiles.append(startup_trepan_file)
         pass
     return
 
 
-def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
+def process_options(debugger_name, pkg_version, sys_argv: List[str], option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
     another main program and want to extend the existing set of debugger
     options.
 
+      Note that ``sys.argv`` must contain at least one element, the program name.
+
     The options dictionary from optparser is returned. sys_argv is
     also updated."""
+
     usage_str = """%prog [debugger-options] [python-script [script-options...]]
 
     Runs the extended python debugger"""
 
+    assert (
+        len(sys_argv) > 0
+    ), "sys_argv parameter must contain at least one string, the program name."
     # serverChoices = ('TCP','FIFO', None)
 
     optparser = OptionParser(
         usage=usage_str,
         option_list=option_list,
-        version="%%prog version %s" % pkg_version,
+        version=f"%prog version {pkg_version}",
     )
 
     optparser.add_option(
@@ -254,12 +263,15 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         help="Out-of-process server connection mode",
     )
 
-    # optparser.add_option("--style", dest="style",
-    #                      action="store", type='string',
-    #                      metavar='*pygments-style*',
-    #                      default=None,
-    #                      help=("Pygments style; 'none' "
-    #                            "uses 8-color rather than 256-color terminal"))
+    optparser.add_option(
+        "--style",
+        dest="style",
+        action="store",
+        type="string",
+        metavar="*pygments-style*",
+        default=None,
+        help=("Pygments style; 'none' " "uses 8-color rather than 256-color terminal"),
+    )
 
     optparser.add_option(
         "--sigcheck",
@@ -310,9 +322,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
-    # FIXME: why does this mess up integration tests?
-    # (opts, sys.argv) = optparser.parse_args(sys_argv)
-    (opts, sys.argv) = optparser.parse_args()
+    (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
     dbg_opts = {"from_ipython": opts.from_ipython}
 
     # Handle debugger startup command files: --nx (-n) and --command.
@@ -338,10 +348,10 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         except IOError:
             _, xxx_todo_changeme, _ = sys.exc_info()
             (errno, strerror) = xxx_todo_changeme.args
-            print("I/O in opening debugger output file %s" % opts.output)
-            print("error(%s): %s" % (errno, strerror))
+            print(f"I/O in opening debugger output file {opts.output}")
+            print(f"error({errno}): {strerror}")
         except Exception:
-            print("Unexpected error in opening debugger output file %s" % opts.output)
+            print(f"Unexpected error in opening debugger output file {opts.output}")
             print(sys.exc_info()[0])
             sys.exit(2)
             pass
@@ -350,7 +360,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     return opts, dbg_opts, sys.argv
 
 
-def _postprocess_options(dbg, opts):
+def postprocess_options(dbg, opts):
     """Handle options (`opts') that feed into the debugger (`dbg')"""
     # Set dbg.settings['printset']
     print_events = []
@@ -371,19 +381,18 @@ def _postprocess_options(dbg, opts):
     else:
         dbg.settings["highlight"] = "plain"
 
-    # if getattr(opts, 'style') and opts.style != 'none':
-    #     dbg.settings['style'] = opts.style
-    # else:
-    #     dbg.settings['style'] = None
-    dbg.settings["style"] = None
+    if getattr(opts, "style") and opts.style != "none":
+        dbg.settings["style"] = opts.style
+    else:
+        dbg.settings["style"] = None
 
-    # Normally we want to set Mdebugger.debugger_obj so that one can
+    # Normally we want to set trepan.api.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
     # than one debugger running. More than one debugger may confuse
     # users, e.g. set different might stop at the same line once for
     # each debugger.
     if not opts.private:
-        Mdebugger.debugger_obj = dbg
+        trepan.api.debugger_obj = dbg
         pass
 
     #     if opts.errors:
@@ -404,7 +413,7 @@ def _postprocess_options(dbg, opts):
     #         dbg.cmdqueue = list(opts.execute.split(';;'))
 
     if opts.post_mortem:
-        Mapi.debugger_on_post_mortem()
+        debugger_on_post_mortem()
         pass
     return
 
@@ -414,7 +423,7 @@ if __name__ == "__main__":
     import pprint
 
     def doit(prog, version, arg_str):
-        print("options '%s'" % arg_str)
+        print(f"options '{arg_str}'")
         args = arg_str.split()
         opts, dbg_opts, sys_argv = process_options("testing", version, args)
         pp.pprint(vars(opts))
@@ -422,11 +431,11 @@ if __name__ == "__main__":
         return
 
     pp = pprint.PrettyPrinter(indent=4)
-    doit("testing", "1.1", "")
-    doit("testing", "1.2", "foo bar")
-    doit("testing", "1.3", "--server")
-    doit("testing", "1.3", "--command %s bar baz" % __file__)
-    doit("testing", "1.4", "--server --client")
-    doit("testing", "1.5", "--style=emacs")
-    doit("testing", "1.6", "--help")  # exits, so must be last
+    doit("testing", "1.1", __file__, "")
+    doit("testing", "1.2", __file__, "foo bar")
+    doit("testing", "1.3", __file__, "--server")
+    doit("testing", "1.3", __file__, f"--command {__file__} bar baz")
+    doit("testing", "1.4", __file__, "--server --client")
+    doit("testing", "1.5", __file__, "--style=emacs")
+    doit("testing", "1.6", __file__, "--help")  # exits, so must be last
     pass

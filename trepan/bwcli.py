@@ -89,7 +89,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     return opts, dbg_opts, sys.argv
 
 
-def _postprocess_options(dbg, opts):
+def postprocess_options(dbg, opts):
     """Handle options (`opts') that feed into the debugger (`dbg')"""
     # Set dbg.settings['printset']
     print_events = []
@@ -128,7 +128,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         dbg = Mdebugger.Trepan(dbg_opts)
         dbg.core.add_ignore(main)
         pass
-    _postprocess_options(dbg, opts)
+    postprocess_options(dbg, opts)
 
     # process_options has munged sys.argv to remove any options that
     # options that belong to this debugger. The original options to
@@ -191,7 +191,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     #     pass
 
     while True:
-
         # Run the debugged script over and over again until we get it
         # right.
 
