@@ -35,6 +35,7 @@ from typing import Any
 import pyficache
 import tracer
 
+import trepan
 import trepan.clifns as Mclifns
 
 # Our local modules
@@ -60,8 +61,6 @@ class TrepanCore(object):
 
         See also `start' and `stop'.
         """
-
-        import trepan.bwprocessor as Mbwproc
 
         def get_option(key: str) -> Any:
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
@@ -94,7 +93,7 @@ class TrepanCore(object):
         if not self.processor:
             self.processor = Mcmdproc.CommandProcessor(self, opts=proc_opts)
         elif self.processor == "bullwinkle":
-            self.processor = Mbwproc.BWProcessor(self, opts=proc_opts)
+            self.processor = trepan.bwprocessor.BWProcessor(self, opts=proc_opts)
             pass
         # What events are considered in stepping. Note: 'None' means *all*.
         self.step_events = None

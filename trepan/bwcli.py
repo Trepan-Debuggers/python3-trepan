@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013, 2015, 2020, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013, 2015, 2020, 2023-2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,14 +24,13 @@ from optparse import OptionParser
 import pyficache
 
 # Our local modules
-from trepan import (
-    clifns as Mclifns,
-    debugger as Mdebugger,
-    exception as Mexcept,
-    misc as Mmisc,
-)
+import trepan.debugger
+
+from trepan.clifns import whence_file
+from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.bullwinkle import BWInterface
 from trepan.lib.file import readable
+from trepan.misc import wrapped_lines
 
 # The name of the debugger we are currently going by.
 __title__ = "trepan"
@@ -39,8 +39,8 @@ __title__ = "trepan"
 from trepan.version import __version__
 
 
-def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
-    """Handle debugger options. Set `option_list' if you are writing
+def process_options(pkg_version, sys_argv, option_list=None):
+    """Handle debugger options. Set ``option_list`` if you are writing
     another main program and want to extend the existing set of debugger
     options.
 
@@ -90,7 +90,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
 
 def postprocess_options(dbg, opts):
-    """Handle options (`opts') that feed into the debugger (`dbg')"""
+    """Handle options (`opts') that feed into the debugger (``dbg``)"""
     # Set dbg.settings['printset']
     print_events = []
     if opts.fntrace:
@@ -109,28 +109,27 @@ def postprocess_options(dbg, opts):
 
     dbg.settings["highlight"] = "plain"
 
-    Mdebugger.debugger_obj = dbg
+    trepan.debugger_obj = dbg
     return
 
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
-    global __title__
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv = process_options(__title__, __version__, sys_argv)
+    opts, dbg_opts, sys_argv = process_options(__version__, sys_argv)
     dbg_opts["orig_sys_argv"] = sys_argv
     dbg_opts["interface"] = BWInterface()
     dbg_opts["processor"] = "bullwinkle"
 
     if dbg is None:
-        dbg = Mdebugger.Trepan(dbg_opts)
+        dbg = trepan.debugger.Trepan(dbg_opts)
         dbg.core.add_ignore(main)
         pass
     postprocess_options(dbg, opts)
 
-    # process_options has munged sys.argv to remove any options that
+    # process_options has munged sys.argv to remove any
     # options that belong to this debugger. The original options to
     # invoke the debugger and script are in global sys_argv
     if len(sys_argv) == 0:
@@ -140,7 +139,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
         if not osp.isfile(mainpyfile):
-            mainpyfile = Mclifns.whence_file(mainpyfile)
+            mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
                 print(
@@ -207,16 +206,16 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             dbg.core.execution_status = "Terminated"
             dbg.intf[-1].msg("The program finished - quit or restart")
             dbg.core.processor.process_commands()
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             break
-        except Mexcept.DebuggerRestart:
+        except DebuggerRestart:
             dbg.core.execution_status = "Restart requested"
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
                 part1 = "Restarting %s with arguments:" % dbg.core.filename(mainpyfile)
                 args = " ".join(dbg.program_sys_argv[1:])
                 dbg.intf[-1].msg(
-                    Mmisc.wrapped_lines(part1, args, dbg.settings["width"])
+                    wrapped_lines(part1, args, dbg.settings["width"])
                 )
             else:
                 break

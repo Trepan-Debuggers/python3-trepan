@@ -32,7 +32,7 @@ def test_options():
     }
     dbg_opts_set = {"proc_opts", "from_ipython"}
 
-    opts, dbg_opts, sys_argv = process_options("testing", "1.0", [__file__])
+    opts, dbg_opts, sys_argv = process_options("1.0", [__file__])
     diff_set = option_key_set - set(vars(opts).keys())
     assert diff_set == set(), "expecting at least these options keys set"
     assert (
@@ -40,9 +40,9 @@ def test_options():
     ) == set(), "expecting at least these processor keys set"
 
     arg_str = f"{__file__} --fntrace --cd=/tmp"
-    opts, dbg_opts, sys_argv = process_options("testing", "1.1", arg_str.split())
+    opts, dbg_opts, sys_argv = process_options("1.1", arg_str.split())
     assert opts.cd == "/tmp"
 
     arg_str = f"{__file__} --style=emacs"
-    opts, dbg_opts, sys_argv = process_options("testing", "1.2", arg_str.split())
+    opts, dbg_opts, sys_argv = process_options("1.2", arg_str.split())
     assert opts.style == "emacs"

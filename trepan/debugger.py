@@ -41,11 +41,13 @@ import tracefilter
 # External Egg packages
 import tracer
 
+import trepan
 import trepan.interfaces.user as Muser
 
 # Default settings used here
 import trepan.lib.default as Mdefault
 import trepan.lib.sighandler as Msig
+
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.misc import option_set
 
@@ -99,9 +101,6 @@ class Trepan(object):
                 exec(cmd, globals_, locals_)
             except DebuggerQuit:
                 pass
-            except DebuggerQuit:
-                pass
-            pass
         except DebuggerQuit:
             pass
         finally:
@@ -338,7 +337,7 @@ class Trepan(object):
             self.intf[-1].output = out
             pass
 
-        self.core = Mcore.TrepanCore(self, core_opts)
+        self.core = trepan.lib.core.TrepanCore(self, core_opts)
         self.core.add_ignore(self.core.stop)
 
         # When set True, we'll also suspend our debug-hook tracing.

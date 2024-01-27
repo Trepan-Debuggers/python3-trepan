@@ -3,7 +3,7 @@
 # The "pygments" version is not quite right
 # And the xdis version is missing
 columnize >= 0.3.10
-nose>=1.0.0, <= 1.3.7
+pyficache >= 2.3.0,
 pygments >= 2.2.0
 spark_parser
 tracer >= 0.3.2

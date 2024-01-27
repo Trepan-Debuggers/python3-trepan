@@ -42,11 +42,10 @@ __title__ = package
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
-    global __title__
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv = process_options(__title__, __version__, sys_argv)
+    opts, dbg_opts, sys_argv = process_options(__version__, sys_argv)
 
     if opts.server is not None:
         if opts.server == "tcp":
