@@ -28,7 +28,7 @@ from trepan.inout import output as Moutput
 from trepan.lib.file import readable
 
 
-def default_configfile(base_filename):
+def default_configfile(base_filename: str) -> str:
     """Return fully expanded configuration filename location for
     base_filename. python2 and  python3 debuggers share the same
     directory: ~/.config/trepan.py
@@ -41,7 +41,7 @@ def default_configfile(base_filename):
     return osp.join(file_dir, base_filename)
 
 
-def add_startup_file(dbg_initfiles):
+def add_startup_file(dbg_initfiles: list):
     """Read debugger startup file(s): both python code and
     debugger profile to dbg_initfiles."""
 
@@ -59,7 +59,9 @@ def add_startup_file(dbg_initfiles):
     return
 
 
-def process_options(debugger_name, pkg_version, sys_argv: List[str], option_list=None):
+def process_options(
+    debugger_name: str, pkg_version: str, sys_argv: List[str], option_list=None
+):
     """Handle debugger options. Set `option_list' if you are writing
     another main program and want to extend the existing set of debugger
     options.
