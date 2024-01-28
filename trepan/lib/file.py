@@ -18,6 +18,7 @@
 import os
 import stat
 import sys
+from typing import Optional
 
 import pyficache
 
@@ -26,7 +27,7 @@ def file_list():
     return list(set(pyficache.cached_files() + list(pyficache.file2file_remap.keys())))
 
 
-def is_compiled_py(filename):
+def is_compiled_py(filename) -> bool:
     """
     Given a file name, return True if the suffix is pyo or pyc (an
     optimized bytecode file).
@@ -35,9 +36,25 @@ def is_compiled_py(filename):
 
 
 READABLE_MASK = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
+EXECUTABLE_MASK = stat.S_IXOTH | stat.S_IXGRP | stat.S_IXUSR
 
 
-def readable(path):
+def executable(path: str) -> Optional[bool]:
+    """Test whether a path exists and is readable.  Returns None for
+    broken symbolic links or a failing stat() and False if
+    the file exists but does not have read permission. True is returned
+    if the file is readable."""
+    try:
+        st = os.stat(path)
+        if 0 == st.st_mode & READABLE_MASK:
+            return False
+        return 0 != st.st_mode & EXECUTABLE_MASK
+    except os.error:
+        return None
+    return True
+
+
+def readable(path: str) -> Optional[bool]:
     """Test whether a path exists and is readable.  Returns None for
     broken symbolic links or a failing stat() and False if
     the file exists but does not have read permission. True is returned

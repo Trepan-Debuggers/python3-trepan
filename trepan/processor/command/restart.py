@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2023-2024
+#  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,6 +17,7 @@
 import atexit
 import os
 
+from trepan.lib.file import executable
 from trepan.misc import wrapped_lines
 
 # Our local modules
@@ -37,11 +39,17 @@ class RestartCommand(DebuggerCommand):
 
     short_help = "(Hard) restart of program via execv()"
 
+    # FIXME: add mechanism for adding python interpreter.
     DebuggerCommand.setup(locals(), category="support", max_args=0)
 
     def run(self, args):
         sys_argv = self.debugger.restart_argv()
         if sys_argv and len(sys_argv) > 0:
+            program_file = sys_argv[0]
+            if not executable(sys_argv[0]):
+                self.errmsg(f'File "{program_file}" is not marked executable.')
+                return
+
             confirmed = self.confirm("Restart (execv)", False)
             if confirmed:
                 self.msg(
@@ -55,7 +63,7 @@ class RestartCommand(DebuggerCommand):
                     atexit._run_exitfuncs()
                 except Exception:
                     pass
-                os.execvp(sys_argv[0], sys_argv)
+                os.execvp(program_file, sys_argv)
                 pass
             pass
         else:
