@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017-2018, 2020 Rocky Bernstein
+#   Copyright (C) 2015, 2017-2018, 2020, 2024 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
 
 style_names = sorted(list(STYLE_MAP.keys()))
 
-# Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import complete as Mcomplete
 
+# Our local modules
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
-class SetStyle(Mbase_subcmd.DebuggerSubcommand):
+
+class SetStyle(DebuggerSubcommand):
     """**set style** [*pygments-style*]
 
     Set the pygments style in to use in formatting text for a 256-color terminal.

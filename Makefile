@@ -9,17 +9,13 @@ PYTHON ?= python3
 RM      ?= rm
 LINT    =o flake8
 
-#EXTRA_DIST=ipython/ipy_pydbgr.py pydbgr
 PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests flake8
 
 #: Default target - same as "check"
-all: check
+all: test-unit
 
 #: Same as "check"
 test: check
-
-#: Run all tests: unit, functional and integration
-check-short: test-unit-short test-functional-short test-integration-short
 
 # Check StructuredText long description formatting
 check-rst:
@@ -31,16 +27,11 @@ flake8:
 
 #: Run all tests: unit, functional and integration verbosely
 # check: test-unit test-functional test-integration # flake8
-check: test-unit test-integration # flake8
+check: test-unit
 
 #: Run unit (transparent-box) tests
 test-unit:
-	$(PYTHON) -m pytest test/unit/lib test/unit/processor test/unit/test_*.py
-
-#: Run unit (white-box) tests
-test-unit-short:
-	$(PYTHON) ./setup.py nosetests --quiet | \
-	$(PYTHON) ./make-check-filter.py
+	$(PYTHON) -m pytest test/unit
 
 #: Run functional tests
 test-functional:
