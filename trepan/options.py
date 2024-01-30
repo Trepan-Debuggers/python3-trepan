@@ -23,7 +23,6 @@ from optparse import OptionParser
 from pygments.styles import STYLE_MAP
 
 import trepan.api
-from trepan.api import debugger_on_post_mortem
 from trepan.clifns import path_expanduser_abs
 from trepan.inout.output import DebuggerUserOutput
 from trepan.lib.file import readable
@@ -420,6 +419,8 @@ def postprocess_options(dbg, opts):
     #         dbg.cmdqueue = list(opts.execute.split(';;'))
 
     if opts.post_mortem:
+        from trepan.api import debugger_on_post_mortem
+
         debugger_on_post_mortem()
         pass
     return

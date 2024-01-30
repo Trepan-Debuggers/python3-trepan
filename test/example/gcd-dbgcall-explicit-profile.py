@@ -36,7 +36,7 @@ def gcd(a, b):
         debug(step_ignore=0)
         return None
     if a == 1 or b - a == 0:
-        debug()
+        debug(start_opts={"startup-profile": True})
         return a
     return gcd(b - a, a)
 

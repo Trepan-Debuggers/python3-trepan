@@ -211,21 +211,43 @@ def debug(
     `dbg_opts' is an optional "options" dictionary that gets fed
     trepan.Debugger(); `start_opts' are the optional "options"
     dictionary that gets fed to trepan.Debugger.core.start()."""
+
+    # We have a global debugger_obj that we reuse
     global debugger_obj
+
+    # A list of debugger profiles we might run
+    dbg_initfiles = []
+
     if debugger_obj is None:
+        # If debugger_obj has not been set this is the first time
+        # we are entering the debugger.
+        # create the object, and set to run the user's
+        # debugger initialization profile
+
         debugger_obj = Trepan(dbg_opts)
         debugger_obj.core.add_ignore(debug, stop)
+
+        # Run user profile if first time and we haven't
+        # explicit set to ignore profile loading.
+        if not start_opts or start_opts.get("startup-profile", True):
+            from trepan.options import add_startup_file
+
+            add_startup_file(dbg_initfiles)
+
         pass
+
     core = debugger_obj.core
     frame = sys._getframe(0 + level)
     core.set_next(frame)
-    if start_opts and "startup-profile" in start_opts and start_opts["startup-profile"]:
-        dbg_initfiles = start_opts["startup-profile"]
-        from trepan import options
 
-        options.add_startup_file(dbg_initfiles)
-        for init_cmdfile in dbg_initfiles:
-            core.processor.queue_startfile(init_cmdfile)
+    # If we've specified profile loading, add that
+    if start_opts and start_opts.get("startup-profile", False):
+        from trepan.options import add_startup_file
+
+        add_startup_file(dbg_initfiles)
+
+    for init_cmdfile in dbg_initfiles:
+        core.processor.queue_startfile(init_cmdfile)
 
     if not core.is_started():
         core.start(start_opts)
