@@ -39,16 +39,14 @@ import tracefilter
 # External Egg packages
 import tracer
 
-import trepan.interfaces.user as Muser
+from trepan.interfaces.user import UserInterface
 
 # Default settings used here
-import trepan.lib.default as Mdefault
-import trepan.lib.sighandler as Msig
+from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
+from trepan.lib.sighandler import SignalManager
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.lib.core import TrepanCore
 from trepan.misc import option_set
-
-debugger_obj = None
 
 try:
     from readline import get_line_buffer
@@ -59,8 +57,10 @@ except ImportError:
 
     pass
 
+debugger_obj = None
 
-class Trepan(object):
+
+class Trepan:
     # The following functions have to be defined before
     # DEFAULT_INIT_OPTS which includes references to these.
 
@@ -76,8 +76,8 @@ class Trepan(object):
 
         Debugger.core.start settings are passed via optional
         dictionary `start_opts'. Overall debugger settings are in
-        Debugger.settings which changed after an instance is created
-        . Also see `run_eval' if what you want to run is an
+        ``Debugger.settings`` which changed after an instance is created
+        . Also see `run_eval' if what you want to run is a
         run_eval'able expression have that result returned and
         `run_call' if you want to debug function run_call.
         """
@@ -112,12 +112,12 @@ class Trepan(object):
         variables. If `locals_' is not given, it becomes a copy of
         `globals_'.
 
-        Debugger.core.start settings are passed via optional
+        ``Debugger.core.start`` settings are passed via optional
         dictionary `start_opts'. Overall debugger settings are in
-        Debugger.settings which changed after an instance is created
-        . Also see `run_eval' if what you want to run is an
-        run_eval'able expression have that result returned and
-        `run_call' if you want to debug function run_call.
+        ``Debugger.settings`` which changed after an instance is created.
+        See `run_eval' if what you want to run is an
+         expression that should be ``eval``d and have that result returned.
+        See ``run_call`` if you want to debug function ``run_call()``.
         """
         if globals_ is None:
             globals_ = globals()
@@ -138,9 +138,9 @@ class Trepan(object):
     def run_call(self, func: Callable, *args, start_opts=None, **kwds):
         """Run debugger on function call: `func(*args, **kwds)'
 
-        See also `run_eval' if what you want to run is an eval'able
-        expression have that result returned and `run' if you want to
-        debug a statement via exec.
+        See also ``run_eval`` if what you want to run is an eval'able
+        expression have that result returned and ``run``if you want to
+        debug a statement via ``exec``.
         """
         res = None
         self.core.start(opts=start_opts)
@@ -276,8 +276,8 @@ class Trepan(object):
         "processor": None,
         # Setting contains lots of debugger settings - a whole file
         # full of them!
-        "settings": Mdefault.DEBUGGER_SETTINGS,
-        "start_opts": Mdefault.START_OPTS,
+        "settings": DEBUGGER_SETTINGS,
+        "start_opts": START_OPTS,
         "step_ignore": 0,
         "from_ipython": False,
     }
@@ -287,7 +287,7 @@ class Trepan(object):
         key 'start' inside hash 'opts', we may or may not initially
         start debugging.
 
-        See also Debugger.start and Debugger.stop.
+        See also ``Debugger.start`` and ``Debugger.stop``.
         """
 
         self.mainpyfile = None
@@ -316,7 +316,7 @@ class Trepan(object):
             core_opts[opt] = get_option(opt)
             pass
 
-        # How is I/O for this debugger handled? This should
+        # How are I/O for this debugger handled? This should
         # be set before calling DebuggerCore.
         interface_opts = {
             "complete": completer,
@@ -325,7 +325,7 @@ class Trepan(object):
         # FIXME when I pass in opts=opts things break
 
         inp = opts.get("input", None) if opts else None
-        interface = get_option("interface") or Muser.UserInterface(
+        interface = get_option("interface") or UserInterface(
             inp=inp, opts=interface_opts
         )
         self.intf = [interface]
@@ -351,7 +351,7 @@ class Trepan(object):
             self.program_sys_argv = None
             pass
 
-        self.sigmgr = Msig.SignalManager(self)
+        self.sigmgr = SignalManager(self)
 
         # Were we requested to activate immediately?
         if get_option("activate"):
@@ -359,14 +359,16 @@ class Trepan(object):
             pass
         return
 
-    def complete(self, last_token, state):
+    def complete(self, last_token: str, state: int):
+        """
+        In place expansion of top-level debugger command
+        for `last_token`` that we are in ``state``.
+        """
         if hasattr(self.core.processor, "completer"):
-            str = get_line_buffer() or last_token
-            results = self.core.processor.completer(str, state)
+            string_seen = get_line_buffer() or last_token
+            results = self.core.processor.completer(string_seen, state)
             return results[state]
-        else:
-            return [None]
-
+        return
     pass
 
 
@@ -375,8 +377,8 @@ if __name__ == "__main__":
 
     def foo():
         y = 2
-        for i in range(2):
-            print("%d %d" % (i, y))
+        for item in range(2):
+            print(f"{item} {y}")
             pass
         return 3
 
@@ -404,15 +406,14 @@ if __name__ == "__main__":
                 print("started")
                 d.core.step_ignore = 0
                 d.core.start()
-                x = 4
                 x = foo()
                 for i in range(2):
-                    print("%d" % (i + 1) * 10)
+                    print(f"{(i + 1) * 10}")
                     pass
                 d.core.stop()
 
-                def square(x):
-                    return x * x
+                def square(n):
+                    return n * n
 
                 print("calling: run_call(square,2)")
                 d.run_call(square, 2)
