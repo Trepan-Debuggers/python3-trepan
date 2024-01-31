@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023 Rocky Bernstein
-#   <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -29,11 +29,9 @@ start/stop and event-handling dispatcher and `client.py' which is a
 user or client-side code for connecting to server'd debugged program.
 """
 
-# Our local modules
-
-# Common Python packages
 import sys
 import types
+from typing import Any, Callable
 
 import pyficache
 import tracefilter
@@ -41,14 +39,13 @@ import tracefilter
 # External Egg packages
 import tracer
 
-import trepan
 import trepan.interfaces.user as Muser
 
 # Default settings used here
 import trepan.lib.default as Mdefault
 import trepan.lib.sighandler as Msig
-
 from trepan.exception import DebuggerQuit, DebuggerRestart
+from trepan.lib.core import TrepanCore
 from trepan.misc import option_set
 
 debugger_obj = None
@@ -138,7 +135,7 @@ class Trepan(object):
             self.core.stop()
         return
 
-    def run_call(self, func, start_opts=None, *args, **kwds):
+    def run_call(self, func: Callable, *args, start_opts=None, **kwds):
         """Run debugger on function call: `func(*args, **kwds)'
 
         See also `run_eval' if what you want to run is an eval'able
@@ -221,7 +218,7 @@ class Trepan(object):
         try:
             compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
         except SyntaxError:
-            self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
+            self.intf[0].errmsg(f"Python can't compile {self.mainpyfile}")
             self.intf[0].errmsg(sys.exc_info()[1])
             retval = False
             pass
@@ -293,13 +290,15 @@ class Trepan(object):
         See also Debugger.start and Debugger.stop.
         """
 
-        import trepan.lib.core as Mcore
-
         self.mainpyfile = None
         self.thread = None
         self.eval_string = None
-        get_option = lambda key: option_set(opts, key, self.DEFAULT_INIT_OPTS)
-        completer = lambda text, state: self.complete(text, state)
+
+        def get_option(key: str) -> Any:
+            return option_set(opts, key, self.DEFAULT_INIT_OPTS)
+
+        def completer(text: str, state):
+            return self.complete(text, state)
 
         # set the instance variables that come directly from options.
         for opt in ("settings", "orig_sys_argv", "from_ipython"):
@@ -324,20 +323,19 @@ class Trepan(object):
             "debugger_name": "trepan3k",
         }
         # FIXME when I pass in opts=opts things break
-        interface = get_option("interface") or Muser.UserInterface(opts=interface_opts)
-        self.intf = [interface]
 
-        inp = get_option("input")
-        if inp:
-            self.intf[-1].input = inp
-            pass
+        inp = opts.get("input", None) if opts else None
+        interface = get_option("interface") or Muser.UserInterface(
+            inp=inp, opts=interface_opts
+        )
+        self.intf = [interface]
 
         out = get_option("output")
         if out:
             self.intf[-1].output = out
             pass
 
-        self.core = trepan.lib.core.TrepanCore(self, core_opts)
+        self.core = TrepanCore(self, core_opts)
         self.core.add_ignore(self.core.stop)
 
         # When set True, we'll also suspend our debug-hook tracing.
