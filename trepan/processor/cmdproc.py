@@ -46,7 +46,10 @@ from trepan.vprocessor import Processor
 
 try:
     from trepan.lib.deparse import deparse_and_cache
+
+    have_deparse_and_cache = True
 except ImportError:
+    have_deparse_and_cache = False
     pass
 
 warned_file_mismatches = set()
@@ -236,8 +239,7 @@ def print_location(proc_obj):
                     tempdir=proc_obj.settings("tempdir"),
                 )
                 pyficache.remap_file(filename, remapped)
-                filename = remapped
-                lineno = pyficache.unmap_file_line(filename, lineno)
+                filename, lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif "<string>" == filename:
@@ -280,6 +282,7 @@ def print_location(proc_obj):
                 not source_text
                 and filename.startswith("<string: ")
                 and proc_obj.curframe.f_code
+                and have_deparse_and_cache
             ):
                 # Deparse the code object into a temp file and remap the line from code
                 # into the corresponding line of the tempfile
