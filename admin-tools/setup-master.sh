@@ -25,7 +25,7 @@ fulldir=$(readlink -f $mydir)
 cd $fulldir/..
 (cd $fulldir/.. && \
      checkout_version pycolumnize && \
-     checkout_version xdis && \
+     checkout_version python-xdis && \
      checkout_version python-filecache && \
      checkout_version python-uncompyle6 && \
      checkout_version python3-trepan
