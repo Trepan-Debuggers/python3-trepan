@@ -148,7 +148,7 @@ if __name__ == "__main__":
     import pprint
 
     for val in ["DEBUGGER_SETTINGS", "START_OPTS", "STOP_OPTS"]:
-        print(f"{val}:")
+        print("%s:" % val)
         print(pprint.pformat(eval(val)))
         print("-" * 10)
         pass

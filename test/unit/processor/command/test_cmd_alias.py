@@ -1,4 +1,4 @@
-"Unit test for trepan.processor.command.alias and unalias"
+"""Unit test for trepan.processor.command.alias and unalias"""
 import inspect
 from test.unit.cmdhelper import setup_unit_test_debugger
 
@@ -32,12 +32,12 @@ def test_alias_unalias_command():
             shoulda = ["no ", ""]
             pass
         assert should_not_have == (len(msgs) == 0), (
-            f"Expecting {shoulda[0]}{cmd_name} for {arg_str}.\n Got {msgs}",
+            "Expecting %s%s for %s.\n Got %s" % (shoulda[0], cmd_name, arg_str, msgs)
         )
 
         assert should_not_have != (
             len(errors) == 0
-        ), f"Expecting {shoulda[1]}error for #{arg_str}.\n Got {errors}"
+        ), "Expecting %serror for #%s.\n Got {errors}" % (shoulda[1], arg_str)
         return
 
     def is_alias_defined(alias_name):

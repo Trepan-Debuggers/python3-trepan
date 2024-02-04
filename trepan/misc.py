@@ -17,10 +17,9 @@
 
 import os
 from glob import glob
-from typing import Any
 
 
-def option_set(options: dict, value, default_options) -> Any:
+def option_set(options: dict, value, default_options):
     """
     If ``value`` is found in ``options``, return that, otherwise return the value
     from ``defaulit_options``.

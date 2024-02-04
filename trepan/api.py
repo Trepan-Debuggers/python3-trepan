@@ -35,7 +35,6 @@ if necessary, first.
 # we see below. So for now, we'll live with the code duplication.
 
 import sys
-from typing import Callable, Optional
 
 from trepan.debugger import Trepan, debugger_obj
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
@@ -49,11 +48,11 @@ def debugger_on_post_mortem():
 
 def run_eval(
     expression,
-    debug_opts: Optional[dict] = None,
-    start_opts: Optional[dict] = None,
-    globals_: Optional[dict] = None,
-    locals_: Optional[dict] = None,
-    tb_fn: Optional[Callable] = None,
+    debug_opts = None,
+    start_opts = None,
+    globals_ = None,
+    locals_ = None,
+    tb_fn = None,
 ):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
@@ -81,11 +80,9 @@ def run_eval(
 
 
 def run_call(
-    func: Callable,
+    func,
     *args,
-    debug_opts: Optional[dict] = None,
-    start_opts: Optional[dict] = None,
-    **kwds,
+    **kwds
 ):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
@@ -94,6 +91,11 @@ def run_call(
     When run_call() returns, it returns whatever the function call
     returned.  The debugger prompt appears as soon as the function is
     entered."""
+
+
+    debug_opts = None
+    if "debug_opts" in kwds:
+        debug_opts = kwds.pop("debug_opts")
 
     dbg = Trepan(opts=debug_opts)
     try:
@@ -316,10 +318,12 @@ if __name__ == "__main__":
     }
     if len(sys.argv) > 1:
         print(
-            f"Issuing interactive: run_call(plus5, {int(sys.argv[1])}, debug_opts={debug_opts})"
+            "Issuing interactive: run_call(plus5, %s)" % sys.argv[1]
         )
         run_call(plus5, int(sys.argv[1]), debug_opts=debug_opts)
     else:
-        print(f"Issuing interactive: run_call(plus5, 2, debug_opts={debug_opts})")
+        print(
+            "Issuing interactive: run_call(plus5, 2)"
+        )
         run_call(plus5, 2, debug_opts=debug_opts)
     pass

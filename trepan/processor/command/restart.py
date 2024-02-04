@@ -47,7 +47,7 @@ class RestartCommand(DebuggerCommand):
         if sys_argv and len(sys_argv) > 0:
             program_file = sys_argv[0]
             if not executable(sys_argv[0]):
-                self.errmsg(f'File "{program_file}" is not marked executable.')
+                self.errmsg('File "%s" is not marked executable.' % program_file)
                 return
 
             confirmed = self.confirm("Restart (execv)", False)

@@ -178,15 +178,15 @@ def print_source_location_info(
         (trepan3k)
     """
     if remapped_file:
-        mess = f"({remapped_file}:{lineno} remapped {filename}"
+        mess = "(%s:%s remapped %s" % (remapped_file, lineno, filename)
     else:
-        mess = f"({filename}:{lineno}"
+        mess = "(%s:%s" % (filename, lineno)
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
     mess += "):"
     if fn_name and fn_name != "?":
-        mess += f" {fn_name}"
+        mess += " %s" % fn_name
         pass
     print_fn(mess)
     return
@@ -244,7 +244,7 @@ def print_location(proc_obj):
             pass
         elif "<string>" == filename:
             source_text = deparse_fn(frame.f_code)
-            filename = f"<string: '{source_text}'>"
+            filename = "<string: '%s'>" % source_text
             pass
         else:
             m = re.search("^<frozen (.*)>", filename)
@@ -320,7 +320,7 @@ def print_location(proc_obj):
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
-                    intf_obj.msg(f"remapped file {filename} to {remapped_file} XX")
+                    intf_obj.msg("remapped file %s to %s" % (filename, remapped_file))
 
                     pass
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
@@ -379,7 +379,7 @@ def print_location(proc_obj):
 
     if proc_obj.event in ["return", "exception"]:
         val = proc_obj.event_arg
-        intf_obj.msg(f"R=> {proc_obj._saferepr(val)}")
+        intf_obj.msg("R=> %s" % proc_obj._saferepr(val))
         pass
     elif (
         proc_obj.event == "call"
@@ -511,7 +511,11 @@ class CommandProcessor(Processor):
         if self.thread_name and self.thread_name != "MainThread":
             prompt += ":" + self.thread_name
             pass
-        self.prompt_str = f"{'(' * self.debug_nest}{prompt}{')' * self.debug_nest}"
+        self.prompt_str = "%s%s%s" % (
+            "(" * self.debug_nest,
+            prompt,
+            ")" * self.debug_nest,
+        )
         highlight = self.debugger.settings["highlight"]
         if highlight and highlight in ("light", "dark"):
             self.prompt_str = colorize("underline", self.prompt_str)
@@ -587,7 +591,7 @@ class CommandProcessor(Processor):
             else:
                 exc_type_name = t.__name__
             if show_error:
-                self.errmsg(str(f"{exc_type_name}: {arg}"))
+                self.errmsg(str("%s: %s" % (exc_type_name, arg)))
             raise
         return None  # Not reached
 
@@ -603,15 +607,15 @@ class CommandProcessor(Processor):
             # in interaction.
             global_vars = None
         try:
-            code = compile(line + "\n", f'"{line}"', "single")
+            code = compile(line + "\n", '"%s"' % line, "single")
             exec(code, global_vars, local_vars)
         except Exception:
             t, v = sys.exc_info()[:2]
-            if type(t) == bytes:
+            if isinstance(t, bytes):
                 exc_type_name = t
             else:
                 exc_type_name = t.__name__
-            self.errmsg(f"{str(exc_type_name)}: {str(v)}")
+            self.errmsg("%s: %s" % (str(exc_type_name), str(v)))
             pass
         return
 
@@ -623,7 +627,7 @@ class CommandProcessor(Processor):
             if msg_on_error:
                 self.errmsg(msg_on_error)
             else:
-                self.errmsg(f"Expecting an integer, got: {str(arg)}.")
+                self.errmsg("Expecting an integer, got: %s." % str(arg))
                 pass
             return None
         if min_value and ret_value < min_value:
@@ -671,7 +675,10 @@ class CommandProcessor(Processor):
                     % (cmdname, str(arg))
                 )
             else:
-                self.errmsg(f"Expecting a positive integer, got: {str(arg)}")
+                self.errmsg(
+                    ("Expecting a positive integer at least" + " %d; got: %d")
+                    % (min_value, default)
+                )
                 pass
             return None
             pass
@@ -713,7 +720,7 @@ class CommandProcessor(Processor):
                 exc_type_name = t
             else:
                 exc_type_name = t.__name__
-            self.errmsg(str(f"{exc_type_name}: {arg}"))
+            self.errmsg(str("%s: %s" % (exc_type_name, arg)))
             raise
         return
 
@@ -724,7 +731,7 @@ class CommandProcessor(Processor):
         """
         if hasattr(cmd_obj, "execution_set"):
             if not (self.core.execution_status in cmd_obj.execution_set):
-                part1 = f"Command '{name}' is not available for execution status:"
+                part1 = "Command '%s' is not available for execution status:" % name
                 mess = Mmisc.wrapped_lines(
                     part1, self.core.execution_status, self.debugger.settings["width"]
                 )
@@ -732,7 +739,7 @@ class CommandProcessor(Processor):
                 return False
             pass
         if self.frame is None and cmd_obj.need_stack:
-            self.intf[-1].errmsg(f"Command '{name}' needs an execution stack.")
+            self.intf[-1].errmsg("Command '%s' needs an execution stack." % name)
             return False
         if nargs < cmd_obj.min_args:
             self.errmsg(
@@ -826,7 +833,7 @@ class CommandProcessor(Processor):
                         current_command = self.macros[macro_cmd_name][0](*args[1:])
                     except TypeError:
                         t, v = sys.exc_info()[:2]
-                        self.errmsg(f"Error expanding macro {macro_cmd_name}")
+                        self.errmsg("Error expanding macro %s" % macro_cmd_name)
                         return False
                     if self.settings("debugmacro"):
                         print(current_command)
@@ -970,15 +977,15 @@ class CommandProcessor(Processor):
         if is_readable:
             self.cmd_queue.append("source " + expanded_cmdfile)
         elif is_readable is None:
-            self.errmsg(f"source file '{expanded_cmdfile}' doesn't exist")
+            self.errmsg("source file '%s' doesn't exist" % expanded_cmdfile)
         else:
-            self.errmsg(f"source file '{expanded_cmdfile}' is not readable")
+            self.errmsg("source file '%s' is not readable" % expanded_cmdfile)
             pass
         return
 
     def undefined_cmd(self, cmd):
         """Error message when a command doesn't exist"""
-        self.errmsg(f'Undefined command: "{cmd}". Try "help".')
+        self.errmsg('Undefined command: "%s". Try "help".' % cmd)
         return
 
     def read_history_file(self):
@@ -1049,7 +1056,7 @@ class CommandProcessor(Processor):
                 except Exception:
                     # Don't need to warn about optional modules
                     if mod_name not in self.optional_modules:
-                        print(f"Error importing {mod_name}: {sys.exc_info()[0]}")
+                        print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
                         pass
                     continue
                 pass
@@ -1094,12 +1101,12 @@ class CommandProcessor(Processor):
                 "show_sub",
             ):
                 pass
-            import_name = f"{Mcommand.__name__}.{mod_name}"
+            import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
                 command_mod = importlib.import_module(import_name)
             except Exception:
                 if mod_name not in self.optional_modules:
-                    print(f"Error importing {mod_name}: {sys.exc_info()[0]}")
+                    print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
                     pass
                 continue
 
@@ -1204,8 +1211,8 @@ if __name__ == "__main__":
     print(cmdproc.commands)
     fn = cmdproc.commands["quit"]
 
-    print(f"Removing non-existing quit hook: {cmdproc.remove_preloop_hook(fn)}")
+    print("Removing non-existing quit hook: %s" % cmdproc.remove_preloop_hook(fn))
     cmdproc.add_preloop_hook(fn)
     print(cmdproc.preloop_hooks)
-    print(f"Removed existing quit hook: {cmdproc.remove_preloop_hook(fn)}")
+    print("Removed existing quit hook: %s" % cmdproc.remove_preloop_hook(fn))
     pass

@@ -141,14 +141,20 @@ class HelpCommand(DebuggerCommand):
                 ]
                 if cmds is None:
                     self.errmsg(
-                        f'No commands found matching /^{cmd_name}/. Try "help".'
+                        "No commands found matching /^%s/. " 'Try "help".' % cmd_name
                     )
                 elif len(cmds) == 1:
-                    self.msg(f"Pattern '{cmd_name}' matches command {cmds[0]}...")
+                    self.msg(
+                        "Pattern '%s' matches command %s..."
+                        % (
+                            cmd_name,
+                            cmds[0],
+                        )
+                    )
                     args[1] = cmds[0]
                     self.run(args)
                 else:
-                    self.section(f"Command names matching /^{cmd_name}/:")
+                    self.section("Command names matching /^%s/:" % cmd_name)
                     self.msg_nocr(self.columnize_commands(cmds))
                     pass
             return
@@ -185,13 +191,13 @@ Type `help` followed by command name for full documentation.
         n2cmd = self.proc.commands
         names = list(n2cmd.keys())
         if len(args) == 1 and args[0] == "*":
-            self.section(f"Commands in class {category}:")
+            self.section("Commands in class %s:" % category)
             cmds = [cmd for cmd in names if category == n2cmd[cmd].category]
             cmds.sort()
             self.msg_nocr(self.columnize_commands(cmds))
             return
 
-        self.msg(f"{categories[category]}.\n")
+        self.msg("%s.\n" % categories[category])
         self.section("List of commands:")
         names.sort()
         for name in names:  # Foo! iteritems() doesn't do sorting
@@ -208,7 +214,7 @@ Type `help` followed by command name for full documentation.
         return
 
     def syntax_files(self):
-        path = osp.join(self.HELP_DIR, (f"*{self.RST_EXTENSION}"))
+        path = osp.join(self.HELP_DIR, ("*%s" % self.RST_EXTENSION))
         files = glob.glob(path)
         return [osp.basename(name).split(".")[0] for name in files]
 
@@ -226,7 +232,7 @@ Type `help` followed by command name for full documentation.
         self.syntax_summary_help = {}
         self.syntax_help = {}
         for name in self.syntax_files():
-            path = osp.join(self.HELP_DIR, f"{name}{self.RST_EXTENSION}")
+            path = osp.join(self.HELP_DIR, "%s%s" % (name, self.RST_EXTENSION))
             self.syntax_help[name] = "".join(open(path).readlines())
             self.syntax_summary_help[name] = open(path).readline().strip()
             pass
@@ -246,7 +252,7 @@ Type `help` followed by command name for full documentation.
                 if name in self.syntax_files():
                     self.rst_msg(self.syntax_help[name])
                 else:
-                    self.errmsg(f"No syntax help for {name}")
+                    self.errmsg("No syntax help for %s" % name)
                 pass
             pass
         return

@@ -22,7 +22,7 @@ def test_complete():
     ]:
         assert result == complete_token(
             ary, prefix
-        ), f"Trouble matching {repr(ary)} on {prefix}"
+        ), "Trouble matching %s on %s" % (repr(ary), prefix)
         pass
 
     for result_keys, prefix in [
@@ -34,7 +34,7 @@ def test_complete():
         result = [[key, hash[key]] for key in result_keys]
         assert result == complete_token_with_next(
             hash, prefix
-        ), f"Trouble matching {repr(hash)} on {prefix}"
+        ), "Trouble matching %s on %s" % (repr(hash), prefix)
         pass
 
     return
@@ -51,7 +51,7 @@ def test_next_token():
         [13, [19, "time"]],
         [19, [19, ""]],
     ]:
-        assert expect == next_token(x, pos), f"Trouble with next_token({x}, {pos})"
+        assert expect == next_token(x, pos), "Trouble with next_token(%s, %d)" % (x, pos)
         pass
 
     return
@@ -64,10 +64,10 @@ def test_complete_brkpts():
     for find in "1":
         assert complete_brkpts(bpmgr, find) == [
             "1"
-        ], f"breakpoint completion of '{find}'"
+        ], "breakpoint completion of '%s'" % find
     for find in ("2", "11"):
         assert (
             complete_brkpts(bpmgr, find) == []
-        ), f"breakpoint non-completion of '{find}'"
+        ), "breakpoint non-completion of '%s'" % find
         pass
     return

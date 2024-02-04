@@ -39,9 +39,9 @@ def test_parse_break_cmd():
     assert (None, None, 11, None) == (fn, cond, li, offset)
 
     if platform.system() == "Windows":
-        brk_cmd = f'b """{__file__}""":8'
+        brk_cmd = 'b """%s""":8' % __file__
     else:
-        brk_cmd = f"b {__file__}:8"
+        brk_cmd = "b %s:8" % __file__
 
     fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
 

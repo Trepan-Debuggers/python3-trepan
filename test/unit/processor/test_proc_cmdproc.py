@@ -53,23 +53,23 @@ def test_class_vars():
     for cmd in list(cp.commands.values()):
         name = cmd.__class__
         for attr in ["aliases", "min_args", "max_args", "name", "need_stack"]:
-            assert hasattr(cmd, attr), f"{name} command should have a {attr} attribute"
+            assert hasattr(cmd, attr), "%s command should have a %s attribute" % (name, attr)
             pass
 
         for attr in ["category", "short_help"]:
-            assert hasattr(cmd, attr), f"{name} command should have a {attr} attribute"
+            assert hasattr(cmd, attr), "%s command should have a %s attribute" % (name, attr)
             value = getattr(cmd, attr)
             assert isinstance(
                 value, str
-            ), f"{name} command {attr} attribute should be a string"
+            ), "%s command %s attribute should be a string" % (name, attr)
             pass
 
         assert isinstance(cmd.name, str)
         assert isinstance(
             cmd.aliases, tuple
-        ), f"{repr(cmd.aliases)} aliases should be a tuple type"
+        ), "%s aliases should be a tuple type" % repr(cmd.aliases)
         for value in cmd.aliases:
-            assert isinstance(value, str), f"{name} command aliases should be strings"
+            assert isinstance(value, str), "%s command aliases should be strings" % name
 
         if cmd.min_args is not None:
             if cmd.max_args is not None:
@@ -123,11 +123,11 @@ def test_populate_commands():
     _, cp = setup_unit_test_debugger()
     for i in cp.cmd_instances:
         if hasattr(i, "aliases"):
-            assert isinstance(i.aliases, tuple), f"not tuple {repr(i.aliases)}."
+            assert isinstance(i.aliases, tuple), "not tuple %s." % repr(i.aliases)
 
             assert [] == [
                 item for item in i.aliases if str != type(item)
-            ], f"elements of tuple should be strings {repr(i.aliases)}"
+            ], "elements of tuple should be strings %s" % repr(i.aliases)
             pass
         pass
     return

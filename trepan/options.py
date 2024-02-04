@@ -81,7 +81,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     optparser = OptionParser(
         usage=usage_str,
         option_list=option_list,
-        version=f"%prog version {pkg_version}",
+        version="%%prog version %s" % pkg_version,
     )
 
     optparser.add_option(
@@ -348,10 +348,10 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         except IOError:
             _, xxx_todo_changeme, _ = sys.exc_info()
             (errno, strerror) = xxx_todo_changeme.args
-            print(f"I/O in opening debugger output file {opts.output}")
-            print(f"error({errno}): {strerror}")
+            print("I/O in opening debugger output file %s" % opts.output)
+            print("error(%s): %s" % (errno, strerror))
         except Exception:
-            print(f"Unexpected error in opening debugger output file {opts.output}")
+            print("Unexpected error in opening debugger output file %s" % opts.output)
             print(sys.exc_info()[0])
             sys.exit(2)
             pass
@@ -388,8 +388,8 @@ def postprocess_options(dbg, opts):
             dbg.settings["style"] = opts.style
         else:
             sys.stderr.write(
-                f"""Pygments style "{opts.style}" listed. --style option ignored.\n"""
-                f"""Use 'set style" to see valid style and change style.\n"""
+                ("""Pygments style "%s" listed. --style option ignored.\n""" % opts.style) +
+                'Use "set style" to see valid style and change style.\n'
             )
 
     # Normally we want to set trepan.api.debugger_obj so that one can
@@ -431,7 +431,7 @@ if __name__ == "__main__":
     import pprint
 
     def doit(version, arg_str):
-        print(f"options '{arg_str}'")
+        print("options '%s'" % arg_str)
         args = arg_str.split()
         opts, dbg_opts, sys_argv = process_options(version, args)
         pp.pprint(vars(opts))
@@ -440,10 +440,10 @@ if __name__ == "__main__":
 
     pp = pprint.PrettyPrinter(indent=4)
     doit("1.1", "__file__")
-    doit("1.2", f"{__file__} foo bar")
-    doit("1.3", f"{__file__} --server")
-    doit("1.3", f"{__file__} --command {__file__} bar baz")
-    doit("1.4", f"{__file__} --server --client")
-    doit("1.5", f"{__file__} --style=emacs")
-    doit("1.6", f"{__file__} --help")  # exits, so must be last
+    doit("1.2", "%s foo bar" % __file__)
+    doit("1.3", "%s --server" % __file__)
+    doit("1.3", "%s --command %s bar baz" % (__file__, __file__))
+    doit("1.4", "%s --server --client" % __file__)
+    doit("1.5", "%s --style=emacs" % __file__)
+    doit("1.6", "%s --help" % __file__)  # exits, so must be last
     pass

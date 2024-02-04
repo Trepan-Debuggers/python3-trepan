@@ -259,7 +259,7 @@ class SignalManager:
         signame = lookup_signame(signum)
         if signame is None:
             self.dbgr.intf[-1].errmsg(
-                f"{signum} is not a signal number I know about."
+                "%s is not a signal number I know about." % signum
             )
             return False
         # Since the intent is to set a handler, we should pass this
@@ -522,7 +522,7 @@ class SigHandler:
     def handle(self, signum, frame):
         """This method is called when a signal is received."""
         if self.print_method:
-            self.print_method(f"\nProgram received signal {self.signame}.")
+            self.print_method("\nProgram received signal %s." % self.signame)
         if self.print_stack:
             import traceback
 
@@ -559,7 +559,7 @@ if __name__ == "__main__":
         True,
         False,
     ):
-        print(f"yes_or_no of {repr(b)} is {yes_or_no(b)}")
+        print("yes_or_no of %s is %s" % (repr(b), yes_or_no(b)))
         pass
     for signum in range(signal.NSIG):
         signame = lookup_signame(signum)
@@ -578,11 +578,11 @@ if __name__ == "__main__":
         pass
 
     for i in ("term", "TERM", "NotThere"):
-        print(f"lookup_signum({i}): {repr(lookup_signum(i))}")
+        print("lookup_signum(%s): %s" % (i, repr(lookup_signum(i))))
         pass
 
     for i in ("15", "-15", "term", "sigterm", "TERM", "300", "bogus"):
-        print(f"canonic_signame({i}): {canonic_signame(i)}")
+        print("canonic_signame(%s): %s" % (i, canonic_signame(i)))
         pass
 
     from trepan.debugger import Trepan

@@ -4,7 +4,6 @@ trepan.processor.command.mock """
 
 import inspect
 from io import StringIO
-from typing import List
 
 from trepan import debugger
 from trepan.inout.input import DebuggerUserInput
@@ -13,7 +12,7 @@ from trepan.processor.command import mock
 
 dbg_setup = mock.dbg_setup
 
-errmsgs: List[str] = []
+errmsgs = []
 
 
 def errmsg(msg_str: str):
@@ -25,7 +24,7 @@ def errmsg(msg_str: str):
     return
 
 
-msgs: List[str] = []
+msgs = []
 
 
 def msg(msg_str: str):

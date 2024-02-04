@@ -31,7 +31,6 @@ user or client-side code for connecting to server'd debugged program.
 
 import sys
 import types
-from typing import Any, Callable
 
 import pyficache
 import tracefilter
@@ -135,7 +134,7 @@ class Trepan:
             self.core.stop()
         return
 
-    def run_call(self, func: Callable, *args, start_opts=None, **kwds):
+    def run_call(self, func, *args, start_opts=None, **kwds):
         """Run debugger on function call: `func(*args, **kwds)'
 
         See also ``run_eval`` if what you want to run is an eval'able
@@ -218,7 +217,7 @@ class Trepan:
         try:
             compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
         except SyntaxError:
-            self.intf[0].errmsg(f"Python can't compile {self.mainpyfile}")
+            self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
             self.intf[0].errmsg(sys.exc_info()[1])
             retval = False
             pass
@@ -294,7 +293,7 @@ class Trepan:
         self.thread = None
         self.eval_string = None
 
-        def get_option(key: str) -> Any:
+        def get_option(key: str):
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
         def completer(text: str, state):
@@ -378,7 +377,7 @@ if __name__ == "__main__":
     def foo():
         y = 2
         for item in range(2):
-            print(f"{item} {y}")
+            print("%d %d" % (item, y))
             pass
         return 3
 
@@ -408,7 +407,7 @@ if __name__ == "__main__":
                 d.core.start()
                 x = foo()
                 for i in range(2):
-                    print(f"{(i + 1) * 10}")
+                    print("%d" % (i + 1) * 10)
                     pass
                 d.core.stop()
 

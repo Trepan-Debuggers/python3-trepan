@@ -1,10 +1,8 @@
 """Unit test for trepan.lib.pp"""
 
-from typing import List
-
 from trepan.lib.pp import pp, pprint_simple_array
 
-errmsgs: List[str] = []
+errmsgs = []
 
 
 def errmsg(msg_str: str):
@@ -16,7 +14,7 @@ def errmsg(msg_str: str):
     return
 
 
-msgs: List[str] = []
+msgs = []
 
 
 def msg(msg_str: str):

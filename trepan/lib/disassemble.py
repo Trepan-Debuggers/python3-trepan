@@ -7,8 +7,6 @@ import inspect
 import sys
 import types
 
-from typing import Callable
-
 from xdis import (
     IS_PYPY,
     Bytecode,
@@ -54,8 +52,8 @@ def _try_compile(source, name):
 
 
 def dis(
-    msg: Callable,
-    msg_nocr: Callable,
+    msg,
+    msg_nocr,
     section,
     errmsg,
     x=None,
@@ -95,21 +93,21 @@ def dis(
     if hasattr(types, "InstanceType") and isinstance(x, types.InstanceType):
         x = x.__class__
     if inspect.ismethod(x):
-        section(f"Disassembly of {x}: {mess}")
+        section("Disassembly of %s: %s" % (x, mess))
         sectioned = True
         x = x.__func__.__code__
     elif inspect.isfunction(x) or inspect.isgeneratorfunction(x):
-        section(f"Disassembly of {x}: {mess}")
+        section("Disassembly of %s: %s" % (x, mess))
         x = x.__code__
         sectioned = True
     elif inspect.isgenerator(x):
-        section(f"Disassembly of {x}: {mess}")
+        section("Disassembly of %s: %s" % (x, mess))
         frame = x.gi_frame
         lasti = frame.f_last_i
         x = x.gi_code
         sectioned = True
     elif inspect.isframe(x):
-        section(f"Disassembly of {x}: {mess}")
+        section("Disassembly of %s: %s" % (x, mess))
         sectioned = True
         if hasattr(x, "f_lasti"):
             lasti = x.f_lasti
@@ -131,7 +129,7 @@ def dis(
         for name, x1 in items:
             if isinstance(x1, _have_code):
                 if not sectioned:
-                    section(f"Disassembly of {x}: ")
+                    section("Disassembly of %s: " % x)
                 try:
                     dis(
                         msg,
@@ -154,7 +152,7 @@ def dis(
         pass
     elif hasattr(x, "co_code"):  # Code object
         if not sectioned:
-            section(f"Disassembly of {x}: ")
+            section("Disassembly of %s: " % x)
         return disassemble(
             msg,
             msg_nocr,
@@ -176,13 +174,13 @@ def dis(
             x,
         )
     else:
-        errmsg(f"Don't know how to disassemble {type(x).__name__} objects.")
+        errmsg("Don't know how to disassemble %s objects." % type(x).__name__)
     return None, None
 
 
 def disassemble(
-    msg: Callable,
-    msg_nocr: Callable,
+    msg,
+    msg_nocr,
     section,
     co,
     lasti: int = -1,
@@ -227,8 +225,8 @@ opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def disassemble_bytes(
-    orig_msg: Callable,
-    orig_msg_nocr: Callable,
+    orig_msg,
+    orig_msg_nocr,
     code,
     lasti=-1,
     cur_line=0,
@@ -331,7 +329,7 @@ def disassemble_bytes(
         # Column: Instruction bytes
         if asm_format in ("extended-bytes", "bytes"):
             msg_nocr(format_token(Symbol, "|", highlight=highlight))
-            msg_nocr(format_token(Hex, f"{instr.opcode:02x}", highlight=highlight))
+            msg_nocr(format_token(Hex, "%02x" % instr.opcode, highlight=highlight))
             if instr.inst_size == 1:
                 # Not 3.6 or later
                 msg_nocr(" " * (2 * 3))
@@ -341,7 +339,7 @@ def disassemble_bytes(
                 if instr.has_arg:
                     msg_nocr(
                         format_token(
-                            Hex, f"{instr.arg % 256:02x}", highlight=highlight
+                            Hex, "%02x" % (instr.arg % 256), highlight=highlight
                         )
                     )
                 else:
@@ -349,9 +347,9 @@ def disassemble_bytes(
             elif instr.inst_size == 3:
                 # Not 3.6 or later
                 opbyte, operand_byte = divmod(instr.arg, 256)
-                msg_nocr(format_token(Hex, f"{opbyte:02x}", highlight=highlight))
+                msg_nocr(format_token(Hex, "%02x" % opbyte, highlight=highlight))
                 msg_nocr(" ")
-                msg_nocr(format_token(Hex, f"{operand_byte:02x}", highlight=highlight))
+                msg_nocr(format_token(Hex, "%02x" % operand_byte, highlight=highlight))
 
             msg_nocr(format_token(Symbol, "|", highlight=highlight))
             msg_nocr(" ")

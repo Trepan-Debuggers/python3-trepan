@@ -330,10 +330,10 @@ class MonoRSTTerminalFormatter(RSTTerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
             if ttype is Token.Name.Variable:
-                text = f'"{text}"'
+                text = '"%s"' % text
                 pass
             elif ttype is Token.Generic.Emph:
-                text = f"*{text}*"
+                text = "*%s*" % text
                 pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
@@ -349,10 +349,10 @@ class MonoTerminalFormatter(TerminalFormatter):
     def format_unencoded(self, tokensource, outfile):
         for ttype, text in tokensource:
             if ttype is Token.Name.Variable:
-                text = f'"{text}"'
+                text = '"%s"' % text
                 pass
             elif ttype is Token.Generic.Emph:
-                text = f"*{text}*"
+                text = "*%s*" % text
                 pass
             elif ttype is Token.Generic.Strong:
                 text = text.upper()
@@ -423,7 +423,6 @@ End of test.
     show_it(test_string, rst_tf, 30)
 
     text = """**break** [*location*] [if *condition*]]
-
 With a line number argument, set a break there in the current file.
 With a function name, set a break at first executable line of that
 function.  Without argument, set a breakpoint at current location.  If

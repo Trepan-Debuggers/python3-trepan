@@ -31,7 +31,7 @@ def test_list_command():
 
         if len(nums) != len(msgs):
             print_lines()
-            assert not f"len(msg): {len(msgs)} vs. len(check): {len(nums)}"
+            assert False, ("%d: %d vs. %d: %d" % (len(msg), len(msgs), len(check), len(nums)))
             return
 
         for i in nums:
@@ -109,20 +109,20 @@ def test_list_command():
     # my_file = os.path.realpath(__file__)
 
     msgs = []
-    clear_run_check(["list", f"{__file__}:3, 2"], list(range(3, 3 + 2 + 1)))
+    clear_run_check(["list", "%s:3, 2" % __file__], list(range(3, 3 + 2 + 1)))
 
     msgs = []
-    clear_run_check(["list", f"{__file__}:3, 2"], list(range(3, 3 + 2 + 1)))
+    clear_run_check(["list", "%s:3, 2" % __file__], list(range(3, 3 + 2 + 1)))
 
     msgs = []
     # 4 < 20, so "4" is a length
-    clear_run_check(["list", f"{__file__}:20,", "4"], list(range(20, 20 + 4 + 1)))
+    clear_run_check(["list", "%s:20," % __file__, "4"], list(range(20, 20 + 4 + 1)))
 
     # 4 > 3, so "4" is a last line number
     msgs = []
-    clear_run_check(["list", f"{__file__}:3 ,", "4"], list(range(3, 4 + 1)))
+    clear_run_check(["list", "%s:3 ," % __file__ , "4"], list(range(3, 4 + 1)))
 
     msgs = []
     # Explicit length
-    clear_run_check(["list", f"{__file__}:3 ,", "+4"], list(range(3, 3 + 4 + 1)))
+    clear_run_check(["list", "%s:3 ," % __file__, "+4"], list(range(3, 3 + 4 + 1)))
     return

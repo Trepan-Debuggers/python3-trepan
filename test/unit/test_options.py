@@ -50,7 +50,7 @@ def test_options():
     ) == set(), "expecting at least these processor keys set"
 
     # Try with more than one option, a boolean option and a string option.
-    arg_str = f"{__file__} --fntrace --cd=/tmp"
+    arg_str = "%s --fntrace --cd=/tmp" % __file__
     opts, dbg_opts, sys_argv = process_options("1.1", arg_str.split())
     assert opts.cd == "/tmp"
     postprocess_options(dbg, opts)
@@ -60,7 +60,7 @@ def test_options():
 
     # Try with an invalid style option and see that it is
     # rejected in postprocess option
-    arg_str = f"{__file__} --style=fafdsaXYZZY"
+    arg_str = "%s --style=fafdsaXYZZY" % __file__
     opts, dbg_opts, sys_argv = process_options("1.3", arg_str.split())
     postprocess_options(dbg, opts)
     assert dbg.settings["style"] is None

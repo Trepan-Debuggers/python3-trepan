@@ -18,7 +18,6 @@
 
 import inspect
 import types
-from typing import Optional
 
 
 def print_dict(s, obj, title) -> str:
@@ -26,20 +25,20 @@ def print_dict(s, obj, title) -> str:
         obj = obj.__dict__
         pass
     if isinstance(obj, dict):
-        s += f"\n{title}:\n"
+        s += "\n%s:\n" % title
         keys = list(obj.keys())
         keys.sort()
         for key in keys:
-            s += f"  {repr(key)}:\t{obj[key]}\n"
+            s += "  %s:\t%s\n" % (repr(key), obj[key])
             pass
         pass
     return s
 
 
-def print_argspec(obj, obj_name: str) -> Optional[str]:
+def print_argspec(obj, obj_name: str):
     """A slightly decorated version of inspect.signature"""
     try:
-        return f"{obj_name}{inspect.signature(obj)}"
+        return obj_name + inspect.formatargspec(*inspect.getargspec(obj))
     except Exception:
         return None
     return  # Not reached
@@ -62,9 +61,9 @@ def print_obj(arg, frame, format=None, short=False) -> str:
     if format:
         what = format + " " + arg
         obj = printf(obj, format)
-    s = f"{what} = {obj}"
+    s = "%s = %s" % (what, obj)
     if not short:
-        s += f"\ntype = {type(obj)}"
+        s += "\ntype = %s" % type(obj)
         if callable(obj):
             argspec = print_argspec(obj, arg)
             if argspec:
@@ -72,7 +71,7 @@ def print_obj(arg, frame, format=None, short=False) -> str:
                 if inspect.isclass(obj):
                     s += "Class constructor information:\n\t"
                     obj = obj.__init__
-                elif isinstance(obj, types.InstanceType):
+                elif hasattr(obj, "__call__"):
                     obj = obj.__call__
                     pass
                 s += argspec
@@ -153,7 +152,7 @@ if __name__ == "__main__":
     print(print_obj("Foo.__init__", None))
     print("-" * 30)
     print(print_argspec(Foo.__init__, "__init__"))
-    assert printf(31, "/o") == "037"
+    assert printf(31, "/o") == "0o37", printf(31, "/o")
     assert printf(31, "/t") == "00011111"
     assert printf(33, "/c") == "!"
     assert printf(33, "/x") == "0x21"

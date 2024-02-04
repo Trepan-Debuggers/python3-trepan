@@ -42,9 +42,9 @@ class UnaliasCommand(DebuggerCommand):
         for arg in args[1:]:
             if arg in self.proc.aliases:
                 del self.proc.aliases[arg]
-                self.msg(f"Alias for {arg} removed.")
+                self.msg("Alias for %s removed." % arg)
             else:
-                self.msg(f"No alias found for {arg}")
+                self.msg("No alias found for %s" % arg)
                 pass
             pass
         return

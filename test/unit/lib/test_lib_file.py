@@ -34,7 +34,7 @@ def test_readable():
     ]:
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
-        assert can_read == readable(f.name), f"Test {i} file mode {oct(mode)}"
+        assert can_read == readable(f.name), "Test %d file mode %s" % (i, oct(mode))
         f.close()
         i += 1
         pass
@@ -57,7 +57,7 @@ def test_executable():
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
 
-        assert can_read == executable(f.name), f"Test {i} file mode {oct(mode)}"
+        assert can_read == executable(f.name), "Test %d file mode %s" % (i, oct(mode))
         f.close()
         i += 1
         pass

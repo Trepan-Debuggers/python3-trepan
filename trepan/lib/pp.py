@@ -16,7 +16,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pprint
-from typing import Callable
 
 from columnize import columnize
 
@@ -60,7 +59,7 @@ class SafePP(pprint.PrettyPrinter):
         return pprint.PrettyPrinter._format(self, obj, *args, **kwargs)
 
 
-def pp(val, display_width, msg_nocr: Callable, msg: Callable, prefix=None):
+def pp(val, display_width, msg_nocr, msg, prefix=None):
     if prefix is not None:
         val_len = len(repr(val))
         if val_len + len(prefix) < display_width - 1:
@@ -83,7 +82,7 @@ def pp(val, display_width, msg_nocr: Callable, msg: Callable, prefix=None):
 # Actually... code like this should go in pformat.
 # Possibly some will go into columnize.
 def pprint_simple_array(
-    val, displaywidth, msg_nocr: Callable, msg: Callable, lineprefix=""
+        val, displaywidth, msg_nocr, msg, lineprefix=""
 ) -> bool:
     """Try to pretty print a simple case where a list is not nested.
     Return True if we can do it and False if not."""
@@ -133,6 +132,6 @@ if __name__ == "__main__":
     x = [i for i in range(30)]
     ll = locals().keys()
     for k in sorted(ll):
-        pp(eval(k), 80, msg_nocr, msg, prefix=f"{k} =")
+        pp(eval(k), 80, msg_nocr, msg, prefix="%s =" % k)
         pass
     pass

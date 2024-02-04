@@ -60,18 +60,19 @@ class AliasCommand(DebuggerCommand):
                     old_command = self.proc.aliases[al]
                     self.msg(
                         (
-                            f"Alias '{al}#' for command '{command}'replaced old "
-                            f"alias for '{old_command}'."
+                            "Alias '%s#' for command '%s'replaced old "
+                            + "alias for '%s'."
                         )
+                        % (al, command, old_command)
                     )
                 else:
-                    self.msg(f"New alias '{al}' for command '{command}' created.")
+                    self.msg("New alias '%s' for command '%s' created." % (al, command))
                     pass
                 self.proc.aliases[al] = command
             else:
                 self.errmsg(
-                    f"You must alias to a command name, and '{command}' "
-                    "and is not one."
+                    ("You must alias to a command name, and '%s' " + "and is not one.")
+                    % command
                 )
                 pass
             return

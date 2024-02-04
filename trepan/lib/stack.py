@@ -17,13 +17,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
 
+import dis
 import inspect
 import linecache
 import os
 import os.path as osp
 import re
 from reprlib import repr
-from typing import Optional
 
 import xdis
 from xdis import IS_PYPY, get_opcode
@@ -73,7 +73,7 @@ _re_pseudo_file = re.compile(r"^<.+>")
 # stripping out __pycache__. Finally, we've adapted this
 # so that it works back to 3.0.
 #
-def getsourcefile(filename: str) -> Optional[str]:
+def getsourcefile(filename: str):
     """Return the filename that can be used to locate an object's source.
     Return None if no way can be identified to get the source.
     """
@@ -106,7 +106,7 @@ def deparse_source_from_code(code):
                 break
         if len(source_lines) > 1:
             source_text += "..."
-        source_text = f'"{source_text}"'
+        source_text = '"%s"' % source_text
     except Exception:
         pass
     return source_text
@@ -143,13 +143,19 @@ def format_stack_entry(
         if is_exec_stmt(frame):
             fn_name = format_token(Function, "exec", highlight=color)
             source_text = deparse_source_from_code(frame.f_code)
-            s += f" {format_token(Function, fn_name, highlight=color)}({source_text})"
+            s += " %s(%s)" % (
+                format_token(Function, fn_name, highlight=color),
+                source_text,
+            )
         else:
             fn_name = get_call_function_name(frame)
             if fn_name:
                 source_text = deparse_source_from_code(frame.f_code)
                 if fn_name:
-                    s += f" {format_token(Function, fn_name, highlight=color)}({source_text})"
+                    s += " %s(%s)" % (
+                        format_token(Function, fn_name, highlight=color),
+                        source_text,
+                    )
             pass
     else:
         is_module = False
@@ -160,7 +166,7 @@ def format_stack_entry(
         else:
             maxargstrsize = dbg_obj.settings["maxargstrsize"]
             if len(params) >= maxargstrsize:
-                params = f"{params[0:maxargstrsize]}...)"
+                parms = "%s...)" % params[0:maxargstrsize]
                 pass
             s += params
         pass
@@ -202,7 +208,7 @@ def format_stack_entry(
             pass
 
         if add_quotes_around_file:
-            filename = f"'{filename}'"
+            filename = "'%s'" % filename
         s += " %s at line %s" % (
             format_token(Filename, filename, highlight=color),
             format_token(LineNumber, "%r" % lineno, highlight=color),
@@ -262,8 +268,6 @@ def is_exec_stmt(frame):
     """Return True if we are looking at an exec statement"""
     return hasattr(frame, "f_back") and get_call_function_name(frame) == "exec"
 
-
-import dis
 
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
@@ -356,7 +360,7 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
                 val = proc_obj.getval(name, frame.f_locals)
                 pass
             width = opts.get("width", 80)
-            pp(val, width, intf.msg_nocr, intf.msg, prefix=f"{name} =")
+            pp(val, width, intf.msg_nocr, intf.msg, prefix="%s =" % name)
             pass
 
         deparsed, node_info = deparse_offset(frame.f_code, name, frame.f_lasti, None)
@@ -389,12 +393,12 @@ def print_dict(s, obj, title):
         if isinstance(d, dict):
             keys = list(d.keys())
             if len(keys) == 0:
-                s += f"\n  No {title}"
+                s += "\n  No %s" % title
             else:
-                s += f"\n  {title}:\n"
+                s += "\n  %s:\n" % title
             keys.sort()
             for key in keys:
-                s += f"    '{key}':\t{d[key]}\n"
+                s += "    '%s':\t%s\n" % (key, d[key])
                 pass
             pass
         pass
@@ -424,9 +428,9 @@ def print_obj(arg, val, format=None, short=False):
         what = format + " " + arg
         val = printf(val, format)
         pass
-    s = f"{what} = {val}"
+    s = "%s = %s" % (what, val)
     if not short:
-        s += f"\n  type = {type(val)}"
+        s += "\n  type = %s" % type(val)
         # Try to list the members of a class.
         # Not sure if this is correct or the
         # best way to do.

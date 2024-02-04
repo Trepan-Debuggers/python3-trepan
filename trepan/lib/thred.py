@@ -72,10 +72,10 @@ if __name__ == "__main__":
     print("=" * 10)
 
     def showit():
-        print(f"Current thread: {current_thread_name()}")
+        print("Current thread: %s" % current_thread_name())
         print("All threads:")
         for thread_id, f in list(sys._current_frames().items()):
-            print(f"  {id2thread_name(thread_id)} {find_debugged_frame(f)}")
+            print("  %s %s" % (id2thread_name(thread_id), find_debugged_frame(f)))
             pass
         print("-" * 10)
         print("Thread->id map:")

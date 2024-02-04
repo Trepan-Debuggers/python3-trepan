@@ -29,7 +29,6 @@ import os
 import os.path as osp
 import sys
 import threading
-from typing import Any
 
 # External packages
 import pyficache
@@ -62,7 +61,7 @@ class TrepanCore(object):
         See also `start' and `stop'.
         """
 
-        def get_option(key: str) -> Any:
+        def get_option(key: str):
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
         self.bpmgr = breakpoint.BreakpointManager()
@@ -231,7 +230,7 @@ class TrepanCore(object):
         try:
             self.trace_hook_suspend = True
 
-            def get_option(key: str) -> Any:
+            def get_option(key: str):
                 return option_set(opts, key, default.START_OPTS)
 
             add_hook_opts = get_option("add_hook_opts")
@@ -260,7 +259,7 @@ class TrepanCore(object):
         try:
             self.trace_hook_suspend = True
 
-            def get_option(key: str) -> Any:
+            def get_option(key: str):
                 return option_set(options, key, default.STOP_OPTS)
 
             args = [self.trace_dispatch]
@@ -294,7 +293,7 @@ class TrepanCore(object):
                     else:
                         msg = ""
                         pass
-                    self.stop_reason = f"at {msg}call breakpoint {bp.number}"
+                    self.stop_reason = "at %scall breakpoint %d" % (msg, bp.number)
                     self.event = "brkpt"
                     return True
                 pass
@@ -309,7 +308,7 @@ class TrepanCore(object):
                 else:
                     msg = ""
                     pass
-                self.stop_reason = f"at {msg}line breakpoint {bp.number}"
+                self.stop_reason = "at %sline breakpoint %d" % (msg, bp.number)
                 self.event = "brkpt"
                 return True
             else:

@@ -18,7 +18,6 @@
 import os
 import stat
 import sys
-from typing import Optional
 
 import pyficache
 
@@ -39,7 +38,7 @@ READABLE_MASK = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
 EXECUTABLE_MASK = stat.S_IXOTH | stat.S_IXGRP | stat.S_IXUSR
 
 
-def executable(path: str) -> Optional[bool]:
+def executable(path: str):
     """Test whether a path exists and is readable.  Returns None for
     broken symbolic links or a failing stat() and False if
     the file exists but does not have read permission. True is returned
@@ -54,7 +53,7 @@ def executable(path: str) -> Optional[bool]:
     return True
 
 
-def readable(path: str) -> Optional[bool]:
+def readable(path: str):
     """Test whether a path exists and is readable.  Returns None for
     broken symbolic links or a failing stat() and False if
     the file exists but does not have read permission. True is returned
@@ -108,7 +107,7 @@ def parse_position(errmsg, arg):
         filename = arg[:colon].rstrip()
         m, f = lookupmodule(filename)
         if not f:
-            errmsg(f"'{filename}' not found using sys.path")
+            errmsg("'%s' not found using sys.path" % filename)
             return (None, None, None)
         else:
             filename = pyficache.resolve_name_to_path(f)
@@ -127,15 +126,15 @@ def parse_position(errmsg, arg):
 if __name__ == "__main__":
     import tempfile
 
-    print(f"readable(\"fdafsa\"): {readable('fdafdsa')}")
+    print('readable("fdafsa"): %s' % readable("fdafdsa"))
     for mode, can_read in [(stat.S_IRUSR, True), (stat.S_IWUSR, False)]:
         f = tempfile.NamedTemporaryFile()
         os.chmod(f.name, mode)
-        print(f"readable('{f.name}'): {readable(f.name)}")
+        print("readable('%s'): %s" % (f.name, readable(f.name)))
         f.close()
         pass
-    print(f"lookupmodule('os.path'): {repr(lookupmodule('os.path'))}")
-    print(f"lookupmodule(__file__): {repr(lookupmodule(__file__))}")
-    print(f"lookupmodule('fafdsadsa'): {repr(lookupmodule('fafdsafdsa'))}")
+    print("lookupmodule('os.path'): %s" % repr(lookupmodule("os.path")))
+    print("lookupmodule(__file__): %s" % repr(lookupmodule(__file__)))
+    print("lookupmodule('fafdsadsa'): %s" % repr(lookupmodule("fafdsafdsa")))
 
     pass

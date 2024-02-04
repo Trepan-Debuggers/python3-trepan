@@ -138,12 +138,12 @@ if __name__ == "__main__":
         % stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION")
     )
     print(
-        f"contains MAKE_FUNCTION {stmt_contains_opcode(co, lineno, 'MAKE_FUNCTION')}"
+        "contains MAKE_FUNCTION %s" % stmt_contains_opcode(co, lineno, "MAKE_FUNCTION")
     )
 
-    print(f"op at frame: {op_at_frame(frame)}")
-    print(f"op at frame, position 2: {op_at_frame(frame, 2)}")
-    print(f"def statement: x=5?: {is_def_stmt('x=5', frame)}")
+    print("op at frame: %s" % op_at_frame(frame))
+    print("op at frame, position 2: %s" % op_at_frame(frame, 2))
+    print("def statement: x=5?: %s" % is_def_stmt("x=5", frame))
     # Not a "def" statement because frame is wrong spot
     print(is_def_stmt("def foo():", frame))
 
@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     lineno = frame.f_lineno
     print(
-        f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}"
+        "contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno - 2, "BUILD_CLASS")
     )
-    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno, 'BUILD_CLASS')}")
+    print("contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno, "BUILD_CLASS"))
     pass
