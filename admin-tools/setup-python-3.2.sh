@@ -36,4 +36,4 @@ fulldir=$(readlink -f $mydir)
 cd $owd
 rm -v */.python-version || true
 
-git checkout python-3.2 && pyenv local $PYTHON_VERSION && git pull
+git checkout python-3.2-to-3.5 && pyenv local $PYTHON_VERSION && git pull

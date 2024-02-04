@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"Unit test for trepan.clifns"
+"""Unit test for trepan.clifns"""
 import inspect
 import os
 import sys

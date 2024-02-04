@@ -12,7 +12,7 @@ LINT    =o flake8
 PHONY=check clean dist distclean test test-unit test-functional rmChangeLog nosetests flake8
 
 #: Default target - same as "check"
-all: test-unit
+all: check
 
 #: Same as "check"
 test: check
@@ -27,15 +27,15 @@ flake8:
 
 #: Run all tests: unit, functional and integration verbosely
 # check: test-unit test-functional test-integration # flake8
-check: test-unit
+check: test-unit test-functional
 
 #: Run unit (transparent-box) tests
 test-unit:
 	$(PYTHON) -m pytest test/unit
 
 #: Run functional tests
-test-functional:
-	(cd test/functional && $(PYTHON) ./setup.py nosetests)
+check-functional test-functional:
+	(cd test/functional && $(PYTHON) -m pytest .)
 
 #: Run functional tests
 test-functional-short:

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"Unit test for trepan.lib.sighandler"
+"""Unit test for trepan.lib.sighandler"""
 import signal
 
 from trepan.lib import sighandler as Msig
@@ -57,6 +56,3 @@ def test_lookup_signame_signum():
             pass
         pass
     return
-
-
-pass
