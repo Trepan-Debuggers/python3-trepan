@@ -17,13 +17,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger class and top-level debugger functions.
 
-This module contains the `Debugger' class and some top-level routines
+This module contains the ``Trepan`` class and some top-level routines
 for creating and invoking a debugger. Most of this module serves as:
   * a wrapper for `Debugger.core' routines,
-  * a place to define `Debugger' exceptions, and
-  * `Debugger' settings.
+  * a place to define debugger exceptions, and
+  * debugger settings.
 
-See also module `cli' which contains a command-line interface to debug
+See also module ``cli`` which contains a command-line interface to debug
 a Python script and `core' which contains the core debugging
 start/stop and event-handling dispatcher and `client.py' which is a
 user or client-side code for connecting to server'd debugged program.
@@ -39,13 +39,13 @@ import tracefilter
 # External Egg packages
 import tracer
 
+from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
+from trepan.lib.core import TrepanCore
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
 from trepan.lib.sighandler import SignalManager
-from trepan.exception import DebuggerQuit, DebuggerRestart
-from trepan.lib.core import TrepanCore
 from trepan.misc import option_set
 
 try:
@@ -61,6 +61,13 @@ debugger_obj = None
 
 
 class Trepan:
+    """
+    Class for a top-level object.
+    """
+
+    def __init__(self):
+        self.settings = {}
+
     # The following functions have to be defined before
     # DEFAULT_INIT_OPTS which includes references to these.
 
@@ -369,6 +376,7 @@ class Trepan:
             results = self.core.processor.completer(string_seen, state)
             return results[state]
         return
+
     pass
 
 
