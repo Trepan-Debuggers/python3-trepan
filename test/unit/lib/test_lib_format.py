@@ -1,4 +1,4 @@
-"Unit test for trepan.lib.file"
+"""Unit test for trepan.lib.file"""
 import sys
 
 from pygments.lexers import RstLexer
@@ -50,6 +50,3 @@ End of test.
         "End of test. " == got
     )
     return
-
-
-pass

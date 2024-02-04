@@ -1,4 +1,4 @@
-"Unit test for trepan.processor.command.alias and unalias"
+"""Unit test for trepan.processor.command.alias and unalias"""
 import inspect
 from test.unit.cmdhelper import setup_unit_test_debugger
 

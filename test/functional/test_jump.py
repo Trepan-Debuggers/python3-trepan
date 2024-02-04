@@ -25,7 +25,7 @@ class TestJump(unittest.TestCase):
         ##############################
         d.core.stop(options={"remove": True})
         out = [
-            "-- x = 4\n",  # x = 4 is shown in prompt, but not run.
+            "-- x = 4",  # x = 4 is shown in prompt, but not run.
             "-- x = 5",
             "-- z = 7  # NOQA",
         ]

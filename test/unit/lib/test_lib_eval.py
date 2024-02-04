@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"Unit test for trepan.lib.eval"
+"""Unit test for trepan.lib.eval"""
 
 from trepan.lib import eval as Meval
 
