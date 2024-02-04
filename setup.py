@@ -4,15 +4,20 @@ import sys
 from setuptools import find_packages, setup
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 1) <= SYS_VERSION < (3, 12)):
-    mess = "Python Versions 3.2 to 3.5 are supported only in this package."
+if not ((3, 2) <= SYS_VERSION < (3, 13)):
+    mess = "Python Versions 3.2 to 3.12 are supported only in this package."
     if (2, 4) <= SYS_VERSION <= (2, 7):
         mess += "\nFor your Python, version %s, See trepan2" % sys.version[0:3]
     elif SYS_VERSION < (2, 4):
         mess += "\nFor your Python, version %s, see pydb" % sys.version[0:3]
-    if SYS_VERSION >= (3, 6):
+    if SYS_VERSION >= (3, 11):
         mess += (
             "\nFor your Python, version %s, use the master code/branch."
+            % sys.version[0:3]
+        )
+    elif SYS_VERSION >= (3, 6):
+        mess += (
+            "\nFor your Python, version %s, use the python-3.6-to-3.10 code/branch."
             % sys.version[0:3]
         )
     print(mess)

@@ -46,7 +46,9 @@ else:
 # 3.4            | pip      | 19.1.1       |
 
 # Things that change more often go here.
-copyright = """Copyright (C) 2013, 2015-2021, 2023 Rocky Bernstein <rocky@gnu.org>."""
+copyright = (
+    """Copyright (C) 2013, 2015-2021, 2023-2024 Rocky Bernstein <rocky@gnu.org>."""
+)
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -65,6 +67,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 

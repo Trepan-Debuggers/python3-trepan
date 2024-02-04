@@ -21,7 +21,8 @@ owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
-(cd ../python-uncompyle6 && ./admin-tools/setup-master.sh)
+cd $mydir
+(cd ../../python-uncompyle6 && ./admin-tools/setup-master.sh)
 cd $fulldir/..
 (cd $fulldir/.. && \
      checkout_version pycolumnize && \

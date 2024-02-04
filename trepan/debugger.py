@@ -17,13 +17,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Debugger class and top-level debugger functions.
 
-This module contains the `Debugger' class and some top-level routines
+This module contains the ``Trepan`` class and some top-level routines
 for creating and invoking a debugger. Most of this module serves as:
   * a wrapper for `Debugger.core' routines,
-  * a place to define `Debugger' exceptions, and
-  * `Debugger' settings.
+  * a place to define debugger exceptions, and
+  * debugger settings.
 
-See also module `cli' which contains a command-line interface to debug
+See also module ``cli`` which contains a command-line interface to debug
 a Python script and `core' which contains the core debugging
 start/stop and event-handling dispatcher and `client.py' which is a
 user or client-side code for connecting to server'd debugged program.
@@ -38,13 +38,13 @@ import tracefilter
 # External Egg packages
 import tracer
 
+from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
+from trepan.lib.core import TrepanCore
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
 from trepan.lib.sighandler import SignalManager
-from trepan.exception import DebuggerQuit, DebuggerRestart
-from trepan.lib.core import TrepanCore
 from trepan.misc import option_set
 
 try:
@@ -60,6 +60,88 @@ debugger_obj = None
 
 
 class Trepan:
+    """
+    Class for a top-level object.
+    """
+
+    def __init__(self, opts=None):
+        """Create a debugger object. But depending on the value of
+        key 'start' inside hash 'opts', we may or may not initially
+        start debugging.
+
+        See also ``Debugger.start`` and ``Debugger.stop``.
+        """
+
+        self.mainpyfile = None
+        self.thread = None
+        self.eval_string = None
+        self.settings = {}
+
+        def get_option(key: str) -> Any:
+            return option_set(opts, key, self.DEFAULT_INIT_OPTS)
+
+        def completer(text: str, state):
+            return self.complete(text, state)
+
+        # set the instance variables that come directly from options.
+        for opt in ("settings", "orig_sys_argv", "from_ipython"):
+            setattr(self, opt, get_option(opt))
+            pass
+
+        core_opts = {}
+        for opt in (
+            "ignore_filter",
+            "proc_opts",
+            "processor",
+            "step_ignore",
+            "processor",
+        ):
+            core_opts[opt] = get_option(opt)
+            pass
+
+        # How are I/O for this debugger handled? This should
+        # be set before calling DebuggerCore.
+        interface_opts = {
+            "complete": completer,
+            "debugger_name": "trepan3k",
+        }
+        # FIXME when I pass in opts=opts things break
+
+        inp = opts.get("input", None) if opts else None
+        interface = get_option("interface") or UserInterface(
+            inp=inp, opts=interface_opts
+        )
+        self.intf = [interface]
+
+        out = get_option("output")
+        if out:
+            self.intf[-1].output = out
+            pass
+
+        self.core = TrepanCore(self, core_opts)
+        self.core.add_ignore(self.core.stop)
+
+        # When set True, we'll also suspend our debug-hook tracing.
+        # This gives us a way to prevent or allow self debugging.
+        self.core.trace_hook_suspend = False
+
+        if get_option("save_sys_argv"):
+            # Save the debugged program's sys.argv? We do this so that
+            # when the debugged script munges these, we have a good
+            # copy to use for an exec restart
+            self.program_sys_argv = list(sys.argv)
+        else:
+            self.program_sys_argv = None
+            pass
+
+        self.sigmgr = SignalManager(self)
+
+        # Were we requested to activate immediately?
+        if get_option("activate"):
+            self.core.start(get_option("start_opts"))
+            pass
+        return
+
     # The following functions have to be defined before
     # DEFAULT_INIT_OPTS which includes references to these.
 
@@ -281,18 +363,6 @@ class Trepan:
         "from_ipython": False,
     }
 
-    def __init__(self, opts=None):
-        """Create a debugger object. But depending on the value of
-        key 'start' inside hash 'opts', we may or may not initially
-        start debugging.
-
-        See also ``Debugger.start`` and ``Debugger.stop``.
-        """
-
-        self.mainpyfile = None
-        self.thread = None
-        self.eval_string = None
-
         def get_option(key: str):
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
@@ -368,6 +438,7 @@ class Trepan:
             results = self.core.processor.completer(string_seen, state)
             return results[state]
         return
+
     pass
 
 

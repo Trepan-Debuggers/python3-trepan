@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"Unit test for trepan.processor.command.kill"
+"""Unit test for trepan.processor.command.kill"""
 
 import signal
 import sys
