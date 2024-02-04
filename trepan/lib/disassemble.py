@@ -7,6 +7,8 @@ import inspect
 import sys
 import types
 
+from typing import Callable
+
 from xdis import (
     IS_PYPY,
     Bytecode,
@@ -52,8 +54,8 @@ def _try_compile(source, name):
 
 
 def dis(
-    msg,
-    msg_nocr,
+    msg: Callable,
+    msg_nocr: Callable,
     section,
     errmsg,
     x=None,
@@ -93,21 +95,21 @@ def dis(
     if hasattr(types, "InstanceType") and isinstance(x, types.InstanceType):
         x = x.__class__
     if inspect.ismethod(x):
-        section("Disassembly of %s: %s" % (x, mess))
+        section(f"Disassembly of {x}: {mess}")
         sectioned = True
         x = x.__func__.__code__
     elif inspect.isfunction(x) or inspect.isgeneratorfunction(x):
-        section("Disassembly of %s: %s" % (x, mess))
+        section(f"Disassembly of {x}: {mess}")
         x = x.__code__
         sectioned = True
     elif inspect.isgenerator(x):
-        section("Disassembly of %s: %s" % (x, mess))
+        section(f"Disassembly of {x}: {mess}")
         frame = x.gi_frame
         lasti = frame.f_last_i
         x = x.gi_code
         sectioned = True
     elif inspect.isframe(x):
-        section("Disassembly of %s: %s" % (x, mess))
+        section(f"Disassembly of {x}: {mess}")
         sectioned = True
         if hasattr(x, "f_lasti"):
             lasti = x.f_lasti
@@ -129,7 +131,7 @@ def dis(
         for name, x1 in items:
             if isinstance(x1, _have_code):
                 if not sectioned:
-                    section("Disassembly of %s: " % x)
+                    section(f"Disassembly of {x}: ")
                 try:
                     dis(
                         msg,
@@ -152,7 +154,7 @@ def dis(
         pass
     elif hasattr(x, "co_code"):  # Code object
         if not sectioned:
-            section("Disassembly of %s: " % x)
+            section(f"Disassembly of {x}: ")
         return disassemble(
             msg,
             msg_nocr,
@@ -174,17 +176,17 @@ def dis(
             x,
         )
     else:
-        errmsg("Don't know how to disassemble %s objects." % type(x).__name__)
+        errmsg(f"Don't know how to disassemble {type(x).__name__} objects.")
     return None, None
 
 
 def disassemble(
-    msg,
-    msg_nocr,
+    msg: Callable,
+    msg_nocr: Callable,
     section,
     co,
-    lasti=-1,
-    start_line=-1,
+    lasti: int = -1,
+    start_line: int = -1,
     end_line=None,
     relative_pos=False,
     highlight="light",
@@ -225,8 +227,8 @@ opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def disassemble_bytes(
-    orig_msg,
-    orig_msg_nocr,
+    orig_msg: Callable,
+    orig_msg_nocr: Callable,
     code,
     lasti=-1,
     cur_line=0,
@@ -257,7 +259,9 @@ def disassemble_bytes(
 
     labels = findlabels(code, opc)
 
-    null_print = lambda x: None
+    def null_print(x):
+        return None
+
     if start_line > cur_line:
         msg_nocr = null_print
         msg = null_print
@@ -327,7 +331,7 @@ def disassemble_bytes(
         # Column: Instruction bytes
         if asm_format in ("extended-bytes", "bytes"):
             msg_nocr(format_token(Symbol, "|", highlight=highlight))
-            msg_nocr(format_token(Hex, "%02x" % instr.opcode, highlight=highlight))
+            msg_nocr(format_token(Hex, f"{instr.opcode:02x}", highlight=highlight))
             if instr.inst_size == 1:
                 # Not 3.6 or later
                 msg_nocr(" " * (2 * 3))
@@ -337,7 +341,7 @@ def disassemble_bytes(
                 if instr.has_arg:
                     msg_nocr(
                         format_token(
-                            Hex, "%02x" % (instr.arg % 256), highlight=highlight
+                            Hex, f"{instr.arg % 256:02x}", highlight=highlight
                         )
                     )
                 else:
@@ -345,9 +349,9 @@ def disassemble_bytes(
             elif instr.inst_size == 3:
                 # Not 3.6 or later
                 opbyte, operand_byte = divmod(instr.arg, 256)
-                msg_nocr(format_token(Hex, "%02x" % opbyte, highlight=highlight))
+                msg_nocr(format_token(Hex, f"{opbyte:02x}", highlight=highlight))
                 msg_nocr(" ")
-                msg_nocr(format_token(Hex, "%02x" % operand_byte, highlight=highlight))
+                msg_nocr(format_token(Hex, f"{operand_byte:02x}", highlight=highlight))
 
             msg_nocr(format_token(Symbol, "|", highlight=highlight))
             msg_nocr(" ")
@@ -409,17 +413,21 @@ if __name__ == "__main__":
         print(msg_str)
         return
 
+
     def msg_nocr(msg_str):
         sys.stdout.write(msg_str)
         return
+
 
     def errmsg(msg_str):
         msg("*** " + msg_str)
         return
 
+
     def section(msg_str):
         msg("=== " + msg_str + " ===")
         return
+
 
     curframe = inspect.currentframe()
     # dis(msg, msg_nocr, errmsg, section, curframe,

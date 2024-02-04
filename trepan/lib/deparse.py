@@ -5,6 +5,7 @@ import sys
 import tempfile
 from hashlib import sha1
 from io import StringIO
+from typing import Callable
 
 import pyficache
 from xdis import PYTHON_VERSION_TRIPLE
@@ -36,7 +37,7 @@ else:
                 deparsed = code_deparse_with_map(co, out)
             except Exception:
                 errmsg_fn(str(sys.exc_info()[0]))
-                errmsg_fn("error in deparsing code: %s" % co.co_filename)
+                errmsg_fn(f"error in deparsing code: {co.co_filename}")
                 return None, None
 
             deparse_cache[co] = deparsed
@@ -56,7 +57,7 @@ else:
         )
         with fd:
             fd.write(text.encode("utf-8"))
-            map_line = "\n\n# %s" % linemap
+            map_line = f"\n\n# {linemap}"
             fd.write(map_line.encode("utf-8"))
             remapped_file = fd.name
         fd.close()
@@ -64,8 +65,8 @@ else:
         pyficache.remap_file_lines(name_for_code, remapped_file, linemap)
         return remapped_file, name_for_code
 
-    def deparse_offset(co, name, last_i, errmsg_fn):
-        nodeInfo = None
+    def deparse_offset(co, name: str, last_i: int, errmsg_fn: Callable) -> tuple:
+        node_info = None
         deparsed = deparse_cache.get(co, None)
         if not deparsed or not hasattr(deparsed, "offsets"):
             out = StringIO()
@@ -79,15 +80,15 @@ else:
                     errmsg_fn("error in deparsing code")
             deparse_cache[co] = deparsed
         try:
-            nodeInfo = deparsed_find((name, last_i), deparsed, co)
+            node_info = deparsed_find((name, last_i), deparsed, co)
         except Exception:
             if errmsg_fn:
                 errmsg_fn(sys.exc_info()[1])
                 errmsg_fn("error in deparsing code at offset %d" % last_i)
 
-        if not nodeInfo:
-            nodeInfo = deparsed_find((name, last_i), deparsed, co)
-        return deparsed, nodeInfo
+        if not node_info:
+            node_info = deparsed_find((name, last_i), deparsed, co)
+        return deparsed, node_info
 
 
 # Demo it
@@ -103,7 +104,6 @@ if __name__ == "__main__":
         return
 
     curframe = inspect.currentframe()
-    line_no = curframe.f_lineno
     mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
     print(pyficache.getline(mapped_name, 7))
     # mapped_name, name_for_code = deparse_offset(curframe.f_code,

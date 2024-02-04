@@ -92,8 +92,8 @@ def parse_list_cmd(proc, args, listsize=10):
                 return INVALID_PARSE_LIST
             first = location.line_number
             last = list_range.last
-            if location.method:
-                first -= listsize // 2
+            # if location.method:
+            #     first -= listsize // 2
             if isinstance(last, str):
                 # Is an offset +number
                 assert last[0] == "+"

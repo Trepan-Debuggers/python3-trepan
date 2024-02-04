@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023 Rocky
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2024 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -31,13 +31,13 @@ if necessary, first.
 #    return function
 #
 # But this a bit cumbersome and perhaps overkill for the 2 or so
-# functions below.  (It also doesn't work once we add the exception handling
+# functions below.  It also doesn't work once we add the exception handling
 # we see below. So for now, we'll live with the code duplication.
 
 import sys
+from typing import Callable, Optional
 
-from trepan import debugger as Mdebugger
-from trepan.debugger import Trepan
+from trepan.debugger import Trepan, debugger_obj
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
 
@@ -49,21 +49,20 @@ def debugger_on_post_mortem():
 
 def run_eval(
     expression,
-    debug_opts=None,
-    start_opts=None,
-    globals_=None,
-    locals_=None,
-    tb_fn=None,
+    debug_opts: Optional[dict] = None,
+    start_opts: Optional[dict] = None,
+    globals_: Optional[dict] = None,
+    locals_: Optional[dict] = None,
+    tb_fn: Optional[Callable] = None,
 ):
-
     """Evaluate the expression (given as a string) under debugger
-    control starting with the statement subsequent to the place that
+    control starting with the statement after the place that
     this appears in your program.
 
     This is a wrapper to Debugger.run_eval(), so see that.
 
     When run_eval() returns, it returns the value of the expression.
-    Otherwise this function is similar to run().
+    Otherwise, this function is similar to run().
     """
 
     dbg = Trepan(opts=debug_opts)
@@ -81,17 +80,22 @@ def run_eval(
     return
 
 
-def run_call(func, *args, **kwds):
-
+def run_call(
+    func: Callable,
+    *args,
+    debug_opts: Optional[dict] = None,
+    start_opts: Optional[dict] = None,
+    **kwds,
+):
     """Call the function (a function or method object, not a string)
-    with the given arguments starting with the statement subsequent to
+    with the given arguments starting with the statement after
     the place that this appears in your program.
 
     When run_call() returns, it returns whatever the function call
     returned.  The debugger prompt appears as soon as the function is
     entered."""
 
-    dbg = Trepan()
+    dbg = Trepan(opts=debug_opts)
     try:
         return dbg.run_call(func, *args, **kwds)
     except Exception:
@@ -101,7 +105,6 @@ def run_call(func, *args, **kwds):
 
 
 def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_=None):
-
     """Execute the statement (given as a string) under debugger
     control starting with the statement subsequent to the place that
     this run_call appears in your program.
@@ -127,7 +130,13 @@ def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_
     return
 
 
-def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level=0):
+def debug(
+    dbg_opts=None,
+    start_opts=None,
+    post_mortem: bool = True,
+    step_ignore: int = 1,
+    level: int = 0,
+):
     """
     Enter the debugger.
 
@@ -141,9 +150,11 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level
     step_ignore : how many line events to ignore after the
     debug() call. 0 means don't even wait for the debug() call to finish.
 
-    param dbg_opts : is an optional "options" dictionary that gets fed
-    trepan.Debugger(); `start_opts' are the optional "options"
-    dictionary that gets fed to trepan.Debugger.core.start().
+    dbg_opts: is an optional "options" dictionary that gets fed
+              trepan.Debugger(); `
+    start_opts: are the optional "options" dictionary that gets fed to
+                trepan.Debugger.core.start().
+    post_mortem: start debugger in post-mortem mode.
 
     Use like this:
 
@@ -157,7 +168,7 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level
         # Below is code you want to use the debugger to do things.
         ....  # more Python code
         # If you get to a place in the program where you aren't going
-        # want to debug any more, but want to remove debugger trace overhead:
+        # want to debug anymore, but want to remove debugger trace overhead:
         trepan.api.stop()
 
     Parameter "level" specifies how many stack frames go back. Usually it will be
@@ -176,7 +187,7 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level
         trepan.api.debug(step_ignore=0)
         # ... as before
 
-    Module variable _debugger_obj_ from module trepan.debugger is used as
+    Module variable _debugger_obj_ from module ``trepan.debugger`` is used as
     the debugger instance variable; it can be subsequently used to change
     settings or alter behavior. It should be of type Debugger (found in
     module trepan). If not, it will get changed to that type::
@@ -207,20 +218,43 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level
     `dbg_opts' is an optional "options" dictionary that gets fed
     trepan.Debugger(); `start_opts' are the optional "options"
     dictionary that gets fed to trepan.Debugger.core.start()."""
-    if not isinstance(Mdebugger.debugger_obj, Mdebugger.Trepan):
-        Mdebugger.debugger_obj = Mdebugger.Trepan(dbg_opts)
-        Mdebugger.debugger_obj.core.add_ignore(debug, stop)
+
+    # We have a global debugger_obj that we reuse
+    global debugger_obj
+
+    # A list of debugger profiles we might run
+    dbg_initfiles = []
+
+    if debugger_obj is None:
+        # If debugger_obj has not been set this is the first time
+        # we are entering the debugger.
+        # create the object, and set to run the user's
+        # debugger initialization profile
+
+        debugger_obj = Trepan(dbg_opts)
+        debugger_obj.core.add_ignore(debug, stop)
+
+        # Run user profile if first time and we haven't
+        # explicit set to ignore profile loading.
+        if not start_opts or start_opts.get("startup-profile", True):
+            from trepan.options import add_startup_file
+
+            add_startup_file(dbg_initfiles)
+
         pass
-    core = Mdebugger.debugger_obj.core
+
+    core = debugger_obj.core
     frame = sys._getframe(0 + level)
     core.set_next(frame)
-    if start_opts and "startup-profile" in start_opts and start_opts["startup-profile"]:
-        dbg_initfiles = start_opts["startup-profile"]
-        from trepan import options
 
-        options.add_startup_file(dbg_initfiles)
-        for init_cmdfile in dbg_initfiles:
-            core.processor.queue_startfile(init_cmdfile)
+    # If we've specified profile loading, add that
+    if start_opts and start_opts.get("startup-profile", False):
+        from trepan.options import add_startup_file
+
+        add_startup_file(dbg_initfiles)
+
+    for init_cmdfile in dbg_initfiles:
+        core.processor.queue_startfile(init_cmdfile)
 
     if not core.is_started():
         core.start(start_opts)
@@ -242,8 +276,8 @@ def debug(dbg_opts=None, start_opts=None, post_mortem=True, step_ignore=1, level
 
 
 def stop(opts=None):
-    if isinstance(Mdebugger.debugger_obj, Trepan):
-        return Mdebugger.debugger_obj.stop(opts)
+    if isinstance(debugger_obj, Trepan):
+        return debugger_obj.stop(opts)
     return None
 
 
@@ -251,29 +285,41 @@ def stop(opts=None):
 if __name__ == "__main__":
     import tracer
 
-    def foo(n):
-        y = n
-        for i in range(n):
-            print(i)
-            pass
-        return y
+    def plus5(n: int) -> int:
+        return n + 5
 
+    from trepan.inout.stringarray import StringArrayInput, StringArrayOutput
     from trepan.lib.default import DEBUGGER_SETTINGS
 
     settings = dict(DEBUGGER_SETTINGS)
     settings.update({"trace": True, "printset": tracer.ALL_EVENTS})
-    debug_opts = {"step_ignore": -1, "settings": settings}
+    debugger_input = StringArrayInput()
+    debugger_output = StringArrayOutput()
+    debug_opts = {
+        "step_ignore": -1,
+        "settings": settings,
+        "input": debugger_input,
+        "output": debugger_output,
+    }
     print('Issuing: run_eval("1+2")')
-    print(run_eval("1+2", debug_opts=debug_opts))
-    print('Issuing: run_exec("x=1; y=2")')
-    run_exec("x=1; y=2", debug_opts=debug_opts)
-    print("Issuing: run_call(foo, debug_opts, None, 2)")
+    run_eval("1+2", debug_opts=debug_opts)
+    print(debugger_output.output)
+    # print('Issuing: run_exec("x=1; y=2")')
+    # run_exec("x=1; y=2", debug_opts=debug_opts)
+    debugger_input = StringArrayInput(["step", "list", "continue"])
+    debugger_output = StringArrayOutput()
+    debug_opts = {
+        "step_ignore": -1,
+        "settings": settings,
+        "input": debugger_input,
+        "output": debugger_output,
+    }
     if len(sys.argv) > 1:
         print(
-            "Issuing interactive: run_call(foo, %s, None, %s)"
-            % (debug_opts, sys.argv[1])
+            f"Issuing interactive: run_call(plus5, {int(sys.argv[1])}, debug_opts={debug_opts})"
         )
-        run_call(foo, debug_opts, int(sys.argv[1]))
+        run_call(plus5, int(sys.argv[1]), debug_opts=debug_opts)
     else:
-        run_call(foo, debug_opts, 2)
+        print(f"Issuing interactive: run_call(plus5, 2, debug_opts={debug_opts})")
+        run_call(plus5, 2, debug_opts=debug_opts)
     pass

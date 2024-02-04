@@ -15,7 +15,9 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """Signal handlers."""
+
 # TODO:
 #  - Doublecheck handle_pass and other routines.
 #  - can remove signal handler altogether when
@@ -28,7 +30,7 @@ import signal
 def yes_or_no(b) -> str:
     """Return 'Yes' for True and 'No' for False, and ?? for anything
     else."""
-    if type(b) != bool:
+    if not isinstance(b, bool):
         return "??"
     if b:
         return "Yes"
@@ -40,9 +42,9 @@ def lookup_signame(num: int):
     if 'num' is invalid."""
     signames = signal.__dict__
     num = abs(num)
-    for signame in list(signames.keys()):
-        if signame.startswith("SIG") and signames[signame] == num:
-            return signame
+    for signal_name in list(signames.keys()):
+        if signal_name.startswith("SIG") and signames[signal_name] == num:
+            return signal_name
         pass
     # Something went wrong. Should have returned above
     return None
@@ -58,8 +60,7 @@ def lookup_signum(name):
         uname = "SIG" + uname
         if hasattr(signal, uname):
             return getattr(signal, uname)
-        return None
-    return  # noqa
+    return None
 
 
 def canonic_signame(name_num):
@@ -67,22 +68,22 @@ def canonic_signame(name_num):
     number.  Return None is name_num is an int but not a valid signal
     number and False if name_num is a not number. If name_num is a
     signal name or signal number, the canonic if name is returned."""
-    signum = lookup_signum(name_num)
-    if signum is None:
-        # Maybe signame is a number?
+    signal_name = lookup_signum(name_num)
+    if signal_name is None:
+        # Maybe signal_name is a number?
         try:
             num = int(name_num)
-            signame = lookup_signame(num)
-            if signame is None:
+            signal_name = lookup_signame(num)
+            if signal_name is None:
                 return None
         except Exception:
-            return False
-        return signame
+            return None
+        return signal_name
 
-    signame = name_num.upper()
-    if not signame.startswith("SIG"):
-        return "SIG" + signame
-    return signame
+    signal_name = name_num.upper()
+    if not signal_name.startswith("SIG"):
+        return "SIG" + signal_name
+    return signal_name
 
 
 fatal_signals = ["SIGKILL", "SIGSTOP"]
@@ -144,7 +145,7 @@ class SignalManager:
 
     Parameter dbgr is a Debugger object. ignore is a list of
     signals to ignore. If you want no signals, use [] as None uses the
-    default set. Parameter default_print specifies whether or not we
+    default set. Parameter default_print specifies whether we
     print receiving a signals that is not ignored.
 
     All the methods which change these attributes return None on error, or
@@ -152,12 +153,12 @@ class SignalManager:
     handler.
     """
 
-    def __init__(self, dbgr, ignore_list=None, default_print=True):
+    def __init__(self, dbgr, ignore_list=None):
         self.dbgr = dbgr
         # dbgr.core.add_ignore(SigHandler.handle)
         self.sigs = {}
 
-        # List of signals. Dunno why signal doesn't provide.
+        # List of signals. I don't know why signal doesn't provide.
         self.siglist = []
 
         # Ignore signal handling initially for these known signals.
@@ -201,14 +202,11 @@ class SignalManager:
             "Description",
         )
 
-        if default_print:
-            default_print = self.dbgr.intf[-1].msg
-
-        for signame in list(signal.__dict__.keys()):
+        for signal_name in list(signal.__dict__.keys()):
             # Look for a signal name on this os.
-            if signame.startswith("SIG") and "_" not in signame:
-                self.siglist.append(signame)
-                self.initialize_handler(signame)
+            if signal_name.startswith("SIG") and "_" not in signal_name:
+                self.siglist.append(signal_name)
+                self.initialize_handler(signal_name)
             pass
         self.action("SIGINT stop print nostack nopass")
         return
@@ -256,12 +254,12 @@ class SignalManager:
         return True
 
     def set_signal_replacement(self, signum: int, handle):
-        """A replacement for signal.signal which chains the signal behind
+        """A replacement for ``signal.signal`` which chains the signal behind
         the debugger's handler"""
         signame = lookup_signame(signum)
         if signame is None:
             self.dbgr.intf[-1].errmsg(
-                "%s is not a signal number I know about." % signum
+                f"{signum} is not a signal number I know about."
             )
             return False
         # Since the intent is to set a handler, we should pass this
@@ -524,7 +522,7 @@ class SigHandler:
     def handle(self, signum, frame):
         """This method is called when a signal is received."""
         if self.print_method:
-            self.print_method("\nProgram received signal %s." % self.signame)
+            self.print_method(f"\nProgram received signal {self.signame}.")
         if self.print_stack:
             import traceback
 
@@ -561,7 +559,7 @@ if __name__ == "__main__":
         True,
         False,
     ):
-        print("yes_or_no of %s is %s" % (repr(b), yes_or_no(b)))
+        print(f"yes_or_no of {repr(b)} is {yes_or_no(b)}")
         pass
     for signum in range(signal.NSIG):
         signame = lookup_signame(signum)
@@ -580,16 +578,16 @@ if __name__ == "__main__":
         pass
 
     for i in ("term", "TERM", "NotThere"):
-        print("lookup_signum(%s): %s" % (i, repr(lookup_signum(i))))
+        print(f"lookup_signum({i}): {repr(lookup_signum(i))}")
         pass
 
     for i in ("15", "-15", "term", "sigterm", "TERM", "300", "bogus"):
-        print("canonic_signame(%s): %s" % (i, canonic_signame(i)))
+        print(f"canonic_signame({i}): {canonic_signame(i)}")
         pass
 
-    from trepan import debugger as Mdebugger
+    from trepan.debugger import Trepan
 
-    dbgr = Mdebugger.Trepan()
+    dbgr = Trepan()
     h = SignalManager(dbgr)
     h.info_signal(["TRAP"])
     # Set to known value

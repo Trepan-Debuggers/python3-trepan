@@ -3,7 +3,7 @@
 # The "pygments" version is not quite right
 # And the xdis version is missing
 columnize >= 0.3.10
-nose>=1.0.0, <= 1.3.7
+pyficache >= 2.3.0,
 pygments >= 2.2.0
 spark_parser
 tracer >= 0.3.2
@@ -12,3 +12,19 @@ uncompyle6 >= 3.7.4
 # Get these from github
 # pyficache >= 2.1.0, < 2.2.0
 # xdis >= 4.7.0
+
+xdis~=6.1.0.dev0
+setuptools~=59.6.0
+pip~=22.0.2
+attrs~=21.2.0
+distro~=1.7.0
+wheel~=0.37.1
+cryptography~=3.4.8
+Pillow~=9.0.1
+tornado~=6.1
+Jinja2~=3.0.3
+pyficache~=2.3.0
+py~=1.10.0
+lxml~=4.8.0
+keyring~=23.5.0
+typing_extensions~=4.8.0

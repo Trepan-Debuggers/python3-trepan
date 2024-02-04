@@ -1,4 +1,5 @@
 *.egg
+.idea
 *.egg-info
 *.py?
 *~

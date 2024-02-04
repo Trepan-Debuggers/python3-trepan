@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015, 2020-2021 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2015, 2020-2021, 2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,8 +15,18 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+from glob import glob
+from typing import Any
 
-def option_set(options, value, default_options):
+
+def option_set(options: dict, value, default_options) -> Any:
+    """
+    If ``value`` is found in ``options``, return that, otherwise return the value
+    from ``defaulit_options``.
+    """
+    # Yes, there is probably some fancy dictionary merge operation, that will do this,
+    # as a one-shot but this code is simple and clear.
     if not options or value not in options:
         return default_options.get(value)
     else:
@@ -23,16 +34,24 @@ def option_set(options, value, default_options):
     return None  # Not reached
 
 
-def bool2YN(b) -> bool:
+def bool2YN(b: bool) -> str:
+    """
+    Turn a bool into the string "Y" or "N".
+    """
     return "Y" if b else "N"
 
 
-def wrapped_lines(msg_part1, msg_part2, width):
+def wrapped_lines(msg_part1: str, msg_part2: str, width: int) -> str:
+    """
+    if ``msg_part1`` concatenated with ``msg_part2`` is larger than
+    ``width`` then concatenate the strings with a new line and tab inserted
+    between the strings. Otherwise, just concatenate with a space between the
+    two strings.
+    """
     if len(msg_part1) + len(msg_part2) + 1 > width:
         return msg_part1 + "\n\t" + msg_part2
     else:
         return msg_part1 + " " + msg_part2
-    return  # Not reached
 
 
 def pretty_modfunc_name(s) -> str:
@@ -42,10 +61,6 @@ def pretty_modfunc_name(s) -> str:
         return str(s)
     else:
         return str(s) + "()"
-
-
-import os
-from glob import glob
 
 
 def pyfiles(callername, level=2):
@@ -61,7 +76,10 @@ def pyfiles(callername, level=2):
 # Demo it
 if __name__ == "__main__":
     TEST_OPTS = {"a": True, "b": 5, "c": None}
-    get_option = lambda key: option_set(opts, key, TEST_OPTS)
+
+    def get_option(key):
+        return option_set(opts, key, TEST_OPTS)
+
     opts = {"d": 6, "a": False}
     for opt in ["a", "b", "c", "d"]:
         print(opt, get_option(opt))

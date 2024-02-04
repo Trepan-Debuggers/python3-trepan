@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2015, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,62 +16,72 @@
 
 import codecs
 import os
+import os.path as osp
 import sys
 from optparse import OptionParser
 
-from trepan import api as Mapi, clifns as Mclifns, debugger as Mdebugger
-from trepan.inout import output as Moutput
-from trepan.lib import file as Mfile
+from pygments.styles import STYLE_MAP
+
+import trepan.api
+from trepan.clifns import path_expanduser_abs
+from trepan.inout.output import DebuggerUserOutput
+from trepan.lib.file import readable
 
 
-def default_configfile(base_filename):
+def default_configfile(base_filename: str) -> str:
     """Return fully expanded configuration filename location for
     base_filename. python2 and  python3 debuggers share the same
     directory: ~/.config/trepan.py
     """
-    file_dir = os.path.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
-    file_dir = Mclifns.path_expanduser_abs(file_dir)
+    file_dir = osp.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
+    file_dir = path_expanduser_abs(file_dir)
 
-    if not os.path.isdir(file_dir):
+    if not osp.isdir(file_dir):
         os.makedirs(file_dir, mode=0o755)
-    return os.path.join(file_dir, base_filename)
+    return osp.join(file_dir, base_filename)
 
 
-def add_startup_file(dbg_initfiles):
+def add_startup_file(dbg_initfiles: list):
     """Read debugger startup file(s): both python code and
     debugger profile to dbg_initfiles."""
 
     startup_python_file = default_configfile("profile.py")
 
-    if Mfile.readable(startup_python_file):
+    if readable(startup_python_file):
         with codecs.open(startup_python_file, "r", encoding="utf8") as fp:
             exec(fp.read())
 
     startup_trepan_file = default_configfile("profile")
-    if Mfile.readable(startup_trepan_file):
+    if readable(startup_trepan_file):
         if startup_trepan_file not in dbg_initfiles:
             dbg_initfiles.append(startup_trepan_file)
         pass
     return
 
 
-def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
-    """Handle debugger options. Set `option_list' if you are writing
+def process_options(pkg_version: str, sys_argv: str, option_list=None):
+    """Handle debugger options. Set ``option_list`` if you are writing
     another main program and want to extend the existing set of debugger
     options.
 
+      Note that ``sys.argv`` must contain at least one element, the program name.
+
     The options dictionary from optparser is returned. sys_argv is
     also updated."""
+
     usage_str = """%prog [debugger-options] [python-script [script-options...]]
 
     Runs the extended python debugger"""
 
+    assert (
+        len(sys_argv) > 0
+    ), "sys_argv parameter must contain at least one string, the program name."
     # serverChoices = ('TCP','FIFO', None)
 
     optparser = OptionParser(
         usage=usage_str,
         option_list=option_list,
-        version="%%prog version %s" % pkg_version,
+        version=f"%prog version {pkg_version}",
     )
 
     optparser.add_option(
@@ -81,7 +90,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="linetrace",
         action="store_true",
         default=False,
-        help="Show lines before executing them. " "This option also sets --batch",
+        help="Show lines before executing them. This option also sets --batch",
     )
     optparser.add_option(
         "-F",
@@ -89,14 +98,14 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="fntrace",
         action="store_true",
         default=False,
-        help="Show functions before executing them. " "This option also sets --batch",
+        help="Show functions before executing them. This option also sets --batch",
     )
     optparser.add_option(
         "--basename",
         dest="basename",
         action="store_true",
         default=False,
-        help="Filenames strip off basename, " "(e.g. for regression tests)",
+        help="Filenames strip off basename, (e.g. for regression tests)",
     )
     #     optparser.add_option("--batch", dest="noninteractive",
     #                          action="store_true", default=False,
@@ -146,7 +155,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="different",
         action="store_true",
         default=True,
-        help="Consecutive stops should have " "different positions",
+        help="Consecutive stops should have different positions",
     )
     #     optparser.add_option("--error", dest="errors", metavar='FILE',
     #                          action="store", type='string',
@@ -168,7 +177,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         action="store",
         type="string",
         metavar="IP-OR-HOST",
-        help="connect IP or host name. " "Only valid if --client option given.",
+        help="connect IP or host name. Only valid if --client option given.",
     )
 
     optparser.add_option(
@@ -178,7 +187,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         type="string",
         metavar="{light|dark|plain}",
         default="light",
-        help="Use syntax and terminal highlight output. " "'plain' is no highlight",
+        help="Use syntax and terminal highlight output. 'plain' is no highlight",
     )
 
     optparser.add_option(
@@ -208,7 +217,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="post_mortem",
         action="store_true",
         default=True,
-        help=("Enter debugger on an uncaught (fatal) " "exception"),
+        help="Enter debugger on an uncaught (fatal) exception",
     )
 
     optparser.add_option(
@@ -216,7 +225,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="post_mortem",
         action="store_false",
         default=True,
-        help=("Don't enter debugger on an uncaught (fatal) " "exception"),
+        help="Don't enter debugger on an uncaught (fatal) exception",
     )
 
     optparser.add_option(
@@ -225,7 +234,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         dest="noexecute",
         action="store_true",
         default=False,
-        help=("Don't execute commands found in any " "initialization files"),
+        help="Don't execute commands found in any initialization files",
     )
 
     optparser.add_option(
@@ -235,7 +244,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         metavar="FILE",
         action="store",
         type="string",
-        help=("Write debugger's output (stdout) " "to FILE"),
+        help="Write debugger's output (stdout) to FILE",
     )
     optparser.add_option(
         "-P",
@@ -244,7 +253,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         default=1027,
         action="store",
         type="int",
-        help="Use TCP port number NUMBER for " "out-of-process connections.",
+        help="Use TCP port number NUMBER for out-of-process connections.",
     )
 
     optparser.add_option(
@@ -254,12 +263,15 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
         help="Out-of-process server connection mode",
     )
 
-    # optparser.add_option("--style", dest="style",
-    #                      action="store", type='string',
-    #                      metavar='*pygments-style*',
-    #                      default=None,
-    #                      help=("Pygments style; 'none' "
-    #                            "uses 8-color rather than 256-color terminal"))
+    optparser.add_option(
+        "--style",
+        dest="style",
+        action="store",
+        type="string",
+        metavar="*pygments-style*",
+        default=None,
+        help="Pygments style; 'none' uses 8-color rather than 256-color terminal",
+    )
 
     optparser.add_option(
         "--sigcheck",
@@ -294,7 +306,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # <arbitrary text>
     # ^Z^Z
     #
-    # where ^Z is the ctrl-Z character, and "annotname" is the name of the
+    # where ^Z is the ctrl-Z character, and "annotation" is the name of the
     # annotation. A line with only two ^Z ends the annotation (no nesting
     # allowed). See trepan.el for the usage
     optparser.add_option(
@@ -304,15 +316,13 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     # Set up to stop on the first non-option because that's the name
     # of the script to be debugged on arguments following that are
     # that scripts options that should be left untouched.  We would
-    # not want to interpret and option for the script, e.g. --help, as
-    # one one of our own, e.g. --help.
+    # not want to interpret an option for the script, e.g. --help, as
+    # one of our own, e.g. --help.
 
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
-    # FIXME: why does this mess up integration tests?
-    # (opts, sys.argv) = optparser.parse_args(sys_argv)
-    (opts, sys.argv) = optparser.parse_args()
+    (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
     dbg_opts = {"from_ipython": opts.from_ipython}
 
     # Handle debugger startup command files: --nx (-n) and --command.
@@ -320,7 +330,7 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     if not opts.noexecute:
         add_startup_file(dbg_initfiles)
 
-    # As per gdb, first we execute user initialization files and then
+    # As per gdb, first we execute user initialization files, and then
     # we execute any file specified via --command.
     if opts.command:
         dbg_initfiles.append(opts.command)
@@ -334,14 +344,14 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
 
     if opts.output:
         try:
-            dbg_opts["output"] = Moutput.DebuggerUserOutput(opts.output)
+            dbg_opts["output"] = DebuggerUserOutput(opts.output)
         except IOError:
             _, xxx_todo_changeme, _ = sys.exc_info()
             (errno, strerror) = xxx_todo_changeme.args
-            print("I/O in opening debugger output file %s" % opts.output)
-            print("error(%s): %s" % (errno, strerror))
+            print(f"I/O in opening debugger output file {opts.output}")
+            print(f"error({errno}): {strerror}")
         except Exception:
-            print("Unexpected error in opening debugger output file %s" % opts.output)
+            print(f"Unexpected error in opening debugger output file {opts.output}")
             print(sys.exc_info()[0])
             sys.exit(2)
             pass
@@ -350,8 +360,8 @@ def process_options(debugger_name, pkg_version, sys_argv, option_list=None):
     return opts, dbg_opts, sys.argv
 
 
-def _postprocess_options(dbg, opts):
-    """Handle options (`opts') that feed into the debugger (`dbg')"""
+def postprocess_options(dbg, opts):
+    """Handle options (``opts`) that feed into the debugger (``dbg``)"""
     # Set dbg.settings['printset']
     print_events = []
     if opts.fntrace:
@@ -371,19 +381,24 @@ def _postprocess_options(dbg, opts):
     else:
         dbg.settings["highlight"] = "plain"
 
-    # if getattr(opts, 'style') and opts.style != 'none':
-    #     dbg.settings['style'] = opts.style
-    # else:
-    #     dbg.settings['style'] = None
     dbg.settings["style"] = None
+    if getattr(opts, "style") and opts.style != "none":
+        style_names = sorted(list(STYLE_MAP.keys()))
+        if opts.style in style_names:
+            dbg.settings["style"] = opts.style
+        else:
+            sys.stderr.write(
+                f"""Pygments style "{opts.style}" listed. --style option ignored.\n"""
+                f"""Use 'set style" to see valid style and change style.\n"""
+            )
 
-    # Normally we want to set Mdebugger.debugger_obj so that one can
+    # Normally we want to set trepan.api.debugger_obj so that one can
     # put trepan.debugger breakpoints in a program and not have more
     # than one debugger running. More than one debugger may confuse
     # users, e.g. set different might stop at the same line once for
     # each debugger.
     if not opts.private:
-        Mdebugger.debugger_obj = dbg
+        trepan.api.debugger_obj = dbg
         pass
 
     #     if opts.errors:
@@ -404,7 +419,9 @@ def _postprocess_options(dbg, opts):
     #         dbg.cmdqueue = list(opts.execute.split(';;'))
 
     if opts.post_mortem:
-        Mapi.debugger_on_post_mortem()
+        from trepan.api import debugger_on_post_mortem
+
+        debugger_on_post_mortem()
         pass
     return
 
@@ -413,20 +430,20 @@ def _postprocess_options(dbg, opts):
 if __name__ == "__main__":
     import pprint
 
-    def doit(prog, version, arg_str):
-        print("options '%s'" % arg_str)
+    def doit(version, arg_str):
+        print(f"options '{arg_str}'")
         args = arg_str.split()
-        opts, dbg_opts, sys_argv = process_options("testing", version, args)
+        opts, dbg_opts, sys_argv = process_options(version, args)
         pp.pprint(vars(opts))
         print("")
         return
 
     pp = pprint.PrettyPrinter(indent=4)
-    doit("testing", "1.1", "")
-    doit("testing", "1.2", "foo bar")
-    doit("testing", "1.3", "--server")
-    doit("testing", "1.3", "--command %s bar baz" % __file__)
-    doit("testing", "1.4", "--server --client")
-    doit("testing", "1.5", "--style=emacs")
-    doit("testing", "1.6", "--help")  # exits, so must be last
+    doit("1.1", "__file__")
+    doit("1.2", f"{__file__} foo bar")
+    doit("1.3", f"{__file__} --server")
+    doit("1.3", f"{__file__} --command {__file__} bar baz")
+    doit("1.4", f"{__file__} --server --client")
+    doit("1.5", f"{__file__} --style=emacs")
+    doit("1.6", f"{__file__} --help")  # exits, so must be last
     pass

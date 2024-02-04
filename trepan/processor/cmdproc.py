@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2021, 2023 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2021, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -46,7 +46,10 @@ from trepan.vprocessor import Processor
 
 try:
     from trepan.lib.deparse import deparse_and_cache
+
+    have_deparse_and_cache = True
 except ImportError:
+    have_deparse_and_cache = False
     pass
 
 warned_file_mismatches = set()
@@ -175,15 +178,15 @@ def print_source_location_info(
         (trepan3k)
     """
     if remapped_file:
-        mess = "(%s:%s remapped %s" % (remapped_file, lineno, filename)
+        mess = f"({remapped_file}:{lineno} remapped {filename}"
     else:
-        mess = "(%s:%s" % (filename, lineno)
+        mess = f"({filename}:{lineno}"
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
     mess += "):"
     if fn_name and fn_name != "?":
-        mess += " %s" % fn_name
+        mess += f" {fn_name}"
         pass
     print_fn(mess)
     return
@@ -209,6 +212,13 @@ def print_location(proc_obj):
     source_text = None
     while i_stack >= 0:
         frame, lineno = proc_obj.stack[i_stack]
+
+        # Before starting a program a location for a module with
+        # line number 0 may be reported. Treat that as though
+        # we were on the first line.
+        if frame.f_code.co_name == "<module>" and lineno == 0:
+            lineno = 1
+
         i_stack -= 1
 
         #         # Next check to see that local variable breadcrumb exists and
@@ -229,13 +239,12 @@ def print_location(proc_obj):
                     tempdir=proc_obj.settings("tempdir"),
                 )
                 pyficache.remap_file(filename, remapped)
-                filename = remapped
-                lineno = pyficache.unmap_file_line(filename, lineno)
+                filename, lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif "<string>" == filename:
             source_text = deparse_fn(frame.f_code)
-            filename = "<string: '%s'>" % source_text
+            filename = f"<string: '{source_text}'>"
             pass
         else:
             m = re.search("^<frozen (.*)>", filename)
@@ -273,6 +282,7 @@ def print_location(proc_obj):
                 not source_text
                 and filename.startswith("<string: ")
                 and proc_obj.curframe.f_code
+                and have_deparse_and_cache
             ):
                 # Deparse the code object into a temp file and remap the line from code
                 # into the corresponding line of the tempfile
@@ -310,7 +320,7 @@ def print_location(proc_obj):
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
-                    intf_obj.msg("remapped file %s to %s" % (filename, remapped_file))
+                    intf_obj.msg(f"remapped file {filename} to {remapped_file} XX")
 
                     pass
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
@@ -369,7 +379,7 @@ def print_location(proc_obj):
 
     if proc_obj.event in ["return", "exception"]:
         val = proc_obj.event_arg
-        intf_obj.msg("R=> %s" % proc_obj._saferepr(val))
+        intf_obj.msg(f"R=> {proc_obj._saferepr(val)}")
         pass
     elif (
         proc_obj.event == "call"
@@ -501,11 +511,7 @@ class CommandProcessor(Processor):
         if self.thread_name and self.thread_name != "MainThread":
             prompt += ":" + self.thread_name
             pass
-        self.prompt_str = "%s%s%s" % (
-            "(" * self.debug_nest,
-            prompt,
-            ")" * self.debug_nest,
-        )
+        self.prompt_str = f"{'(' * self.debug_nest}{prompt}{')' * self.debug_nest}"
         highlight = self.debugger.settings["highlight"]
         if highlight and highlight in ("light", "dark"):
             self.prompt_str = colorize("underline", self.prompt_str)
@@ -581,7 +587,7 @@ class CommandProcessor(Processor):
             else:
                 exc_type_name = t.__name__
             if show_error:
-                self.errmsg(str("%s: %s" % (exc_type_name, arg)))
+                self.errmsg(str(f"{exc_type_name}: {arg}"))
             raise
         return None  # Not reached
 
@@ -597,7 +603,7 @@ class CommandProcessor(Processor):
             # in interaction.
             global_vars = None
         try:
-            code = compile(line + "\n", '"%s"' % line, "single")
+            code = compile(line + "\n", f'"{line}"', "single")
             exec(code, global_vars, local_vars)
         except Exception:
             t, v = sys.exc_info()[:2]
@@ -605,7 +611,7 @@ class CommandProcessor(Processor):
                 exc_type_name = t
             else:
                 exc_type_name = t.__name__
-            self.errmsg("%s: %s" % (str(exc_type_name), str(v)))
+            self.errmsg(f"{str(exc_type_name)}: {str(v)}")
             pass
         return
 
@@ -617,7 +623,7 @@ class CommandProcessor(Processor):
             if msg_on_error:
                 self.errmsg(msg_on_error)
             else:
-                self.errmsg("Expecting an integer, got: %s." % str(arg))
+                self.errmsg(f"Expecting an integer, got: {str(arg)}.")
                 pass
             return None
         if min_value and ret_value < min_value:
@@ -665,7 +671,7 @@ class CommandProcessor(Processor):
                     % (cmdname, str(arg))
                 )
             else:
-                self.errmsg("Expecting a positive integer, got: %s" % str(arg))
+                self.errmsg(f"Expecting a positive integer, got: {str(arg)}")
                 pass
             return None
             pass
@@ -707,7 +713,7 @@ class CommandProcessor(Processor):
                 exc_type_name = t
             else:
                 exc_type_name = t.__name__
-            self.errmsg(str("%s: %s" % (exc_type_name, arg)))
+            self.errmsg(str(f"{exc_type_name}: {arg}"))
             raise
         return
 
@@ -718,7 +724,7 @@ class CommandProcessor(Processor):
         """
         if hasattr(cmd_obj, "execution_set"):
             if not (self.core.execution_status in cmd_obj.execution_set):
-                part1 = "Command '%s' is not available for execution status:" % name
+                part1 = f"Command '{name}' is not available for execution status:"
                 mess = Mmisc.wrapped_lines(
                     part1, self.core.execution_status, self.debugger.settings["width"]
                 )
@@ -726,7 +732,7 @@ class CommandProcessor(Processor):
                 return False
             pass
         if self.frame is None and cmd_obj.need_stack:
-            self.intf[-1].errmsg("Command '%s' needs an execution stack." % name)
+            self.intf[-1].errmsg(f"Command '{name}' needs an execution stack.")
             return False
         if nargs < cmd_obj.min_args:
             self.errmsg(
@@ -820,7 +826,7 @@ class CommandProcessor(Processor):
                         current_command = self.macros[macro_cmd_name][0](*args[1:])
                     except TypeError:
                         t, v = sys.exc_info()[:2]
-                        self.errmsg("Error expanding macro %s" % macro_cmd_name)
+                        self.errmsg(f"Error expanding macro {macro_cmd_name}")
                         return False
                     if self.settings("debugmacro"):
                         print(current_command)
@@ -964,15 +970,15 @@ class CommandProcessor(Processor):
         if is_readable:
             self.cmd_queue.append("source " + expanded_cmdfile)
         elif is_readable is None:
-            self.errmsg("source file '%s' doesn't exist" % expanded_cmdfile)
+            self.errmsg(f"source file '{expanded_cmdfile}' doesn't exist")
         else:
-            self.errmsg("source file '%s' is not readable" % expanded_cmdfile)
+            self.errmsg(f"source file '{expanded_cmdfile}' is not readable")
             pass
         return
 
     def undefined_cmd(self, cmd):
         """Error message when a command doesn't exist"""
-        self.errmsg('Undefined command: "%s". Try "help".' % cmd)
+        self.errmsg(f'Undefined command: "{cmd}". Try "help".')
         return
 
     def read_history_file(self):
@@ -1043,7 +1049,7 @@ class CommandProcessor(Processor):
                 except Exception:
                     # Don't need to warn about optional modules
                     if mod_name not in self.optional_modules:
-                        print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
+                        print(f"Error importing {mod_name}: {sys.exc_info()[0]}")
                         pass
                     continue
                 pass
@@ -1088,12 +1094,12 @@ class CommandProcessor(Processor):
                 "show_sub",
             ):
                 pass
-            import_name = "%s.%s" % (Mcommand.__name__, mod_name)
+            import_name = f"{Mcommand.__name__}.{mod_name}"
             try:
                 command_mod = importlib.import_module(import_name)
             except Exception:
                 if mod_name not in self.optional_modules:
-                    print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
+                    print(f"Error importing {mod_name}: {sys.exc_info()[0]}")
                     pass
                 continue
 
@@ -1198,8 +1204,8 @@ if __name__ == "__main__":
     print(cmdproc.commands)
     fn = cmdproc.commands["quit"]
 
-    print("Removing non-existing quit hook: %s" % cmdproc.remove_preloop_hook(fn))
+    print(f"Removing non-existing quit hook: {cmdproc.remove_preloop_hook(fn)}")
     cmdproc.add_preloop_hook(fn)
     print(cmdproc.preloop_hooks)
-    print("Removed existing quit hook: %s" % cmdproc.remove_preloop_hook(fn))
+    print(f"Removed existing quit hook: {cmdproc.remove_preloop_hook(fn)}")
     pass

@@ -1,4 +1,4 @@
-#  Copyright (C) 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -60,19 +60,18 @@ class AliasCommand(DebuggerCommand):
                     old_command = self.proc.aliases[al]
                     self.msg(
                         (
-                            "Alias '%s#' for command '%s'replaced old "
-                            + "alias for '%s'."
+                            f"Alias '{al}#' for command '{command}'replaced old "
+                            f"alias for '{old_command}'."
                         )
-                        % (al, command, old_command)
                     )
                 else:
-                    self.msg("New alias '%s' for command '%s' created." % (al, command))
+                    self.msg(f"New alias '{al}' for command '{command}' created.")
                     pass
                 self.proc.aliases[al] = command
             else:
                 self.errmsg(
-                    ("You must alias to a command name, and '%s' " + "and is not one.")
-                    % command
+                    f"You must alias to a command name, and '{command}' "
+                    "and is not one."
                 )
                 pass
             return

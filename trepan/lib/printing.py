@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2007-2010, 2015, 2020, 2023 Rocky Bernstein
-
+#  Copyright (C) 2007-2010, 2015, 2020, 2023-2024
+#  Rocky Bernstein
+#
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -17,33 +18,34 @@
 
 import inspect
 import types
+from typing import Optional
 
 
-def print_dict(s, obj, title):
+def print_dict(s, obj, title) -> str:
     if hasattr(obj, "__dict__"):
         obj = obj.__dict__
         pass
     if isinstance(obj, dict):
-        s += "\n%s:\n" % title
+        s += f"\n{title}:\n"
         keys = list(obj.keys())
         keys.sort()
         for key in keys:
-            s += "  %s:\t%s\n" % (repr(key), obj[key])
+            s += f"  {repr(key)}:\t{obj[key]}\n"
             pass
         pass
     return s
 
 
-def print_argspec(obj, obj_name):
-    """A slightly decorated version of inspect.format_argspec"""
+def print_argspec(obj, obj_name: str) -> Optional[str]:
+    """A slightly decorated version of inspect.signature"""
     try:
-        return obj_name + inspect.formatargspec(*inspect.getargspec(obj))
+        return f"{obj_name}{inspect.signature(obj)}"
     except Exception:
         return None
     return  # Not reached
 
 
-def print_obj(arg, frame, format=None, short=False):
+def print_obj(arg, frame, format=None, short=False) -> str:
     """Return a string representation of an object"""
     try:
         if not frame:
@@ -60,9 +62,9 @@ def print_obj(arg, frame, format=None, short=False):
     if format:
         what = format + " " + arg
         obj = printf(obj, format)
-    s = "%s = %s" % (what, obj)
+    s = f"{what} = {obj}"
     if not short:
-        s += "\ntype = %s" % type(obj)
+        s += f"\ntype = {type(obj)}"
         if callable(obj):
             argspec = print_argspec(obj, arg)
             if argspec:

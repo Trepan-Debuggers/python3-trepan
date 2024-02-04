@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -7,9 +7,108 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path
+from typing import Optional
 
 
-class BreakpointManager(object):
+class Breakpoint:
+
+    """Breakpoint class implements temporary breakpoints, ignore
+    counts, disabling and (re)-enabling breakpoints and breakpoint
+    conditionals.
+
+    When matching an offset, if offset is None, the offset value is not
+    considered in a match. If offset is -1, we are at a "call" event;
+    the first offset in bytecode is 0.
+    """
+
+    def __init__(
+        self,
+        number,
+        filename,
+        line,
+        temporary=False,
+        condition=None,
+        funcname=None,
+        offset=None,
+    ):
+        self.offset = offset
+        self.condition = condition
+        self.enabled = True
+
+        self.filename = filename
+        if filename:
+            self.filename = os.path.realpath(filename)
+
+        # Needed if funcname is not None.
+        self.func_first_executable_line = None
+        self.funcname = funcname
+
+        # Number of time breakpoint has been hit
+        self.hits = 0
+
+        # Number of times to ignore breakpoint before stopping
+        self.ignore = 0
+
+        self.line = line
+        self.number = number
+
+        # Delete breakpoint after hitting it.
+        self.temporary = temporary
+        return
+
+    def __str__(self):
+        if self.temporary:
+            disp = "del  "
+        else:
+            disp = "keep "
+        if self.enabled:
+            disp = disp + "yes  "
+        else:
+            disp = disp + "no   "
+        if self.offset is None:
+            offset_str = " any"
+        else:
+            offset_str = "%4d" % self.offset
+        msg = "%-4dbreakpoint   %s %s at %s:%d" % (
+            self.number,
+            disp,
+            offset_str,
+            self.filename,
+            self.line,
+        )
+        if self.condition:
+            msg += f"\n\tstop only if {self.condition}"
+        if self.ignore:
+            msg += f"\n\tignore next {self.ignore} hits"
+        if self.hits:
+            ss = "" if self.hits > 1 else "s"
+            msg += f"\n\tbreakpoint already hit {self.hits} time{ss}"
+        return msg
+
+    def enable(self):
+        self.enabled = True
+        return self.enabled
+
+    def disable(self):
+        self.enabled = False
+        return self.enabled
+
+    def icon_char(self) -> str:
+        """Return a one-character "icon" giving the state of the breakpoint
+        't': temporary breakpoint
+        'B': enabled breakpoint
+        'b': disabled breakpoint
+        """
+        if self.temporary:
+            return "t"
+        elif self.enabled:
+            return "B"
+        return "b"
+
+    pass  # end of Breakpoint class
+
+
+class BreakpointManager:
     """Manages the list of Breakpoints.
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
@@ -20,19 +119,28 @@ class BreakpointManager(object):
     """
 
     def __init__(self):
-        self.reset()
+
+        # self.reset()
+
+        # The below duplicates self.reset(). However we include it here,
+        # to assist linters which as of 2014 largely do not grok attributes of
+        # class unless it is put inside __init__
+
+        self.bpbynumber: list = [None]
+        self.bplist = {}
+        self.fnlist = {}
         return
 
     def bpnumbers(self):
         """Returns a list of strings of breakpoint numbers"""
         return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
-    def get_breakpoint(self, i):
+    def get_breakpoint(self, i) -> tuple:
         if isinstance(i, str):
             try:
                 i = int(i)
             except ValueError:
-                return (False, "Breakpoint value %r is not a number." % i, None)
+                return (False, f"Breakpoint value {i!r} is not a number.", None)
             pass
         if 1 == len(self.bpbynumber):
             return (False, "No breakpoints set.", None)
@@ -49,12 +157,32 @@ class BreakpointManager(object):
         return (True, None, bp)
 
     def add_breakpoint(
-        self, filename, lineno, offset, temporary=False, condition=None, func=None
+        self,
+        filename: Optional[str],
+        lineno: Optional[int] = None,
+        offset: int = -1,
+        temporary: bool = False,
+        condition: Optional[str] = None,
+        func: Optional[str] = None,
     ):
-
+        """
+        Add a breakpoint in ``filename`` at line number ``lineno``.
+        If ``offset`` is given and not -1, then it we must also be at that offset in order to stop.
+        ``temporary`` specifies whether the breakpoint will be removed once it is hit.
+        `condition`` specifies that a string Python expression to be evaluated to determine
+        whether the breakpoint is hit or not.
+        """
         bpnum = len(self.bpbynumber)
         if filename:
             filename = os.path.realpath(filename)
+
+        assert (
+            isinstance(lineno, int) or func is not None
+        ), "You must either supply a function name or give a line number"
+
+        assert (
+            isinstance(filename, str) or func is not None
+        ), "You must either supply a filename or give a line number"
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, func, offset)
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
@@ -71,7 +199,11 @@ class BreakpointManager(object):
                 pass
         return brkpt
 
-    def delete_all_breakpoints(self):
+    def delete_all_breakpoints(self) -> str:
+        """
+        Delete all breakpoints. Return a message indicating
+        what was deleted.
+        """
         bp_list = []
         for bp in self.bpbynumber:
             if bp:
@@ -80,11 +212,9 @@ class BreakpointManager(object):
                 pass
         if not bp_list:
             return "There are no breakpoints"
-        else:
-            return "Deleted breakpoints %s" % ", ".join(bp_list)
-        return
+        return f"Deleted breakpoints {', '.join(bp_list)}"
 
-    def delete_breakpoint(self, bp):
+    def delete_breakpoint(self, bp: Breakpoint) -> bool:
         "remove breakpoint `bp'"
         bpnum = bp.number
         self.bpbynumber[bpnum] = None  # No longer in list
@@ -97,7 +227,7 @@ class BreakpointManager(object):
             del self.bplist[index]
         return True
 
-    def delete_breakpoint_by_number(self, bpnum):
+    def delete_breakpoint_by_number(self, bpnum: int) -> tuple:
         "Remove a breakpoint given its breakpoint number."
         success, msg, bp = self.get_breakpoint(bpnum)
         if not success:
@@ -115,14 +245,14 @@ class BreakpointManager(object):
             endis = "dis"
             pass
         if not bp_list:
-            return "No breakpoints to %sable" % endis
+            return f"No breakpoints to {endis}able"
         for bp in bp_list:
             bp.enabled = do_enable
             bp_nums.append(str(bp.number))
             pass
-        return "Breakpoints %sabled: %s" % (endis, ", ".join(bp_nums))
+        return f"Breakpoints {endis}abled: {', '.join(bp_nums)}"
 
-    def en_disable_breakpoint_by_number(self, bpnum, do_enable=True):
+    def en_disable_breakpoint_by_number(self, bpnum: int, do_enable=True) -> tuple:
         "Enable or disable a breakpoint given its breakpoint number."
         success, msg, bp = self.get_breakpoint(bpnum)
         if not success:
@@ -136,17 +266,13 @@ class BreakpointManager(object):
             return (
                 False,
                 (
-                    "Breakpoint (%r) previously %sabled"
-                    % (
-                        str(bpnum),
-                        endis,
-                    )
+                    f"Breakpoint ({str(bpnum)!r}) previously {endis}abled"
                 ),
             )
         bp.enabled = do_enable
         return (True, "")
 
-    def delete_breakpoints_by_lineno(self, filename, lineno):
+    def delete_breakpoints_by_lineno(self, filename: str, lineno: int):
         """Removes all breakpoints at a give filename and line number.
         Returns a list of breakpoints numbers deleted.
         """
@@ -158,7 +284,7 @@ class BreakpointManager(object):
             self.delete_breakpoint(bp)
         return bpnums
 
-    def find_bp(self, filename, lineno, frame):
+    def find_bp(self, filename: str, lineno: int, frame):
         """Determine which breakpoint for this file:line is to be acted upon.
 
         Called only if we know there is a bpt at this
@@ -226,110 +352,6 @@ class BreakpointManager(object):
     pass  # BreakpointManager
 
 
-class Breakpoint:
-
-    """Breakpoint class implements temporary breakpoints, ignore
-    counts, disabling and (re)-enabling breakpoints and breakpoint
-    conditionals.
-
-    When matching an offset, if offset is None, the offset value is not
-    considered in a match. If offset is -1, we are at a "call" event;
-    the first offset in bytecode is 0.
-    """
-
-    def __init__(
-        self,
-        number,
-        filename,
-        line,
-        temporary=False,
-        condition=None,
-        funcname=None,
-        offset=None,
-    ):
-
-        self.offset = offset
-        self.condition = condition
-        self.enabled = True
-
-        self.filename = filename
-        if filename:
-            self.filename = os.path.realpath(filename)
-
-        # Needed if funcname is not None.
-        self.func_first_executable_line = None
-        self.funcname = funcname
-
-        # Number of time breakpoint has been hit
-        self.hits = 0
-
-        # Number of times to ignore breakpoint before stopping
-        self.ignore = 0
-
-        self.line = line
-        self.number = number
-
-        # Delete breakpoint after hitting it.
-        self.temporary = temporary
-        return
-
-    def __str__(self):
-        if self.temporary:
-            disp = "del  "
-        else:
-            disp = "keep "
-        if self.enabled:
-            disp = disp + "yes  "
-        else:
-            disp = disp + "no   "
-        if self.offset is None:
-            offset_str = " any"
-        else:
-            offset_str = "%4d" % self.offset
-        msg = "%-4dbreakpoint   %s %s at %s:%d" % (
-            self.number,
-            disp,
-            offset_str,
-            self.filename,
-            self.line,
-        )
-        if self.condition:
-            msg += "\n\tstop only if %s" % self.condition
-        if self.ignore:
-            msg += msg("\n\tignore next %d hits" % self.ignore)
-        if self.hits:
-            if self.hits > 1:
-                ss = "s"
-            else:
-                ss = ""
-            msg += "\n\tbreakpoint already hit %d time%s" % self.hits, ss
-        return msg
-
-    def enable(self):
-        self.enabled = True
-        return self.enabled
-
-    def disable(self):
-        self.enabled = False
-        return self.enabled
-
-    def icon_char(self):
-        """Return a one-character "icon" giving the state of the breakpoint
-        't': temporary breakpoint
-        'B': enabled breakpoint
-        'b': disabled breakpoint
-        """
-        if self.temporary:
-            return "t"
-        elif self.enabled:
-            return "B"
-        else:
-            return "b"
-        return
-
-    pass  # end of Breakpoint class
-
-
 def checkfuncname(b, frame):
     """Check whether we should break here because of `b.funcname`."""
     if not b.funcname:
@@ -372,28 +394,23 @@ if __name__ == "__main__":
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
         print(
-            "Delete breakpoint %s: %s %s"
-            % (
-                i,
-                status,
-                msg,
-            )
+            f"Delete breakpoint {i}: {status} {msg}"
         )
     import inspect
 
     frame = inspect.currentframe()
-    print("Stop at bp: %s" % checkfuncname(bp, frame))
+    print(f"Stop at bp: {checkfuncname(bp, frame)}")
 
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
-        print("Stop at bp2: %s" % checkfuncname(bp, frame))
+        print(f"Stop at bp2: {checkfuncname(bp, frame)}")
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
         bp3 = bpmgr.add_breakpoint("foo", 0, frame.f_lineno + 1)
-        print("Stop at bp3: %s" % checkfuncname(bp3, frame))
+        print(f"Stop at bp3: {checkfuncname(bp3, frame)}")
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, False, None, "foo")
+    bp2 = bpmgr.add_breakpoint(None, None, -1,  None, "foo")
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint("foo", 5, 2, temporary=True)
     print(bp3.icon_char())

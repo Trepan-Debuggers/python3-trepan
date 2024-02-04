@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.complete import complete_token
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib import complete as Mcomplete
 
 
 class UndisplayCommand(DebuggerCommand):
@@ -39,10 +39,9 @@ class UndisplayCommand(DebuggerCommand):
 
     def complete(self, prefix):
         completions = [str(disp.number) for disp in self.proc.display_mgr.list]
-        return Mcomplete.complete_token(completions, prefix)
+        return complete_token(completions, prefix)
 
     def run(self, args):
-
         if len(args) == 1:
             self.proc.display_mgr.clear()
             return
@@ -60,15 +59,21 @@ class UndisplayCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
-    from trepan import debugger as Mdebugger
-    from trepan.processor import cmdproc as Mcmdproc
     import inspect
 
-    d = Mdebugger.Trepan()
+    from trepan.debugger import Trepan
+    from trepan.processor.cmdproc import get_stack
+
+    d = Trepan()
     cp = d.core.processor
-    command = UndisplayCommand(d.core.processor)
-    cp.curframe = inspect.currentframe()
-    cp.stack, cp.curindex = Mcmdproc.get_stack(cp.curframe, None, None, cp)
-    command.run(["undisplay", "z"])
-    command.run(["undisplay", "1", "10"])
+    if cp is not None:
+        command = UndisplayCommand(d.core.processor)
+        cp.curframe = inspect.currentframe()
+        if cp.curframe is None:
+            print("Can't get current frame - no demo done")
+        else:
+            cp.stack, cp.curindex = get_stack(cp.curframe, None, None, cp)
+            command.run(["undisplay", "z"])
+            command.run(["undisplay", "1", "10"])
+        pass
     pass

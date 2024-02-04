@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2012-2013, 2020, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2020, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,10 @@
 
 import re
 
-import xdis
 from opcode import HAVE_ARGUMENT, opname
+from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
+
+opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
 
 
 def op_at_code_loc(code, loc):
@@ -55,8 +57,9 @@ def next_opcode(code, offset):
 
 
 def next_linestart(co, offset, count=1):
-    linestarts = dict(xdis.findlinestarts(co))
     code = co.co_code
+
+    linestarts = dict(opcode_module.findlinestarts(co))
     # n = len(code)
     # contains_cond_jump = False
     for op, offset in next_opcode(code, offset):
@@ -66,11 +69,12 @@ def next_linestart(co, offset, count=1):
                 return linestarts[offset]
             pass
         pass
+
     return -1000
 
 
 def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
-    linestarts = dict(xdis.findlinestarts(co))
+    linestarts = dict(opcode_module.findlinestarts(co))
     code = co.co_code
     found_start = False
     offset = 0
@@ -134,12 +138,12 @@ if __name__ == "__main__":
         % stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION")
     )
     print(
-        "contains MAKE_FUNCTION %s" % stmt_contains_opcode(co, lineno, "MAKE_FUNCTION")
+        f"contains MAKE_FUNCTION {stmt_contains_opcode(co, lineno, 'MAKE_FUNCTION')}"
     )
 
-    print("op at frame: %s" % op_at_frame(frame))
-    print("op at frame, position 2: %s" % op_at_frame(frame, 2))
-    print("def statement: x=5?: %s" % is_def_stmt("x=5", frame))
+    print(f"op at frame: {op_at_frame(frame)}")
+    print(f"op at frame, position 2: {op_at_frame(frame, 2)}")
+    print(f"def statement: x=5?: {is_def_stmt('x=5', frame)}")
     # Not a "def" statement because frame is wrong spot
     print(is_def_stmt("def foo():", frame))
 
@@ -148,7 +152,7 @@ if __name__ == "__main__":
 
     lineno = frame.f_lineno
     print(
-        "contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno - 2, "BUILD_CLASS")
+        f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}"
     )
-    print("contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno, "BUILD_CLASS"))
+    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno, 'BUILD_CLASS')}")
     pass

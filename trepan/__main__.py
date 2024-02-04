@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2023 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -24,57 +24,52 @@ import tempfile
 
 import pyficache
 
-package = "trepan"
+from trepan.client import run
+from trepan.clifns import whence_file
+from trepan.debugger import Trepan
+from trepan.exception import DebuggerQuit, DebuggerRestart
+from trepan.interfaces.server import ServerInterface
+from trepan.lib.file import is_compiled_py, readable
+from trepan.misc import wrapped_lines
+from trepan.options import postprocess_options, process_options
+from trepan.version import __version__
 
-# Our local modules
-import trepan.client as Mclient
-import trepan.clifns as Mclifns
-import trepan.debugger as Mdebugger
-import trepan.exception as Mexcept
-import trepan.interfaces.server as Mserver
-import trepan.lib.file as Mfile
-import trepan.misc as Mmisc
-import trepan.options as Moptions
+package = "trepan"
 
 # The name of the debugger we are currently going by.
 __title__ = package
 
-from trepan.version import __version__
-
 
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
-    global __title__
 
     # Save the original just for use in the restart that works via exec.
     orig_sys_argv = list(sys_argv)
-    opts, dbg_opts, sys_argv = Moptions.process_options(
-        __title__, __version__, sys_argv
-    )
+    opts, dbg_opts, sys_argv = process_options(__version__, sys_argv)
 
     if opts.server is not None:
         if opts.server == "tcp":
             connection_opts = {"IO": "TCP", "PORT": opts.port}
         else:
             connection_opts = {"IO": "FIFO"}
-        intf = Mserver.ServerInterface(connection_opts=connection_opts)
+        intf = ServerInterface(connection_opts=connection_opts)
         dbg_opts["interface"] = intf
         if "FIFO" == intf.server_type:
-            print("Starting FIFO server for process %s." % os.getpid())
+            print(f"Starting FIFO server for process {os.getpid()}.")
         elif "TCP" == intf.server_type:
-            print("Starting TCP server listening on port %s." % intf.inout.PORT)
+            print(f"Starting TCP server listening on port {intf.inout.PORT}.")
             pass
     elif opts.client:
-        Mclient.run(opts, sys_argv)
+        run(opts, sys_argv)
         return
 
     dbg_opts["orig_sys_argv"] = orig_sys_argv
 
     if dbg is None:
-        dbg = Mdebugger.Trepan(dbg_opts)
+        dbg = Trepan(dbg_opts)
         dbg.core.add_ignore(main)
-        pass
-    Moptions._postprocess_options(dbg, opts)
+
+    postprocess_options(dbg, opts)
 
     # process_options has munged sys.argv to remove any options that
     # options that belong to this debugger. The original options to
@@ -87,29 +82,17 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
         if not osp.isfile(mainpyfile):
-            mainpyfile = Mclifns.whence_file(mainpyfile)
-            is_readable = Mfile.readable(mainpyfile)
+            mainpyfile = whence_file(mainpyfile)
+            is_readable = readable(mainpyfile)
             if is_readable is None:
-                print(
-                    "%s: Python script file '%s' does not exist"
-                    % (
-                        __title__,
-                        mainpyfile,
-                    )
-                )
+                print(f"{__title__}: Python script file '{mainpyfile}' does not exist")
                 sys.exit(1)
             elif not is_readable:
-                print(
-                    "%s: Can't read Python script file '%s'"
-                    % (
-                        __title__,
-                        mainpyfile,
-                    )
-                )
+                print(f"{__title__}: Can't read Python script file '{mainpyfile}'")
                 sys.exit(1)
                 return
 
-        if Mfile.is_compiled_py(mainpyfile):
+        if is_compiled_py(mainpyfile):
             try:
                 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
                 from xdis.version_info import version_tuple_to_str
@@ -124,7 +107,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     sip_hash,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
-                    print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
+                    print(f"Bytecode is pypy {is_pypy}, but we are {IS_PYPY}.")
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
@@ -146,7 +129,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         + os.environ["PATH"].split(osp.pathsep)
                         + ["."]
                     )
-                    try_file = Mclifns.whence_file(py_file, dirnames)
+                    try_file = whence_file(py_file, dirnames)
 
                 if osp.isfile(try_file):
                     mainpyfile = try_file
@@ -154,7 +137,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 else:
                     # Move onto the except branch
                     raise IOError(
-                        "Python file name embedded in code %s not found" % try_file
+                        f"Python file name embedded in code {try_file} not found"
                     )
             except IOError:
                 decompiler = "uncompyle6"
@@ -199,7 +182,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
-                        "%s: error decompiling '%s'" % (__title__, mainpyfile),
+                        f"{__title__}: error decompiling '{mainpyfile}'",
                         file=sys.stderr,
                     )
                     sys.exit(1)
@@ -230,15 +213,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # If mainpyfile is an optimized Python script try to find and
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
-        if mainpyfile != mainpyfile_noopt and Mfile.readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that." % __title__)
-            print(
-                "%s: Substituting non-compiled name: %s"
-                % (
-                    __title__,
-                    mainpyfile_noopt,
-                )
-            )
+        if mainpyfile != mainpyfile_noopt and readable(mainpyfile_noopt):
+            print(f"{__title__}: Compiled Python script given and we can't use that.")
+            print(f"{__title__}: Substituting non-compiled name: {mainpyfile_noopt}")
             mainpyfile = mainpyfile_noopt
             pass
 
@@ -272,17 +249,15 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             dbg.core.execution_status = "Terminated"
             dbg.intf[-1].msg("The program finished - quit or restart")
             dbg.core.processor.process_commands()
-        except Mexcept.DebuggerQuit:
+        except DebuggerQuit:
             break
-        except Mexcept.DebuggerRestart:
+        except DebuggerRestart:
             dbg.core.execution_status = "Restart requested"
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
-                part1 = "Restarting %s with arguments:" % dbg.core.filename(mainpyfile)
+                part1 = f"Restarting {dbg.core.filename(mainpyfile)} with arguments:"
                 args = " ".join(dbg.program_sys_argv[1:])
-                dbg.intf[-1].msg(
-                    Mmisc.wrapped_lines(part1, args, dbg.settings["width"])
-                )
+                dbg.intf[-1].msg(wrapped_lines(part1, args, dbg.settings["width"]))
             else:
                 break
         except SystemExit:
@@ -298,4 +273,3 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 # When invoked as main program, invoke the debugger on a script
 if __name__ == "__main__":
     main()
-    pass

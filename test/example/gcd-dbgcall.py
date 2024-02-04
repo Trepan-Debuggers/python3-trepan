@@ -9,7 +9,9 @@ of parameters.
 
 """
 import sys
+
 from trepan.api import debug
+
 
 def check_args():
     if len(sys.argv) != 3:
@@ -17,27 +19,29 @@ def check_args():
         raise Exception("Need to give two numbers")
     for i in range(2):
         try:
-            sys.argv[i+1] = int(sys.argv[i+1])
+            sys.argv[i + 1] = int(sys.argv[i + 1])
         except ValueError:
             print("** Expecting an integer, got: %s" % repr(sys.argv[i]))
             sys.exit(2)
 
-def gcd(a,b):
-    """ GCD. We assume positive numbers"""
+
+def gcd(a, b):
+    """GCD. We assume positive numbers"""
 
     # Make: a <= b
     if a > b:
-       (a, b) = (b, a)
+        (a, b) = (b, a)
 
     if a <= 0:
         debug(step_ignore=0)
         return None
-    if a == 1 or b-a == 0:
-        debug(start_opts={'startup-profile': True})
+    if a == 1 or b - a == 0:
+        debug()
         return a
-    return gcd(b-a, a)
+    return gcd(b - a, a)
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     check_args()
 
     (a, b) = sys.argv[1:3]
