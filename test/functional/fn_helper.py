@@ -25,7 +25,7 @@ trepan_prompt = re.compile(r"^.. \d+.*\n\(trepan3k(:.+)?\) ")
 trepan_loc = re.compile(r"^\(.+:\d+\): ")
 
 
-def filter_line_cmd(a):
+def filter_line_cmd(a: list) -> list:
     """Return output with source lines prompt and command removed"""
     # Remove extra leading spaces.
     # For example:
@@ -33,6 +33,7 @@ def filter_line_cmd(a):
     # becomes
     # -- y = 5
     a1 = [re.sub(r"^(..) \d+\s+", r"\1 ", s) for s in a if re.match(r"^.. \d+\s+", s)]
+
     # Remove debugger prompts
     # For example:
     #  (trepan3k)
@@ -40,16 +41,20 @@ def filter_line_cmd(a):
 
     # Remove locations (test-next.py:41): test_next_between_fn
     a3 = [re.sub(r"\n\(.*:\d+\):.*", "", s) for s in a2]
-    return a3
+
+    # Strip leading and trailing blanks.
+    a4 = [s.strip() for s in a3]
+
+    return a4
 
 
-def get_lineno():
+def get_lineno() -> int:
     """Return the caller's line number"""
     caller = sys._getframe(1)
     return caller.f_lineno
 
 
-def compare_output(obj, right, d):
+def compare_output(obj, right: list, d):
     got = filter_line_cmd(d.intf[-1].output.output)
     if got != right:
         for i in range(len(got)):
