@@ -1,5 +1,5 @@
 #!/bin/bash
-PYTHON_VERSION=3.8.18
+PYTHON_VERSION=3.11.7
 
 # FIXME put some of the below in a common routine
 function checkout_version {
@@ -25,7 +25,7 @@ fulldir=$(readlink -f $mydir)
 cd $fulldir/..
 (cd $fulldir/.. && \
      checkout_version pycolumnize && \
-     checkout_version pyhthon-xdis && \
+     checkout_version python-xdis && \
      checkout_version python-filecache && \
      checkout_version python-uncompyle6 && \
      checkout_version python3-trepan
