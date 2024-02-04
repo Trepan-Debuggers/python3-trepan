@@ -320,7 +320,7 @@ def print_location(proc_obj):
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
-                    intf_obj.msg(f"remapped file {filename} to {remapped_file} XX")
+                    intf_obj.msg(f"remapped file {filename} to {remapped_file}")
 
                     pass
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
