@@ -49,17 +49,21 @@ def test_run_xxx():
     print('Issuing: run_call(foo, 3")')
     x = run_call(plus5, 3, debug_opts=debug_opts)
     assert x == 8
-    call_lineno = "12"
+    call_lineno = "14"
     for i, (prefix, suffix) in enumerate(
         (
             ("call - ", "test/unit/test_api.py:%s" % call_lineno),
-            ("line - ", "test/unit/test_api.py:13"),
-            ("return - ", "test/unit/test_api.py:13, 8 "),
+            ("line - ", "test/unit/test_api.py:15"),
+            ("return - ", "test/unit/test_api.py:15, 8 "),
         )
     ):
-        assert debugger_output.output[i].startswith(prefix), debugger_output.output[i]
-        if not debugger_output.output[i].endswith(suffix):
-            from trepan.api import debug
-
-            debug()
-        assert debugger_output.output[i].endswith(suffix), debugger_output.output[i]
+        assert debugger_output.output[i].startswith(prefix), (
+            prefix,
+            suffix,
+            debugger_output.output[i],
+        )
+        assert debugger_output.output[i].endswith(suffix), (
+            prefix,
+            suffix,
+            debugger_output.output[i],
+        )
