@@ -1,10 +1,11 @@
 *.egg
-.idea
 *.egg-info
 *.py?
 *~
+.idea
 .python-version
 /*.egg
+/.cache
 /.coverage
 /.eggs
 /.tox
