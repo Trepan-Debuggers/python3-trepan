@@ -25,10 +25,15 @@ cd $mydir
 (cd ../../python-uncompyle6 && ./admin-tools/setup-master.sh)
 cd $fulldir/..
 (cd $fulldir/.. && \
+     checkout_version python-spark master && \
      checkout_version pycolumnize && \
      checkout_version python-xdis && \
      checkout_version python-filecache && \
-     checkout_version python-uncompyle6 && \
-     checkout_version python3-trepan
+     checkout_version python-uncompyle6 \
 )
+
+rm -v */.python-version || true
+
+git checkout master && pyenv local $PYTHON_VERSION && git pull
+
 cd $owd

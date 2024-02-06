@@ -34,6 +34,10 @@ def ctype_async_raise(thread_obj, exception):
     if not found:
         raise ValueError("Invalid thread object")
 
+    if not hasattr(ctypes, "pythonapi"):
+        # PyPy 7.3.11 is like this
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+
     ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(
         target_tid, ctypes.py_object(exception)
     )

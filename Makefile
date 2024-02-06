@@ -5,7 +5,7 @@
 # remake --tasks to shows the targets and the comments
 
 GIT2CL ?= git2cl
-PYTHON ?= python3
+PYTHON ?= $(shell command -v python)
 RM      ?= rm
 LINT    =o flake8
 

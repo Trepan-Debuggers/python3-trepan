@@ -8,18 +8,19 @@ owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
-if ! source ./pyenv-newer-versions ; then
+if ! source ./pyenv-3.6-3.10-versions ; then
     exit $?
 fi
 
-. ./setup-master.sh
+. ./setup-python-3.6.sh
 
 cd ..
 for version in $PYVERSIONS; do
     if ! pyenv local $version ; then
 	exit $?
     fi
-    python --version
+    export PYTHON=$(command -v python)
+    $PYTHON --version
     make clean && pip install -e .
     if ! make check; then
 	exit $?
