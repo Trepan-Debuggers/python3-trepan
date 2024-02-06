@@ -38,7 +38,7 @@ def test_run_xxx():
     print('Issuing: run_eval("1+2")')
     print(run_eval("1+2", debug_opts=debug_opts))
     print(debugger_output.output)
-    start_lineno = "1" if sys.version_info[:2] < (3, 10) else "0"
+    start_lineno = "1" if sys.version_info[:2] < (3, 11) else "0"
 
     assert debugger_output.output[0:3] == [
         "call - <string>:%s" % start_lineno,
