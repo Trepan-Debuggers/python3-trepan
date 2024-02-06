@@ -179,7 +179,9 @@ class TrepanCore(object):
                 pass
             canonic = osp.realpath(osp.normcase(canonic))
             self.filename_cache[filename] = canonic
-        canonic = pyficache.unmap_file(canonic)
+        if pyficache is not None:
+            # removing logging can null out pyficache
+            canonic = pyficache.unmap_file(canonic)
 
         return canonic
 
