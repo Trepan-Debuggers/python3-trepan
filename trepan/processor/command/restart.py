@@ -14,8 +14,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import atexit
 import os
+import sys
+from getopt import GetoptError, getopt
 
 from trepan.lib.file import executable
 from trepan.misc import wrapped_lines
@@ -25,10 +28,23 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 
 
 class RestartCommand(DebuggerCommand):
-    """**restart**
+    """**restart** [*options*]
 
     Restart debugger and program via an *exec()* call. All state is lost,
     and new copy of the debugger is used.
+
+    *options* are:
+
+       -p | --python - Add Python interpreter to invocation
+       -e | --env    - Use current Environment settings
+
+    Normally invocation is what was stored in sys.args. However
+    it can happen that sys.argv[0] can be not marked  executable in the OS.
+    When this happens, we need to add "python" at the beginning. Use the "-p" option
+    do that using the current Python interpreter running.
+
+    Sometimes in the invocation various environment variables are
+    set and these too might get lost in the execv. To pre
 
     See also:
     ---------
@@ -40,18 +56,44 @@ class RestartCommand(DebuggerCommand):
     short_help = "(Hard) restart of program via execv()"
 
     # FIXME: add mechanism for adding python interpreter.
-    DebuggerCommand.setup(locals(), category="support", max_args=0)
+    DebuggerCommand.setup(locals(), category="support", max_args=2)
 
     def run(self, args):
+        # Not sure if we need --env. But for now we'll try it.
+        try:
+            opts, args = getopt(args[1:], "hep", "help env python".split())
+        except GetoptError as err:
+            # print help information and exit:
+            print(str(err))  # will print something like "option -a not recognized"
+            return
+
+        restart_options = {"env": False, "python": False}
+        for o, _ in opts:
+            if o in ("-h", "--help"):
+                self.proc.commands["help"].run(["help", "restart"])
+                return
+            elif o in ("-e", "--env"):
+                restart_options["env"] = True
+            elif o in ("-p", "--python"):
+                restart_options["python"] = True
+            else:
+                self.errmsg("unhandled option '%s'" % o)
+            pass
+
         sys_argv = self.debugger.restart_argv()
         if sys_argv and len(sys_argv) > 0:
             program_file = sys_argv[0]
-            if not executable(sys_argv[0]):
-                self.errmsg('File "%s" is not marked executable.' % program_file)
-                return
+            if not restart_options["python"]:
+                if not executable(sys_argv[0]):
+                    self.errmsg('File "%s" is not marked executable.' % program_file)
+                    return
 
-            confirmed = self.confirm("Restart (execv)", False)
+            exec_suffix = "e" if restart_options["env"] else ""
+            confirmed = self.confirm("Restart (execvp%s)" % exec_suffix, False)
             if confirmed:
+                if restart_options["python"]:
+                    sys_argv.insert(0, sys.executable)
+
                 self.msg(
                     wrapped_lines(
                         "Re exec'ing:", repr(sys_argv), self.settings["width"]
@@ -63,7 +105,11 @@ class RestartCommand(DebuggerCommand):
                     atexit._run_exitfuncs()
                 except Exception:
                     pass
-                os.execvp(program_file, sys_argv)
+
+                if restart_options["env"]:
+                    os.execvpe(program_file, sys_argv, os.environ)
+                else:
+                    os.execvp(program_file, sys_argv)
                 pass
             pass
         else:
@@ -80,7 +126,6 @@ if __name__ == "__main__":
     d, cp = dbg_setup()
     command = RestartCommand(cp)
     command.run([])
-    import sys
 
     if len(sys.argv) > 1:
         # Strip of arguments so we don't loop in exec.

@@ -33,7 +33,7 @@ class RunCommand(DebuggerCommand):
 
     See `quit`, `exit` or `kill` for termination commands."""
 
-    aliases = ("R", "restart!")
+    aliases = ("R", "run!")
     short_help = "(Soft) restart program via a DebuggerRestart exception"
 
     DebuggerCommand.setup(locals(), category="support", max_args=0)
