@@ -11,18 +11,20 @@ jobs:
     shell: /bin/bash --login
     working_directory: ~/rocky/python3-trepan
     docker:
-    - image: circleci/python:3.6
+    - image: circleci/python:3.8
     steps:
       - checkout  # checkout source code to working directory
       - run:
           command: |  # use pip to install dependencies. FIXME: can we get rid of sudo?
-            # sudo pip install -e git://github.com/rocky/python-xdis.git#egg=xdis
-            # sudo pip install -e git://github.com/rocky/python-filecache.git#egg=pyficache
-            sudo pip install -e .
-            sudo pip install -r requirements-dev.txt
+            pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
+            pip install --local -e git+https://github.com/rocky/pytracer.git#egg=tracer
+            pip install --local -e git+https://github.com/rocky/python-filecache.git#egg=pyficache
+            pip install --local -e git+https://github.com/rocky/python-decompile3.git#egg=decompyle3
+            pip install --local -e .
+            # pip install --local -r requirements-dev.txt
           name: Install dependencies
       - run:
-          command: sudo python ./setup.py develop && sudo make test-unit test-functional
+          command: sudo python ./setup.py develop && make test-unit test-functional
           name: Run Tests
 
 workflows:
