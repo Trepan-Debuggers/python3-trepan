@@ -4,7 +4,7 @@ Functional test of debugger "step" command.
 import unittest
 from test.functional.fn_helper import compare_output, strarray_setup
 
-import tracer
+# import tracer
 
 
 class TestStep(unittest.TestCase):
