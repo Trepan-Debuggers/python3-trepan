@@ -40,6 +40,7 @@ import trepan.clifns as Mclifns
 
 # Our local modules
 from trepan.lib import breakpoint, default, stack as Mstack
+from trepan.lib.stack import count_frames
 from trepan.misc import option_set
 from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
 
@@ -362,7 +363,7 @@ class TrepanCore(object):
         if self.stop_level is not None:
             if frame and frame != self.last_frame:
                 # Recompute stack_depth
-                self.last_level = Mstack.count_frames(frame)
+                self.last_level = count_frames(frame)
                 self.last_frame = frame
                 pass
             if self.last_level > self.stop_level:
@@ -397,7 +398,7 @@ class TrepanCore(object):
     def set_next(self, frame, step_ignore=0, step_events=None):
         "Sets to stop on the next event that happens in frame 'frame'."
         self.step_events = None  # Consider all events
-        self.stop_level = Mstack.count_frames(frame)
+        self.stop_level = count_frames(frame)
         self.last_level = self.stop_level
         self.last_frame = frame
         self.stop_on_finish = False

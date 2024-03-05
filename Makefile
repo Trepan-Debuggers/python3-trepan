@@ -53,6 +53,7 @@ test-integration-short:
 
 #: Clean up temporary files
 clean:
+	find . | grep -E "\.pyc\|\.pyo" | xargs rm -rvf;
 	$(PYTHON) ./setup.py $@
 
 #: Create source (tarball) and binary (egg) distribution
