@@ -55,9 +55,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         intf = ServerInterface(connection_opts=connection_opts)
         dbg_opts["interface"] = intf
         if "FIFO" == intf.server_type:
-            print(f"Starting FIFO server for process {os.getpid()}.")
+            print("Starting FIFO server for process %s." % os.getpid())
         elif "TCP" == intf.server_type:
-            print(f"Starting TCP server listening on port {intf.inout.PORT}.")
+            print("Starting TCP server listening on port %s." % intf.inout.PORT)
             pass
     elif opts.client:
         run(opts, sys_argv)
@@ -85,10 +85,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
-                print(f"{__title__}: Python script file '{mainpyfile}' does not exist")
+                print("%s: Python script file '{mainpyfile}' does not exist" % __title__)
                 sys.exit(1)
             elif not is_readable:
-                print(f"{__title__}: Can't read Python script file '{mainpyfile}'")
+                print("%s: Can't read Python script file '{mainpyfile}'" % __title__)
                 sys.exit(1)
                 return
 
@@ -107,7 +107,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     sip_hash,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
-                    print(f"Bytecode is pypy {is_pypy}, but we are {IS_PYPY}.")
+                    print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
@@ -137,7 +137,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 else:
                     # Move onto the except branch
                     raise IOError(
-                        f"Python file name embedded in code {try_file} not found"
+                        "Python file name embedded in code %s not found" % try_file
                     )
             except IOError:
                 decompiler = "uncompyle6"
@@ -182,7 +182,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
-                        f"{__title__}: error decompiling '{mainpyfile}'",
+                        "%s{__title__}: error decompiling '{mainpyfile}'" % __title__,
                         file=sys.stderr,
                     )
                     sys.exit(1)
@@ -214,8 +214,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
         if mainpyfile != mainpyfile_noopt and readable(mainpyfile_noopt):
-            print(f"{__title__}: Compiled Python script given and we can't use that.")
-            print(f"{__title__}: Substituting non-compiled name: {mainpyfile_noopt}")
+            print("%s: Compiled Python script given and we can't use that." % __title__)
+            print("%s: Substituting non-compiled name: {mainpyfile_noopt}" % __title__)
             mainpyfile = mainpyfile_noopt
             pass
 
@@ -255,7 +255,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             dbg.core.execution_status = "Restart requested"
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
-                part1 = f"Restarting {dbg.core.filename(mainpyfile)} with arguments:"
+                part1 = "Restarting %s with arguments:" % dbg.core.filename(mainpyfile)
                 args = " ".join(dbg.program_sys_argv[1:])
                 dbg.intf[-1].msg(wrapped_lines(part1, args, dbg.settings["width"]))
             else:

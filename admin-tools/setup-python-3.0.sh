@@ -1,5 +1,6 @@
 #!/bin/bash
 PYTHON_VERSION=3.1
+pyenv local $PYTHON_VERSION
 
 # FIXME put some of the below in a common routine
 function checkout_version {

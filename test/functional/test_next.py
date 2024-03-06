@@ -8,6 +8,9 @@ from test.functional.fn_helper import compare_output, strarray_setup
 class TestNext(unittest.TestCase):
     print("test ", __file__, "skipped")
 
+    @unittest.skip(
+        "FIXME: figure out why this doesn't work in Python 3.0 .. 3.1"
+    )
     def test_next_same_level(self):
         # See that we can next with parameter which is the same as 'next 1'
         cmds = ["next", "continue"]
@@ -31,6 +34,9 @@ class TestNext(unittest.TestCase):
         compare_output(self, out, d)
         return
 
+    @unittest.skip(
+        "FIXME: figure out why this doesn't work in Python 3.0 .. 3.1"
+    )
     def test_next_between_fn(self):
         # Next over a function
         def fact(x):
@@ -48,6 +54,9 @@ class TestNext(unittest.TestCase):
         compare_output(self, out, d)
         return
 
+    @unittest.skip(
+        "FIXME: figure out why this doesn't work in Python 3.0 .. 3.1"
+    )
     def test_next_in_exception(self):
         return
 

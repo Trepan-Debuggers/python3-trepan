@@ -42,7 +42,6 @@ def test_complete_identifier():
     ]
 
 
-@pytest.mark.skipif(IS_PYPY, reason="Does not work with PyPy")
 def test_completion():
     dbgr, _ = setup_unit_test_debugger()
 

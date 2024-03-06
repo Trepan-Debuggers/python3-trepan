@@ -20,7 +20,6 @@ def test_lookupmodule():
     return
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="Does not work on MS Windows")
 def test_readable():
     assert not readable("fdafdsa")
     i = 1
@@ -41,7 +40,6 @@ def test_readable():
     return
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="Does not work on MS Windows")
 def test_executable():
     i = 1
     for mode, can_read in [
