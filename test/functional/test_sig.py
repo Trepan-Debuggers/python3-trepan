@@ -6,11 +6,8 @@ import signal
 import unittest
 from test.functional.fn_helper import compare_output, strarray_setup
 
-import pytest
-
-
 class TestSigHandler(unittest.TestCase):
-    @pytest.mark.skip("This does not work when run with other pytests")
+    @unittest.skip("This does not work when run with other pytests")
     def test_handle(self):
         # See that we handle a USR1 signal with a 'stop' action
         cmds = ["handle usr1 stop nopass", "continue", "where", "continue"]
