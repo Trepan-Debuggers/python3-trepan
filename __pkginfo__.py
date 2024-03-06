@@ -32,8 +32,6 @@ if SYS_VERSION <= (3, 2):
     pygments_version = "== 1.6"
 else:
     pygments_version = ">= 2.2.0"
-    if (3, 7) <= SYS_VERSION < (3, 9):
-        decompiler = "decompyle3 >= 3.8.0"
 
 
 # Python-version | package  | last-version |
