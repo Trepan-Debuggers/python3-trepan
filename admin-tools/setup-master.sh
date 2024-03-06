@@ -1,5 +1,5 @@
 #!/bin/bash
-PYTHON_VERSION=3.11.7
+PYTHON_VERSION=3.11.8
 
 # FIXME put some of the below in a common routine
 function checkout_version {
