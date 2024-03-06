@@ -75,7 +75,10 @@ class UserInterface(TrepanInterface):
                 except Exception:
                     # PyPy read_history_file fails
                     return
-                set_history_length(50)
+                try:
+                    set_history_length(50)
+                except Exception:
+                    pass
                 atexit.register(self.user_write_history_file)
                 pass
         return
