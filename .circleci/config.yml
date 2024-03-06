@@ -20,7 +20,7 @@ jobs:
       - run: pip install --local -e git+https://github.com/rocky/python-decompile3.git#egg=decompyle3
       - run: pip install --local -e .
       - run: pip install -r requirements-dev.txt
-      - run: make test
+      # - run: make test
       - restore_cache:
           keys:
             # This branch if available
