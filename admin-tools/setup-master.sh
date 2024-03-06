@@ -1,5 +1,5 @@
 #!/bin/bash
-PYTHON_VERSION=3.11.7
+PYTHON_VERSION=3.11.8
 
 # FIXME put some of the below in a common routine
 function checkout_version {
@@ -9,11 +9,6 @@ function checkout_version {
     (cd ../$repo && git checkout $version && pyenv local $PYTHON_VERSION) && \
 	git pull
     return $?
-}
-
-# FIXME put some of the below in a common routine
-function finish {
-  cd $owd
 }
 
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH

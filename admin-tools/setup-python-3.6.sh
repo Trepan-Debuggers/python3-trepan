@@ -11,11 +11,6 @@ function checkout_version {
     return $?
 }
 
-# FIXME put some of the below in a common routine
-function finish {
-  cd $owd
-}
-
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 owd=$(pwd)
 bs=${BASH_SOURCE[0]}
@@ -37,3 +32,4 @@ cd $owd
 rm -v */.python-version || true
 
 git checkout python-3.6-to-3.10 && pyenv local $PYTHON_VERSION && git pull
+cd $owd
