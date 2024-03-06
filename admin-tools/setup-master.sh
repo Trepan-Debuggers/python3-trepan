@@ -11,11 +11,6 @@ function checkout_version {
     return $?
 }
 
-# FIXME put some of the below in a common routine
-function finish {
-  cd $owd
-}
-
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 owd=$(pwd)
 bs=${BASH_SOURCE[0]}
