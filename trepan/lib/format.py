@@ -38,6 +38,7 @@ from pygments.token import (
     String,
     Token,
 )
+
 from trepan.lib.default import DEBUGGER_SETTINGS
 
 # Set up my own color scheme with some additional definitions.
@@ -70,14 +71,13 @@ color_scheme = TERMINAL_COLORS.copy()
 # }
 
 
-
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Emph] = ("blue", "brightcyan")
-color_scheme[Token.Comment] = ("magenta", "yellow")
+color_scheme[Token.Literal.String] = ("magenta", "yellow")
 
 # Assume pygments has fixed up the horrible atom colors
 # FIXME: change some horrible colors under atom dark
@@ -155,7 +155,7 @@ class RstFilter(Filter):
                 # That is remove:
                 # Header
                 # ------ <- remove this line
-                if last_was_heading_title and re.match(r'^(?:=|-)+$', value):
+                if last_was_heading_title and re.match(r"^(?:=|-)+$", value):
                     value = ""
                     last_was_heading_title = ""
                 else:
@@ -189,6 +189,7 @@ class RSTTerminalFormatter(Formatter):
         A dictionary mapping token types to (lightbg, darkbg) color names or
         ``None`` (default: ``None`` = use builtin colorscheme).
     """
+
     name = "Terminal"
     aliases = ["terminal", "console"]
     filenames = []
