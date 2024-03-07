@@ -26,6 +26,7 @@ from term_background import is_dark_background
 
 width = computed_displaywidth()
 is_dark_bg = is_dark_background()
+default_style = "zenburn" if is_dark_bg else "tango"
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to
@@ -137,7 +138,7 @@ DEBUGGER_SETTINGS = {
 
     # Pygments style. Style is ignored if "highlight" setting
     # is "plain"
-    "style": "zenburn" if is_dark_bg else "tango",
+    "style": default_style,
 
     # Location to put temporary decompiled python files.
     # If value is None, use Python's defaults

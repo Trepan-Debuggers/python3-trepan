@@ -159,7 +159,6 @@ def dis(
         return disassemble(
             msg,
             msg_nocr,
-            section,
             x,
             lasti=lasti,
             start_line=start_line,
@@ -184,7 +183,6 @@ def dis(
 def disassemble(
     msg: Callable,
     msg_nocr: Callable,
-    section,
     co,
     lasti: int = -1,
     start_line: int = -1,
@@ -398,9 +396,7 @@ def disassemble_bytes(
             pass
         else:
             # Column: Opcode argument details
-            msg_nocr(format_token(Symbol, "(", highlight=highlight))
-            msg_nocr(format_token(Details, argrepr, highlight=highlight))
-            msg(format_token(Symbol, ")", highlight=highlight))
+            msg(format_token(Details, argrepr, highlight=highlight))
         pass
 
     return code, offset
