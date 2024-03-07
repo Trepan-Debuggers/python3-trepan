@@ -56,7 +56,7 @@ def next_opcode(code, offset):
     pass
 
 
-def next_linestart(co, offset, count=1):
+def next_linestart(co, offset: int, count=1) -> int:
     code = co.co_code
 
     linestarts = dict(opcode_module.findlinestarts(co))

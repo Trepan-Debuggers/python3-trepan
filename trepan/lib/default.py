@@ -81,7 +81,7 @@ DEBUGGER_SETTINGS = {
     #  'plain'   : no highlighting
     #  'dark'    : terminal highlighting for a dark background
     #  'light'   : terminal highlighting for a light background
-    "highlight": is_dark_background(),
+    "highlight": "dark" if is_dark_background() else "light",
     # Where do we save the history?
     "histfile": None,
     # Save debugger history?

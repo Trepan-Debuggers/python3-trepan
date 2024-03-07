@@ -37,17 +37,47 @@ from pygments.token import (
     Operator,
     String,
     Token,
+    Text
 )
-from pygments.util import get_choice_opt
+from trepan.lib.default import DEBUGGER_SETTINGS
 
 # Set up my own color scheme with some additional definitions.
 color_scheme = TERMINAL_COLORS.copy()
+# color_scheme = {
+#     Token:              ('',            ''),
+#     Comment:            ('gray',   'brightblack'),
+#     Comment.Preproc:    ('cyan',        'brightcyan'),
+#     Keyword:            ('blue',    'brightblue'),
+#     Keyword.Type:       ('cyan',        'brightcyan'),
+#     Operator.Word:      ('magenta',      'brightmagenta'),
+#     Name.Builtin:       ('cyan',        'brightcyan'),
+#     Name.Function:      ('green',   'brightgreen'),
+#     Name.Namespace:     ('_cyan_',      '_brightcyan_'),
+#     Name.Class:         ('_green_', '_brightgreen_'),
+#     Name.Exception:     ('cyan',        'brightcyan'),
+#     Name.Decorator:     ('brightblack',    'gray'),
+#     Name.Variable:      ('red',     'brightred'),
+#     Name.Constant:      ('red',     'brightred'),
+#     Name.Attribute:     ('cyan',        'brightcyan'),
+#     Name.Tag:           ('brightblue',        'brightblue'),
+#     String:             ('gray',       'yellow'),
+#     Number:             ('blue',    'brightblue'),
+#     Generic.Deleted:    ('brightred',        'brightred'),
+#     Generic.Inserted:   ('green',  'brightgreen'),
+#     Generic.Heading:    ('**',         '**'),
+#     Generic.Subheading: ('*magenta*',   '*brightmagenta*'),
+#     Generic.Prompt:     ('**',         '**'),
+#     Generic.Error:      ('brightred',        'brightred'),
+# }
+
+
+
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
-color_scheme[Generic.Emph] = color_scheme[Comment.Preproc]
+color_scheme[Generic.Emph] = ("blue", "brightcyan")
 
 # Assume pygments has fixed up the horrible atom colors
 # FIXME: change some horrible colors under atom dark
@@ -65,11 +95,10 @@ pyficache.light_terminal_formatter.colorscheme = color_scheme
 def format_token(ttype, token, colorscheme=color_scheme, highlight="light"):
     if "plain" == highlight:
         return token
-    dark_bg = "dark" == highlight
-
+    is_dark_bg = 1 if DEBUGGER_SETTINGS["highlight"] == "dark" else 0
     color = colorscheme.get(ttype)
     if color:
-        color = color[dark_bg]
+        color = color[is_dark_bg]
         if isinstance(token, tuple):
             # have (token, start offset)
             token = token[0]
@@ -166,9 +195,7 @@ class RSTTerminalFormatter(Formatter):
 
     def __init__(self, **options):
         Formatter.__init__(self, **options)
-        self.darkbg = (
-            get_choice_opt(options, "bg", ["light", "dark"], "light") != "dark"
-        )
+        self.is_dark_bg = 1 if DEBUGGER_SETTINGS["highlight"] == "dark" else 0
         self.colorscheme = options.get("colorscheme", None) or color_scheme
         self.width = options.get("width", 80)
         self.verbatim = False
@@ -203,7 +230,7 @@ class RSTTerminalFormatter(Formatter):
         # color
         if self.__class__ != MonoRSTTerminalFormatter:
             cs = self.colorscheme.get(Verbatim)
-            color = cs[self.darkbg]
+            color = cs[self.is_dark_bg]
         else:
             color = None
             pass
@@ -226,7 +253,7 @@ class RSTTerminalFormatter(Formatter):
         # print '%r' % text
         # from trepan.api import debug
         # if u' or ' == text: debug()
-        if text == "::" and ttype == Token.Literal.String.Escape:
+        if text == "::" and ttype == Token.Literal.String:
             self.verbatim = "colon-verbatim"
             return
         elif (
@@ -318,7 +345,7 @@ class RSTTerminalFormatter(Formatter):
                 color = self.colorscheme.get(resolved_type)
                 pass
             if color:
-                color = color[self.darkbg]
+                color = color[self.is_dark_bg]
             self.reflow_text(text, ttype, color)
             pass
         return

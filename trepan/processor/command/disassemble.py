@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009, 2012-2018, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2018, 2020, 2023-2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -89,6 +89,11 @@ class DisassembleCommand(DebuggerCommand):
     With a class, method, function, pyc-file, code or string argument
     disassemble that.
 
+    Assembly output format is be controlled by the setting of `set
+    asmfmt`. Output formats are those described the `xdis` `pydisasm`
+    disassembler.
+
+
     Examples:
     --------
     ::
@@ -105,7 +110,9 @@ class DisassembleCommand(DebuggerCommand):
     See also:
     ---------
 
-    `help syntax arange`, `deparse`, `list`, `info pc`."""
+    `help syntax arange`, `deparse`, `list`, `info pc`, `set asmfmt`.
+
+    """
 
     aliases = ("disasm",)  # Note: we will have disable
     short_help = "Disassemble Python bytecode"
