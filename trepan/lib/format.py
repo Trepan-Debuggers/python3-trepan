@@ -37,7 +37,6 @@ from pygments.token import (
     Operator,
     String,
     Token,
-    Text
 )
 from trepan.lib.default import DEBUGGER_SETTINGS
 
@@ -78,6 +77,7 @@ color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Emph] = ("blue", "brightcyan")
+color_scheme[Token.Comment] = ("magenta", "yellow")
 
 # Assume pygments has fixed up the horrible atom colors
 # FIXME: change some horrible colors under atom dark

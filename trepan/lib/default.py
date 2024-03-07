@@ -25,6 +25,7 @@ from columnize import computed_displaywidth
 from term_background import is_dark_background
 
 width = computed_displaywidth()
+is_dark_bg = is_dark_background()
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to
@@ -81,7 +82,7 @@ DEBUGGER_SETTINGS = {
     #  'plain'   : no highlighting
     #  'dark'    : terminal highlighting for a dark background
     #  'light'   : terminal highlighting for a light background
-    "highlight": "dark" if is_dark_background() else "light",
+    "highlight": "dark" if is_dark_bg else "light",
     # Where do we save the history?
     "histfile": None,
     # Save debugger history?
@@ -107,6 +108,8 @@ DEBUGGER_SETTINGS = {
     # (In the Python they are "class" and "def" statements)
     "skip": True,
     "step_ignore": 0,
+    # Pygments style
+    "style": "zenburn" if is_dark_bg else "tango",
     # Location to put temporary decompiled python files.
     # If value is None, use Python's defaults
     "tempdir": None,

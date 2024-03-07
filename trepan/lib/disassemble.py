@@ -9,6 +9,8 @@ import types
 
 from typing import Callable
 
+from pygments.token import Comment
+
 from xdis import (
     IS_PYPY,
     Bytecode,
@@ -22,7 +24,6 @@ from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 from trepan.lib.format import (
     Arrow,
-    Comment,
     Details,
     Hex,
     Integer,
