@@ -6,11 +6,9 @@
 import inspect
 import sys
 import types
-
 from typing import Callable
 
 from pygments.token import Comment
-
 from xdis import (
     IS_PYPY,
     Bytecode,
@@ -370,10 +368,11 @@ def disassemble_bytes(
                     hasattr(opc, "opcode_extended_fmt")
                     and opc.opname[op] in opc.opcode_extended_fmt
                 ):
-                    new_repr = f"""{opc.opcode_extended_fmt[opc.opname[op]](
+                    result= opc.opcode_extended_fmt[opc.opname[op]](
                         opc, list(reversed(instructions))
-                    )}"""
-                    argrepr = new_repr
+                    )
+                    if result is not None:
+                        argrepr = result[0]
                 pass
         elif asm_format in ("extended", "extended-bytes"):
             # Note: instr.arg is also None
@@ -433,7 +432,7 @@ if __name__ == "__main__":
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_offset=10, end_offset=20, highlight='dark')
     print("-" * 40)
-    for asm_format in ("std", "extended", "bytes", "extended-bytes"):
+    for asm_format in ("extended", "bytes", "extended-bytes", "std"):
         print("Format is", asm_format)
         dis(msg, msg_nocr, section, errmsg, disassemble, asm_format=asm_format)
         print("=" * 30)
