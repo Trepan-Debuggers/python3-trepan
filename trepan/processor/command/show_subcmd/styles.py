@@ -22,6 +22,7 @@ class ShowStyles(DebuggerSubcommand):
 
     in_list = True
     short_help = "Show all pygments style available"
+    min_abbrev = len("styles")
 
     def run(self, args):
         if len(args) != 0:

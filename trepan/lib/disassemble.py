@@ -370,9 +370,9 @@ def disassemble_bytes(
                     hasattr(opc, "opcode_extended_fmt")
                     and opc.opname[op] in opc.opcode_extended_fmt
                 ):
-                    new_repr = f"""["{opc.opcode_extended_fmt[opc.opname[op]](
+                    new_repr = f"""{opc.opcode_extended_fmt[opc.opname[op]](
                         opc, list(reversed(instructions))
-                    )}"] {instr.arg}"""
+                    )}"""
                     argrepr = new_repr
                 pass
         elif asm_format in ("extended", "extended-bytes"):
