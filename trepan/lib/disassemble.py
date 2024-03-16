@@ -17,6 +17,7 @@ from xdis import (
     get_instructions_bytes,
     get_opcode,
 )
+from xdis.instruction import Instruction
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -368,11 +369,17 @@ def disassemble_bytes(
                     hasattr(opc, "opcode_extended_fmt")
                     and opc.opname[op] in opc.opcode_extended_fmt
                 ):
-                    result= opc.opcode_extended_fmt[opc.opname[op]](
+                    tos_str, start_offset = opc.opcode_extended_fmt[opc.opname[op]](
                         opc, list(reversed(instructions))
                     )
-                    if result is not None:
-                        argrepr = result[0]
+                    if start_offset is not None:
+                        argrepr = tos_str
+                        new_instruction = list(instructions[-1])
+                        new_instruction[-2] = tos_str
+                        new_instruction[-1] = start_offset
+                        del instructions[-1]
+                        instructions.append(Instruction(*new_instruction))
+
                 pass
         elif asm_format in ("extended", "extended-bytes"):
             # Note: instr.arg is also None
@@ -432,7 +439,8 @@ if __name__ == "__main__":
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_offset=10, end_offset=20, highlight='dark')
     print("-" * 40)
-    for asm_format in ("extended", "bytes", "extended-bytes", "std"):
+    # for asm_format in ("std", "extended", "bytes", "extended-bytes"):
+    for asm_format in ("extended", "bytes", "extended-bytes"):
         print("Format is", asm_format)
         dis(msg, msg_nocr, section, errmsg, disassemble, asm_format=asm_format)
         print("=" * 30)
