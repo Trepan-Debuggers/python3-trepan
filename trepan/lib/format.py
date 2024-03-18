@@ -21,7 +21,7 @@ import re
 import sys
 
 import pyficache
-from pygments import highlight, lex
+from pygments import highlight, lex, __version__ as pygments_version
 from pygments.console import ansiformat
 from pygments.filter import Filter
 from pygments.formatter import Formatter
@@ -77,7 +77,9 @@ color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Emph] = ("blue", "brightcyan")
-color_scheme[Token.Literal.String] = ("purple", "yellow")
+
+purple = "magenta" if pygments_version[:3] >= "2.5" else "purple"
+color_scheme[Token.Literal.String] = (purple, "yellow")
 
 # Assume pygments has fixed up the horrible atom colors
 # FIXME: change some horrible colors under atom dark
