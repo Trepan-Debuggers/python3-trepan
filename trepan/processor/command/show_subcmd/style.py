@@ -24,7 +24,7 @@ class ShowStyle(DebuggerSubcommand):
     See also:
     ---------
 
-    `set style`, `show highlight`"""
+    `set style`, `show styles`, `show highlight`"""
 
     in_list = True
     min_abbrev = len("sty")

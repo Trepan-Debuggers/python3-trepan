@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021, 2023 Rocky
-#  Bernstein
+#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021, 2023-2024
+#  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ and storing it as a list of known debugger commands.
 import columnize
 from pygments.console import colorize
 
-from trepan.lib import format as Mformat
+from trepan.lib.format import rst_text
 
 NotImplementedMessage = "This method must be overridden in a subclass"
 
@@ -111,7 +111,8 @@ class DebuggerCommand:
 
     def rst_msg(self, text, opts={}):
         """Convert ReStructuredText and run through msg()"""
-        text = Mformat.rst_text(
+        # FIXME: rst_text should pass color style
+        text = rst_text(
             text,
             "plain" == self.debugger.settings["highlight"],
             self.debugger.settings["width"],

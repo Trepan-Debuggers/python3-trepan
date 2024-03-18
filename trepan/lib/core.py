@@ -38,7 +38,7 @@ import trepan
 import trepan.clifns as Mclifns
 
 # Our local modules
-from trepan.lib import breakpoint, default, stack as Mstack
+from trepan.lib import breakpoint, default
 from trepan.lib.stack import count_frames
 from trepan.misc import option_set
 from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
