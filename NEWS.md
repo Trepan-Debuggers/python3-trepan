@@ -1,3 +1,16 @@
+1.2.10 2024-05-17
+=================
+
+* Revise for newer `xdis`.
+* Go over disassembly (more work is needed)
+* Add `set/show asmfmt`, and `set/show styles` commands.
+* Go over terminal detection.
+* Tolerate GraalVM
+* Remove use of `nosetest` in master branch
+* Modernize code using black and isort; convert to fstring use.
+* Tokerate 3.11 and 3.12; git branches handle older Python versions
+
+
 1.2.9 2023-05-27
 ================
 

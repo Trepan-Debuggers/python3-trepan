@@ -13,31 +13,11 @@ if not ((3, 1) <= SYS_VERSION < (3, 13)):
     print(mess)
     raise Exception(mess)
 
-# Get the package information used in setup().
-from __pkginfo__ import (
-    __version__,
-    author,
-    author_email,
-    classifiers,
-    entry_points,
-    install_requires,
-    license,
-    long_description,
-    modname,
-    py_modules,
-    short_desc,
-    web,
-    zip_safe,
-)
-
 __import__("pkg_resources")
 
 packages = find_packages()
 
 setup(
-    author=author,
-    author_email=author_email,
-    classifiers=classifiers,
     data_files=[
         (
             "trepan/processor/command/help",
@@ -52,17 +32,5 @@ setup(
             ],
         )
     ],
-    description=short_desc,
-    entry_points=entry_points,
-    install_requires=install_requires,
-    license=license,
-    long_description=long_description,
-    long_description_content_type="text/x-rst",
-    name=modname,
     packages=packages,
-    py_modules=py_modules,
-    test_suite="nose.collector",
-    url=web,
-    version=__version__,
-    zip_safe=zip_safe,
 )
