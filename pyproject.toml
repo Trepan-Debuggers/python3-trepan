@@ -10,7 +10,7 @@ authors = [
     {name = "Rocky Bernstein",	email = "rb@dustyfeet.com"},
 ]
 
-name = "trepan"
+name = "trepan3k"
 description = "Python cross-version byte-code library and disassembler"
 dependencies = [
     "columnize >= 0.3.10",
