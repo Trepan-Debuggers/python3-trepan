@@ -36,8 +36,7 @@ for pyversion in $PYVERSIONS; do
     # Pick out first two number of version, e.g. 3.5.1 -> 35
     first_two=$(echo $pyversion | cut -d'.' -f 1-2 | sed -e 's/\.//')
     rm -fr build
-    python setup.py bdist_egg bdist_wheel
-    mv -v dist/${PACKAGE}-$__version__-{py3,$first_two}-none-any.whl
+    python setup.py bdist_egg
 done
 
 tarball=dist/${PACKAGE}-${__version__}.tar.gz
