@@ -11,7 +11,7 @@ authors = [
 ]
 
 name = "trepan3k"
-description = "Python cross-version byte-code library and disassembler"
+description = "GDB-like Python Debugger in the Trepan family"
 dependencies = [
     "columnize >= 0.3.10",
     "pyficache >= 2.3.0",
