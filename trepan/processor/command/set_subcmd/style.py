@@ -46,7 +46,7 @@ class SetStyle(DebuggerSubcommand):
             return
 
         if args[0] not in style_names:
-            self.errmsg(f"style name '{args[0]}' not valid. valid names are: ")
+            self.errmsg("style name '%s' not valid. valid names are: " % args[0])
             self.msg(self.columnize_commands(style_names))
             return
 

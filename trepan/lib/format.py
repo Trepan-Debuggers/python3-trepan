@@ -49,7 +49,7 @@ color_scheme = TERMINAL_COLORS.copy()
 #     Comment.Preproc:    ('cyan',        'brightcyan'),
 #     Keyword:            ('blue',    'brightblue'),
 #     Keyword.Type:       ('cyan',        'brightcyan'),
-#     Operator.Word:      ('magenta',      'brightmagenta'),
+#     Operator.Word:      ('purple',      'brightmagenta'),
 #     Name.Builtin:       ('cyan',        'brightcyan'),
 #     Name.Function:      ('green',   'brightgreen'),
 #     Name.Namespace:     ('_cyan_',      '_brightcyan_'),
@@ -65,7 +65,7 @@ color_scheme = TERMINAL_COLORS.copy()
 #     Generic.Deleted:    ('brightred',        'brightred'),
 #     Generic.Inserted:   ('green',  'brightgreen'),
 #     Generic.Heading:    ('**',         '**'),
-#     Generic.Subheading: ('*magenta*',   '*brightmagenta*'),
+#     Generic.Subheading: ('*purple*',   '*brightmagenta*'),
 #     Generic.Prompt:     ('**',         '**'),
 #     Generic.Error:      ('brightred',        'brightred'),
 # }
@@ -77,7 +77,7 @@ color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Emph] = ("blue", "brightcyan")
-color_scheme[Token.Literal.String] = ("magenta", "yellow")
+color_scheme[Token.Literal.String] = ("purple", "yellow")
 
 # Assume pygments has fixed up the horrible atom colors
 # FIXME: change some horrible colors under atom dark

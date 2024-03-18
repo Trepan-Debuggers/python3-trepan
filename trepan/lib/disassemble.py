@@ -182,7 +182,6 @@ def dis(
 def disassemble(
     msg,
     msg_nocr,
-    section,
     co,
     lasti: int = -1,
     start_line: int = -1,
