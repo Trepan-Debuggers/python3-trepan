@@ -18,6 +18,7 @@ import inspect
 import linecache
 import os.path as osp
 import sys
+from trepan.processor.cmd_addrlist import INVALID_PARSE_LIST
 
 import pyficache
 
@@ -88,6 +89,8 @@ class ListCommand(DebuggerCommand):
         dbg_obj = self.core.debugger
         listsize = dbg_obj.settings["listsize"]
         filename, first, last = parse_list_cmd(proc, args, listsize)
+        if (filename, first, last) == INVALID_PARSE_LIST:
+            return
         curframe = proc.curframe
         if filename is None:
             return
@@ -129,8 +132,9 @@ class ListCommand(DebuggerCommand):
             "strip_nl": False,
         }
 
-        if "style" in self.settings:
-            opts["style"] = self.settings["style"]
+        for field in ("highlight", "style"):
+            if field in self.settings:
+                opts[field] = self.settings[field]
 
         if first <= 0:
             first = 1
@@ -189,9 +193,9 @@ if __name__ == "__main__":
         cmd.run(args)
 
     from trepan.processor.cmdproc import CommandProcessor
-    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command.mock import MockDebugger
 
-    d = Mmock.MockDebugger()
+    d = MockDebugger()
     cmdproc = CommandProcessor(d.core)
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
@@ -200,8 +204,8 @@ if __name__ == "__main__":
     print("--" * 10)
     # doit(lcmd, ['list'])
 
-    # doit(lcmd, ['list', __file__ + ':10'])
-    # print('--' * 10)
+    doit(lcmd, ['list', __file__ + ':5'])
+    print('--' * 10)
 
     # doit(lcmd, ['list', 'os:10'])
     # print('--' * 10)

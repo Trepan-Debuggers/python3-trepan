@@ -24,6 +24,10 @@ in addition you can also use:
 With a class, method, function, pyc-file, code or string argument
 disassemble that.
 
+Assembly output format is be controlled by the setting of ``set
+asmfmt``. Output formats are those described the ``xdis`` ``pydisasm``
+disassembler.
+
 Examples
 ++++++++
 
@@ -43,4 +47,6 @@ Examples
 
 .. seealso::
 
- :ref:`help syntax arange <syntax_arange>` for the specification of a address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`
+ :ref:`help syntax arange <syntax_arange>` for the specification of an
+  address range :ref:`deparse <deparse>`, :ref:`list <list>`,
+ :ref:`info pc <info_pc>`, and :ref:`set asmfmt <set_asmfmt>`.

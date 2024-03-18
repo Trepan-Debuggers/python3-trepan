@@ -3,13 +3,10 @@
 #
 
 from pygments.styles import STYLE_MAP
+from trepan.lib.complete import complete_token
+from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 style_names = sorted(list(STYLE_MAP.keys()))
-
-from trepan.lib import complete as Mcomplete
-
-# Our local modules
-from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 
 class SetStyle(DebuggerSubcommand):
@@ -35,7 +32,7 @@ class SetStyle(DebuggerSubcommand):
     `show style`, `set highlight`"""
 
     def complete(self, prefix):
-        return Mcomplete.complete_token(style_names, prefix)
+        return complete_token(style_names, prefix)
 
     in_list = True
     min_abbrev = len("sty")
@@ -43,15 +40,13 @@ class SetStyle(DebuggerSubcommand):
 
     def run(self, args):
         if len(args) == 0:
-            self.section("style names: ")
-            self.msg(self.columnize_commands(style_names))
-            return
+            return self.proc.commands["show"].cmds.subcmds["styles"].run([])
         if args[0] == "none":
             self.debugger.settings[self.name] = None
             return
 
         if args[0] not in style_names:
-            self.errmsg("style name '%s' not valid. valid names are: " % args[0])
+            self.errmsg(f"style name '{args[0]}' not valid. valid names are: ")
             self.msg(self.columnize_commands(style_names))
             return
 
@@ -61,10 +56,8 @@ class SetStyle(DebuggerSubcommand):
     pass
 
 
-# if __name__ == '__main__':
-#     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
-#     sub = Mhelper.demo_run(SetWidth)
-#     d = sub.proc.debugger
-#     sub.run(['emacs'])
-#     print(d.settings['emacs'])
-#     pass
+if __name__ == '__main__':
+    from trepan.processor.command.set_subcmd.__demo_helper__ import demo_run
+    demo_run(SetStyle, ["emacs"])
+    demo_run(SetStyle, [])
+    pass

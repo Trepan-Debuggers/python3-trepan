@@ -76,7 +76,7 @@ class Trepan:
         self.mainpyfile = None
         self.thread = None
         self.eval_string = None
-        self.settings = {}
+        self.settings = self.DEFAULT_INIT_OPTS["settings"].copy()
 
         def get_option(key: str) -> Any:
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
@@ -143,10 +143,16 @@ class Trepan:
             pass
         return
 
-    # The following functions have to be defined before
-    # DEFAULT_INIT_OPTS which includes references to these.
-
-    # FIXME DRY run, run_exec, run_eval.
+    def complete(self, last_token: str, state: int):
+        """
+        In place expansion of top-level debugger command
+        for `last_token`` that we are in ``state``.
+        """
+        if hasattr(self.core.processor, "completer"):
+            string_seen = get_line_buffer() or last_token
+            results = self.core.processor.completer(string_seen, state)
+            return results[state]
+        return
 
     def run(self, cmd, start_opts=None, globals_=None, locals_=None):
         """Run debugger on string `cmd' using builtin function eval
@@ -332,6 +338,9 @@ class Trepan:
         """Return an array that would be execv-ed  to restart the program"""
         return self.orig_sys_argv or self.program_sys_argv
 
+    # The following functions have to be defined before
+    # DEFAULT_INIT_OPTS which includes references to these.
+
     # Note: has to come after functions listed in ignore_filter.
     DEFAULT_INIT_OPTS = {
         # What routines will we not trace into?
@@ -364,17 +373,6 @@ class Trepan:
         "from_ipython": False,
     }
 
-    def complete(self, last_token: str, state: int):
-        """
-        In place expansion of top-level debugger command
-        for `last_token`` that we are in ``state``.
-        """
-        if hasattr(self.core.processor, "completer"):
-            string_seen = get_line_buffer() or last_token
-            results = self.core.processor.completer(string_seen, state)
-            return results[state]
-        return
-
     pass
 
 
@@ -388,9 +386,8 @@ if __name__ == "__main__":
             pass
         return 3
 
-    import debugger
-
-    d = debugger.Trepan()
+    d = Trepan()
+    print(d.settings)
     d.settings["trace"] = True
     d.settings["printset"] = tracer.ALL_EVENTS
     d.core.step_ignore = -1
