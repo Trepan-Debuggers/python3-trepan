@@ -381,7 +381,6 @@ def postprocess_options(dbg, opts):
     else:
         dbg.settings["highlight"] = "plain"
 
-    dbg.settings["style"] = None
     if getattr(opts, "style") and opts.style != "none":
         style_names = sorted(list(STYLE_MAP.keys()))
         if opts.style in style_names:
