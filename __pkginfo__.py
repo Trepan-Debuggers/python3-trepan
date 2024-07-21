@@ -25,7 +25,7 @@
 import os.path as osp
 import sys
 
-decompiler = "uncompyle6 >= 3.8.0"
+decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
