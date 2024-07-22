@@ -1,34 +1,23 @@
 #!/bin/bash
-PYTHON_VERSION=3.11.8
+# Check out master branch and dependent development master branches
+PYTHON_VERSION=3.11
 
-# FIXME put some of the below in a common routine
-function checkout_version {
-    local repo=$1
-    version=${2:-master}
-    echo Checking out $version on $repo ...
-    (cd ../$repo && git checkout $version && pyenv local $PYTHON_VERSION) && \
-	git pull
-    return $?
-}
-
-export PATH=$HOME/.pyenv/bin/pyenv:$PATH
-owd=$(pwd)
 bs=${BASH_SOURCE[0]}
+if [[ $0 == $bs ]] ; then
+    echo "This script should be *sourced* rather than run directly through bash"
+    exit 1
+fi
+
 mydir=$(dirname $bs)
-fulldir=$(readlink -f $mydir)
+trepan3_owd=$(pwd)
 cd $mydir
-(cd ../../python-uncompyle6 && ./admin-tools/setup-master.sh)
+. ./checkout_common.sh
+fulldir=$(readlink -f $mydir)
 cd $fulldir/..
 (cd $fulldir/.. && \
-     checkout_version python-spark master && \
-     checkout_version pycolumnize && \
-     checkout_version python-xdis && \
-     checkout_version python-filecache && \
-     checkout_version python-uncompyle6 \
+     setup_version python-uncompyle6 master && \
+     setup_version python-filecache master && \
+     setup_version pycolumnize master \
 )
 
-rm -v */.python-version || true
-
-git checkout master && pyenv local $PYTHON_VERSION && git pull
-
-cd $owd
+checkout_finish master
