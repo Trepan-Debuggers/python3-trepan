@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2014-2015, 2020, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2014-2015, 2020, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ Code project.
 
 from abc import ABCMeta
 
-NotImplementedMessage = "This method must be overriden in a subclass"
+NotImplementedMessage = "This method must be overridden in a subclass"
 
 
 class DebuggerInputBase(metaclass=ABCMeta):

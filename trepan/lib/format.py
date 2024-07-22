@@ -49,7 +49,7 @@ color_scheme = TERMINAL_COLORS.copy()
 #     Comment.Preproc:    ('cyan',        'brightcyan'),
 #     Keyword:            ('blue',    'brightblue'),
 #     Keyword.Type:       ('cyan',        'brightcyan'),
-#     Operator.Word:      ('purple',      'brightmagenta'),
+#     Operator.Word:      ('magenta',      'brightmagenta'),
 #     Name.Builtin:       ('cyan',        'brightcyan'),
 #     Name.Function:      ('green',   'brightgreen'),
 #     Name.Namespace:     ('_cyan_',      '_brightcyan_'),
@@ -65,7 +65,7 @@ color_scheme = TERMINAL_COLORS.copy()
 #     Generic.Deleted:    ('brightred',        'brightred'),
 #     Generic.Inserted:   ('green',  'brightgreen'),
 #     Generic.Heading:    ('**',         '**'),
-#     Generic.Subheading: ('*purple*',   '*brightmagenta*'),
+#     Generic.Subheading: ('*magenta*',   '*brightmagenta*'),
 #     Generic.Prompt:     ('**',         '**'),
 #     Generic.Error:      ('brightred',        'brightred'),
 # }
@@ -78,7 +78,8 @@ color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
 color_scheme[Generic.Emph] = ("blue", "brightcyan")
 
-purple = "magenta" if pygments_version[:3] >= "2.5" else "purple"
+pygments_version_tuple = tuple([int(num) for num in pygments_version.split(".")[:2]])
+purple = "magenta" if pygments_version_tuple >= (2, 5) else "purple"
 color_scheme[Token.Literal.String] = (purple, "yellow")
 
 # Assume pygments has fixed up the horrible atom colors
