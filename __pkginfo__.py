@@ -25,7 +25,7 @@
 import os.path as osp
 import sys
 
-decompiler = "uncompyle6 >= 3.8.0"
+decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION <= (3, 2):
@@ -85,7 +85,7 @@ ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
     "pyficache >= 2.3.0",
-    "xdis >= 6.0.3,<6.2.0",
+    "xdis >= 6.1.1,<6.2.0",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
