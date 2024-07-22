@@ -40,6 +40,7 @@ for pyversion in $PYVERSIONS; do
     mv -v dist/${PACKAGE}-$__version__-{py3,$first_two}-none-any.whl
 done
 
+python ./setup.py sdist
 tarball=dist/${PACKAGE}-${__version__}.tar.gz
 if [[ -f $tarball ]]; then
     mv -v $tarball dist/${PACKAGE}_32-${__version__}.tar.gz
