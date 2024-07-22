@@ -1,3 +1,10 @@
+1.2.11 2024-077-22
+==================
+
+Add `set/show asmfmt` Improve disassembler formatting; allow all of the assembler formats that exits
+Track xdis API changes.
+The usual lint and bug fixes
+
 1.2.10 2024-05-17
 =================
 
@@ -8,13 +15,13 @@
 * Tolerate GraalVM
 * Remove use of `nosetest` in master branch
 * Modernize code using black and isort; convert to fstring use.
-* Tokerate 3.11 and 3.12; git branches handle older Python versions
+* Tolerate 3.11 and 3.12; git branches handle older Python versions
 
 
 1.2.9 2023-05-27
 ================
 
-Commands that are useful in remote envionments and docker:
+Commands that are useful in remote environments and docker:
 
 * Add "set tempdir" to set location of TEMPDIR (useful docker)
 * Add "set/show substitute"
@@ -270,7 +277,7 @@ users is that function names in locations in this debugger needs a
 trailing "()" to mark it as a function. This was not needed in
 previous versions and it isn't needed in gdb.
 
-Not implimented in our notion of location are things that feel
+Not implemented in our notion of location are things that feel
 compiled-language object-file-ish. Specifying the function name inside
 an object file, isn't the way Python (or most dynamic languages)
 do things.  Instead you list the method/function inside a class or
@@ -318,8 +325,8 @@ I have a feeling  that too is overkill.
 ================
 
 - Fix botched release
-- Corrected setup.py code, cheking and better error messaging
-`- better stack trace position in the presense of eval() and exec()
+- Corrected setup.py code, checking and better error messaging
+`- better stack trace position in the presence of eval() and exec()
 - position in the presence of eval() and exec() via uncompyle6; this needs
   uncompyle6 0.11.0 or greater now
 - better deparse command output shows grammar symbol on parent,
@@ -374,7 +381,7 @@ I have a feeling  that too is overkill.
 ================
 
 - Remove namespace packages. These no longer work in Python3
-- expresssion and highlight changes
+- expression and highlight changes
   * show display expression after setting it
   * clear source-code cache after setting highlight
 
