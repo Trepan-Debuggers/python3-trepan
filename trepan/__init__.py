@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2008-2009, 2013, 2015, 2021-2022 Rocky Bernstein <rocky@gnu.org>
+#  Copyright (C) 2008-2009, 2013, 2015, 2021-2022, 2024 Rocky Bernstein <rocky@gnu.org>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -164,7 +164,7 @@ keeping developers happy is a good thing.(TM)
 * more testable. Much more unit and functional tests. More of _pydb_'s
   integration test will eventually be added.
 
-Copyright (C) 2008-2009, 2013-2016, 2021-2022 Rocky Bernstein <rocky@gnu.org>
+Copyright (C) 2008-2009, 2013-2016, 2021-2022, 2024 Rocky Bernstein <rocky@gnu.org>
 
 .. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
 .. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
