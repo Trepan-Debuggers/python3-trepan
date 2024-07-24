@@ -1,7 +1,4 @@
 #!/bin/bash
-PYTHON_VERSION=3.1
-pyenv local $PYTHON_VERSION
-
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
@@ -9,6 +6,7 @@ if [[ $0 == $bs ]] ; then
 fi
 
 PYTHON_VERSION=3.1
+pyenv local $PYTHON_VERSION
 
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3_owd=$(pwd)

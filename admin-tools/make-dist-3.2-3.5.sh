@@ -3,10 +3,10 @@ PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
-  cd $make_dist_33_owd
+  cd $make_dist_32_owd
 }
 
-make_trepan_dist_33_owd=$(pwd)
+make_trepan_dist_32_owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
@@ -21,9 +21,10 @@ fi
 . ./setup-python-3.2.sh
 
 cd ..
-source $PACKAGE/version.py
+source trepan/version.py
 if [[ ! -n $__version__ ]]; then
     echo "You need to set __version__ first"
+    exit 1
 fi
 echo $__version__
 
