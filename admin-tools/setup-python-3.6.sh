@@ -1,35 +1,24 @@
 #!/bin/bash
-PYTHON_VERSION=3.6.15
-
-# FIXME put some of the below in a common routine
-function checkout_version {
-    local repo=$1
-    version=${2:-python-3.0-to-3.2}
-    echo Checking out $version on $repo ...
-    (cd ../$repo && git checkout $version && pyenv local $PYTHON_VERSION) && \
-	git pull
-    return $?
-}
-
-export PATH=$HOME/.pyenv/bin/pyenv:$PATH
-owd=$(pwd)
+# Check out 3.6-to-3.10 branch and dependent development branches
+s
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
     exit 1
 fi
 
-mydir=$(dirname $bs)
-fulldir=$(readlink -f $mydir)
-(cd $fulldir/.. && \
-     checkout_version python-spark master && \
-     checkout_version python-xdis python-3.6-to-3.10 && \
-     checkout_version python-filecache master && \
-     checkout_version pycolumnize master && \
-     checkout_version python-uncompyle6 master \
-    )
-cd $owd
-rm -v */.python-version || true
+PYTHON_VERSION=3.6.15
 
-git checkout python-3.6-to-3.10 && pyenv local $PYTHON_VERSION && git pull
-cd $owd
+export PATH=$HOME/.pyenv/bin/pyenv:$PATH
+trepan3_owd=$(pwd)
+mydir=$(dirname $bs)
+. ./checkout_common.sh
+cd $mydir
+(cd $fulldir/.. && \
+     setup_version python-uncompyle6 master && \
+     setup_version python-filecache master && \
+     setup_version pycolumnize master && \
+     setup_version python-xdis python-3.6 \
+    )
+
+checkout_finish python-3.6-to-3.10
