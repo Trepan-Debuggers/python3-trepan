@@ -3,12 +3,13 @@ PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
-  cd $make_trepan_dist_32_owd
+  cd $make_dist_33_owd
 }
 
-cd $(dirname ${BASH_SOURCE[0]})
-make_trepan_dist_32_owd=$(pwd)
+make_trepan_dist_33_owd=$(pwd)
 trap finish EXIT
+
+cd $(dirname ${BASH_SOURCE[0]})
 
 if ! source ./pyenv-3.2-3.5-versions ; then
     exit $?
@@ -19,6 +20,9 @@ fi
 
 cd ..
 source $PACKAGE/version.py
+if [[ ! -n $__version__ ]]; then
+    echo "You need to set __version__ first"
+fi
 echo $__version__
 
 for pyversion in $PYVERSIONS; do
@@ -40,7 +44,9 @@ for pyversion in $PYVERSIONS; do
     mv -v dist/${PACKAGE}-$__version__-{py3,$first_two}-none-any.whl
 done
 
+python ./setup.py sdist
 tarball=dist/${PACKAGE}-${__version__}.tar.gz
+
 if [[ -f $tarball ]]; then
     mv -v $tarball dist/${PACKAGE}_32-${__version__}.tar.gz
 fi
