@@ -6,9 +6,11 @@ function finish {
   cd $make_trepan_dist_30_owd
 }
 
-cd $(dirname ${BASH_SOURCE[0]})
 make_trepan_dist_30_owd=$(pwd)
+
 trap finish EXIT
+
+cd $(dirname ${BASH_SOURCE[0]})
 
 if ! source ./pyenv-3.0-3.1-versions ; then
     exit $?
@@ -19,10 +21,13 @@ fi
 
 cd ..
 source $PACKAGE/version.py
+if [[ ! -n $__version__ ]]; then
+    echo "You need to set __version__ first"
+fi
 echo $__version__
 
 for pyversion in $PYVERSIONS; do
-    echo --- $pyversion ---
+o    echo --- $pyversion ---
     if [[ ${pyversion:0:4} == "pypy" ]] ; then
 	echo "$pyversion - PyPy does not get special packaging"
 	continue
@@ -40,8 +45,9 @@ for pyversion in $PYVERSIONS; do
     mv -v dist/${PACKAGE}-$__version__-{py3,$first_two}-none-any.whl
 done
 
+python ./setup.py sdist
 tarball=dist/${PACKAGE}-${__version__}.tar.gz
 if [[ -f $tarball ]]; then
-    mv -v $tarball dist/${PACKAGE}_32-${__version__}.tar.gz
+    mv -v $tarball dist/${PACKAGE}_30-${__version__}.tar.gz
 fi
 finish
