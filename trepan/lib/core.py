@@ -45,7 +45,7 @@ from trepan.misc import option_set
 from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
 
 
-class TrepanCore(object):
+class TrepanCore:
     DEFAULT_INIT_OPTS = {
         "processor": None,
         # How many step events to skip before
