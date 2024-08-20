@@ -35,14 +35,13 @@ from typing import Any
 import pyficache
 import tracer
 
-import trepan
-import trepan.clifns as Mclifns
-
 # Our local modules
+from trepan.clifns import search_file
 from trepan.lib import breakpoint, default
 from trepan.lib.stack import count_frames
 from trepan.misc import option_set
-from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
+from trepan.processor.cmdproc import CommandProcessor
+from trepan.processor.trace import PrintProcessor
 
 
 class TrepanCore:
@@ -92,10 +91,8 @@ class TrepanCore:
         self.processor = get_option("processor")
         proc_opts = get_option("proc_opts")
         if not self.processor:
-            self.processor = Mcmdproc.CommandProcessor(self, opts=proc_opts)
-        elif self.processor == "bullwinkle":
-            self.processor = trepan.bwprocessor.BWProcessor(self, opts=proc_opts)
-            pass
+            self.processor = CommandProcessor(self, opts=proc_opts)
+
         # What events are considered in stepping. Note: 'None' means *all*.
         self.step_events = None
         # How many line events to skip before entering event processor?
@@ -121,7 +118,7 @@ class TrepanCore:
         # 'finish', 'step', or 'exception'.
         self.stop_reason = ""
 
-        self.trace_processor = Mtrace.PrintProcessor(self)
+        self.trace_processor = PrintProcessor(self)
 
         # What routines (keyed by f_code) will we not trace into?
         self.ignore_filter = get_option("ignore_filter")
@@ -172,9 +169,7 @@ class TrepanCore:
                 canonic = osp.abspath(filename)
                 pass
             if not osp.isfile(canonic):
-                canonic = Mclifns.search_file(
-                    filename, self.search_path, self.main_dirname
-                )
+                canonic = search_file(filename, self.search_path, self.main_dirname)
                 # FIXME: is this is right for utter failure?
                 if not canonic:
                     canonic = filename
