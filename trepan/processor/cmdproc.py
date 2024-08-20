@@ -1061,19 +1061,14 @@ class CommandProcessor(Processor):
             ]
             for classname in classnames:
                 eval_cmd = eval_cmd_template % classname
-                if False:
+                try:
                     instance = eval(eval_cmd)
                     cmd_instances.append(instance)
-                else:
-                    try:
-                        instance = eval(eval_cmd)
-                        cmd_instances.append(instance)
-                    except Exception:
-                        print(
-                            "Error loading %s from %s: %s"
-                            % (classname, mod_name, sys.exc_info()[0])
-                        )
-                        pass
+                except Exception:
+                    print(
+                        "Error loading %s from %s: %s"
+                        % (classname, mod_name, sys.exc_info()[0])
+                    )
                     pass
                 pass
             pass
