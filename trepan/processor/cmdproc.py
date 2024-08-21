@@ -1113,8 +1113,7 @@ class CommandProcessor(Processor):
                         cmd_instances.append(instance)
                     except Exception:
                         print(
-                            "Error loading %s from %s: %s"
-                            % (classname, mod_name, sys.exc_info()[0])
+                            f"Error loading {classname} from mod_name, sys.exc_info()[0]"
                         )
                         pass
                     pass
