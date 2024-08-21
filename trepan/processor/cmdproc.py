@@ -1025,7 +1025,7 @@ class CommandProcessor(Processor):
         if hasattr(Mcommand, "__modules__"):
             return self.populate_commands_easy_install(Mcommand)
         else:
-            return self.populate_commands_pip(Mcommand, "trepan")
+            return self.populate_commands_pip(Mcommand)
 
     def populate_commands_pip(self, Mcommand):
         cmd_instances = []
