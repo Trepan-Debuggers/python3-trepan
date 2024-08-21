@@ -80,7 +80,7 @@ class SubcommandMgr(DebuggerCommand):
         # Initialization
         cmd_instances = []
         class_prefix = capitalize(name)  # e.g. Info, Set, or Show
-        module_dir = "%s.processor.command.%s_subcmd" % (base, name)
+        module_dir = f"{base}.processor.command.{name}_subcmd"
         mod = __import__(module_dir, None, None, ["*"])
         eval_cmd_template = "command_mod.%s(self)"
 
