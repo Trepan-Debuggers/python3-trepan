@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009, 2010, 2013, 2015, 2020-2021, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2010, 2013, 2015, 2020-2021, 2023-2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@ from trepan.processor.subcmd import Subcmd
 
 
 def abbrev_stringify(name, min_abbrev):
-    return "(%s)%s" % (
-        name[:min_abbrev],
-        name[min_abbrev:],
-    )
+    return f"({name[:min_abbrev]}){name[min_abbrev:]}"
 
 
 def capitalize(s):
@@ -119,7 +116,7 @@ class SubcommandMgr(DebuggerCommand):
                     instance = eval(eval_cmd)
                     self.cmds.add(instance)
                 except Exception:
-                    print("Error eval'ing class %s" % classname)
+                    print(f"Error eval'ing class {classname}")
                     pass
                 pass
             pass
@@ -154,7 +151,7 @@ class SubcommandMgr(DebuggerCommand):
         subcmd_name = args[2]
 
         if "*" == subcmd_name:
-            self.section("List of subcommands for command '%s':" % self.name)
+            self.section(f"List of subcommands for command '{self.name}':")
             self.msg(self.columnize_commands(self.cmds.list()))
             return
 
@@ -179,11 +176,7 @@ class SubcommandMgr(DebuggerCommand):
                 )
             else:
                 self.section(
-                    'Subcommand(s) of "%s" matching /^%s/:'
-                    % (
-                        self.name,
-                        subcmd_name,
-                    )
+                    f'Subcommand(s) of "{self.name}" matching /^{subcmd_name}/:'
                 )
                 self.msg_nocr(self.columnize_commands(cmds))
                 pass
@@ -208,8 +201,8 @@ class SubcommandMgr(DebuggerCommand):
             # like "show", "info" or "set". Generally this means list
             # all of the subcommands.
             self.section(
-                "List of %s commands (with minimum abbreviation in "
-                "parenthesis):" % self.name
+                f"List of {self.name} commands (with minimum abbreviation in "
+                "parenthesis):"
             )
             for subcmd_name in self.cmds.list():
                 # Some commands have lots of output.
