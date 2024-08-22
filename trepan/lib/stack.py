@@ -370,7 +370,7 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
 
 
 def print_stack_trace(proc_obj, count=None, color="plain", opts={}):
-    "Print count entries of the stack trace"
+    "Print ``count`` entries of the stack trace"
     if count is None:
         n = len(proc_obj.stack)
     else:

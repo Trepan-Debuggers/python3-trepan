@@ -27,6 +27,7 @@ import traceback
 
 # Note: the module name pre 3.2 is repr
 from reprlib import Repr
+from typing import Tuple
 
 import pyficache
 from pygments.console import colorize
@@ -88,7 +89,7 @@ def arg_split(s, posix=False):
     return args_list
 
 
-def get_stack(f, t, botframe, proc_obj=None):
+def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
     """Return a stack of frames which the debugger will use for in
     showing backtraces and in frame switching. As such various frame
     that are really around may be excluded unless we are debugging the
