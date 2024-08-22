@@ -581,14 +581,14 @@ class CommandProcessor(Processor):
         try:
             return eval(arg, self.curframe.f_globals, self.curframe.f_locals)
         except Exception:
-            t, v = sys.exc_info()[:2]
+            t, _ = sys.exc_info()[:2]
             if isinstance(t, str):
                 exc_type_name = t
                 pass
             else:
                 exc_type_name = t.__name__
             if show_error:
-                self.errmsg(str(f"{exc_type_name}: {arg}"))
+                self.errmsg(f"{exc_type_name}: {arg}")
             raise
         return None  # Not reached
 

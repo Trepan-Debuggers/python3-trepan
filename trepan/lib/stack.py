@@ -312,7 +312,7 @@ def get_call_function_name(frame):
     return None
 
 
-def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
+def print_stack_entry(proc_obj, i_stack: int, color="plain", opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
     frame, lineno = frame_lineno
     intf = proc_obj.intf[-1]
@@ -321,8 +321,7 @@ def print_stack_entry(proc_obj, i_stack, color="plain", opts={}):
     else:
         intf.msg_nocr("##")
     intf.msg(
-        "%d %s"
-        % (i_stack, format_stack_entry(proc_obj.debugger, frame_lineno, color=color))
+        f"{i_stack} {format_stack_entry(proc_obj.debugger, frame_lineno, color=color)}"
     )
     if opts.get("source", False):
         filename = frame2file(proc_obj.core, frame)
