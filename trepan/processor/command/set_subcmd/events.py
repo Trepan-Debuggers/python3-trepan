@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2012-2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class SetEvents(Mbase_subcmd.DebuggerSubcommand):
         eventset = []
         for arg in args:
             if arg not in valid_args:
-                self.errmsg("set events: Invalid argument %s ignored." % arg)
+                self.errmsg(f"set events: Invalid argument {arg} ignored.")
                 continue
             if arg in tracer.ALL_EVENTS:
                 eventset += [arg]
