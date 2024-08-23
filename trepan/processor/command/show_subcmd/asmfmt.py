@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2020 Rocky Bernstein
+#  Copyright (C) 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class ShowAsmFmt(DebuggerSubcommand):
 
         style = self.debugger.settings[self.name]
         if style:
-            self.msg("Assembly format style is %s" % style)
+            self.msg(f"Assembly format style is {style}")
         else:
             self.msg("Assembly format style not set")
         return

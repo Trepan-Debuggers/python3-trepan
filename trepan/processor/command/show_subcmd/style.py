@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2018, 2020 Rocky Bernstein
+#   Copyright (C) 2015, 2018, 2020, 2024 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP
@@ -37,7 +37,7 @@ class ShowStyle(DebuggerSubcommand):
 
         style = self.debugger.settings.get(self.name, None)
         if style:
-            self.msg("Pygments style is %s." % style)
+            self.msg(f"Pygments style is {style}.")
         else:
             self.msg("Pygments style not set.")
         return
