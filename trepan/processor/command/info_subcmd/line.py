@@ -103,7 +103,7 @@ class InfoLine(DebuggerSubcommand):
             # lineinfo returns (item, file, lineno) or (None,)
             line_number, filename = self.lineinfo(args[2:])
             if not filename:
-                self.errmsg("Can't parse '%s'" % args[2])
+                self.errmsg(f"Can't parse '{args[2]}'")
                 pass
             filename = self.core.canonic(filename)
         else:

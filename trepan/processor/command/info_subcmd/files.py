@@ -83,7 +83,7 @@ class InfoFiles(DebuggerSubcommand):
             if len(matches) > 1:
                 self.msg("Multiple files found ending filename string:")
                 for match_file in matches:
-                    self.msg("\t%s" % match_file)
+                    self.msg(f"\t{match_file}")
                     pass
             elif len(matches) == 1:
                 canonic_name = pyficache.unmap_file(matches[0])
@@ -112,7 +112,7 @@ class InfoFiles(DebuggerSubcommand):
                 processed_arg = True
                 pass
             if arg in ["all", "sha1"]:
-                self.msg("SHA1 is %s." % pyficache.sha1(canonic_name))
+                self.msg(f"SHA1 is {pyficache.sha1(canonic_name)}.")
                 processed_arg = True
                 pass
             if arg in ["all", "brkpts"]:
@@ -130,7 +130,7 @@ class InfoFiles(DebuggerSubcommand):
                 processed_arg = True
                 pass
             if not processed_arg:
-                self.errmsg("Don't understand sub-option %s." % arg)
+                self.errmsg(f"Don't understand sub-option {arg}.")
                 pass
             pass
         return

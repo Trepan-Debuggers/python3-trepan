@@ -59,7 +59,7 @@ class InfoOffsets(DebuggerSubcommand):
                 filename, toplevel_only=False, include_offsets=True
             )
             if file_info:
-                self.section("Offset - line number table for %s" % filename)
+                self.section(f"Offset - line number table for {filename}")
                 offsets = [
                     "@%4d:%4d" % (offset, line)
                     for offset, line in file_info.linestarts.items()
@@ -67,7 +67,7 @@ class InfoOffsets(DebuggerSubcommand):
                 m = self.columnize_commands(list(sorted(offsets)))
                 self.msg(m)
             else:
-                self.errmsg("haven't recorded info for offset file %s" % filename)
+                self.errmsg(f"haven't recorded info for offset file {filename}")
                 pass
             pass
         else:

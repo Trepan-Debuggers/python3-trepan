@@ -37,7 +37,7 @@ class InfoReturn(DebuggerSubcommand):
         if self.proc.event in ["return", "exception"]:
             val = self.proc.event_arg
             formatted_val = pformat(val)
-            self.msg("return value (type %s):\n\t%s" % (type(val), formatted_val))
+            self.msg(f"return value (type {type(val)}):\n\t{formatted_val}")
         else:
             self.errmsg(
                 "Must be in a 'return' or 'exception' event "

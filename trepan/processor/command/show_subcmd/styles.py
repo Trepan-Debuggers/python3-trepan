@@ -39,7 +39,7 @@ class ShowStyles(DebuggerSubcommand):
 if __name__ == "__main__":
     from trepan.processor.command.set_subcmd import __demo_helper__ as Mhelper
 
-    sub = Mhelper.demo_run(ShowStyle, [])
+    sub = Mhelper.demo_run(ShowStyles, [])
     d = sub.proc.debugger
     sub.run(["show"])
     pass

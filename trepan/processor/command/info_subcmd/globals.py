@@ -56,7 +56,7 @@ class InfoGlobals(Mbase_subcmd.DebuggerSubcommand):
                     self.settings["width"],
                     self.msg_nocr,
                     self.msg,
-                    prefix="%s =" % name,
+                    prefix=f"{name} =",
                 )
                 pass
         else:
@@ -68,11 +68,11 @@ class InfoGlobals(Mbase_subcmd.DebuggerSubcommand):
                         self.settings["width"],
                         self.msg_nocr,
                         self.msg,
-                        prefix="%s =" % name,
+                        prefix=f"{name} =",
                     )
                     pass
                 else:
-                    self.errmsg("%s is not a global variable" % name)
+                    self.errmsg(f"{name} is not a global variable")
                     pass
                 pass
         return False

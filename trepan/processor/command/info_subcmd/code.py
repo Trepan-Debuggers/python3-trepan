@@ -99,17 +99,17 @@ class InfoCode(Mbase_subcmd.DebuggerSubcommand):
 
         mess = "Code for Frame %d" % frame_num if frame_num is not None else "Code Info"
         self.section(mess)
-        self.msg("  name: %s" % code.co_name)
+        self.msg(f"  name: {code.co_name}")
         self.msg("  number of arguments: %d" % code.co_argcount)
         self.msg("  number of locals: %d" % code.co_nlocals)
-        self.msg("  maximum stack size %s" % code.co_stacksize)
-        self.msg("  first line number: %s" % code.co_firstlineno)
-        self.msg("  is%s optimized" % ("" if (code.co_flags & 1) == 1 else " not"))
+        self.msg(f"  maximum stack size {code.co_stacksize}")
+        self.msg(f"  first line number: {code.co_firstlineno}")
+        self.msg(f"  is{'' if code.co_flags & 1 == 1 else ' not'} optimized")
         self.msg(
-            "  new local namespace? %s" % ("yes" if (code.co_flags & 2) == 1 else " no")
+            f"  new local namespace? {'yes' if code.co_flags & 2 == 1 else ' no'}"
         )
-        self.msg("  has%s *args" % ("" if (code.co_flags & 4) == 1 else " no"))
-        self.msg("  has%s **args" % ("" if (code.co_flags & 8) == 1 else " no"))
+        self.msg(f"  has{'' if code.co_flags & 4 == 1 else ' no'} *args")
+        self.msg(f"  has{'' if code.co_flags & 8 == 1 else ' no'} **args")
         maxwidth = self.settings["width"] // 2
         for name, field in [
             ("Constants", "co_consts"),
