@@ -22,7 +22,6 @@ from typing import Tuple
 from trepan.lib.complete import complete_token
 from trepan.processor.cmdfns import get_an_int
 
-
 def frame_low_high(proc_obj, direction) -> Tuple[int, int]:
     stack_size = len(proc_obj.stack)  # - hide_level
     if direction is None:
@@ -48,7 +47,7 @@ def frame_num(proc_obj, pos: int) -> int:
     return len(proc_obj.stack) - pos - 1
 
 
-def adjust_frame(proc_obj, pos, absolute_pos):
+def adjust_frame(proc_obj, pos: int, absolute_pos: int):
     """Adjust stack frame by pos positions. If absolute_pos then
     pos is an absolute number. Otherwise it is a relative number.
 
@@ -87,7 +86,7 @@ def adjust_frame(proc_obj, pos, absolute_pos):
     return
 
 
-def adjust_relative(proc_obj, name, args, signum):
+def adjust_relative(proc_obj, name: str, args, signum: int):
     if not proc_obj.stack:
         proc_obj.errmsg("Program has no stack frame set.")
         return False
