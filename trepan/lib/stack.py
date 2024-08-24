@@ -114,7 +114,7 @@ def deparse_source_from_code(code):
 
 def format_stack_entry(
     dbg_obj, frame_lineno, lprefix=": ", include_location=True, color="plain"
-):
+) -> str:
     """Format and return a stack entry gdb-style.
     Note: lprefix is not used. It is kept for compatibility.
     """

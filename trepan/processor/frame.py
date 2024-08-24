@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013-2014 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2014, 2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,14 +17,16 @@
 # Call-frame-oriented helper function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from trepan.processor import cmdfns as Mcmdfns
-from trepan.lib import complete as Mcomplete
+from typing import Tuple
+
+from trepan.lib.complete import complete_token
+from trepan.processor.cmdfns import get_an_int
 
 
-def frame_low_high(proc_obj, direction):
+def frame_low_high(proc_obj, direction) -> Tuple[int, int]:
     stack_size = len(proc_obj.stack)  # - hide_level
     if direction is None:
-        return [-stack_size, stack_size - 1]
+        return (-stack_size, stack_size - 1)
     else:
         frame_index = proc_obj.curindex
         low, high = [
@@ -34,20 +36,19 @@ def frame_low_high(proc_obj, direction):
         if direction < 0:
             low, high = [high, low]
         return (low, high)
-    return
 
 
 def frame_complete(proc_obj, prefix, direction):
     low, high = frame_low_high(proc_obj, direction)
     ary = [str(low + i) for i in range(high - low + 1)]
-    return Mcomplete.complete_token(ary, prefix)
+    return complete_token(ary, prefix)
 
 
-def frame_num(proc_obj, pos):
+def frame_num(proc_obj, pos: int) -> int:
     return len(proc_obj.stack) - pos - 1
 
 
-def adjust_frame(proc_obj, name, pos, absolute_pos):
+def adjust_frame(proc_obj, pos, absolute_pos):
     """Adjust stack frame by pos positions. If absolute_pos then
     pos is an absolute number. Otherwise it is a relative number.
 
@@ -95,11 +96,13 @@ def adjust_relative(proc_obj, name, args, signum):
     else:
         count_str = args[1]
         low, high = frame_low_high(proc_obj, signum)
-        count = Mcmdfns.get_an_int(
+        count = get_an_int(
             proc_obj.errmsg,
             count_str,
-            ("The '%s' command argument must eval to" + " an integer. Got: %s")
-            % (name, count_str),
+            (
+                f"The '{name}' command argument must eval to"
+                f" an integer. Got: {count_str}"
+            ),
             low,
             high,
         )
@@ -107,5 +110,5 @@ def adjust_relative(proc_obj, name, args, signum):
             return
         pass
 
-    adjust_frame(proc_obj, name, pos=signum * count, absolute_pos=False)
+    adjust_frame(proc_obj, pos=signum * count, absolute_pos=False)
     return
