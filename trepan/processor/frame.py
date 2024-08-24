@@ -47,7 +47,7 @@ def frame_num(proc_obj, pos: int) -> int:
     return len(proc_obj.stack) - pos - 1
 
 
-def adjust_frame(proc_obj, pos: int, absolute_pos: int):
+def adjust_frame(proc_obj, pos: int, absolute_pos: bool):
     """Adjust stack frame by pos positions. If absolute_pos then
     pos is an absolute number. Otherwise it is a relative number.
 
