@@ -37,8 +37,8 @@ import tracer
 
 # Our local modules
 from trepan.clifns import search_file
-from trepan.lib.default import START_OPTS, STOP_OPTS
 from trepan.lib.breakpoint import BreakpointManager
+from trepan.lib.default import START_OPTS, STOP_OPTS
 from trepan.lib.stack import count_frames
 from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
