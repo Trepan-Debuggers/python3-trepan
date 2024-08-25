@@ -10,7 +10,6 @@
 """
 
 """ Copyright (C) 2013 Rocky Bernstein <rocky@gnu.org> """
-__import__('pkg_resources').declare_namespace(__name__)
 
 __docformat__ = 'restructuredtext'
 __all__ = ['trepan']

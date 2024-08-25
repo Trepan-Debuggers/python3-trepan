@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2021 Rocky Bernstein
+#   Copyright (C) 2021, 2024 Rocky Bernstein
 #
 
 import os

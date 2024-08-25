@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2018, 2020 Rocky Bernstein
+#   Copyright (C) 2015, 2018, 2020, 2024 Rocky Bernstein
 #
 
 from pygments.styles import STYLE_MAP

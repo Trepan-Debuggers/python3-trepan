@@ -143,7 +143,7 @@ class BWProcessor(Mprocessor.Processor):
         self.preloop_hooks.insert(position, hook)
         return True
 
-    def adjust_frame(self, pos, absolute_pos):
+    def adjust_frame(self, pos: int, absolute_pos: bool):
         """Adjust stack frame by pos positions. If absolute_pos then
         pos is an absolute number. Otherwise it is a relative number.
 
