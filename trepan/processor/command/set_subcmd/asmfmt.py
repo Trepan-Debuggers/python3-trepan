@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020, 2021 Rocky Bernstein
+#   Copyright (C) 2020, 2021, 2024 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ class SetAsmFmt(DebuggerSubcommand):
         if arg in choices:
             return arg
         else:
-            self.errmsg("Expecting one of: %s; got: %s." % (", ".join(choices), arg))
+            self.errmsg(f"Expecting one of: {', '.join(choices)}; got: {arg}.")
             return None
         pass
 

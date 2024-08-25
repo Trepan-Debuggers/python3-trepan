@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2013, 2015, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class ShowAliases(Mbase_subcmd.DebuggerShowIntSubcommand):
                 if alias in aliases:
                     self._alias_line(alias)
                 else:
-                    self.errmsg("%s is not an alias" % alias)
+                    self.errmsg(f"{alias} is not an alias")
                     pass
                 pass
             return

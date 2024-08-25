@@ -188,7 +188,7 @@ def runcode(obj, code_obj):
         raise
     except Exception:
         info = sys.exc_info()
-        print("%s; %s" % (info[0], info[1]))
+        print(f"{info[0]}; {info[1]}")
     else:
         pass
     return

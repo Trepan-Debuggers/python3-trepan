@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2012-2013, 2015-2016, 2020 Rocky Bernstein
+#   Copyright (C) 2012-2013, 2015-2016, 2020, 2024 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -72,8 +72,7 @@ class SetHighlight(DebuggerSubcommand):
             return arg
         else:
             self.errmsg(
-                'Expecting %s"; got %s'
-                % (", ".join(SetHighlight.highlight_choices), arg)
+                f"Expecting {', '.join(SetHighlight.highlight_choices)}\"; got {arg}"
             )
             return None
         pass

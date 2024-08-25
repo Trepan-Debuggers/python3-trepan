@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2021 Rocky Bernstein
+#   Copyright (C) 2021, 2024 Rocky Bernstein
 #
 
 # Our local modules
@@ -25,7 +25,7 @@ class ShowTempdir(DebuggerSubcommand):
     def run(self, args):
         tempdir = self.debugger.settings.get(self.name, None)
         if tempdir:
-            self.msg("tempdir is %s." % tempdir)
+            self.msg(f"tempdir is {tempdir}.")
         else:
             self.msg("tempdir not set; Python default is used.")
         return
