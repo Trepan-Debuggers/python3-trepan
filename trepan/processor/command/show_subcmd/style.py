@@ -37,7 +37,7 @@ class ShowStyle(DebuggerSubcommand):
 
         style = self.debugger.settings.get(self.name, None)
         if style:
-            self.msg(f"Pygments style is {style}.")
+            self.msg("Pygments style is %s." % style)
         else:
             self.msg("Pygments style not set.")
         return

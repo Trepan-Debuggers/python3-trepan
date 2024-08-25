@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -99,17 +99,17 @@ class InfoCode(Mbase_subcmd.DebuggerSubcommand):
 
         mess = "Code for Frame %d" % frame_num if frame_num is not None else "Code Info"
         self.section(mess)
-        self.msg(f"  name: {code.co_name}")
+        self.msg("  name: %s" % code.co_name)
         self.msg("  number of arguments: %d" % code.co_argcount)
         self.msg("  number of locals: %d" % code.co_nlocals)
-        self.msg(f"  maximum stack size {code.co_stacksize}")
-        self.msg(f"  first line number: {code.co_firstlineno}")
-        self.msg(f"  is{'' if code.co_flags & 1 == 1 else ' not'} optimized")
+        self.msg("  maximum stack size %s" % code.co_stacksize)
+        self.msg("  first line number: %s" % code.co_firstlineno)
+        self.msg("  is%s optimized" % ("" if (code.co_flags & 1) == 1 else " not"))
         self.msg(
-            f"  new local namespace? {'yes' if code.co_flags & 2 == 1 else ' no'}"
+            "  new local namespace? %s" % ("yes" if (code.co_flags & 2) == 1 else " no")
         )
-        self.msg(f"  has{'' if code.co_flags & 4 == 1 else ' no'} *args")
-        self.msg(f"  has{'' if code.co_flags & 8 == 1 else ' no'} **args")
+        self.msg("  has%s *args" % ("" if (code.co_flags & 4) == 1 else " no"))
+        self.msg("  has%s **args" % ("" if (code.co_flags & 8) == 1 else " no"))
         maxwidth = self.settings["width"] // 2
         for name, field in [
             ("Constants", "co_consts"),

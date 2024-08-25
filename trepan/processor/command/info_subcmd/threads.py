@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2014, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             if thread_name in list(name2id.keys()):
                 self.info_thread_line(thread_name, name2id)
             else:
-                self.errmsg(f"Don't know about thread name {thread_name}")
+                self.errmsg("Don't know about thread name %s" % thread_name)
                 return
             pass
 
@@ -131,12 +131,12 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             try:
                 thread_id = int(thread_name)
                 if thread_id not in list(threading._active.keys()):
-                    self.errmsg(f"Don't know about thread number {thread_name}")
+                    self.errmsg("Don't know about thread number %s" % thread_name)
                     self.info_thread_terse(name2id)
                     return
             except ValueError:
                 if thread_name not in list(self.name2id.keys()):
-                    self.errmsg(f"Don't know about thread {thread_name}")
+                    self.errmsg("Don't know about thread %s" % thread_name)
                     self.info_thread_terse(name2id)
                     return
                 thread_id = self.name2id[thread_name]
@@ -168,7 +168,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 else:
                     prefix = "   "
                     pass
-                s += f"{prefix}{str(thread)}"
+                s += "%s%s" % (prefix, str(thread))
                 if all_verbose:
                     s += ": %d" % thread_id
                     pass

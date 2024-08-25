@@ -76,7 +76,7 @@ class InfoPC(DebuggerSubcommand):
             pass
         else:
             if mainfile:
-                part1 = f"Python program '{mainfile}'"
+                part1 = "Python program '%s'" % mainfile
                 msg = "is not currently running. "
                 self.msg(wrapped_lines(part1, msg, self.settings["width"]))
             else:

@@ -29,7 +29,7 @@ class ShowArgs(Mbase_subcmd.DebuggerSubcommand):
         self.msg(
             "Argument list to give program being debugged " + "when it is started is:"
         )
-        self.msg(f"\t{' '.join(self.debugger.program_sys_argv[1:])}.")
+        self.msg("\t%s." % " ".join(self.debugger.program_sys_argv[1:]))
         return False
 
     pass

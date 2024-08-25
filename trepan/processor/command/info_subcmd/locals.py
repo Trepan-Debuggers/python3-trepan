@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2018, 2020, 2023 Rocky
+#   Copyright (C) 2008-2009, 2013, 2015, 2018, 2020, 2023-2024 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
             elif o in ("-l", "--list"):
                 list_only = True
             else:
-                self.errmsg(f"unhandled option '{o}'")
+                self.errmsg("unhandled option '%s'" % o)
             pass
         pass
 
@@ -110,7 +110,7 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
                     self.settings["width"],
                     self.msg_nocr,
                     self.msg,
-                    prefix=f"{name} =",
+                    prefix="%s =" % name,
                 )
                 pass
             pass
@@ -131,10 +131,10 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
                         self.settings["width"],
                         self.msg_nocr,
                         self.msg,
-                        prefix=f"{name} =",
+                        prefix="%s =" % name,
                     )
                 else:
-                    self.errmsg(f"{name} is not a local variable")
+                    self.errmsg("%s is not a local variable" % name)
                     pass
         return False
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023 Rocky Bernstein
+#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -103,7 +103,7 @@ class InfoLine(DebuggerSubcommand):
             # lineinfo returns (item, file, lineno) or (None,)
             line_number, filename = self.lineinfo(args[2:])
             if not filename:
-                self.errmsg(f"Can't parse '{args[2]}'")
+                self.errmsg("Can't parse '%s'" % args[2])
                 pass
             filename = self.core.canonic(filename)
         else:

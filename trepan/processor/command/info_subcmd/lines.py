@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2020, 2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ class InfoOffsets(DebuggerSubcommand):
             elif o in ("-n", "--name"):
                 name = a
             else:
-                self.errmsg(f"unhandled option '{o}'")
+                self.errmsg("unhandled option '%s'" % o)
             pass
         pass
 
@@ -100,7 +100,7 @@ class InfoOffsets(DebuggerSubcommand):
             filename, toplevel_only=False, include_offsets=True
         )
         if file_info:
-            self.section(f"Line - (fn, start offset) table for {filename}")
+            self.section("Line - (fn, start offset) table for %s" % filename)
             lines = []
             for line_number, line_info in file_info.line_numbers.items():
                 if not name or any(li.name == name for li in line_info):
@@ -121,7 +121,7 @@ class InfoOffsets(DebuggerSubcommand):
             m = self.columnize_commands(list(sorted(lines)))
             self.msg(m)
         else:
-            self.errmsg(f"haven't recorded info for offset file {filename}")
+            self.errmsg("haven't recorded info for offset file %s" % filename)
             pass
         pass
 

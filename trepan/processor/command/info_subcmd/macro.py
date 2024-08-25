@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013, 2015 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2013, 2015, 2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -51,15 +51,15 @@ class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
 
             for macro_name in sorted(macro_names):
                 if macro_name in self.proc.macros:
-                    self.section(f"{macro_name}:")
+                    self.section("%s:" % macro_name)
                     string = self.proc.macros[macro_name][1]
                     highlight = self.settings["highlight"]
                     if highlight in ["light", "dark"]:
                         string = highlight_string(string, highlight)
                         pass
-                    self.msg(f"  {string}")
+                    self.msg("  %s" % string)
                 else:
-                    self.errmsg(f"{macro_name} is not a defined macro")
+                    self.errmsg("%s is not a defined macro" % macro_name)
                     pass
                 pass
         elif 0 == len(list(self.proc.macros.keys())):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2012-2013, 2015, 2023 Rocky Bernstein
+#   Copyright (C) 2008-2009, 2012-2013, 2015, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -83,7 +83,7 @@ class InfoFiles(DebuggerSubcommand):
             if len(matches) > 1:
                 self.msg("Multiple files found ending filename string:")
                 for match_file in matches:
-                    self.msg(f"\t{match_file}")
+                    self.msg("\t%s" % match_file)
                     pass
             elif len(matches) == 1:
                 canonic_name = pyficache.unmap_file(matches[0])
@@ -112,7 +112,7 @@ class InfoFiles(DebuggerSubcommand):
                 processed_arg = True
                 pass
             if arg in ["all", "sha1"]:
-                self.msg(f"SHA1 is {pyficache.sha1(canonic_name)}.")
+                self.msg("SHA1 is %s." % pyficache.sha1(canonic_name))
                 processed_arg = True
                 pass
             if arg in ["all", "brkpts"]:
@@ -130,7 +130,7 @@ class InfoFiles(DebuggerSubcommand):
                 processed_arg = True
                 pass
             if not processed_arg:
-                self.errmsg(f"Don't understand sub-option {arg}.")
+                self.errmsg("Don't understand sub-option %s." % arg)
                 pass
             pass
         return

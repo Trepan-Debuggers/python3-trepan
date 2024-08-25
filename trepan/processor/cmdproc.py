@@ -27,7 +27,6 @@ import traceback
 
 # Note: the module name pre 3.2 is repr
 from reprlib import Repr
-from typing import Tuple
 
 import pyficache
 from pygments.console import colorize
@@ -89,7 +88,7 @@ def arg_split(s, posix=False):
     return args_list
 
 
-def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
+def get_stack(f, t, botframe, proc_obj=None) -> tuple:
     """Return a stack of frames which the debugger will use for in
     showing backtraces and in frame switching. As such various frame
     that are really around may be excluded unless we are debugging the
@@ -1122,7 +1121,8 @@ class CommandProcessor(Processor):
                     cmd_instances.append(instance)
                 except Exception:
                     print(
-                        f"Error loading {classname} from mod_name, sys.exc_info()[0]"
+                        "Error loading %s from %s: %s"
+                        % (classname, mod_name, sys.exc_info()[0])
                     )
                     pass
                 pass

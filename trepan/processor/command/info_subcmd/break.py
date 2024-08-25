@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015, 2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2012-2013, 2015, 2018, 2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -75,7 +76,7 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
             % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
         )
         if bp.condition:
-            self.msg(f"\tstop only if {bp.condition}")
+            self.msg("\tstop only if %s" % (bp.condition))
             pass
         if bp.ignore:
             self.msg("\tignore next %d hits" % (bp.ignore))

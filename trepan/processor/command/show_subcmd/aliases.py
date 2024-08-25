@@ -64,7 +64,7 @@ class ShowAliases(Mbase_subcmd.DebuggerShowIntSubcommand):
                 if alias in aliases:
                     self._alias_line(alias)
                 else:
-                    self.errmsg(f"{alias} is not an alias")
+                    self.errmsg("%s is not an alias" % alias)
                     pass
                 pass
             return

@@ -72,7 +72,8 @@ class SetHighlight(DebuggerSubcommand):
             return arg
         else:
             self.errmsg(
-                f"Expecting {', '.join(SetHighlight.highlight_choices)}\"; got {arg}"
+                'Expecting %s"; got %s'
+                % (", ".join(SetHighlight.highlight_choices), arg)
             )
             return None
         pass

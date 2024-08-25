@@ -25,7 +25,10 @@ from trepan.processor.subcmd import Subcmd
 
 
 def abbrev_stringify(name, min_abbrev):
-    return f"({name[:min_abbrev]}){name[min_abbrev:]}"
+    return "(%s)%s" % (
+        name[:min_abbrev],
+        name[min_abbrev:],
+    )
 
 
 def capitalize(s):
@@ -77,7 +80,7 @@ class SubcommandMgr(DebuggerCommand):
         # Initialization
         cmd_instances = []
         class_prefix = capitalize(name)  # e.g. Info, Set, or Show
-        module_dir = f"{base}.processor.command.{name}_subcmd"
+        module_dir = "%s.processor.command.%s_subcmd" % (base, name)
         mod = __import__(module_dir, None, None, ["*"])
         eval_cmd_template = "command_mod.%s(self)"
 
@@ -116,7 +119,7 @@ class SubcommandMgr(DebuggerCommand):
                     instance = eval(eval_cmd)
                     self.cmds.add(instance)
                 except Exception:
-                    print(f"Error eval'ing class {classname}")
+                    print("Error eval'ing class %s" % classname)
                     pass
                 pass
             pass
@@ -151,7 +154,7 @@ class SubcommandMgr(DebuggerCommand):
         subcmd_name = args[2]
 
         if "*" == subcmd_name:
-            self.section(f"List of subcommands for command '{self.name}':")
+            self.section("List of subcommands for command '%s':" % self.name)
             self.msg(self.columnize_commands(self.cmds.list()))
             return
 
@@ -176,7 +179,11 @@ class SubcommandMgr(DebuggerCommand):
                 )
             else:
                 self.section(
-                    f'Subcommand(s) of "{self.name}" matching /^{subcmd_name}/:'
+                    'Subcommand(s) of "%s" matching /^%s/:'
+                    % (
+                        self.name,
+                        subcmd_name,
+                    )
                 )
                 self.msg_nocr(self.columnize_commands(cmds))
                 pass
@@ -201,8 +208,8 @@ class SubcommandMgr(DebuggerCommand):
             # like "show", "info" or "set". Generally this means list
             # all of the subcommands.
             self.section(
-                f"List of {self.name} commands (with minimum abbreviation in "
-                "parenthesis):"
+                "List of %s commands (with minimum abbreviation in "
+                "parenthesis):" % self.name
             )
             for subcmd_name in self.cmds.list():
                 # Some commands have lots of output.

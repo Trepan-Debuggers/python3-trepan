@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2020, 2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class InfoOffsets(DebuggerSubcommand):
                 filename, toplevel_only=False, include_offsets=True
             )
             if file_info:
-                self.section(f"Offset - line number table for {filename}")
+                self.section("Offset - line number table for %s" % filename)
                 offsets = [
                     "@%4d:%4d" % (offset, line)
                     for offset, line in file_info.linestarts.items()
@@ -67,7 +67,7 @@ class InfoOffsets(DebuggerSubcommand):
                 m = self.columnize_commands(list(sorted(offsets)))
                 self.msg(m)
             else:
-                self.errmsg(f"haven't recorded info for offset file {filename}")
+                self.errmsg("haven't recorded info for offset file %s" % filename)
                 pass
             pass
         else:

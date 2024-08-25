@@ -46,7 +46,7 @@ class ShowHighlight(Mbase_subcmd.DebuggerSubcommand):
                 "output set for terminal with escape sequences " "for a dark background"
             )
         else:
-            self.errmsg(f"Internal error: incorrect highlight setting {val}")
+            self.errmsg("Internal error: incorrect highlight setting %s" % val)
             return
         self.msg(mess)
         return

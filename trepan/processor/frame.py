@@ -17,12 +17,10 @@
 # Call-frame-oriented helper function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from typing import Tuple
-
 from trepan.lib.complete import complete_token
 from trepan.processor.cmdfns import get_an_int
 
-def frame_low_high(proc_obj, direction) -> Tuple[int, int]:
+def frame_low_high(proc_obj, direction) -> tuple:
     stack_size = len(proc_obj.stack)  # - hide_level
     if direction is None:
         return (-stack_size, stack_size - 1)
@@ -98,10 +96,8 @@ def adjust_relative(proc_obj, name: str, args, signum: int):
         count = get_an_int(
             proc_obj.errmsg,
             count_str,
-            (
-                f"The '{name}' command argument must eval to"
-                f" an integer. Got: {count_str}"
-            ),
+            ("The '%s' command argument must eval to" + " an integer. Got: %s")
+            % (name, count_str),
             low,
             high,
         )

@@ -56,7 +56,7 @@ class SetEvents(Mbase_subcmd.DebuggerSubcommand):
         eventset = []
         for arg in args:
             if arg not in valid_args:
-                self.errmsg(f"set events: Invalid argument {arg} ignored.")
+                self.errmsg("set events: Invalid argument %s ignored." % arg)
                 continue
             if arg in tracer.ALL_EVENTS:
                 eventset += [arg]

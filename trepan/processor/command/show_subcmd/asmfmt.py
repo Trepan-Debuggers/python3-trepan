@@ -39,7 +39,7 @@ class ShowAsmFmt(DebuggerSubcommand):
 
         style = self.debugger.settings[self.name]
         if style:
-            self.msg(f"Assembly format style is {style}")
+            self.msg("Assembly format style is %s" % style)
         else:
             self.msg("Assembly format style not set")
         return

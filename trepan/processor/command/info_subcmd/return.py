@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class InfoReturn(DebuggerSubcommand):
         if self.proc.event in ["return", "exception"]:
             val = self.proc.event_arg
             formatted_val = pformat(val)
-            self.msg(f"return value (type {type(val)}):\n\t{formatted_val}")
+            self.msg("return value (type %s):\n\t%s" % (type(val), formatted_val))
         else:
             self.errmsg(
                 "Must be in a 'return' or 'exception' event "

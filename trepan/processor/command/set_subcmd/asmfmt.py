@@ -57,7 +57,7 @@ class SetAsmFmt(DebuggerSubcommand):
         if arg in choices:
             return arg
         else:
-            self.errmsg(f"Expecting one of: {', '.join(choices)}; got: {arg}.")
+            self.errmsg("Expecting one of: %s; got: %s." % (", ".join(choices), arg))
             return None
         pass
 

@@ -40,7 +40,7 @@ class SetMaxString(DebuggerSubcommand):
         Mcmdfns.run_set_int(
             self,
             " ".join(args),
-            f"The '{self.name}' command requires a character count",
+            "The '%s' command requires a character count" % self.name,
             0,
             None,
         )

@@ -325,7 +325,8 @@ def print_stack_entry(proc_obj, i_stack: int, color="plain", opts={}):
     else:
         intf.msg_nocr("##")
     intf.msg(
-        f"{i_stack} {format_stack_entry(proc_obj.debugger, frame_lineno, color=color)}"
+        "%d %s"
+        % (i_stack, format_stack_entry(proc_obj.debugger, frame_lineno, color=color))
     )
     if opts.get("source", False):
         filename = frame2file(proc_obj.core, frame)

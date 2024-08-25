@@ -47,17 +47,17 @@ class InfoProgram(DebuggerSubcommand):
         proc = self.proc
         if self.core.is_running():
             if mainfile:
-                part1 = f"Python program '{mainfile}' is stopped."
+                part1 = "Python program '%s' is stopped." % mainfile
             else:
                 part1 = "Program is stopped."
                 pass
             if proc.event:
-                msg = f"via a '{proc.event}' event."
+                msg = "via a %s event." % proc.event
             else:
                 msg = "."
             self.msg(part1)
             if proc.curframe:
-                self.msg(f"PC offset is {proc.curframe.f_lasti}.")
+                self.msg("PC offset is %d." % proc.curframe.f_lasti)
 
             if proc.event == "return":
                 val = proc.event_arg
@@ -69,19 +69,19 @@ class InfoProgram(DebuggerSubcommand):
             elif proc.event == "call":
                 proc.commands["info"].run(["info", "locals"])
             elif proc.event == "exception":
-                exc_type, exc_value, _ = proc.event_arg
-                self.msg(f"Exception type: {proc._saferepr(exc_type)}")
+                exc_type, exc_value, exc_tb = proc.event_arg
+                self.msg("Exception type: %s" % proc._saferepr(exc_type))
                 if exc_value:
-                    self.msg(f"Exception value: {proc._saferepr(exc_value)}")
+                    self.msg("Exception value: %s" % proc._saferepr(exc_value))
                     pass
                 pass
-            self.msg(f"It stopped {msg}")
+            self.msg("It stopped %s" % msg)
             if proc.event in ["signal", "exception", "c_exception"]:
                 self.msg("Note: we are stopped *after* running the " "line shown.")
                 pass
         else:
             if mainfile:
-                part1 = f"Python program '{mainfile}'"
+                part1 = "Python program '%s'" % mainfile
                 msg = "is not currently running. "
                 self.msg(wrapped_lines(part1, msg, self.settings["width"]))
             else:
