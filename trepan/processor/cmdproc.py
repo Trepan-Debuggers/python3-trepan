@@ -211,7 +211,7 @@ def print_location(proc_obj):
     # once and sometimes twice.
     remapped_file = None
     source_text = None
-    while i_stack >= 0:
+    while i_stack >= 0 and len(proc_obj.stack) > 0:
         frame, lineno = proc_obj.stack[i_stack]
 
         # Before starting a program a location for a module with
@@ -569,8 +569,13 @@ class CommandProcessor(Processor):
 
     def forget(self):
         """Remove memory of state variables set in the command processor"""
+
+        # call frame stack.
         self.stack = []
+
+        # Current frame index in call frame stack. 0 is the most recent frame.
         self.curindex = 0
+
         self.curframe = None
         self.thread_name = None
         self.frame_thread_name = None
@@ -608,7 +613,7 @@ class CommandProcessor(Processor):
             exec(code, global_vars, local_vars)
         except Exception:
             t, v = sys.exc_info()[:2]
-            if type(t) == bytes:
+            if isinstance(t, bytes):
                 exc_type_name = t
             else:
                 exc_type_name = t.__name__
@@ -1090,6 +1095,7 @@ class CommandProcessor(Processor):
                 "show_sub",
             ):
                 pass
+
             import_name = f"{Mcommand.__name__}.{mod_name}"
             try:
                 command_mod = importlib.import_module(import_name)
@@ -1105,18 +1111,13 @@ class CommandProcessor(Processor):
                 if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
             ]
             for classname in classnames:
-                if False:
+                try:
                     instance = getattr(command_mod, classname)(self)
                     cmd_instances.append(instance)
-                else:
-                    try:
-                        instance = getattr(command_mod, classname)(self)
-                        cmd_instances.append(instance)
-                    except Exception:
-                        print(
-                            f"Error loading {classname} from mod_name, sys.exc_info()[0]"
-                        )
-                        pass
+                except Exception:
+                    print(
+                        f"Error loading {classname} from mod_name, sys.exc_info()[0]"
+                    )
                     pass
                 pass
             pass

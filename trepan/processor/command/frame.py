@@ -127,7 +127,7 @@ class FrameCommand(DebuggerCommand):
             )
             return False
         else:
-            adjust_frame(self.proc, pos=frame_num, absolute_pos=True)
+            adjust_frame(self.proc, pos=frame_num, is_absolute_pos=True)
             return True
         return  # Not reached
 

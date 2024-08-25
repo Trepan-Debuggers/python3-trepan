@@ -47,8 +47,8 @@ def frame_num(proc_obj, pos: int) -> int:
     return len(proc_obj.stack) - pos - 1
 
 
-def adjust_frame(proc_obj, pos: int, absolute_pos: bool):
-    """Adjust stack frame by pos positions. If absolute_pos then
+def adjust_frame(proc_obj, pos: int, is_absolute_pos: bool):
+    """Adjust stack frame by pos positions. If is_absolute_pos then
     pos is an absolute number. Otherwise it is a relative number.
 
     A negative number indexes from the other end."""
@@ -58,7 +58,7 @@ def adjust_frame(proc_obj, pos: int, absolute_pos: bool):
 
     # Below we remove any negativity. At the end, pos will be
     # the new value of proc_obj.curindex.
-    if absolute_pos:
+    if is_absolute_pos:
         if pos >= 0:
             pos = frame_num(proc_obj, pos)
         else:
@@ -109,5 +109,5 @@ def adjust_relative(proc_obj, name: str, args, signum: int):
             return
         pass
 
-    adjust_frame(proc_obj, pos=signum * count, absolute_pos=False)
+    adjust_frame(proc_obj, pos=signum * count, is_absolute_pos=False)
     return
