@@ -573,7 +573,7 @@ class CommandProcessor(Processor):
         # call frame stack.
         self.stack = []
 
-        # Current frame index in call frame stack. 0 is the most recent frame.
+        # Current frame index in call frame stack; 0 is the oldest frame.
         self.curindex = 0
 
         self.curframe = None

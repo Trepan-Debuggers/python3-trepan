@@ -80,7 +80,7 @@ class FrameCommand(DebuggerCommand):
         need to the hide initial debugger frames.
         """
         thread = threading._active[thread_id]
-        thread_name = thread.getName()
+        thread_name = thread.name
         if (
             not self.settings["dbg_trepan"]
             and thread_name == Mthread.current_thread_name()
@@ -164,6 +164,7 @@ class FrameCommand(DebuggerCommand):
         """Run a frame command. This routine is a little complex
         because we allow a number parameter variations."""
 
+        position_str = "0"
         if len(args) == 1:
             # Form is: "frame" which means "frame 0"
             position_str = "0"
