@@ -109,7 +109,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
         # invert threading._active
         for thread_id in list(threading._active.keys()):
             thread = threading._active[thread_id]
-            name = thread.getName()
+            name = thread.name
             if name not in list(self.name2id.keys()):
                 self.name2id[name] = thread_id
                 pass
@@ -156,7 +156,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             # Print location where thread was created and line number
             if thread_id in threading._active:
                 thread = threading._active[thread_id]
-                thread_name = thread.getName()
+                thread_name = thread.name
                 if thread_name == self.proc.frame_thread_name:
                     prefix = "-> "
                     if not self.settings["dbg_trepan"]:
