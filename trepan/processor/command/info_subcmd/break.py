@@ -75,7 +75,7 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
             % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
         )
         if bp.condition:
-            self.msg("\tstop only if %s" % (bp.condition))
+            self.msg(f"\tstop only if {bp.condition}")
             pass
         if bp.ignore:
             self.msg("\tignore next %d hits" % (bp.ignore))

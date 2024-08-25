@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2021 Rocky Bernstein
+#   Copyright (C) 2021, 2024 Rocky Bernstein
 #
 
 import os
@@ -38,7 +38,7 @@ class SetTempdir(DebuggerSubcommand):
         if os.path.isdir(dirpath):
             self.debugger.settings[self.name] = dirpath
         else:
-            self.errmsg("set tempdir: directory %s not found; not changed." % dirpath)
+            self.errmsg(f"set tempdir: directory {dirpath} not found; not changed.")
         return
 
     pass

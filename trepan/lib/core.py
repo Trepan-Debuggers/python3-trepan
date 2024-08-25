@@ -34,17 +34,17 @@ import threading
 import pyficache
 import tracer
 
-import trepan
-import trepan.clifns as Mclifns
-
 # Our local modules
-from trepan.lib import breakpoint, default
+from trepan.clifns import search_file
+from trepan.lib.breakpoint import BreakpointManager
+from trepan.lib.default import START_OPTS, STOP_OPTS
 from trepan.lib.stack import count_frames
 from trepan.misc import option_set
-from trepan.processor import cmdproc as Mcmdproc, trace as Mtrace
+from trepan.processor.cmdproc import CommandProcessor
+from trepan.processor.trace import PrintProcessor
 
 
-class TrepanCore(object):
+class TrepanCore:
     DEFAULT_INIT_OPTS = {
         "processor": None,
         # How many step events to skip before
@@ -65,7 +65,7 @@ class TrepanCore(object):
         def get_option(key: str):
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
 
-        self.bpmgr = breakpoint.BreakpointManager()
+        self.bpmgr = BreakpointManager()
         self.current_bp = None
         self.debugger = debugger
 
@@ -91,10 +91,8 @@ class TrepanCore(object):
         self.processor = get_option("processor")
         proc_opts = get_option("proc_opts")
         if not self.processor:
-            self.processor = Mcmdproc.CommandProcessor(self, opts=proc_opts)
-        elif self.processor == "bullwinkle":
-            self.processor = trepan.bwprocessor.BWProcessor(self, opts=proc_opts)
-            pass
+            self.processor = CommandProcessor(self, opts=proc_opts)
+
         # What events are considered in stepping. Note: 'None' means *all*.
         self.step_events = None
         # How many line events to skip before entering event processor?
@@ -120,7 +118,7 @@ class TrepanCore(object):
         # 'finish', 'step', or 'exception'.
         self.stop_reason = ""
 
-        self.trace_processor = Mtrace.PrintProcessor(self)
+        self.trace_processor = PrintProcessor(self)
 
         # What routines (keyed by f_code) will we not trace into?
         self.ignore_filter = get_option("ignore_filter")
@@ -171,9 +169,7 @@ class TrepanCore(object):
                 canonic = osp.abspath(filename)
                 pass
             if not osp.isfile(canonic):
-                canonic = Mclifns.search_file(
-                    filename, self.search_path, self.main_dirname
-                )
+                canonic = search_file(filename, self.search_path, self.main_dirname)
                 # FIXME: is this is right for utter failure?
                 if not canonic:
                     canonic = filename
@@ -234,7 +230,7 @@ class TrepanCore(object):
             self.trace_hook_suspend = True
 
             def get_option(key: str):
-                return option_set(opts, key, default.START_OPTS)
+                return option_set(opts, key, START_OPTS)
 
             add_hook_opts = get_option("add_hook_opts")
 
@@ -242,7 +238,7 @@ class TrepanCore(object):
             if not tracer.is_started() or get_option("force"):
                 # FIXME: should filter out opts not for tracer
 
-                tracer_start_opts = default.START_OPTS.copy()
+                tracer_start_opts = START_OPTS.copy()
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))
                 tracer_start_opts["trace_fn"] = self.trace_dispatch
@@ -263,7 +259,7 @@ class TrepanCore(object):
             self.trace_hook_suspend = True
 
             def get_option(key: str):
-                return option_set(options, key, default.STOP_OPTS)
+                return option_set(options, key, STOP_OPTS)
 
             args = [self.trace_dispatch]
             remove = get_option("remove")

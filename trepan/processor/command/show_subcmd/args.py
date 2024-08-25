@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class ShowArgs(Mbase_subcmd.DebuggerSubcommand):
         self.msg(
             "Argument list to give program being debugged " + "when it is started is:"
         )
-        self.msg("\t%s." % " ".join(self.debugger.program_sys_argv[1:]))
+        self.msg(f"\t{' '.join(self.debugger.program_sys_argv[1:])}.")
         return False
 
     pass

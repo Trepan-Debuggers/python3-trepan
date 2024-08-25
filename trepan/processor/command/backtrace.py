@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2018-2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2018-2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ from getopt import getopt, GetoptError
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib import stack as Mstack
+from trepan.lib.stack import print_stack_trace
 
 
 class BacktraceCommand(DebuggerCommand):
@@ -112,7 +112,7 @@ class BacktraceCommand(DebuggerCommand):
         if not self.proc.curframe:
             self.errmsg("No stack.")
             return False
-        Mstack.print_stack_trace(
+        print_stack_trace(
             self.proc, count, color=self.settings["highlight"], opts=bt_opts
         )
         return False

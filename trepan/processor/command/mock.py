@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009-2010, 2013-2015, 2020, 2023 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013-2015, 2020, 2023-2024 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import tracefilter
 from trepan.lib import breakpoint, default
 
 
-class MockIO(object):
+class MockIO:
     def readline(self, prompt="", add_to_history=False):
         print(prompt)
         return "quit"
@@ -36,7 +36,7 @@ class MockIO(object):
     pass
 
 
-class MockUserInterface(object):
+class MockUserInterface:
     def __init__(self):
         self.io = MockIO()
         self.output = MockIO()
@@ -66,7 +66,7 @@ class MockUserInterface(object):
     pass
 
 
-class MockProcessor(object):
+class MockProcessor:
     def __init__(self, core):
         self.core = core
         self.debugger = core.debugger
@@ -89,7 +89,7 @@ class MockProcessor(object):
     pass
 
 
-class MockDebuggerCore(object):
+class MockDebuggerCore:
     def __init__(self, debugger):
         self.debugger = debugger
         self.execution_status = "Pre-execution"
@@ -130,7 +130,7 @@ class MockDebuggerCore(object):
     pass
 
 
-class MockDebugger(object):
+class MockDebugger:
     def __init__(self):
         self.intf = [MockUserInterface()]
         self.core = MockDebuggerCore(self)

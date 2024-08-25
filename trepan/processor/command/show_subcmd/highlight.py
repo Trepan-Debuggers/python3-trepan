@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein
+#   Copyright (C) 2015, 2024 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ class ShowHighlight(Mbase_subcmd.DebuggerSubcommand):
                 "output set for terminal with escape sequences " "for a dark background"
             )
         else:
-            self.errmsg("Internal error: incorrect highlight setting %s" % val)
+            self.errmsg(f"Internal error: incorrect highlight setting {val}")
             return
         self.msg(mess)
         return

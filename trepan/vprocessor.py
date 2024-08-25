@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2012-2013, 2015, 2020, 2023 Rocky
+#   Copyright (C) 2008-2010, 2012-2013, 2015, 2020, 2023-2024 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ NotImplementedMessage = "This method must be overridden in a subclass"
 __all__ = ["Processor"]
 
 
-class Processor(object):
+class Processor:
     """A processor is the thing that handles the events that come to
     the debugger.  It has it's own I/O mechanism and a way to handle
     the events.

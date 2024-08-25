@@ -51,15 +51,15 @@ class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
 
             for macro_name in sorted(macro_names):
                 if macro_name in self.proc.macros:
-                    self.section("%s:" % macro_name)
+                    self.section(f"{macro_name}:")
                     string = self.proc.macros[macro_name][1]
                     highlight = self.settings["highlight"]
                     if highlight in ["light", "dark"]:
                         string = highlight_string(string, highlight)
                         pass
-                    self.msg("  %s" % string)
+                    self.msg(f"  {string}")
                 else:
-                    self.errmsg("%s is not a defined macro" % macro_name)
+                    self.errmsg(f"{macro_name} is not a defined macro")
                     pass
                 pass
         elif 0 == len(list(self.proc.macros.keys())):

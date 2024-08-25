@@ -81,7 +81,7 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
             elif o in ("-l", "--list"):
                 list_only = True
             else:
-                self.errmsg("unhandled option '%s'" % o)
+                self.errmsg(f"unhandled option '{o}'")
             pass
         pass
 
@@ -110,7 +110,7 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
                     self.settings["width"],
                     self.msg_nocr,
                     self.msg,
-                    prefix="%s =" % name,
+                    prefix=f"{name} =",
                 )
                 pass
             pass
@@ -131,10 +131,10 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
                         self.settings["width"],
                         self.msg_nocr,
                         self.msg,
-                        prefix="%s =" % name,
+                        prefix=f"{name} =",
                     )
                 else:
-                    self.errmsg("%s is not a local variable" % name)
+                    self.errmsg(f"{name} is not a local variable")
                     pass
         return False
 

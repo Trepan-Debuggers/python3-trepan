@@ -100,7 +100,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
                     )
                     return False
                 if not inspect.isframe(frame):
-                    self.errmsg("%s is not a frame object" % frame)
+                    self.errmsg(f"{frame} is not a frame object")
                 pass
         else:
             frame_num = proc.curindex
@@ -112,12 +112,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         )
         self.section(mess)
         if hasattr(frame, "f_restricted"):
-            self.msg("  restricted execution: %s" % frame.f_restricted)
+            self.msg(f"  restricted execution: {frame.f_restricted}")
         self.msg("  current line number: %d" % frame.f_lineno)
         self.msg("  last instruction: %d" % frame.f_lasti)
-        self.msg("  code: %s" % frame.f_code)
-        self.msg("  previous frame: %s" % frame.f_back)
-        self.msg("  tracing function: %s" % frame.f_trace)
+        self.msg(f"  code: {frame.f_code}")
+        self.msg(f"  previous frame: {frame.f_back}")
+        self.msg(f"  tracing function: {frame.f_trace}")
 
         if show_lists:
             for name, field in [
