@@ -8,6 +8,8 @@ import sys
 import types
 from typing import Callable
 
+from pyficache import highlight_string
+
 from pygments.token import Comment
 from xdis import (
     IS_PYPY,
@@ -27,7 +29,9 @@ from trepan.lib.format import (
     Hex,
     Integer,
     LineNumber,
-    Opcode,
+    Number,
+    Keyword,
+    # Opcode,
     Symbol,
     format_token,
 )
@@ -257,7 +261,7 @@ def disassemble_bytes(
 
     labels = findlabels(code, opc)
 
-    def null_print(x):
+    def null_print(_):
         return None
 
     if start_line > cur_line:
@@ -267,6 +271,7 @@ def disassemble_bytes(
         msg_nocr = orig_msg_nocr
         msg = orig_msg
 
+    offset = -1
     for instr in get_instructions_bytes(
         code, opc, varnames, names, constants, cells, linestarts
     ):
@@ -323,7 +328,7 @@ def disassemble_bytes(
             msg_nocr("  ")
 
         # Column: Instruction offset from start of code sequence
-        msg_nocr(repr(offset).rjust(4))
+        msg_nocr(format_token(Number, repr(offset).rjust(4), style=style))
         msg_nocr(" ")
 
         # Column: Instruction bytes
@@ -355,7 +360,7 @@ def disassemble_bytes(
             msg_nocr(" ")
 
         # Column: Opcode name
-        msg_nocr(format_token(Opcode, instr.opname.ljust(20), style=style))
+        msg_nocr(format_token(Keyword, instr.opname.ljust(20), style=style))
         msg_nocr(" ")
 
         # Column: Opcode argument
@@ -399,10 +404,13 @@ def disassemble_bytes(
             else:
                 msg("")
                 pass
-            pass
         else:
-            # Column: Opcode argument details
-            msg(format_token(Details, argrepr, style=style))
+            msg(format_token(Details, instr.argrepr, style=style))
+
+
+        # Column: Opcode argument details
+        if instr.tos_str is not None:
+            msg(highlight_string(instr.tos_str, style=style))
         pass
 
     return code, offset
@@ -431,6 +439,11 @@ if __name__ == "__main__":
         return
 
 
+    def fib(x):
+        if x <= 1:
+            return 1
+        return fib(x-1) + fib(x-2)
+
     curframe = inspect.currentframe()
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_line=10, end_line=40, highlight='dark')
@@ -442,7 +455,8 @@ if __name__ == "__main__":
     # for asm_format in ("std", "extended", "bytes", "extended-bytes"):
     for asm_format in ("extended", "bytes", "extended-bytes"):
         print("Format is", asm_format)
-        dis(msg, msg_nocr, section, errmsg, disassemble, asm_format=asm_format)
+        dis(msg, msg_nocr, section, errmsg, disassemble, asm_format=asm_format, style="tango")
+        dis(msg, msg_nocr, section, errmsg, fib, asm_format=asm_format, style="tango")
         print("=" * 30)
 
     # print('-' * 40)
