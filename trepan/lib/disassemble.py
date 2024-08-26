@@ -9,7 +9,6 @@ import types
 from typing import Callable
 
 from pyficache import highlight_string
-
 from pygments.token import Comment
 from xdis import (
     IS_PYPY,
@@ -23,15 +22,14 @@ from xdis.instruction import Instruction
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
-from trepan.lib.format import (
+from trepan.lib.format import (  # Opcode,
     Arrow,
     Details,
     Hex,
     Integer,
+    Keyword,
     LineNumber,
     Number,
-    Keyword,
-    # Opcode,
     Symbol,
     format_token,
 )
@@ -242,7 +240,7 @@ def disassemble_bytes(
     constants=(),
     cells=(),
     freevars=(),
-    linestarts={},
+    line_starts={},
     style="none",
     start_offset=0,
     end_offset=None,
@@ -250,7 +248,7 @@ def disassemble_bytes(
     asm_format="extended",
 ):
     """Disassemble byte string of code. If end_line is negative
-    it counts the number of statement linestarts to use."""
+    it counts the number of statement line starts to use."""
     instructions = []
     statement_count = 10000
     if end_line is None:
@@ -273,10 +271,12 @@ def disassemble_bytes(
 
     offset = -1
     for instr in get_instructions_bytes(
-        code, opc, varnames, names, constants, cells, linestarts
+        code, opc, varnames, names, constants, cells, line_starts
     ):
         instructions.append(instr)
         offset = instr.offset
+        opcode = instr.opcode
+
         if end_offset and offset > end_offset:
             break
 
@@ -334,7 +334,7 @@ def disassemble_bytes(
         # Column: Instruction bytes
         if asm_format in ("extended-bytes", "bytes"):
             msg_nocr(format_token(Symbol, "|", style=style))
-            msg_nocr(format_token(Hex, f"{instr.opcode:02x}", style=style))
+            msg_nocr(format_token(Hex, f"{opcode:02x}", style=style))
             if instr.inst_size == 1:
                 # Not 3.6 or later
                 msg_nocr(" " * (2 * 3))
@@ -342,11 +342,7 @@ def disassemble_bytes(
                 # Must by Python 3.6 or later
                 msg_nocr(" ")
                 if instr.has_arg:
-                    msg_nocr(
-                        format_token(
-                            Hex, f"{instr.arg % 256:02x}", style=style
-                        )
-                    )
+                    msg_nocr(format_token(Hex, f"{instr.arg % 256:02x}", style=style))
                 else:
                     msg_nocr(format_token(Hex, "00", style=style))
             elif instr.inst_size == 3:
@@ -369,35 +365,43 @@ def disassemble_bytes(
             argrepr = instr.argrepr
             # The argrepr value when the instruction was created generally has all the information we require.
             if asm_format in ("extended", "extended-bytes"):
-                op = instr.opcode
+                if (
+                    instr.is_jump()
+                    and line_starts is not None
+                    and line_starts.get(instr.argval) is not None
+                ):
+                    msg(
+                        format_token(
+                            Details,
+                            f"{instr.argrepr}, line {line_starts[instr.argval]}",
+                            style=style,
+                        )
+                    )
+                    continue
                 if (
                     hasattr(opc, "opcode_extended_fmt")
-                    and opc.opname[op] in opc.opcode_extended_fmt
+                    and opc.opname[opcode] in opc.opcode_extended_fmt
                 ):
-                    tos_str, start_offset = opc.opcode_extended_fmt[opc.opname[op]](
+                    tos_str, start_offset = opc.opcode_extended_fmt[opc.opname[opcode]](
                         opc, list(reversed(instructions))
                     )
                     if start_offset is not None:
-                        argrepr = tos_str
-                        new_instruction = list(instructions[-1])
-                        new_instruction[-2] = tos_str
-                        new_instruction[-1] = start_offset
-                        del instructions[-1]
-                        instructions.append(Instruction(*new_instruction))
-
+                        msg(highlight_string(tos_str, style=style))
+                        continue
+                    pass
                 pass
         elif asm_format in ("extended", "extended-bytes"):
             # Note: instr.arg is also None
-            op = instr.opcode
             if (
                 hasattr(opc, "opcode_extended_fmt")
-                and opc.opname[op] in opc.opcode_extended_fmt
+                and opc.opname[opcode] in opc.opcode_extended_fmt
             ):
-                new_repr = opc.opcode_extended_fmt[opc.opname[op]](
+                tos_str, start_offset = opc.opcode_extended_fmt[opc.opname[opcode]](
                     opc, list(reversed(instructions))
                 )
-                if new_repr:
-                    argrepr = new_repr
+                if start_offset is not None:
+                    msg(highlight_string(tos_str, style=style))
+                    continue
         if argrepr is None or argrepr == "":
             if instr.arg is not None:
                 msg(format_token(Integer, str(instr.arg), style=style))
@@ -407,10 +411,6 @@ def disassemble_bytes(
         else:
             msg(format_token(Details, instr.argrepr, style=style))
 
-
-        # Column: Opcode argument details
-        if instr.tos_str is not None:
-            msg(highlight_string(instr.tos_str, style=style))
         pass
 
     return code, offset
@@ -423,26 +423,22 @@ if __name__ == "__main__":
         print(msg_str)
         return
 
-
     def msg_nocr(msg_str):
         sys.stdout.write(msg_str)
         return
-
 
     def errmsg(msg_str):
         msg("*** " + msg_str)
         return
 
-
     def section(msg_str):
         msg("=== " + msg_str + " ===")
         return
 
-
     def fib(x):
         if x <= 1:
             return 1
-        return fib(x-1) + fib(x-2)
+        return fib(x - 1) + fib(x - 2)
 
     curframe = inspect.currentframe()
     # dis(msg, msg_nocr, errmsg, section, curframe,
@@ -455,7 +451,15 @@ if __name__ == "__main__":
     # for asm_format in ("std", "extended", "bytes", "extended-bytes"):
     for asm_format in ("extended", "bytes", "extended-bytes"):
         print("Format is", asm_format)
-        dis(msg, msg_nocr, section, errmsg, disassemble, asm_format=asm_format, style="tango")
+        dis(
+            msg,
+            msg_nocr,
+            section,
+            errmsg,
+            disassemble,
+            asm_format=asm_format,
+            style="tango",
+        )
         dis(msg, msg_nocr, section, errmsg, fib, asm_format=asm_format, style="tango")
         print("=" * 30)
 
