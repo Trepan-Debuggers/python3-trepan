@@ -126,7 +126,7 @@ class DisassembleCommand(DebuggerCommand):
         listsize = 4
 
         opts = {
-            "highlight": self.settings["highlight"],
+            "style": self.settings["style"],
             "start_line": 1,
             "end_line": None,
             "start_offset": None,
