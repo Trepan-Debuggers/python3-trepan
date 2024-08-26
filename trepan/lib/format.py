@@ -94,11 +94,11 @@ pyficache.light_terminal_formatter.colorscheme = color_scheme
 
 def format_token(token_type, token_value: str, style) -> str:
     """
-    Decorate ``token`` with coloring matching `token_type` and return
+    Decorate ``token_value`` with coloring matching `token_type` and return
     the resulting string.
     """
-    if "plain" == highlight:
-        return token
+    if style == "none":
+        return token_value
     terminal_256_formatter = Terminal256Formatter(style=style)
     return format([[token_type, token_value]], terminal_256_formatter)
 
