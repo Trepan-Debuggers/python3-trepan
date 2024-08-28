@@ -18,7 +18,6 @@ from xdis import (
     get_instructions_bytes,
     get_opcode,
 )
-from xdis.instruction import Instruction
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -377,7 +376,7 @@ def disassemble_bytes(
                     msg(
                         format_token(
                             Details,
-                            f"{instr.argrepr}, line {line_starts[instr.argval]}",
+                            "%s, line %s" % (instr.argrepr, line_starts[instr.argval]),
                             style=style,
                         )
                     )

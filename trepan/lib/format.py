@@ -19,10 +19,9 @@
 
 
 import pyficache
-from pygments import highlight, lex, __version__ as pygments_version
+from pygments import format, highlight, lex, __version__ as pygments_version
 import re
 
-from pygments import format, highlight, lex
 from pygments.console import ansiformat
 from pygments.filter import Filter
 from pygments.formatter import Formatter
@@ -77,7 +76,7 @@ color_scheme[Name.Variable] = ("_black_", "_white_")
 
 color_scheme[Generic.Strong] = ("*black*", "*white*")
 color_scheme[Name.Variable] = ("_black_", "_white_")
-color_scheme[Generic.Emph] = ("blue", "brightcyan")
+color_scheme[Generic.Emph] = ("blue", "blue")
 
 pygments_version_tuple = tuple([int(num) for num in pygments_version.split(".")[:2]])
 purple = "magenta" if pygments_version_tuple >= (2, 5) else "purple"
