@@ -7,9 +7,9 @@ SYS_VERSION = sys.version_info[0:2]
 if not ((3, 0) <= SYS_VERSION < (3, 13)):
     mess = "Python Versions 3.0 to 3.12 are supported only in this package."
     if (2, 4) <= SYS_VERSION <= (2, 7):
-        mess += "\nFor your Python, version %s, See trepan2" % sys.version[0:3]
+        mess += ("\nFor your Python, version %s, See trepan2" % sys.version)
     elif SYS_VERSION < (2, 4):
-        mess += "\nFor your Python, version %s, see pydb" % sys.version[0:3]
+        mess += ("\nFor your Python, version %s, see pydb" % sys.version)
     if SYS_VERSION >= (3, 11):
         mess += (
             "\nFor your Python, version %s, use the master code/branch."

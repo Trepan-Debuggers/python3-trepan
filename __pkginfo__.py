@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021, 2023 Rocky Bernstein
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2014 Rocky Bernstein
 # <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,10 @@ import sys
 decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
-if SYS_VERSION < (3, 1):
-    pygments_version = "== 1.6"
+if SYS_VERSION < (3, 2):
+    pygments_version = "Pygments-rocky-hacked == 2.0.0" # I have my own patch for this
 else:
-    pygments_version = ">= 2.2.0"
+    pygments_version = "pygments>= 2.2.0"
 
 
 # Python-version | package  | last-version |
@@ -84,7 +84,7 @@ install_requires = [
     "columnize >= 0.3.10",
     "pyficache >= 2.3.0",
     "xdis >= 6.1.1,<6.2.0",
-    "pygments %s" % pygments_version,
+    pygments_version,
     "spark_parser >= 1.8.9, <1.9.0",
     "tracer >= 0.3.2",
     "term-background >= 1.0.1",
