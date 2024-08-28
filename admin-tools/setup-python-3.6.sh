@@ -12,8 +12,8 @@ PYTHON_VERSION=3.6.15
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3_owd=$(pwd)
 mydir=$(dirname $bs)
-. ./checkout_common.sh
 cd $mydir
+. ./checkout_common.sh
 (cd $fulldir/.. && \
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
