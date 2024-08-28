@@ -113,7 +113,7 @@ class BacktraceCommand(DebuggerCommand):
             self.errmsg("No stack.")
             return False
         print_stack_trace(
-            self.proc, count, color=self.settings["highlight"], opts=bt_opts
+            self.proc, count, style=self.settings["style"], opts=bt_opts
         )
         return False
 

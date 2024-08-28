@@ -60,7 +60,7 @@ class AliasCommand(DebuggerCommand):
                     old_command = self.proc.aliases[al]
                     self.msg(
                         (
-                            "Alias '%s#' for command '%s'replaced old "
+                            "Alias '%s' for command '%s'replaced old "
                             + "alias for '%s'."
                         )
                         % (al, command, old_command)

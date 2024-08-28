@@ -22,10 +22,11 @@ import pyficache
 from pygments import highlight, lex, __version__ as pygments_version
 import re
 
+from pygments import format, highlight, lex
 from pygments.console import ansiformat
 from pygments.filter import Filter
 from pygments.formatter import Formatter
-from pygments.formatters import TerminalFormatter
+from pygments.formatters import Terminal256Formatter, TerminalFormatter
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.lexers import RstLexer
 from pygments.token import (
@@ -95,19 +96,15 @@ pyficache.dark_terminal_formatter.colorscheme = color_scheme
 pyficache.light_terminal_formatter.colorscheme = color_scheme
 
 
-def format_token(ttype, token: str, color_scheme=color_scheme, highlight="light") -> str:
+def format_token(token_type, token_value: str, style) -> str:
     """
-    Decorate ``token`` with coloring matching `ttype`` and return the resulting string.
+    Decorate ``token_value`` with coloring matching `token_type` and return
+    the resulting string.
     """
-    if "plain" == highlight:
-        return token
-    is_dark_bg = 1 if DEBUGGER_SETTINGS["highlight"] == "dark" else 0
-    color_pair = color_scheme.get(ttype)
-    if color_pair:
-        color = color_pair[is_dark_bg]
-        token = token
-        return ansiformat(color, token)
-    return token
+    if style == "none":
+        return token_value
+    terminal_256_formatter = Terminal256Formatter(style=style)
+    return format([[token_type, token_value]], terminal_256_formatter)
 
 
 Arrow = Name.Variable

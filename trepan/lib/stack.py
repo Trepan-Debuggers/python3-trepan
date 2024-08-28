@@ -113,7 +113,7 @@ def deparse_source_from_code(code):
 
 
 def format_stack_entry(
-    dbg_obj, frame_lineno, lprefix=": ", include_location=True, color="plain"
+    dbg_obj, frame_lineno, lprefix=": ", include_location=True, style="none"
 ) -> str:
     """Format and return a stack entry gdb-style.
     Note: lprefix is not used. It is kept for compatibility.
@@ -127,7 +127,7 @@ def format_stack_entry(
     else:
         funcname = "<lambda>"
         pass
-    s = format_token(Function, funcname, highlight=color)
+    s = format_token(Function, funcname, style=style)
 
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
     if "<module>" == funcname and (
@@ -141,10 +141,10 @@ def format_stack_entry(
     ):
         is_module = True
         if is_exec_stmt(frame):
-            fn_name = format_token(Function, "exec", highlight=color)
+            fn_name = format_token(Function, "exec", style=style)
             source_text = deparse_source_from_code(frame.f_code)
             s += " %s(%s)" % (
-                format_token(Function, fn_name, highlight=color),
+                format_token(Function, fn_name, style=style),
                 source_text,
             )
         else:
@@ -153,7 +153,7 @@ def format_stack_entry(
                 source_text = deparse_source_from_code(frame.f_code)
                 if fn_name:
                     s += " %s(%s)" % (
-                        format_token(Function, fn_name, highlight=color),
+                        format_token(Function, fn_name, style=style),
                         source_text,
                     )
             pass
@@ -166,7 +166,7 @@ def format_stack_entry(
         else:
             maxargstrsize = dbg_obj.settings["maxargstrsize"]
             if len(params) >= maxargstrsize:
-                parms = "%s...)" % params[0:maxargstrsize]
+                params = "%s...)" % params[0:maxargstrsize]
                 pass
             s += params
         pass
@@ -179,7 +179,7 @@ def format_stack_entry(
     if "__return__" in frame.f_locals:
         rv = frame.f_locals["__return__"]
         s += "->"
-        s += format_token(Return, repr(rv), highlight=color)
+        s += format_token(Return, repr(rv), style=style)
         pass
 
     if include_location:
@@ -210,8 +210,8 @@ def format_stack_entry(
         if add_quotes_around_file:
             filename = "'%s'" % filename
         s += " %s at line %s" % (
-            format_token(Filename, filename, highlight=color),
-            format_token(LineNumber, "%r" % lineno, highlight=color),
+            format_token(Filename, filename, style=style),
+            format_token(LineNumber, "%r" % lineno, style=style),
         )
     return s
 
@@ -316,17 +316,17 @@ def get_call_function_name(frame):
     return None
 
 
-def print_stack_entry(proc_obj, i_stack: int, color="plain", opts={}):
+def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
     frame, lineno = frame_lineno
     intf = proc_obj.intf[-1]
     if frame is proc_obj.curframe:
-        intf.msg_nocr(format_token(Arrow, "->", highlight=color))
+        intf.msg_nocr(format_token(Arrow, "->", style=style))
     else:
         intf.msg_nocr("##")
     intf.msg(
         "%d %s"
-        % (i_stack, format_stack_entry(proc_obj.debugger, frame_lineno, color=color))
+        % (i_stack, format_stack_entry(proc_obj.debugger, frame_lineno, style=style))
     )
     if opts.get("source", False):
         filename = frame2file(proc_obj.core, frame)
@@ -373,7 +373,7 @@ def print_stack_entry(proc_obj, i_stack: int, color="plain", opts={}):
         pass
 
 
-def print_stack_trace(proc_obj, count=None, color="plain", opts={}):
+def print_stack_trace(proc_obj, count=None, style="none", opts={}):
     "Print ``count`` entries of the stack trace"
     if count is None:
         n = len(proc_obj.stack)
@@ -381,7 +381,7 @@ def print_stack_trace(proc_obj, count=None, color="plain", opts={}):
         n = min(len(proc_obj.stack), count)
     try:
         for i in range(n):
-            print_stack_entry(proc_obj, i, color=color, opts=opts)
+            print_stack_entry(proc_obj, i, style=style, opts=opts)
     except KeyboardInterrupt:
         pass
     return
@@ -469,7 +469,20 @@ if __name__ == "__main__":
     )
     print(pyc_file, getsourcefile(pyc_file))
 
-    # m = MockDebugger()
+    m = MockDebugger()
+
+    # For testing print_stack_entry()
+    # import inspect
+    # import trepan
+    # from trepan.api import debug;
+    # dd = trepan.debugger.Trepan()
+    # my_frame = inspect.currentframe()
+    # dd.core.processor.stack =  [(my_frame, 100)]
+    # dd.core.processor.curframe =  my_frame
+    # debug()
+    # print_stack_entry(dd.core.processor, 0, "fruity")
+
+
     # print(format_stack_entry(m, (frame, 10,)))
     # print(format_stack_entry(m, (frame, 10,), color="dark"))
     # print("frame count: %d" % count_frames(frame))

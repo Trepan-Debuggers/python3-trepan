@@ -11,8 +11,8 @@ pyenv local $PYTHON_VERSION
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3_owd=$(pwd)
 mydir=$(dirname $bs)
-. ./checkout_common.sh
 cd $mydir
+. ./checkout_common.sh
 fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
      setup_version python-uncompyle6 python-3.0 \
