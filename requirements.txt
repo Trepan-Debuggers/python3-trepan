@@ -4,7 +4,6 @@
 # And the xdis version is missing
 columnize >= 0.3.10
 pyficache >= 2.3.0,
-Pygments-rocky-hacked == 2.0
 spark_parser
 tracer >= 0.3.2
 flake8

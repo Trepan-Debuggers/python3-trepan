@@ -29,7 +29,7 @@ decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
 if SYS_VERSION < (3, 2):
-    pygments_version = "Pygments-rocky-hacked == 2.0.0" # I have my own patch for this
+    pygments_version = "pygments==2.0.0" # I have my own patch for this
 else:
     pygments_version = "pygments>= 2.2.0"
 
@@ -37,7 +37,7 @@ else:
 # Python-version | package  | last-version |
 # ------------------------------------------
 # 3.2            | pip      | 8.1.2        |
-# 3.2            | pygments | 1.6          |
+# 3.1            | pygments | 2.0.0        |
 # 3.3            | pip      | 10.0.1       |
 # 3.4            | pip      | 19.1.1       |
 
@@ -54,6 +54,7 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Debuggers",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.1",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",

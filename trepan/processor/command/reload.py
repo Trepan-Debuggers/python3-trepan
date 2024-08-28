@@ -43,22 +43,22 @@ class ReloadCommand(DebuggerCommand):
         proc = self.proc
         if cmd_name in proc.commands:
             command_module = importlib.import_module(proc.commands[cmd_name].__module__)
-            importlib.reload(command_module)
+            # importlib.reload(command_module)
             classnames = [tup[0] for tup in inspect.getmembers(command_module, inspect.isclass) if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))]
             if len(classnames) == 1:
                 try:
                     instance = getattr(command_module, classnames[0])(proc)
                 except Exception:
                     print(
-                        f"Error loading {classnames[0]} from mod_name, sys.exc_info()[0]"
+                        "Error loading %s from mod_name, sys.exc_info()[0]" % classnames[0]
                     )
                     return
 
                 # FIXME: should we also replace object in proc.cmd_instances?
                 proc.commands[cmd_name] = instance
-                self.msg(f'reloaded command "{cmd_name}"')
+                self.msg('reloaded command "%s"' % cmd_name)
         else:
-            self.errmsg(f'command "{cmd_name}" not found as a debugger command"')
+            self.errmsg('command "%s" not found as a debugger command"' % cmd_name )
     pass
 
 
