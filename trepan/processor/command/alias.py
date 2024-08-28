@@ -54,7 +54,7 @@ class AliasCommand(DebuggerCommand):
         elif len(args) == 2:
             self.proc.commands["show"].run(["show", "alias", args[1]])
         else:
-            junk, al, command = args
+            _, al, command = args
             if command in self.proc.commands:
                 if al in self.proc.aliases:
                     old_command = self.proc.aliases[al]
