@@ -26,7 +26,7 @@ from term_background import is_dark_background
 
 width = computed_displaywidth()
 is_dark_bg = is_dark_background()
-default_style = "zenburn" if is_dark_bg else "tango"
+default_style = "monokai" if is_dark_bg else "tango"
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to

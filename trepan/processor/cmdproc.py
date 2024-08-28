@@ -1041,14 +1041,14 @@ class CommandProcessor(Processor):
 
     def populate_commands_pip(self, Mcommand):
         cmd_instances = []
-        eval_cmd_template = "command_mod.%s(self)"
+        eval_cmd_template = "command_module.%s(self)"
         for mod_name in Mcommand.__dict__.keys():
             if mod_name.startswith("__"):
                 continue
             import_name = "trepan.processor.command." + mod_name
             imp = __import__(import_name)
             if imp.__name__ == mod_name:
-                command_mod = imp.processor.command
+                command_module = imp.processor.command
             else:
                 if mod_name in (
                     "info_sub",
@@ -1057,7 +1057,7 @@ class CommandProcessor(Processor):
                 ):
                     pass
                 try:
-                    command_mod = getattr(__import__(import_name), mod_name)
+                    command_module = getattr(__import__(import_name), mod_name)
                 except Exception:
                     # Don't need to warn about optional modules
                     if mod_name not in self.optional_modules:
@@ -1068,7 +1068,7 @@ class CommandProcessor(Processor):
 
             classnames = [
                 tup[0]
-                for tup in inspect.getmembers(command_mod, inspect.isclass)
+                for tup in inspect.getmembers(command_module, inspect.isclass)
                 if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
             ]
             for classname in classnames:
@@ -1103,7 +1103,7 @@ class CommandProcessor(Processor):
                 pass
             import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
-                command_mod = importlib.import_module(import_name)
+                command_module = importlib.import_module(import_name)
             except Exception:
                 if mod_name not in self.optional_modules:
                     print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
@@ -1112,12 +1112,12 @@ class CommandProcessor(Processor):
 
             classnames = [
                 tup[0]
-                for tup in inspect.getmembers(command_mod, inspect.isclass)
+                for tup in inspect.getmembers(command_module, inspect.isclass)
                 if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
             ]
             for classname in classnames:
                 try:
-                    instance = getattr(command_mod, classname)(self)
+                    instance = getattr(command_module, classname)(self)
                     cmd_instances.append(instance)
                 except Exception:
                     print(
