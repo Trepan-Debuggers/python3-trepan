@@ -109,7 +109,7 @@ class FrameCommand(DebuggerCommand):
         not needed and we have an explicit position number as a string"""
         frame_num = self.proc.get_an_int(
             position_str,
-            f"The 'frame' command requires a" + " frame number. Got: {position_str}"
+            f"The 'frame' command requires a frame number. Got: {position_str}"
         )
         if frame_num is None:
             return False
@@ -121,8 +121,8 @@ class FrameCommand(DebuggerCommand):
 
         if frame_num < -i_stack or frame_num > i_stack - 1:
             self.errmsg(
-                ("Frame number has to be in the range %d to %d." + " Got: %d (%s).")
-                % (-i_stack, i_stack - 1, frame_num, position_str)
+                f"Frame number has to be in the range {-i_stack} to {i_stack - 1}. "
+                f"Got: {frame_num} ({position_str})."
             )
             return False
         else:
