@@ -56,7 +56,7 @@ except ImportError:
 warned_file_mismatches = set()
 
 
-def get_srcdir():
+def get_srcdir() -> str:
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
 
