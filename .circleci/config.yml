@@ -14,7 +14,8 @@ jobs:
         password: $DOCKERHUB_PASSWORD
     steps:
       - checkout  # checkout source code to working directory
-      - run: pip install xdis
+      # - run: pip install xdis
+      - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
       - run: pip install --local -e git+https://github.com/rocky/pytracer.git#egg=tracer
       - run: pip install pyficache
       - run: pip install uncompyle6
