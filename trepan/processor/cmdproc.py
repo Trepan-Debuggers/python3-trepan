@@ -27,7 +27,7 @@ import traceback
 
 # Note: the module name pre 3.2 is repr
 from reprlib import Repr
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pyficache
 from pygments.console import colorize
@@ -56,7 +56,7 @@ except ImportError:
 warned_file_mismatches = set()
 
 
-def get_srcdir():
+def get_srcdir() -> str:
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
 
@@ -597,7 +597,7 @@ class CommandProcessor(Processor):
             raise
         return None  # Not reached
 
-    def exec_line(self, line):
+    def exec_line(self, line: str):
         if self.curframe:
             local_vars = self.curframe.f_locals
             global_vars = self.curframe.f_globals
@@ -621,7 +621,9 @@ class CommandProcessor(Processor):
             pass
         return
 
-    def get_an_int(self, arg, msg_on_error, min_value=None, max_value=None):
+    def get_an_int(
+        self, arg, msg_on_error, min_value=None, max_value=None
+    ) -> Optional[int]:
         """Like cmdfns.get_an_int(), but if there's a stack frame use that
         in evaluation."""
         ret_value = self.get_int_noerr(arg)
@@ -662,7 +664,9 @@ class CommandProcessor(Processor):
             return None
         return val
 
-    def get_int(self, arg, min_value=0, default=1, cmdname=None, at_most=None):
+    def get_int(
+        self, arg, min_value=0, default=1, cmdname=None, at_most=None
+    ) -> Optional[int]:
         """If no argument use the default. If arg is a an integer between
         least min_value and at_most, use that. Otherwise report an error.
         If there's a stack frame use that in evaluation."""
@@ -680,7 +684,6 @@ class CommandProcessor(Processor):
                 self.errmsg(f"Expecting a positive integer, got: {str(arg)}")
                 pass
             return None
-            pass
         if default < min_value:
             if cmdname:
                 self.errmsg(
@@ -1115,9 +1118,7 @@ class CommandProcessor(Processor):
                     instance = getattr(command_module, classname)(self)
                     cmd_instances.append(instance)
                 except Exception:
-                    print(
-                        f"Error loading {classname} from mod_name, sys.exc_info()[0]"
-                    )
+                    print(f"Error loading {classname} from mod_name, sys.exc_info()[0]")
                     pass
                 pass
             pass
