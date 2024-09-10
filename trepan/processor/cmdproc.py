@@ -100,7 +100,7 @@ def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
         return false_fn
 
     def fn_is_ignored(f):
-        return proc_obj.core.ignore_filter.is_included(f)
+        return proc_obj.core.ignore_filter.is_excluded(f)
 
     exclude_frame = false_fn
     if proc_obj:
