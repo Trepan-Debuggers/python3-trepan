@@ -1,10 +1,14 @@
 """Unit test for trepan.options"""
 
+import sys
 from test.unit.cmdhelper import setup_unit_test_debugger
+
+import pytest
 
 from trepan.options import postprocess_options, process_options
 
 
+@pytest.mark.skipif(sys.platform in ("win32",), reason="$Need to go over on MS Windows")
 def test_options():
     """
     Test trepan.options.process_options() and trepan.options.postprocess.

@@ -48,10 +48,6 @@ classifiers = [
 ]
 dynamic = ["version"]
 
-[project.urls]
-Homepage = "https://pypi.org/project/trepan3k/"
-Downloads = "https://github.com/rocky/python-trepan3k/releases"
-
 [project.optional-dependencies]
 dev = [
     "flake8",
@@ -62,6 +58,10 @@ dev = [
 [project.scripts]
 trepan3k   = "trepan.__main__:main"
 trepan3kc  = "trepan.client:main"
+
+[project.urls]
+Homepage = "https://pypi.org/project/trepan3k/"
+Downloads = "https://github.com/rocky/python-trepan3k/releases"
 
 [tool.setuptools.dynamic]
 version = {attr = "trepan.version.__version__"}
