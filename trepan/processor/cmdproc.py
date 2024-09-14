@@ -253,11 +253,8 @@ def print_location(proc_obj):
                 remapped_file = pyficache.file2file_remap[m.group(1)]
                 pass
             elif filename in pyficache.file2file_remap:
-                remapped_file = pyficache.unmap_file(filename)
-                # FIXME: a remapped_file shouldn't be the same as its unmapped version
-                if remapped_file == filename:
-                    remapped_file = None
-                    pass
+                remapped_file = pyficache.file2file_remap[filename]
+                filename = remapped_file
                 pass
             elif pyficache.main.remap_re_hash:
                 remapped_file = pyficache.remap_file_pat(
@@ -273,7 +270,10 @@ def print_location(proc_obj):
             "output": proc_obj.settings("highlight"),
         }
 
-        if "style" in proc_obj.debugger.settings:
+        if (
+            "style" in proc_obj.debugger.settings
+            and proc_obj.debugger.settings.get("highlight", "plain") != "plain"
+        ):
             opts["style"] = proc_obj.settings("style")
 
         pyficache.update_cache(filename)

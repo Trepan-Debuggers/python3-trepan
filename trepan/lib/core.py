@@ -242,7 +242,7 @@ class TrepanCore:
                 tracer_start_opts = START_OPTS.copy()
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))
-                tracer_start_opts["trace_fn"] = self.trace_dispatch
+                tracer_start_opts["trace_func"] = self.trace_dispatch
                 tracer_start_opts["add_hook_opts"] = add_hook_opts
                 tracer.start(tracer_start_opts)
             elif not tracer.find_hook(self.trace_dispatch):
@@ -410,8 +410,10 @@ class TrepanCore:
 
         # For now we only allow one instance in a process
         # In Python 2.6 and beyond one can use "with threading.Lock():"
+        # print("XXX trace dispatch", frame, event, arg)  # for debugging
         try:
             self.debugger_lock.acquire()
+            # print("XXX", frame, frame.f_lineno, event, arg)
 
             if self.trace_hook_suspend:
                 return None

@@ -35,8 +35,7 @@ test-unit:
 
 #: Run functional tests
 check-functional test-functional:
-	@echo "Function needs fixup after highlight work"
-	# (cd test/functional && $(PYTHON) -m pytest .)
+	(cd test/functional && $(PYTHON) -m pytest .)
 
 #: Run functional tests
 test-functional-short:
