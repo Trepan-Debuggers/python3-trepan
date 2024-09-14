@@ -34,10 +34,11 @@ import types
 from typing import Any, Callable
 
 import pyficache
-import tracefilter
 
 # External Egg packages
 import tracer
+
+from tracer.tracefilter import TraceFilter
 
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
@@ -344,7 +345,7 @@ class Trepan:
     # Note: has to come after functions listed in ignore_filter.
     DEFAULT_INIT_OPTS = {
         # What routines will we not trace into?
-        "ignore_filter": tracefilter.TraceFilter(
+        "ignore_filter": TraceFilter(
             [tracer.start, tracer.stop, run_eval, run_call, run_eval, run_script]
         ),
         # sys.argv when not None contains sys.argv *before* debugger

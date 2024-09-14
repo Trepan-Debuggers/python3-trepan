@@ -7,7 +7,7 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=3.6.15
+PYTHON_VERSION=3.6
 
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3_owd=$(pwd)
@@ -18,7 +18,8 @@ cd $mydir
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
      setup_version pycolumnize master && \
-     setup_version python-xdis python-3.6 \
+     setup_version python-xdis python-3.6-to-3.10 \
+     setup_version pytracer python-3.6-to-3.10 \
     )
 
 checkout_finish python-3.6-to-3.10

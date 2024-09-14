@@ -8,20 +8,21 @@ jobs:
       CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
       CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
     docker:
-    - image: cimg/python:3.8.12
+    - image: cimg/python:3.12.6
       auth:
         username: rockyb
         password: $DOCKERHUB_PASSWORD
     steps:
       - checkout  # checkout source code to working directory
-      - run: pip install xdis
+      # - run: pip install xdis
+      - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
       - run: pip install --local -e git+https://github.com/rocky/pytracer.git#egg=tracer
       - run: pip install pyficache
       - run: pip install uncompyle6
       - run: pip install --local -e git+https://github.com/rocky/python-decompile3.git#egg=decompyle3
       - run: pip install --local -e .
       - run: pip install -r requirements-dev.txt
-      # - run: make test
+      - run: make test
       - restore_cache:
           keys:
             # This branch if available
