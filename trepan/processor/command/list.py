@@ -18,13 +18,13 @@ import inspect
 import linecache
 import os.path as osp
 import sys
-from trepan.processor.cmd_addrlist import INVALID_PARSE_LIST
 
 import pyficache
 
 # Our local modules
 from pygments.console import colorize
 
+from trepan.processor.cmd_addrlist import INVALID_PARSE_LIST
 from trepan.processor.cmdlist import parse_list_cmd
 
 # Our local modules
@@ -91,6 +91,7 @@ class ListCommand(DebuggerCommand):
         filename, first, last = parse_list_cmd(proc, args, listsize)
         if (filename, first, last) == INVALID_PARSE_LIST:
             return
+        assert isinstance(first, int)
         curframe = proc.curframe
         if filename is None:
             return
@@ -133,7 +134,9 @@ class ListCommand(DebuggerCommand):
         }
 
         for field in ("highlight", "style"):
-            if field in self.settings:
+            if field == "style" and opts["highlight"] == "plain":
+                opts["style"] = None
+            elif field in self.settings:
                 opts[field] = self.settings[field]
 
         if first <= 0:
@@ -204,8 +207,8 @@ if __name__ == "__main__":
     print("--" * 10)
     # doit(lcmd, ['list'])
 
-    doit(lcmd, ['list', __file__ + ':5'])
-    print('--' * 10)
+    doit(lcmd, ["list", __file__ + ":5"])
+    print("--" * 10)
 
     # doit(lcmd, ['list', 'os:10'])
     # print('--' * 10)
