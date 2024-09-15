@@ -410,10 +410,8 @@ class TrepanCore:
 
         # For now we only allow one instance in a process
         # In Python 2.6 and beyond one can use "with threading.Lock():"
-        # print("XXX trace dispatch", frame, event, arg)  # for debugging
         try:
             self.debugger_lock.acquire()
-            # print("XXX", frame, frame.f_lineno, event, arg)
 
             if self.trace_hook_suspend:
                 return None
@@ -427,7 +425,10 @@ class TrepanCore:
             # which will give a cryptic the message on setting f_lineno:
             #   f_lineno can only be set by a trace function
             if self.ignore_filter and self.ignore_filter.is_excluded(frame):
+                # print("XXX- trace dispatch ignored - frame", frame, frame.f_lineno, event, arg) # for debugging
                 return self
+
+            # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
 
             if self.debugger.settings["trace"]:
                 print_event_set = self.debugger.settings["printset"]

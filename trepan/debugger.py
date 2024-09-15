@@ -118,7 +118,6 @@ class Trepan:
             pass
 
         self.core = TrepanCore(self, core_opts)
-        self.core.add_ignore(self.core.stop)
 
         # When set True, we'll also suspend our debug-hook tracing.
         # This gives us a way to prevent or allow self debugging.
@@ -340,7 +339,7 @@ class Trepan:
     # DEFAULT_INIT_OPTS which includes references to these.
 
     # Note: has to come after functions listed in ignore_filter.
-    ignore_items = [tracer.tracer, TrepanCore]
+    ignore_items = [tracer, tracer.tracer, TrepanCore]
     trepan_debugger = sys.modules.get("trepan.debugger")
     if trepan_debugger is not None:
         ignore_items.append(trepan_debugger)

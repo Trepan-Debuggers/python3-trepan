@@ -144,11 +144,11 @@ def test_step_between_fn():
         (
             ["step", "step", "step", "step", "continue"],
             [
+                "-- d.core.start()",
                 "-- x = sqr(4)  # NOQA",
                 "-> def sqr(x):",
                 "-- return x * x",
                 "<- return x * x",
-                "-- y = 5  # NOQA",
             ],
             tracer.ALL_EVENTS,
         ),
