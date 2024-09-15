@@ -141,17 +141,21 @@ def test_step_between_fn():
     for cmds, out, eventset in (
         (
             ["step", "step", "continue"],
-            ["-- x = sqr(4)  # NOQA", "-- return x * x", "-- y = 5  # NOQA"],
+            [
+                "-- x = sqr(4)  # NOQA",
+                "-- return x * x",
+                "-- y = 5  # NOQA",
+            ],
             frozenset(("line",)),
         ),
         (
             ["step", "step", "step", "step", "continue"],
             [
-                "-- d.core.start()",
                 "-- x = sqr(4)  # NOQA",
                 "-> def sqr(x):",
                 "-- return x * x",
                 "<- return x * x",
+                "-- y = 5  # NOQA",
             ],
             tracer.ALL_EVENTS,
         ),
