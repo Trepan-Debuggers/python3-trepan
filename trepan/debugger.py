@@ -93,7 +93,6 @@ class Trepan:
             "proc_opts",
             "processor",
             "step_ignore",
-            "processor",
         ):
             core_opts[opt] = get_option(opt)
             pass
