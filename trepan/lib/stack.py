@@ -17,6 +17,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """ Functions for working with Python frames"""
 
+import dis
 import inspect
 import linecache
 import os
@@ -263,8 +264,6 @@ def is_exec_stmt(frame):
     return hasattr(frame, "f_back") and get_call_function_name(frame) == "exec"
 
 
-import dis
-
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
@@ -476,7 +475,6 @@ if __name__ == "__main__":
     # dd.core.processor.curframe =  my_frame
     # debug()
     # print_stack_entry(dd.core.processor, 0, "fruity")
-
 
     # print(format_stack_entry(m, (frame, 10,)))
     # print(format_stack_entry(m, (frame, 10,), color="dark"))

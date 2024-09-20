@@ -129,13 +129,12 @@ def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
     return stack, i
 
 
-def run_hooks(obj, hooks, *args):
-    """Run each function in `hooks' with args"""
-    for hook in hooks:
-        if hook(obj, *args):
-            return True
-        pass
-    return False
+def run_hooks(obj, hooks, *args) -> bool:
+    """Run each function in `hooks' with args
+    Returns True if a hook failed and so the caller should
+    leave its command loop.
+    """
+    return any((hook(obj, *args) for hook in hooks))
 
 
 def resolve_name(obj, command_name):
@@ -270,10 +269,9 @@ def print_location(proc_obj):
             "output": proc_obj.settings("highlight"),
         }
 
-        if (
-            "style" in proc_obj.debugger.settings
-            and proc_obj.debugger.settings.get("highlight", "plain") != "plain"
-        ):
+        if proc_obj.debugger.settings.get("highlight", "plain") == "plain":
+            opts["style"] = "plain"
+        elif "style" in proc_obj.debugger.settings:
             opts["style"] = proc_obj.settings("style")
 
         pyficache.update_cache(filename)
@@ -796,7 +794,8 @@ class CommandProcessor(Processor):
                     break
                 pass
             pass
-        return run_hooks(self, self.postcmd_hooks)
+        run_hooks(self, self.postcmd_hooks)
+        return
 
     def process_command(self):
         # process command
