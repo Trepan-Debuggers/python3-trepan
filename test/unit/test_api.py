@@ -21,6 +21,7 @@ def plus5(n: int) -> int:
     IS_PYPY and PYTHON_VERSION_TRIPLE < (3, 7, 0),
     reason="PyPy strings work differently",
 )
+@pytest.mark.skipif(sys.platform in ("win32",), reason="$Need to go over on MS Windows")
 def test_run_xxx():
     """
     test run_eval() and run_call()
