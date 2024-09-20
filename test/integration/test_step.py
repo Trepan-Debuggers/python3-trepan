@@ -6,8 +6,8 @@ from xdis import PYTHON_VERSION_TRIPLE
 
 def test_step():
     """Test stepping, set skip, set trace"""
-    if PYTHON_VERSION_TRIPLE >= (3, 12):
-        right_template = "%s-312.right"
+    if PYTHON_VERSION_TRIPLE >= (3, 11):
+        right_template = "%s-311.right"
     elif PYTHON_VERSION_TRIPLE >= (3, 8):
         right_template = "%s-38.right"
     else:
