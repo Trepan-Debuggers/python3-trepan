@@ -8,6 +8,8 @@ def test_step():
     """Test stepping, set skip, set trace"""
     if PYTHON_VERSION_TRIPLE >= (3, 11):
         right_template = "%s-311.right"
+    elif PYTHON_VERSION_TRIPLE >= (3, 10):
+        right_template = "%s-310.right"
     elif PYTHON_VERSION_TRIPLE >= (3, 8):
         right_template = "%s-38.right"
     else:
