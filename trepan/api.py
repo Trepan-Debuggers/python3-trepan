@@ -257,6 +257,7 @@ def debug(
         core.processor.queue_startfile(init_cmdfile)
 
     if not core.is_started():
+        core.add_ignore(debug, stop)
         core.start(start_opts)
         pass
     if post_mortem:

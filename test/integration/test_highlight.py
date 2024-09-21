@@ -1,9 +1,15 @@
 "General integration tests"
 
+import sys
+
+import pytest
 from helper import run_debugger
 from xdis import PYTHON_VERSION_TRIPLE
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="Need to adjust for filesystem on MS Windows"
+)
 def test_highlight():
     """Test set/show highlight"""
     if PYTHON_VERSION_TRIPLE >= (3, 10):
