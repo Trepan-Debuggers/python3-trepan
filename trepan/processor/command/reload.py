@@ -45,6 +45,7 @@ class ReloadCommand(DebuggerCommand):
         cmd_name = args[1]
         proc = self.proc
         if len(args) == 2:
+            cmd_name = proc.aliases.get(cmd_name, cmd_name)
             if cmd_name not in proc.commands:
                 self.errmsg(f'command "{cmd_name}" not found as a debugger command')
                 return
