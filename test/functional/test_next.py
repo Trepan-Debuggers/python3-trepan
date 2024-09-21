@@ -2,16 +2,15 @@
 Functional test of debugger "next" command.
 """
 
-from os.path import basename
-from pathlib import Path
+from os.path import abspath, basename
 from test.functional.fn_helper import compare_output, strarray_setup
 
 import pyficache
 import pytest
 
-# FIXME: try this:
+# FIXME: DRY this:
 
-absolute_path = str(Path(__file__).absolute())
+absolute_path = abspath(__file__)
 short_name = basename(__file__)
 pyficache.update_cache(short_name)
 pyficache.file2file_remap.update({short_name: absolute_path})
