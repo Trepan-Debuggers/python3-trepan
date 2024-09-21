@@ -1,6 +1,6 @@
 #!/bin/bash
 # Check out 3.6-to-3.10 branch and dependent development branches
-s
+
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
