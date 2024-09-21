@@ -237,8 +237,6 @@ class TrepanCore:
 
             # Has tracer been started?
             if not tracer.is_started() or get_option("force"):
-                # FIXME: should filter out opts not for tracer
-
                 tracer_start_opts = START_OPTS.copy()
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))

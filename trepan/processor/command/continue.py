@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2017, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2017, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,8 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdbreak import parse_break_cmd, set_break
+from trepan.processor.command.base_cmd import DebuggerCommand
 
 
 class ContinueCommand(DebuggerCommand):
@@ -51,12 +51,15 @@ class ContinueCommand(DebuggerCommand):
     def run(self, args):
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
-            func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
+            func, filename, lineno, condition, _ = parse_break_cmd(self.proc, args)
             if not set_break(self, func, filename, lineno, condition, True, args):
                 return False
         self.core.step_events = None  # All events
         self.core.step_ignore = -1
         self.proc.continue_running = True  # Break out of command read loop
+        self.proc.fast_continue = (
+            True  # try to remove debugger hook if no breakpoints are set.
+        )
         return True
 
     pass
@@ -64,6 +67,7 @@ class ContinueCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     import sys
+
     from trepan.debugger import Trepan
 
     d = Trepan()
