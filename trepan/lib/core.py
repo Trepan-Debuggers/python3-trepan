@@ -137,7 +137,7 @@ class TrepanCore:
         """Add `frame_or_fn' to the list of functions that are not to
         be debugged"""
         for frame_or_fn in frames_or_fns:
-            rc = self.ignore_filter.add_include(frame_or_fn)
+            rc = self.ignore_filter.add(frame_or_fn)
             pass
         return rc
 
@@ -213,7 +213,7 @@ class TrepanCore:
     def remove_ignore(self, frame_or_fn):
         """Remove `frame_or_fn' to the list of functions that are not to
         be debugged"""
-        return self.ignore_filter.remove_include(frame_or_fn)
+        return self.ignore_filter.remove(frame_or_fn)
 
     def start(self, opts=None):
         """We've already created a debugger object, but here we start
@@ -236,12 +236,10 @@ class TrepanCore:
 
             # Has tracer been started?
             if not tracer.is_started() or get_option("force"):
-                # FIXME: should filter out opts not for tracer
-
                 tracer_start_opts = START_OPTS.copy()
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))
-                tracer_start_opts["trace_fn"] = self.trace_dispatch
+                tracer_start_opts["trace_func"] = self.trace_dispatch
                 tracer_start_opts["add_hook_opts"] = add_hook_opts
                 tracer.start(tracer_start_opts)
             elif not tracer.find_hook(self.trace_dispatch):
@@ -423,8 +421,11 @@ class TrepanCore:
             # This will disallow a command like "jump" from working properly,
             # which will give a cryptic the message on setting f_lineno:
             #   f_lineno can only be set by a trace function
-            if self.ignore_filter and self.ignore_filter.is_included(frame):
+            if self.ignore_filter and self.ignore_filter.is_excluded(frame):
+                # print("XXX- trace dispatch ignored - frame", frame, frame.f_lineno, event, arg) # for debugging
                 return self
+
+            # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
 
             if self.debugger.settings["trace"]:
                 print_event_set = self.debugger.settings["printset"]

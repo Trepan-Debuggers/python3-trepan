@@ -482,7 +482,6 @@ if __name__ == "__main__":
     # debug()
     # print_stack_entry(dd.core.processor, 0, "fruity")
 
-
     # print(format_stack_entry(m, (frame, 10,)))
     # print(format_stack_entry(m, (frame, 10,), color="dark"))
     # print("frame count: %d" % count_frames(frame))

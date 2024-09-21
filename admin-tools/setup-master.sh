@@ -17,6 +17,7 @@ cd $fulldir/..
 (cd $fulldir/.. && \
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
+     setup_version pytracer master && \
      setup_version pycolumnize master \
 )
 

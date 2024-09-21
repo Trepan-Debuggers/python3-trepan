@@ -1,6 +1,7 @@
 """
 Helper module for functional testing.
 """
+
 import re
 import sys
 
@@ -18,6 +19,7 @@ def strarray_setup(debugger_cmds):
     d.settings["different"] = False
     d.settings["autoeval"] = False
     d.settings["highlight"] = "plain"
+    # d.settings["style"] = "none"  highlight == "plain" implies style is "none"
     return d
 
 
@@ -54,7 +56,7 @@ def get_lineno() -> int:
     return caller.f_lineno
 
 
-def compare_output(obj, right: list, d):
+def compare_output(right: list, d):
     got = filter_line_cmd(d.intf[-1].output.output)
     if got != right:
         for i in range(len(got)):
@@ -73,7 +75,7 @@ def compare_output(obj, right: list, d):
                 pass
             pass
         pass
-    obj.assertEqual(right, got)
+    assert right == got
     return
 
 

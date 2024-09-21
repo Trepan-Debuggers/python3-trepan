@@ -30,7 +30,7 @@ from reprlib import Repr
 
 import pyficache
 from pygments.console import colorize
-from tracer import EVENT2SHORT
+from tracer import EVENT2SHORT, remove_hook
 
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
@@ -55,7 +55,7 @@ except ImportError:
 warned_file_mismatches = set()
 
 
-def get_srcdir():
+def get_srcdir() -> str:
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
 
@@ -99,7 +99,7 @@ def get_stack(f, t, botframe, proc_obj=None) -> tuple:
         return false_fn
 
     def fn_is_ignored(f):
-        return proc_obj.core.ignore_filter.is_included(f)
+        return proc_obj.core.ignore_filter.is_excluded(f)
 
     exclude_frame = false_fn
     if proc_obj:
@@ -128,13 +128,12 @@ def get_stack(f, t, botframe, proc_obj=None) -> tuple:
     return stack, i
 
 
-def run_hooks(obj, hooks, *args):
-    """Run each function in `hooks' with args"""
-    for hook in hooks:
-        if hook(obj, *args):
-            return True
-        pass
-    return False
+def run_hooks(obj, hooks, *args) -> bool:
+    """Run each function in `hooks' with args
+    Returns True if a hook failed and so the caller should
+    leave its command loop.
+    """
+    return any((hook(obj, *args) for hook in hooks))
 
 
 def resolve_name(obj, command_name):
@@ -177,7 +176,7 @@ def print_source_location_info(
         L -- 2 import sys,os
         (trepan3k)
     """
-    if remapped_file:
+    if remapped_file and filename != remapped_file:
         mess = "(%s:%s remapped %s" % (remapped_file, lineno, filename)
     else:
         mess = "(%s:%s" % (filename, lineno)
@@ -252,11 +251,8 @@ def print_location(proc_obj):
                 remapped_file = pyficache.file2file_remap[m.group(1)]
                 pass
             elif filename in pyficache.file2file_remap:
-                remapped_file = pyficache.unmap_file(filename)
-                # FIXME: a remapped_file shouldn't be the same as its unmapped version
-                if remapped_file == filename:
-                    remapped_file = None
-                    pass
+                remapped_file = pyficache.file2file_remap[filename]
+                filename = remapped_file
                 pass
             elif pyficache.main.remap_re_hash:
                 remapped_file = pyficache.remap_file_pat(
@@ -272,7 +268,9 @@ def print_location(proc_obj):
             "output": proc_obj.settings("highlight"),
         }
 
-        if "style" in proc_obj.debugger.settings:
+        if proc_obj.debugger.settings.get("highlight", "plain") == "plain":
+            opts["style"] = "plain"
+        elif "style" in proc_obj.debugger.settings:
             opts["style"] = proc_obj.settings("style")
 
         pyficache.update_cache(filename)
@@ -409,7 +407,15 @@ class CommandProcessor(Processor):
         get_option = get_option_fn
         super().__init__(core_obj)
 
-        self.continue_running = False  # True if we should leave command loop
+        # "contine_running" is used by step/next/contine to signal breaking out of
+        # the command evaluation loop.
+        self.continue_running = False
+
+        # "fast_continue" is used if we should try to see if we can
+        # remove the debugger callback hook altogether. It is used by
+        # the "continue" command, but not stepping (step, next, finish).
+        self.fast_continue = False
+
         self.event2short = dict(EVENT2SHORT)
         self.event2short["signal"] = "?!"
         self.event2short["brkpt"] = "xx"
@@ -600,7 +606,7 @@ class CommandProcessor(Processor):
             raise
         return None  # Not reached
 
-    def exec_line(self, line):
+    def exec_line(self, line: str):
         if self.curframe:
             local_vars = self.curframe.f_locals
             global_vars = self.curframe.f_globals
@@ -624,7 +630,9 @@ class CommandProcessor(Processor):
             pass
         return
 
-    def get_an_int(self, arg, msg_on_error, min_value=None, max_value=None):
+    def get_an_int(
+        self, arg, msg_on_error, min_value=None, max_value=None
+    ):
         """Like cmdfns.get_an_int(), but if there's a stack frame use that
         in evaluation."""
         ret_value = self.get_int_noerr(arg)
@@ -665,7 +673,9 @@ class CommandProcessor(Processor):
             return None
         return val
 
-    def get_int(self, arg, min_value=0, default=1, cmdname=None, at_most=None):
+    def get_int(
+        self, arg, min_value=0, default=1, cmdname=None, at_most=None
+    ) -> Optional[int]:
         """If no argument use the default. If arg is a an integer between
         least min_value and at_most, use that. Otherwise report an error.
         If there's a stack frame use that in evaluation."""
@@ -686,7 +696,6 @@ class CommandProcessor(Processor):
                 )
                 pass
             return None
-            pass
         if default < min_value:
             if cmdname:
                 self.errmsg(
@@ -771,6 +780,7 @@ class CommandProcessor(Processor):
 
         leave_loop = run_hooks(self, self.preloop_hooks)
         self.continue_running = False
+        self.fast_continue = False
 
         while not leave_loop:
             try:
@@ -799,7 +809,13 @@ class CommandProcessor(Processor):
                     break
                 pass
             pass
-        return run_hooks(self, self.postcmd_hooks)
+        run_hooks(self, self.postcmd_hooks)
+        if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
+            # remove hook
+            self.debugger.intf[-1].output.writeline("Fast continue...")
+            remove_hook(self.core.trace_dispatch, True)
+
+        return
 
     def process_command(self):
         # process command

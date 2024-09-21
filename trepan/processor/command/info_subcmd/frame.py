@@ -18,7 +18,7 @@ import inspect
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 from trepan.processor import frame as Mframe
 
 
@@ -50,7 +50,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
     `info locals`, `info globals`, `info args`"""
 
     min_abbrev = 2
-    max_args = 2
+    max_args = 3
     need_stack = True
     short_help = """Show detailed info about the current frame"""
 
@@ -59,7 +59,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         low, high = Mframe.frame_low_high(proc_obj, None)
         ary = [str(low + i) for i in range(high - low + 1)]
         # FIXME: add in Thread names
-        return Mcomplete.complete_token(ary, prefix)
+        return complete_token(ary, prefix)
 
     def run(self, args):
 
@@ -70,10 +70,10 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.errmsg("No frame selected.")
             return False
 
-        show_lists = False
+        is_verbose = False
         if len(args) >= 1 and args[0] == "-v":
             args.pop(0)
-            show_lists = True
+            is_verbose = True
 
         frame_num = None
         if len(args) == 1:
@@ -119,12 +119,16 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg("  previous frame: %s" % frame.f_back)
         self.msg("  tracing function: %s" % frame.f_trace)
 
-        if show_lists:
+        if is_verbose:
             for name, field in [
                 ("Globals", "f_globals"),
                 ("Builtins", "f_builtins"),
             ]:
-                vals = getattr(frame, field).keys()
+                # FIXME: not sure this is quite right.
+                # For now we'll strip out values that start with the option
+                # prefix "-".
+                vals = [field for field in getattr(frame, field).keys() if
+                        not field.startswith("-")]
                 if vals:
                     self.section(name)
                     m = self.columnize_commands(vals)

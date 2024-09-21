@@ -33,10 +33,8 @@ import sys
 import types
 
 import pyficache
-import tracefilter
-
-# External Egg packages
 import tracer
+from tracer.tracefilter import TraceFilter
 
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
@@ -94,7 +92,6 @@ class Trepan:
             "proc_opts",
             "processor",
             "step_ignore",
-            "processor",
         ):
             core_opts[opt] = get_option(opt)
             pass
@@ -119,7 +116,6 @@ class Trepan:
             pass
 
         self.core = TrepanCore(self, core_opts)
-        self.core.add_ignore(self.core.stop)
 
         # When set True, we'll also suspend our debug-hook tracing.
         # This gives us a way to prevent or allow self debugging.
@@ -341,11 +337,15 @@ class Trepan:
     # DEFAULT_INIT_OPTS which includes references to these.
 
     # Note: has to come after functions listed in ignore_filter.
+    ignore_items = [tracer, tracer.tracer, TrepanCore]
+    trepan_debugger = sys.modules.get("trepan.debugger")
+    if trepan_debugger is not None:
+        ignore_items.append(trepan_debugger)
+    else:
+        ignore_items += [run_call, run_eval, run_script]
     DEFAULT_INIT_OPTS = {
         # What routines will we not trace into?
-        "ignore_filter": tracefilter.TraceFilter(
-            [tracer.start, tracer.stop, run_eval, run_call, run_eval, run_script]
-        ),
+        "ignore_filter": TraceFilter(ignore_items),
         # sys.argv when not None contains sys.argv *before* debugger
         # command processing. So sys.argv contains debugger options as
         # well as debugged-program options. These options are used to
