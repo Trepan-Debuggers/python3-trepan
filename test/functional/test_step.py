@@ -10,6 +10,7 @@ from test.functional.fn_helper import compare_output, strarray_setup
 import pyficache
 import pytest
 import tracer
+from xdis import PYTHON_VERSION_TRIPLE
 
 absolute_path = str(Path(__file__).absolute())
 short_name = basename(__file__)
@@ -138,6 +139,23 @@ def test_step_between_fn():
     def sqr(x):
         return x * x
 
+    if PYTHON_VERSION_TRIPLE < (3, 10):
+        test2_expect = [
+            "-- d.core.start()",
+            "-- x = sqr(4)  # NOQA",
+            "-> def sqr(x):",
+            "-- return x * x",
+            "<- return x * x",
+        ]
+    else:
+        test2_expect = [
+            "-- x = sqr(4)  # NOQA",
+            "-> def sqr(x):",
+            "-- return x * x",
+            "<- return x * x",
+            "-- y = 5  # NOQA",
+        ]
+
     for cmds, out, eventset in (
         (
             ["step", "step", "continue"],
@@ -150,13 +168,7 @@ def test_step_between_fn():
         ),
         (
             ["step", "step", "step", "step", "continue"],
-            [
-                "-- x = sqr(4)  # NOQA",
-                "-> def sqr(x):",
-                "-- return x * x",
-                "<- return x * x",
-                "-- y = 5  # NOQA",
-            ],
+            test2_expect,
             tracer.ALL_EVENTS,
         ),
     ):
