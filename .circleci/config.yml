@@ -8,7 +8,7 @@ jobs:
       CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
       CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
     docker:
-    - image: cimg/python:3.12.6
+    - image: cimg/python:3.8.20
       auth:
         username: rockyb
         password: $DOCKERHUB_PASSWORD
