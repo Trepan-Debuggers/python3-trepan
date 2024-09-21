@@ -31,7 +31,7 @@ from typing import Optional, Tuple
 
 import pyficache
 from pygments.console import colorize
-from tracer import EVENT2SHORT
+from tracer import EVENT2SHORT, remove_hook
 
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
@@ -177,7 +177,7 @@ def print_source_location_info(
         L -- 2 import sys,os
         (trepan3k)
     """
-    if remapped_file:
+    if remapped_file and filename != remapped_file:
         mess = f"({remapped_file}:{lineno} remapped {filename}"
     else:
         mess = f"({filename}:{lineno}"
@@ -408,7 +408,15 @@ class CommandProcessor(Processor):
         get_option = get_option_fn
         super().__init__(core_obj)
 
-        self.continue_running = False  # True if we should leave command loop
+        # "contine_running" is used by step/next/contine to signal breaking out of
+        # the command evaluation loop.
+        self.continue_running = False
+
+        # "fast_continue" is used if we should try to see if we can
+        # remove the debugger callback hook altogether. It is used by
+        # the "continue" command, but not stepping (step, next, finish).
+        self.fast_continue = False
+
         self.event2short = dict(EVENT2SHORT)
         self.event2short["signal"] = "?!"
         self.event2short["brkpt"] = "xx"
@@ -766,6 +774,7 @@ class CommandProcessor(Processor):
 
         leave_loop = run_hooks(self, self.preloop_hooks)
         self.continue_running = False
+        self.fast_continue = False
 
         while not leave_loop:
             try:
@@ -795,6 +804,11 @@ class CommandProcessor(Processor):
                 pass
             pass
         run_hooks(self, self.postcmd_hooks)
+        if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
+            # remove hook
+            self.debugger.intf[-1].output.writeline("Fast continue...")
+            remove_hook(self.core.trace_dispatch, True)
+
         return
 
     def process_command(self):
