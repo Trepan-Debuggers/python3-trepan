@@ -14,19 +14,19 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from importlib import import_module
 import inspect
+import sys
+from importlib import import_module
+
+from xdis.version_info import PYTHON_VERSION_TRIPLE
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.command.base_submgr import SubcommandMgr
 
-from xdis.version_info import PYTHON_VERSION_TRIPLE
-
 if PYTHON_VERSION_TRIPLE >= (3, 4):
     from importlib import reload
 else:
-
     import imp
     import os.path as osp
     import sys
@@ -70,7 +70,6 @@ else:
                 pass
 
 
-
 class ReloadCommand(DebuggerCommand):
     """**reload** *command-name*
        **reload** *subcommand-name* *subcommand*
@@ -109,28 +108,30 @@ class ReloadCommand(DebuggerCommand):
                     instance = getattr(command_module, classnames[0])(proc)
                 except Exception:
                     self.errmsg(
-                        "Error loading %s from mod_name, sys.exc_info()[0]" % classnames[0]
+                        "Error loading %s from mod_name, sys.exc_info()[0]"
+                        % classnames[0]
                     )
                     return
 
                 # FIXME: should we also replace object in proc.cmd_instances?
                 proc.commands[cmd_name] = instance
-                self.msg(f'reloaded command: "{cmd_name}"')
+                self.msg('reloaded command: "%s"' % cmd_name)
             pass
         else:
             assert len(args) == 3
             subcmd_mgr = proc.commands.get(cmd_name)
             if subcmd_mgr is None:
-                self.errmsg(f"cannot find {cmd_name} in list of commands")
+                self.errmsg("cannot find %s in list of commands" % cmd_name)
                 return
             if not isinstance(subcmd_mgr, SubcommandMgr):
-                self.errmsg(f"command {cmd_name} does not have subcommands")
+                self.errmsg("command %s does not have subcommands" % cmd_name)
                 return
             subcmd_name = args[2]
             subcmd = subcmd_mgr.cmds.subcmds.get(subcmd_name)
             if subcmd is None:
-                self.errmsg(f'command "{cmd_name}" does not have subcommand '
-                            f'"{subcmd_name}"')
+                self.errmsg(
+                    'command "%s" does not have subcommand %s' % (cmd_name, subcmd_name)
+                )
                 return
 
             subcommand_module = importlib.import_module(subcmd.__module__)
@@ -143,15 +144,15 @@ class ReloadCommand(DebuggerCommand):
                     instance = getattr(subcommand_module, classnames[0])(subcmd)
                 except Exception:
                     self.errmsg(
-                        f"Error loading {classnames[0]} from mod_name, sys.exc_info()[0]"
+                        "Error loading %s from mod_name, %s"
+                        % (classnames[0], sys.exc_info()[0])
                     )
                     return
 
                 subcmd_mgr.cmds.subcmds[subcmd_name] = instance
-                self.msg(f'reloaded subcommand: "{cmd_name} {subcmd_name}"')
+                self.msg('reloaded subcommand: "%s %s"' % (cmd_name, subcmd_name))
             return
 
->>>>>>> python-3.6-to-3.10
     pass
 
 

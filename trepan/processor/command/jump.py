@@ -53,7 +53,7 @@ class JumpCommand(DebuggerCommand):
             return False
 
         lineno = self.proc.get_an_int(
-            args[1], f"jump: a line number is required, got {args[1]}."
+            args[1], "jump: a line number is required; got %s." % args[1]
         )
 
         if lineno is None:

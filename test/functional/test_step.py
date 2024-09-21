@@ -63,7 +63,6 @@ def test_step_computed_value():
     d.core.stop(options={"remove": True})
     out = ["-- x = 5", "-> def foo():"]
     compare_output(out, d)
->>>>>>> python-3.6-to-3.10
 
     # Test step!
     cmds = ["step!", "continue"]

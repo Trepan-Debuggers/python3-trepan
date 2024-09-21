@@ -53,7 +53,7 @@ class ConditionCommand(DebuggerCommand):
             condition = " ".join(args[2:])
         else:
             condition = None
-            self.msg(f"Breakpoint {bp.number} is now unconditional.")
+            self.msg("Breakpoint %s is now unconditional." % bp.number)
             pass
         bp.condition = condition
         return

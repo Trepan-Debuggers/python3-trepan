@@ -14,7 +14,6 @@ absolute_path = str(Path(__file__).absolute())
 short_name = basename(__file__)
 pyficache.update_cache(short_name)
 pyficache.file2file_remap.update({short_name: absolute_path})
->>>>>>> python-3.6-to-3.10
 
 
 def test_jump():

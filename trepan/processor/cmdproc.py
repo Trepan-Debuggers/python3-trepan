@@ -630,9 +630,7 @@ class CommandProcessor(Processor):
             pass
         return
 
-    def get_an_int(
-        self, arg, msg_on_error, min_value=None, max_value=None
-    ):
+    def get_an_int(self, arg, msg_on_error, min_value=None, max_value=None):
         """Like cmdfns.get_an_int(), but if there's a stack frame use that
         in evaluation."""
         ret_value = self.get_int_noerr(arg)
@@ -673,9 +671,7 @@ class CommandProcessor(Processor):
             return None
         return val
 
-    def get_int(
-        self, arg, min_value=0, default=1, cmdname=None, at_most=None
-    ) -> Optional[int]:
+    def get_int(self, arg, min_value=0, default=1, cmdname=None, at_most=None):
         """If no argument use the default. If arg is a an integer between
         least min_value and at_most, use that. Otherwise report an error.
         If there's a stack frame use that in evaluation."""
