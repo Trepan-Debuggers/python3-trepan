@@ -806,7 +806,11 @@ class CommandProcessor(Processor):
             pass
         run_hooks(self, self.postcmd_hooks)
         if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
-            # remove hook
+            # Remove tracing on frames and remove trace hook.
+            frame = self.curframe
+            while frame:
+                del frame.f_trace
+                frame = frame.f_back
             self.debugger.intf[-1].output.writeline("Fast continue...")
             remove_hook(self.core.trace_dispatch, True)
 
@@ -1180,9 +1184,9 @@ class CommandProcessor(Processor):
 
 # Demo it
 if __name__ == "__main__":
-    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command.mock import MockDebugger
 
-    d = Mmock.MockDebugger()
+    d = MockDebugger()
     cmdproc = CommandProcessor(d.core)
     print("commands:")
     commands = list(cmdproc.commands.keys())
