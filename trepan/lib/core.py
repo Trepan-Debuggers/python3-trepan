@@ -435,7 +435,7 @@ class TrepanCore:
         ):
             # We are "finish"ing or "next"ing and should not be tracing into this call
             # or any other calls from this. Set to not trace further.
-            print(f"XXX1 deleting further calls {frame.f_code.co_name}")
+            # print(f"XXX1 deleting further calls {frame.f_code.co_name}") # debug
             del frame.f_trace
             return None
 
