@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020, 2023 Rocky
-#   Bernstein
+#   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020,
+#   2023-2024 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -115,8 +115,8 @@ class DebuggerSubcommand:
         """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
         return self.debugger.intf[-1].msg_nocr(msg)
 
-    aliases = ()
-    name = "YourCommandName"
+    aliases: tuple = ()
+    name: str = "YourSubCommandName"
 
     def rst_msg(self, text):
         """Convenience short-hand for self.proc.rst_msg(text)"""
