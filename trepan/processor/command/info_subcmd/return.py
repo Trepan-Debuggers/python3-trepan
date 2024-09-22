@@ -27,7 +27,7 @@ class InfoReturn(DebuggerSubcommand):
     is useful after a 'finish' command or stepping just after a 'return'
     statement."""
 
-    # aliases = ("retval",)  # "retval" is the pdb name for this
+    aliases = ("retval",)  # "retval" is the pdb name for this
     min_abbrev = 1
     need_stack = True
     short_help = "Show function return value"
