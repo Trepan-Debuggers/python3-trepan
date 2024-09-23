@@ -26,13 +26,16 @@ program, when a call or return occur, or when an exception is raised.
 The overhead in running these callbacks slows down your
 program. Currently, the overhead can be greater than the overhead in
 ``pdb``. This is because the debugger tries to be more precise and
-careful it tracing, and the features it provides are more powerful In
-most cases, this does not diminish the debugging experience.
+careful it tracing, and the features it provides are more powerful. In
+most cases, we can do this without a significatn slow down in the
+debugged program.
 
+But in certain situations, the overhead in running debugged code can
+be large. This happens when we want to "step over" a function that is
+large and complex like an ``import`` of a large module.
 
-But for some instructions, the overhead can be large.  For example, if
-you turn on the debugger and run the ``import pandas`` instruction, it
-can increase your CPU for a while.  ::
+For example, if you turn on the debugger and run the ``import pandas``
+instruction, it can increase your CPU for a while.  ::
 
    $ cat slow.py
    #!/usr/bin/env python3
