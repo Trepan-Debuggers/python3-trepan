@@ -38,33 +38,48 @@ class LoadCommand(DebuggerCommand):
 
     DebuggerCommand.setup(locals(), category="support", min_args=1, max_args=1)
 
+    def load_command(self, command_module, cmd_name: str):
+        proc = self.proc
+        classnames = [
+            tup
+            for tup in inspect.getmembers(command_module, inspect.isclass)
+            if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
+        ]
+        if len(classnames) == 1:
+            classname, class_obj = classnames[0]
+            try:
+                instance = getattr(command_module, classname)(proc)
+            except Exception:
+                self.errmsg(
+                    f"Error loading {classname} from module name, sys.exc_info()[0]"
+                )
+                return
+
+            # FIXME: should we also replace object in proc.cmd_instances?
+            proc.commands[cmd_name] = instance
+            for alias in class_obj.aliases:
+                if alias not in proc.aliases:
+                    proc.aliases[alias] = cmd_name
+            self.msg(f'loaded command: "{cmd_name}"')
+
     def run(self, args):
         module_name = args[1]
-        cmd_name = module_name.split(".")[-1]
+        cmd_name_array = module_name.split(".")
         try:
             command_module = importlib.import_module(module_name)
         except ModuleNotFoundError as e:
             self.errmsg(str(e))
             return
 
-        proc = self.proc
-        classnames = [
-            tup[0]
-            for tup in inspect.getmembers(command_module, inspect.isclass)
-            if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
-        ]
-        if len(classnames) == 1:
-            try:
-                instance = getattr(command_module, classnames[0])(proc)
-            except Exception:
-                self.errmsg(
-                    f"Error loading {classnames[0]} from module name, sys.exc_info()[0]"
-                )
-                return
-
-            # FIXME: should we also replace object in proc.cmd_instances?
-            proc.commands[cmd_name] = instance
-            self.msg(f'loaded command: "{cmd_name}"')
+        if len(cmd_name_array) > 1:
+            cmd_name = cmd_name_array[-1]
+            self.load_command(command_module, cmd_name)
+        else:
+            modules = inspect.getmembers(command_module, inspect.ismodule)
+            for cmd_name, module in modules:
+                if cmd_name.startswith("__"):
+                    continue
+                self.load_command(module, cmd_name)
         return
 
     pass
@@ -77,6 +92,7 @@ if __name__ == "__main__":
     dbgr, cmd = Mmock.dbg_setup()
     command = LoadCommand(cmd)
     for cmdline in [
+        "load trepan3k_mathics3",
         "load trepan3k_mathics3.mathics3",
     ]:
         args = cmdline.split()
