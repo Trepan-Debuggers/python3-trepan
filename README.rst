@@ -1,4 +1,4 @@
-|CircleCI| |Pypi Installs| |license| |Supported Python Versions|
+|CircleCI| |Pypi Installs| |license| |docs| |Supported Python Versions|
 
 |packagestatus|
 
@@ -312,3 +312,6 @@ See Also
 .. |Pypi Installs| image:: https://pepy.tech/badge/trepan3k
 .. |packagestatus| image:: https://repology.org/badge/vertical-allrepos/python:trepan3k.svg
 		 :target: https://repology.org/project/python:trepan3k/versions
+.. |docs| image:: https://readthedocs.org/projects/python3-trepan/badge/?version=latest
+    :target: https://python3-trepan.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
