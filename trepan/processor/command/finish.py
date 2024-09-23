@@ -15,9 +15,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 
+from trepan.lib.stack import count_frames
+
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.stack import count_frames
 
 
 class FinishCommand(DebuggerCommand):
@@ -60,7 +61,7 @@ class FinishCommand(DebuggerCommand):
         # print "+++ %d" % levels
         self.core.step_events = ["return"]
         self.core.stop_on_finish = True
-        self.core.stop_level = count_frames(self.proc.frame) - levels
+        self.core.stop_level = count_frames(self.proc.frame) + 1 - levels
         self.core.last_frame = self.proc.frame
         self.proc.continue_running = True  # Break out of command read loop
         return True
