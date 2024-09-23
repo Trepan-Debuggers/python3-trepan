@@ -19,11 +19,11 @@ Explanation of Problem
 ~~~~~~~~~~~~~~~~~~~~~~
 
 When you enable the debugger, there are callbacks made in the running
-of the program when certain events happen. Events are things like when
-the code reaches a new line in the program, when a call or return
-occur, or when an exception is raised.
+of the program when certain events happen. Events are things occur in
+running the program, like when the code reaches a new line in the
+program, when a call or return occur, or when an exception is raised.
 
-The overhad in running these callbacks slows down your
+The overhead in running these callbacks slows down your
 program. Currently, the overhead can be greater than the overhead in
 ``pdb``. This is because the debugger tries to be more precise and
 careful it tracing, and the features it provides are more powerful In
