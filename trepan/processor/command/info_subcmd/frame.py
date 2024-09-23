@@ -16,10 +16,11 @@
 
 import inspect
 
-# Our local modules
-from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib.complete import complete_token
 from trepan.processor import frame as Mframe
+
+# Our local modules
+from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
@@ -62,7 +63,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         return complete_token(ary, prefix)
 
     def run(self, args):
-
         # FIXME: should DRY this with code.py
         proc = self.proc
         frame = proc.curframe
@@ -114,7 +114,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if hasattr(frame, "f_restricted"):
             self.msg(f"  restricted execution: {frame.f_restricted}")
         self.msg(f"  current line number: {frame.f_lineno}")
-        self.msg("  last instruction: {frame.f_lasti}")
+        self.msg(f"  last instruction: {frame.f_lasti}")
         self.msg(f"  code: {frame.f_code}")
         self.msg(f"  previous frame: {frame.f_back}")
         self.msg(f"  tracing function: {frame.f_trace}")
@@ -127,8 +127,11 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
                 # FIXME: not sure this is quite right.
                 # For now we'll strip out values that start with the option
                 # prefix "-".
-                vals = [field for field in getattr(frame, field).keys() if
-                        not field.startswith("-")]
+                vals = [
+                    field
+                    for field in getattr(frame, field).keys()
+                    if not field.startswith("-")
+                ]
                 if vals:
                     self.section(name)
                     m = self.columnize_commands(vals)
@@ -140,7 +143,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     cp.setup()

@@ -60,6 +60,11 @@ class LoadCommand(DebuggerCommand):
             for alias in class_obj.aliases:
                 if alias not in proc.aliases:
                     proc.aliases[alias] = cmd_name
+            if hasattr(command_module, "setup") and inspect.isfunction(
+                command_module.setup
+            ):
+                command_module.setup(self.debugger, instance)
+
             self.msg(f'loaded command: "{cmd_name}"')
 
     def run(self, args):
@@ -92,7 +97,7 @@ if __name__ == "__main__":
     dbgr, cmd = Mmock.dbg_setup()
     command = LoadCommand(cmd)
     for cmdline in [
-        "load trepan3k_mathics3",
+        # "load trepan3k_mathics3",
         "load trepan3k_mathics3.mathics3",
     ]:
         args = cmdline.split()
