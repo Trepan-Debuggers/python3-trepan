@@ -97,8 +97,9 @@ if __name__ == "__main__":
     dbgr, cmd = Mmock.dbg_setup()
     command = LoadCommand(cmd)
     for cmdline in [
-        # "load trepan3k_mathics3",
-        "load trepan3k_mathics3.mathics3",
+        "load trepan3k_mathics3",
+        "load trepan3k_mathics3.mup",
+        "load trepan3k_mathics3.mbacktrace",
     ]:
         args = cmdline.split()
         cmd_argstr = cmdline[len(args[0]) :].lstrip()
