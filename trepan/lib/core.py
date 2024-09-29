@@ -411,7 +411,8 @@ class TrepanCore:
         different line). We could put that here, but since that seems
         processor-specific I think it best to distribute the checks."""
 
-        # print("XXX+ trace dispatch", frame.f_code.co_name, frame.f_lineno, event, arg) # for debugging
+        # for debugging
+        # print("XXX+ trace dispatch:", frame.f_code.co_name, frame.f_lineno, event, arg)
 
         # Check to see if are in a call but we should be stepping over the call
         # using "next" of "finish". If so, then we can speed tracing by
@@ -419,13 +420,7 @@ class TrepanCore:
         # that we don't have any breakpoint set, since we have to check
         # for breakpoints in a kind of slow way of checking all events.
 
-        # For debugging:
-        # if event == "call":
-        #     print("XXX1", self.last_frame, frame, len(self.bpmgr.bplist), self.stop_level, count_frames(frame))
-        #     print("XXX2 frames !=", self.last_frame != frame)
-        #     print("XXX3 bplit == 0", len(self.bpmgr.bplist) == 0, self.bpmgr.bplist)
-        #     print("XXX4 stop_level",  self.stop_level is not None and self.stop_level < count_frames(frame))
-
+        # TODO: add thread check
         if (
             event == "call"
             and self.last_frame != frame
@@ -434,9 +429,7 @@ class TrepanCore:
             and self.stop_level < count_frames(frame)
         ):
             # We are "finish"ing or "next"ing and should not be tracing into this call
-            # or any other calls from this. Set to not trace further.
-            # print(f"XXX1 deleting further calls {frame.f_code.co_name}") # debug
-            del frame.f_trace
+            # or any other calls from this. Return Nont to not trace further.
             return None
 
         self.event = event

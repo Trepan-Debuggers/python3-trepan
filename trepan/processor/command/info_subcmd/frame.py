@@ -132,9 +132,14 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         line_number = frame.f_lineno
         code = frame.f_code
         file_path = code.co_filename
-        line_text = getline(file_path, line_number, {"style": style}).strip()
 
-        self.msg(f"  current line number: {frame.f_lineno}: {line_text[:40]}")
+        line_text = getline(file_path, line_number, {"style": style})
+        if line_text is None:
+            self.msg(f"  current line number: {frame.f_lineno}")
+        else:
+            formatted_text = highlight_string(line_text.strip())
+            self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
+
         self.msg(f"  last instruction: {frame.f_lasti}")
         self.msg(f"  code: {code}")
         self.msg(f"  previous frame: {frame.f_back}")
