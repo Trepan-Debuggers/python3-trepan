@@ -16,7 +16,10 @@
 
 import inspect
 
+from pyficache import getline, highlight_string
+
 from trepan.lib.complete import complete_token
+from trepan.lib.stack import format_function_name
 from trepan.processor import frame as Mframe
 
 # Our local modules
@@ -75,6 +78,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             args.pop(0)
             is_verbose = True
 
+        style = self.settings["style"]
         frame_num = None
         if len(args) == 1:
             try:
@@ -111,11 +115,28 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             else "Frame Info"
         )
         self.section(mess)
+
+        function_name, formatted_func_name = format_function_name(frame, style=style)
+        f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
+        self.msg(f"  function name: {formatted_func_name}")
+        func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
+        formatted_func_signature = highlight_string(func_args, style=style).strip()
+        self.msg(f"  function args: {formatted_func_signature}")
+
+        # signature = highlight_string(inspect.signature(frame))
+        # self.msg(f"  signature : {signature}")
+
         if hasattr(frame, "f_restricted"):
             self.msg(f"  restricted execution: {frame.f_restricted}")
-        self.msg(f"  current line number: {frame.f_lineno}")
+
+        line_number = frame.f_lineno
+        code = frame.f_code
+        file_path = code.co_filename
+        line_text = getline(file_path, line_number, {"style": style}).strip()
+
+        self.msg(f"  current line number: {frame.f_lineno}: {line_text[:40]}")
         self.msg(f"  last instruction: {frame.f_lasti}")
-        self.msg(f"  code: {frame.f_code}")
+        self.msg(f"  code: {code}")
         self.msg(f"  previous frame: {frame.f_back}")
         self.msg(f"  tracing function: {frame.f_trace}")
 

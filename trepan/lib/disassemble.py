@@ -18,7 +18,6 @@ from xdis import (
     get_instructions_bytes,
     get_opcode,
 )
-from xdis.instruction import Instruction
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
