@@ -63,8 +63,8 @@ class DebuggerCommand:
         self.settings = self.debugger.settings
         return
 
-    aliases = ()
-    name = "YourCommandName"
+    aliases: tuple = ()
+    name: str = "YourCommandName"
 
     def columnize_commands(self, commands):
         """List commands arranged in an aligned columns"""

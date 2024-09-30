@@ -18,6 +18,7 @@ Show
 
    show/aliases
    show/args
+   show/asmfmt
    show/autoeval
    show/autolist
    show/autopc

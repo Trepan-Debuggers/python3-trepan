@@ -45,6 +45,7 @@ class ReloadCommand(DebuggerCommand):
         cmd_name = args[1]
         proc = self.proc
         if len(args) == 2:
+            cmd_name = proc.aliases.get(cmd_name, cmd_name)
             if cmd_name not in proc.commands:
                 self.errmsg(f'command "{cmd_name}" not found as a debugger command')
                 return
@@ -60,7 +61,7 @@ class ReloadCommand(DebuggerCommand):
                     instance = getattr(command_module, classnames[0])(proc)
                 except Exception:
                     self.errmsg(
-                        f"Error loading {classnames[0]} from mod_name, sys.exc_info()[0]"
+                        f"Error loading {classnames[0]} from module name, sys.exc_info()[0]"
                     )
                     return
 
@@ -80,8 +81,9 @@ class ReloadCommand(DebuggerCommand):
             subcmd_name = args[2]
             subcmd = subcmd_mgr.cmds.subcmds.get(subcmd_name)
             if subcmd is None:
-                self.errmsg(f'command "{cmd_name}" does not have subcommand '
-                            f'"{subcmd_name}"')
+                self.errmsg(
+                    f'command "{cmd_name}" does not have subcommand ' f'"{subcmd_name}"'
+                )
                 return
 
             subcommand_module = importlib.import_module(subcmd.__module__)

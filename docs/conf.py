@@ -11,15 +11,19 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os, sys
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+#
+# import os
+# import sys
 # sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.join(os.path.abspath(".."), "trepan"))
 
-# -- General configuration ------------------------------------------------
+# -- Project information -----------------------------------------------------
+
+project = "trepan3k"
+copyright = "2020-2024 Rocky Bernstein"
+author = "Rocky Bernstein"
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
@@ -53,7 +57,7 @@ master_doc = "index"
 # General information about the project.
 project = "trepan3k"
 copyright = "2017, 2021 Rocky Bernstein"
-author = u"Rocky Bernstein"
+author = "Rocky Bernstein"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -69,7 +73,7 @@ release = "1.0"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -115,6 +119,13 @@ todo_include_todos = False
 # a list of builtin themes.
 html_theme = "alabaster"
 
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+# html_static_path = ['_static']
+
+smartquotes = True
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -142,7 +153,7 @@ html_theme_options = {"show_relbar_bottom": "true"}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -224,7 +235,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "trepan.tex", u"trepan Documentation", u"Rocky Bernstein", "manual"),
+    (master_doc, "trepan.tex", "trepan Documentation", "Rocky Bernstein", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -252,7 +263,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "trepan", u"trepan Documentation", [author], 1)]
+man_pages = [(master_doc, "trepan", "trepan Documentation", [author], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False

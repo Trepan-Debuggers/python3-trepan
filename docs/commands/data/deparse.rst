@@ -26,11 +26,11 @@ closely matches a literal reading of the bytecode with hidden (often
 extraneous) instructions added. In some cases this may even result in
 invalid Python code.
 
-Output is colorized the same as source listing. Use `set highlight plain` to turn
+Output is colorized the same as source listing. Use ``set highlight plain`` to turn
 that off.
 
-Examples
-++++++++
+Deparse Examples:
++++++++++++++++++
 
 ::
 
@@ -38,7 +38,7 @@ Examples
        deparse --parent    # deparse current location enclosing context
        deparse .           # deparse current function or main
        deparse --offset 6  # deparse starting at offset 6
-       deparse --offsets   # show all exect deparsing offsets
+       deparse --offsets   # show all exact deparsing offsets
        deparse --tree      # deparse and show parse tree
 
 .. seealso::

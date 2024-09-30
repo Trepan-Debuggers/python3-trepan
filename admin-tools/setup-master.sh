@@ -6,7 +6,7 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=3.11
+PYTHON_VERSION=3.12
 
 mydir=$(dirname $bs)
 trepan3_owd=$(pwd)
@@ -15,10 +15,10 @@ cd $mydir
 fulldir=$(readlink -f $mydir)
 cd $fulldir/..
 (cd $fulldir/.. && \
-     setup_version python-uncompyle6 master && \
-     setup_version python-filecache master && \
-     setup_version pytracer master && \
-     setup_version pycolumnize master \
+     setup_version_trepan3k python-uncompyle6 master && \
+     setup_version_trepan3k python-filecache master && \
+     setup_version_trepan3k pytracer master && \
+     setup_version_trepan3k pycolumnize master \
 )
 
 checkout_finish master

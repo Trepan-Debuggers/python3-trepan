@@ -18,7 +18,6 @@ from xdis import (
     get_instructions_bytes,
     get_opcode,
 )
-from xdis.instruction import Instruction
 from xdis.std import distb
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -386,7 +385,9 @@ def disassemble_bytes(
                         opc, list(reversed(instructions))
                     )
                     if start_offset is not None:
-                        msg(highlight_string(tos_str, style=style))
+                        if style is not None and style != "none":
+                            tos_str = highlight_string(tos_str, style=style)
+                        msg(tos_str)
                         continue
                     pass
                 pass

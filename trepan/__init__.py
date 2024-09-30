@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2008-2009, 2013, 2015, 2021-2022, 2024 Rocky Bernstein <rocky@gnu.org>
+#  Copyright (C) 2008-2009, 2013, 2015, 2021-2022,
+#  2024 Rocky Bernstein <rocky@gnu.org>
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -13,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-|Downloads| |Build Status|
-
 Abstract
 ========
 A gdb-like debugger for Python3.
@@ -165,9 +164,6 @@ keeping developers happy is a good thing.(TM)
   integration test will eventually be added.
 
 Copyright (C) 2008-2009, 2013-2016, 2021-2022, 2024 Rocky Bernstein <rocky@gnu.org>
-
-.. |Downloads| image:: https://pypip.in/download/trepan/badge.svg
-.. |Build Status| image:: https://travis-ci.org/rocky/python3-trepan.svg
 """
 __docformat__ = "restructuredtext"
 

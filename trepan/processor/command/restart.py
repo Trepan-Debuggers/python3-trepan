@@ -85,7 +85,9 @@ class RestartCommand(DebuggerCommand):
             program_file = sys_argv[0]
             if not restart_options["python"]:
                 if not executable(sys_argv[0]):
-                    self.errmsg(f'File "{program_file}" is not marked executable.')
+                    self.errmsg(
+                        f'File "{program_file}" is not marked executable; try with -p option?'
+                    )
                     return
 
             exec_suffix = "e" if restart_options["env"] else ""
