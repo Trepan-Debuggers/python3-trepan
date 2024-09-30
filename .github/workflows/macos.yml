@@ -1,4 +1,4 @@
-name: trepan3k (osx)
+name: trepan3k (macos)
 
 on:
   push:
