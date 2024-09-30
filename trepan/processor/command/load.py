@@ -51,7 +51,7 @@ class LoadCommand(DebuggerCommand):
                 instance = getattr(command_module, classname)(proc)
             except Exception:
                 self.errmsg(
-                    f"Error loading {classname} from module name, sys.exc_info()[0]"
+                    "Error loading %s from module name, sys.exc_info()[0]" % classname
                 )
                 return
 
@@ -65,14 +65,14 @@ class LoadCommand(DebuggerCommand):
             ):
                 command_module.setup(self.debugger, instance)
 
-            self.msg(f'loaded command: "{cmd_name}"')
+            self.msg('loaded command: "%s"' % cmd_name)
 
     def run(self, args):
         module_name = args[1]
         cmd_name_array = module_name.split(".")
         try:
             command_module = importlib.import_module(module_name)
-        except ModuleNotFoundError as e:
+        except Exception as e:
             self.errmsg(str(e))
             return
 

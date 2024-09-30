@@ -118,16 +118,17 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         function_name, formatted_func_name = format_function_name(frame, style=style)
         f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
-        self.msg(f"  function name: {formatted_func_name}")
+        self.msg("  function name: %s" % formatted_func_name)
         func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
         formatted_func_signature = highlight_string(func_args, style=style).strip()
-        self.msg(f"  function args: {formatted_func_signature}")
+        self.msg("  function args: %s" % formatted_func_signature)
 
         # signature = highlight_string(inspect.signature(frame))
         # self.msg(f"  signature : {signature}")
 
         if hasattr(frame, "f_restricted"):
             self.msg("  restricted execution: %s" % frame.f_restricted)
+        self.msg("  current line number: %d" % frame.f_lineno)
 
         line_number = frame.f_lineno
         code = frame.f_code
@@ -135,25 +136,18 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         line_text = getline(file_path, line_number, {"style": style})
         if line_text is None:
+            self.msg("  current line number: %s" % frame.f_lineno)
+        else:
+            formatted_text = highlight_string(line_text.strip())
+            self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
 
-        self.msg("  current line number: %d" % frame.f_lineno)
         self.msg("  last instruction: %d" % frame.f_lasti)
         self.msg("  code: %s" % frame.f_code)
         self.msg("  previous frame: %s" % frame.f_back)
         self.msg("  tracing function: %s" % frame.f_trace)
-=======
-            self.msg(f"  restricted execution: {frame.f_restricted}")
 
-            self.msg(f"  current line number: {frame.f_lineno}")
-        else:
-            formatted_text = highlight_string(line_text.strip())
-            self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
-
-        self.msg(f"  last instruction: {frame.f_lasti}")
-        self.msg(f"  code: {code}")
-        self.msg(f"  previous frame: {frame.f_back}")
-        self.msg(f"  tracing function: {frame.f_trace}")
->>>>>>> python-3.6-to-3.10
+        if hasattr(frame, "f_restricted"):
+            self.msg("  restricted execution: %s" % frame.f_restricted)
 
         if is_verbose:
             for name, field in [

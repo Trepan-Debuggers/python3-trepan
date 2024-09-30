@@ -16,7 +16,6 @@
 
 import inspect
 import sys
-from importlib import import_module
 
 from xdis.version_info import PYTHON_VERSION_TRIPLE
 
@@ -97,8 +96,12 @@ class ReloadCommand(DebuggerCommand):
             if cmd_name not in proc.commands:
                 self.errmsg('command "%s" not found as a debugger command' % cmd_name)
                 return
-            command_module = importlib.import_module(proc.commands[cmd_name].__module__)
-            importlib.reload(command_module)
+
+            # FIGURE out how to get module. Use sys.module from Mathics debugger project??
+            self.msg("need to fix up")
+            return
+
+            reload(proc.commands[cmd_name].__module__)
             classnames = [
                 tup[0]
                 for tup in inspect.getmembers(command_module, inspect.isclass)

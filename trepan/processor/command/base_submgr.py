@@ -78,8 +78,8 @@ class SubcommandMgr(DebuggerCommand):
 
         # Initialization
         cmd_instances = []
-        class_prefix = capitalize(name)  # e.g. Info, Set, or Show
-        module_dir = "%s.processor.command.%s_subcmd" % (base, name)
+        class_prefix = capitalize(self.name)  # e.g. Info, Set, or Show
+        module_dir = "%s.processor.command.%s_subcmd" % (base, self.name)
         mod = __import__(module_dir, None, None, ["*"])
         eval_cmd_template = "command_mod.%s(self)"
 
@@ -119,7 +119,10 @@ class SubcommandMgr(DebuggerCommand):
                     self.cmds.add(instance)
                     subcmd_name = instance.name
                     for alias_name in instance.aliases:
-                        self.proc.aliases[alias_name] = f"{cmd_name} {subcmd_name}"
+                        self.proc.aliases[alias_name] = "%s %s" % (
+                            cmd_name,
+                            subcmd_name,
+                        )
                 except Exception:
                     print("Error eval'ing class %s" % classname)
                     pass

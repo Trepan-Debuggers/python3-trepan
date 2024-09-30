@@ -122,7 +122,7 @@ class DeparseCommand(DebuggerCommand):
             elif o in ("-o", "--offset"):
                 offset = a
             else:
-                self.errmsg(f"unhandled option '{o}'")
+                self.errmsg("unhandled option '%s'" % o)
             pass
         pass
         nodeInfo = None
@@ -170,7 +170,7 @@ class DeparseCommand(DebuggerCommand):
                     parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                 self.msg(p)
             if extractInfo:
-                self.rst_msg(f"*instruction:* {nodeInfo.node}")
+                self.rst_msg("*instruction:* %s" % nodeInfo.node)
                 self.print_text(extractInfo.selectedLine)
                 self.msg(extractInfo.markerLine)
                 if show_parent:
@@ -178,7 +178,7 @@ class DeparseCommand(DebuggerCommand):
                         parentInfo, p = deparsed.extract_parent_info(nodeInfo.node)
                     if parentInfo:
                         self.section("Contained in...")
-                        self.rst_msg(f"\t*Grammar Symbol:* {p.kind}")
+                        self.rst_msg("\t*Grammar Symbol:* %s" % p.kind)
                         self.print_text(parentInfo.selectedLine)
                         self.msg(parentInfo.markerLine)
                     pass
@@ -186,9 +186,9 @@ class DeparseCommand(DebuggerCommand):
             pass
         elif last_i == -1:
             if name:
-                self.msg(f"At beginning of {name} ")
+                self.msg("At beginning of %s " % name)
             elif self.core.filename(None):
-                self.msg(f"At beginning of program {self.core.filename(None)}")
+                self.msg("At beginning of program %s" % self.core.filename(None))
             else:
                 self.msg("At beginning")
         else:

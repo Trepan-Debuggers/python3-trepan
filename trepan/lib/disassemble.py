@@ -7,7 +7,6 @@ import inspect
 import sys
 import types
 
-
 from pyficache import highlight_string
 from pygments.token import Comment
 from xdis import (
@@ -341,11 +340,7 @@ def disassemble_bytes(
                 # Must by Python 3.6 or later
                 msg_nocr(" ")
                 if instr.has_arg:
-                    msg_nocr(
-                        format_token(
-                            Hex, "%02x" % (instr.arg % 256), style=style
-                        )
-                    )
+                    msg_nocr(format_token(Hex, "%02x" % (instr.arg % 256), style=style))
                 else:
                     msg_nocr(format_token(Hex, "00", style=style))
             elif instr.inst_size == 3:

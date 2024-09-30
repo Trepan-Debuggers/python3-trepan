@@ -43,7 +43,7 @@ class InfoReturn(DebuggerSubcommand):
         else:
             self.errmsg(
                 "Must be in a 'return' or 'exception' event "
-                f"rather than a {self.proc.event} event."
+                "rather than a %s event." % self.proc.event
             )
             pass
         return

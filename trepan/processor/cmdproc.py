@@ -136,7 +136,7 @@ def run_hooks(obj, hooks, *args) -> bool:
     return any((hook(obj, *args) for hook in hooks))
 
 
-def resolve_name(obj, command_name) -> Optional[str]:
+def resolve_name(obj, command_name):
     if command_name.lower() not in obj.commands:
         if command_name in obj.aliases:
             command_name = obj.aliases[command_name]

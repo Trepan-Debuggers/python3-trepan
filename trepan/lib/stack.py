@@ -112,7 +112,7 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame, style: str) -> Tuple[str, str]:
+def format_function_name(frame, style: str) -> tuple:
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
@@ -125,7 +125,7 @@ def format_function_name(frame, style: str) -> Tuple[str, str]:
     return funcname, format_token(Function, funcname, style=style)
 
 
-def format_function_and_parameters(frame, debugger, style: str) -> Tuple[bool, str]:
+def format_function_and_parameters(frame, debugger, style: str) -> tuple:
     """ """
 
     funcname, s = format_function_name(frame, style)
@@ -311,7 +311,7 @@ def is_exec_stmt(frame) -> bool:
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
-def get_call_function_name(frame) -> Optional[str]:
+def get_call_function_name(frame):
     """If f_back is looking at a call function, return
     the name for it. Otherwise, return None"""
 

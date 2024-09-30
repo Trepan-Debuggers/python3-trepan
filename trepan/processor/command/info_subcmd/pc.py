@@ -54,7 +54,7 @@ class InfoPC(DebuggerSubcommand):
             if curframe:
                 line_no = inspect.getlineno(curframe)
                 offset = curframe.f_lasti
-                self.msg(f"PC offset is {offset}.")
+                self.msg("PC offset is %d." % offset)
                 offset = max(offset, 0)
                 code = curframe.f_code
                 co_code = code.co_code

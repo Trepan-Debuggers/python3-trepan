@@ -115,8 +115,8 @@ class DebuggerSubcommand:
         """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
         return self.debugger.intf[-1].msg_nocr(msg)
 
-    aliases: tuple = ()
-    name: str = "YourSubCommandName"
+    aliases = tuple()
+    name = "YourSubCommandName"
 
     def rst_msg(self, text):
         """Convenience short-hand for self.proc.rst_msg(text)"""

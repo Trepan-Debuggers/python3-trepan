@@ -75,11 +75,11 @@ def resolve_location(proc, location) -> Optional[Location]:
                     # should be the same.)
                     mod_func = modules[0]
                 else:
-                    proc.errmsg(f"Cannot resolve <module> from a path {filename}")
+                    proc.errmsg("Cannot resolve <module> from a path %s" % filename)
                     return INVALID_LOCATION
 
         if mod_func is None:
-            msg = f"Object {location_method} is not known yet as a function, "
+            msg = "Object %s is not known yet as a function, " % location_method
             try:
                 mod_func = eval(location_method, g, locals_dict)
             except Exception:
@@ -111,13 +111,15 @@ def resolve_location(proc, location) -> Optional[Location]:
         filename = proc.core.canonic(location.path)
         lineno = location.line_number
         mod_func = None
-        msg = f"{location.path} is not known as a file"
+        msg = "%s is not known as a file" % location.path
         if not osp.isfile(filename):
             # See if argument is a module
             try:
                 mod_func = eval(location.path, g, locals_dict)
             except Exception:
-                msg = f"Don't see '{location.path}' as a existing file or as an module"
+                msg = (
+                    "Don't see '%s' as a existing file or as an module" % location.path
+                )
                 proc.errmsg(msg)
                 return INVALID_LOCATION
             pass
@@ -133,7 +135,7 @@ def resolve_location(proc, location) -> Optional[Location]:
                         is_address = False
                     return Location(filename, lineno, is_address, mod_func, offset)
                 else:
-                    msg = f"module '{location.path}' doesn't have a file associated with it"
+                    msg = "module '%s' doesn't have a file associated with it"
 
             proc.errmsg(msg)
             return INVALID_LOCATION
@@ -152,7 +154,7 @@ def resolve_location(proc, location) -> Optional[Location]:
                 offset = lineinfo[0].offsets[0]
                 mod_func = lineinfo[0].name
             else:
-                print(f"No offset found for {filename} {lineno}")
+                print("No offset found for %s %s" % (filename, lineno))
 
     elif location.line_number:
         filename = frame2file(proc.core, curframe, canonic=False)
@@ -198,7 +200,7 @@ def resolve_address_location(proc, location) -> Optional[Location]:
     if location.method:
         # Validate arguments that can't be done in parsing
         filename = offset = None
-        msg = f"Object {location.method} is not known yet as a function, "
+        msg = "Object %s is not known yet as a function, " % location.method
         try:
             mod_func = eval(location.method, g, locals_dict)
         except Exception:
@@ -224,13 +226,15 @@ def resolve_address_location(proc, location) -> Optional[Location]:
         offset = location.line_number
         is_address = location.is_address
         mod_func = None
-        msg = f"{location.path} is not known as a file"
+        msg = "%s is not known as a file" % location.path
         if not osp.isfile(filename):
             # See if argument is a module
             try:
                 mod_func = eval(location.path, g, locals_dict)
             except Exception:
-                msg = f"Don't see '{location.path}' as a existing file or as an module"
+                msg = (
+                    "Don't see '%s' as a existing file or as an module" % location.path
+                )
                 proc.errmsg(msg)
                 return INVALID_LOCATION
             pass
@@ -245,7 +249,10 @@ def resolve_address_location(proc, location) -> Optional[Location]:
                         is_address = True
                     return Location(filename, offset, is_address, mod_func, offset)
                 else:
-                    msg = f"module '{location.path}' doesn't have a file associated with it"
+                    msg = (
+                        "module '%s' doesn't have a file associated with it"
+                        % location.path
+                    )
 
             proc.errmsg(msg)
             return INVALID_LOCATION
@@ -253,7 +260,8 @@ def resolve_address_location(proc, location) -> Optional[Location]:
         if maxline and offset > maxline:
             # NB: we use the gdb wording here
             proc.errmsg(
-                f"Line number {offset} out of range; {filename} has {maxline} lines."
+                "Line number %s out of range; %s has %s lines."
+                % (offset, filename, maxline)
             )
             return INVALID_LOCATION
     elif location.line_number is not None:
