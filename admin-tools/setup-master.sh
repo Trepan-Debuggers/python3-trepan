@@ -9,11 +9,10 @@ fi
 PYTHON_VERSION=3.12
 
 mydir=$(dirname $bs)
-trepan3_owd=$(pwd)
+trepan3k_owd=$(pwd)
 cd $mydir
 . ./checkout_common.sh
 fulldir=$(readlink -f $mydir)
-cd $fulldir/..
 (cd $fulldir/.. && \
      setup_version_trepan3k python-uncompyle6 master && \
      setup_version_trepan3k python-filecache master && \
