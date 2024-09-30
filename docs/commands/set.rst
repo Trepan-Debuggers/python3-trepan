@@ -21,6 +21,7 @@ environment settings with the :ref:`show <show>` command.
 .. toctree::
    :maxdepth: 1
 
+   set/asmfmt
    set/autoeval
    set/autolist
    set/autopc

@@ -9,7 +9,7 @@ Tbreak (temporary breakpoint)
 With a line number argument, set a break there in the current file.
 With a function name, set a break at first executable line of that
 function.  Without argument, set a breakpoint at current location.  If
-a second argument is `if`, subequent arguments given an expression
+a second argument is ``if``, subsequent arguments given an expression
 which must evaluate to true before the breakpoint is honored.
 
 The location line number may be prefixed with a filename or module

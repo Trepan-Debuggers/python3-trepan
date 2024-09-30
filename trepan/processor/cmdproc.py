@@ -136,7 +136,7 @@ def run_hooks(obj, hooks, *args) -> bool:
     return any((hook(obj, *args) for hook in hooks))
 
 
-def resolve_name(obj, command_name):
+def resolve_name(obj, command_name) -> Optional[str]:
     if command_name.lower() not in obj.commands:
         if command_name in obj.aliases:
             command_name = obj.aliases[command_name]
@@ -407,6 +407,7 @@ class CommandProcessor(Processor):
         get_option = get_option_fn
         super().__init__(core_obj)
 
+        self.aliases = {}
         # "contine_running" is used by step/next/contine to signal breaking out of
         # the command evaluation loop.
         self.continue_running = False
@@ -807,7 +808,11 @@ class CommandProcessor(Processor):
             pass
         run_hooks(self, self.postcmd_hooks)
         if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
-            # remove hook
+            # Remove tracing on frames and remove trace hook.
+            frame = self.curframe
+            while frame:
+                del frame.f_trace
+                frame = frame.f_back
             self.debugger.intf[-1].output.writeline("Fast continue...")
             remove_hook(self.core.trace_dispatch, True)
 
@@ -892,6 +897,11 @@ class CommandProcessor(Processor):
 
                 self.cmd_name = args[0]
                 cmd_name = resolve_name(self, self.cmd_name)
+                if cmd_name is not None and cmd_name.find(" ") > 0:
+                    # May have an alias with args
+                    args = cmd_name.split(" ") + args[1:]
+                    cmd_name = args[0]
+
                 self.cmd_argstr = current_command[len(self.cmd_name) :].lstrip()
                 if cmd_name:
                     self.last_command = current_command
@@ -1145,7 +1155,6 @@ class CommandProcessor(Processor):
         """Populate self.lists and hashes:
         self.commands, and self.aliases, self.category"""
         self.commands = {}
-        self.aliases = {}
         self.category = {}
         #         self.short_help = {}
         for cmd_instance in self.cmd_instances:
@@ -1179,9 +1188,9 @@ class CommandProcessor(Processor):
 
 # Demo it
 if __name__ == "__main__":
-    from trepan.processor.command import mock as Mmock
+    from trepan.processor.command.mock import MockDebugger
 
-    d = Mmock.MockDebugger()
+    d = MockDebugger()
     cmdproc = CommandProcessor(d.core)
     print("commands:")
     commands = list(cmdproc.commands.keys())

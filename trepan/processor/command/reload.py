@@ -93,6 +93,7 @@ class ReloadCommand(DebuggerCommand):
         cmd_name = args[1]
         proc = self.proc
         if len(args) == 2:
+            cmd_name = proc.aliases.get(cmd_name, cmd_name)
             if cmd_name not in proc.commands:
                 self.errmsg('command "%s" not found as a debugger command' % cmd_name)
                 return
@@ -108,7 +109,7 @@ class ReloadCommand(DebuggerCommand):
                     instance = getattr(command_module, classnames[0])(proc)
                 except Exception:
                     self.errmsg(
-                        "Error loading %s from mod_name, sys.exc_info()[0]"
+                        "Error loading %s from module name, sys.exc_info()[0]"
                         % classnames[0]
                     )
                     return

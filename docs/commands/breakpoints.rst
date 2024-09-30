@@ -1,8 +1,6 @@
 Breakpoints
 ===========
 
-Making the program stop at certain points
-
 A *breakpoint* can make your program stop at that point. You can set
 breakpoints with the break command and its variants. You can specify
 the place where your program should stop by file and line number or by
@@ -44,6 +42,10 @@ breakpoint is reached.
 Break conditions can be specified when a breakpoint is set, by adding
 a comma in the arguments to the break command. They can also be
 changed at any time with the :ref:`condition <condition>` command.
+
+In certain cases using a breakpoint may cause ``next``, ``finish`` and
+``continue`` instructions to slow down the execution of your
+program. See :ref:`running <running>` for more information.
 
 .. toctree::
    :maxdepth: 1

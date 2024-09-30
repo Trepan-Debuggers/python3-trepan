@@ -61,7 +61,7 @@ class FinishCommand(DebuggerCommand):
         # print "+++ %d" % levels
         self.core.step_events = ["return"]
         self.core.stop_on_finish = True
-        self.core.stop_level = count_frames(self.proc.frame) - levels
+        self.core.stop_level = count_frames(self.proc.frame) + 1 - levels
         self.core.last_frame = self.proc.frame
         self.proc.continue_running = True  # Break out of command read loop
         return True

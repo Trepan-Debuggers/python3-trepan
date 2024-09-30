@@ -41,7 +41,6 @@ def capitalize(s):
 
 
 class SubcommandMgr(DebuggerCommand):
-
     category = "status"
     min_args = 0
     max_args = None
@@ -67,10 +66,10 @@ class SubcommandMgr(DebuggerCommand):
 
         return
 
-    def _load_debugger_subcommands(self, name, base="trepan"):
+    def _load_debugger_subcommands(self, cmd_name, base="trepan"):
         """Create an instance of each of the debugger
         subcommands. Commands are found by importing files in the
-        directory 'name' + 'sub'. Some files are excluded via an array set
+        directory 'cmd_name' + 'sub'. Some files are excluded via an array set
         in __init__.  For each of the remaining files, we import them
         and scan for class names inside those files and for each class
         name, we will create an instance of that class. The set of
@@ -93,7 +92,7 @@ class SubcommandMgr(DebuggerCommand):
             except ImportError:
                 print(
                     (
-                        "Error importing name %s module %s: %s"
+                        "Error importing cmd_name %s module %s: %s"
                         % (import_name, module_name, sys.exc_info()[0])
                     )
                 )
@@ -118,6 +117,9 @@ class SubcommandMgr(DebuggerCommand):
                 try:
                     instance = eval(eval_cmd)
                     self.cmds.add(instance)
+                    subcmd_name = instance.name
+                    for alias_name in instance.aliases:
+                        self.proc.aliases[alias_name] = f"{cmd_name} {subcmd_name}"
                 except Exception:
                     print("Error eval'ing class %s" % classname)
                     pass

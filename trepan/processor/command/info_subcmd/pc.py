@@ -15,12 +15,14 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+
 from xdis import findlinestarts
+
+from trepan.lib.disassemble import disassemble_bytes
+from trepan.misc import wrapped_lines
 
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
-from trepan.lib.disassemble import disassemble_bytes
-from trepan.misc import wrapped_lines
 
 
 # FIXME: this could be combined with trepan-xpy's `info pc`, but that
@@ -52,10 +54,11 @@ class InfoPC(DebuggerSubcommand):
             if curframe:
                 line_no = inspect.getlineno(curframe)
                 offset = curframe.f_lasti
-                self.msg("PC offset is %d." % offset)
+                self.msg(f"PC offset is {offset}.")
                 offset = max(offset, 0)
                 code = curframe.f_code
                 co_code = code.co_code
+                style = self.debugger.settings.get("style", "none")
                 disassemble_bytes(
                     self.msg,
                     self.msg_nocr,
@@ -69,7 +72,8 @@ class InfoPC(DebuggerSubcommand):
                     constants=code.co_consts,
                     cells=code.co_cellvars,
                     freevars=code.co_freevars,
-                    linestarts=dict(findlinestarts(code)),
+                    line_starts=dict(findlinestarts(code)),
+                    style=style,
                     end_offset=offset + 10,
                 )
                 pass
@@ -90,7 +94,7 @@ class InfoPC(DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     i = Minfo.InfoCommand(cp)
