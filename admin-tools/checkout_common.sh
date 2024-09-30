@@ -14,7 +14,7 @@ function setup_version_trepan3k {
 
 function checkout_finish {
     branch=$1
-    cd $trepan3_owd
+    cd $trepan3k_owd
     git checkout $branch && pyenv local $PYTHON_VERSION && git pull
     rc=$?
     return $rc
