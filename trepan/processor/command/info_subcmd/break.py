@@ -15,9 +15,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.processor import complete as Mcomplete
+
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.processor import complete as Mcomplete
 
 
 class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
@@ -71,10 +72,16 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
         else:
             disp = disp + "n  "
             pass
-        self.msg(
-            "%-4dbreakpoint    %s %3d at %s:%d"
-            % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
-        )
+        if bp.offset is None:
+            self.msg(
+                "%-4dbreakpoint    %s ??? at %s:%d"
+                % (bp.number, disp, self.core.filename(bp.filename), bp.line)
+            )
+        else:
+            self.msg(
+                "%-4dbreakpoint    %s %3d at %s:%d"
+                % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
+            )
         if bp.condition:
             self.msg("\tstop only if %s" % (bp.condition))
             pass

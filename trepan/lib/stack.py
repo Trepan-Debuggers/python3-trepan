@@ -112,23 +112,23 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_stack_entry(
-    dbg_obj, frame_lineno, lprefix=": ", include_location=True, style="none"
-) -> str:
-    """Format and return a stack entry gdb-style.
-    Note: lprefix is not used. It is kept for compatibility.
+def format_function_name(frame, style: str) -> tuple:
     """
-    frame, lineno = frame_lineno
-    filename = frame2file(dbg_obj.core, frame)
-
-    s = ""
+    Pick out the function name from ``frame`` and return both the name
+    and the name styled according to ``style``
+    """
     if frame.f_code.co_name:
         funcname = frame.f_code.co_name
     else:
         funcname = "<lambda>"
         pass
-    s = format_token(Function, funcname, style=style)
+    return funcname, format_token(Function, funcname, style=style)
 
+
+def format_function_and_parameters(frame, debugger, style: str) -> tuple:
+    """ """
+
+    funcname, s = format_function_name(frame, style)
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
     if "<module>" == funcname and (
         [],
@@ -164,18 +164,34 @@ def format_stack_entry(
         except Exception:
             pass
         else:
-            maxargstrsize = dbg_obj.settings["maxargstrsize"]
+            maxargstrsize = debugger.settings["maxargstrsize"]
             if len(params) >= maxargstrsize:
                 params = "%s...)" % params[0:maxargstrsize]
                 pass
             s += params
         pass
 
-    # Note: ddd can't handle wrapped stack entries (yet).
-    # The 35 is hoaky though. FIXME.
-    if len(s) >= 35:
-        s += "\n    "
+    return is_module, s
 
+
+def format_return_and_location(
+    frame,
+    line_number: int,
+    debugger,
+    is_module: bool,
+    include_location: bool,
+    style: str,
+) -> str:
+    """
+    Format the return value if frame is at a return, and the location
+    of frame if `include_location` is True; `is_module` indicates whether
+    frame is a module or not.
+
+    A formatted string is returned; `style` gives the formatting
+    style used.
+    """
+    filename = frame2file(debugger.core, frame)
+    s = ""
     if "__return__" in frame.f_locals:
         rv = frame.f_locals["__return__"]
         s += "->"
@@ -211,8 +227,31 @@ def format_stack_entry(
             filename = "'%s'" % filename
         s += " %s at line %s" % (
             format_token(Filename, filename, style=style),
-            format_token(LineNumber, "%r" % lineno, style=style),
+            format_token(LineNumber, str(line_number), style=style),
         )
+
+    return s
+
+
+def format_stack_entry(
+    dbg_obj, frame_lineno, lprefix=": ", include_location=True, style="none"
+) -> str:
+    """Format and return a stack entry gdb-style.
+    Note: lprefix is not used. It is kept for compatibility.
+    """
+    frame, line_number = frame_lineno
+
+    is_module, s = format_function_and_parameters(frame, dbg_obj, style)
+    args, varargs, varkw, local_vars = inspect.getargvalues(frame)
+
+    # Note: ddd can't handle wrapped stack entries (yet).
+    # The 35 is hoaky though. FIXME.
+    if len(s) >= 35:
+        s += "\n    "
+
+    s += format_return_and_location(
+        frame, line_number, dbg_obj, is_module, include_location, style
+    )
     return s
 
 
@@ -264,7 +303,7 @@ def check_path_with_frame(frame, path):
     return True, None
 
 
-def is_exec_stmt(frame):
+def is_exec_stmt(frame) -> bool:
     """Return True if we are looking at an exec statement"""
     return hasattr(frame, "f_back") and get_call_function_name(frame) == "exec"
 
@@ -275,6 +314,7 @@ opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 def get_call_function_name(frame):
     """If f_back is looking at a call function, return
     the name for it. Otherwise, return None"""
+
     f_back = frame.f_back
     if not f_back:
         return None
@@ -463,28 +503,34 @@ if __name__ == "__main__":
         pass
 
     frame = inspect.currentframe()
-    print(frame2filesize(frame))
+    # print(frame2filesize(frame))
     pyc_file = osp.join(
         osp.dirname(__file__), "__pycache__", osp.basename(__file__)[:-3] + ".pyc"
     )
-    print(pyc_file, getsourcefile(pyc_file))
+    # print(pyc_file, getsourcefile(pyc_file))
 
     m = MockDebugger()
 
     # For testing print_stack_entry()
-    # import inspect
-    # import trepan
-    # from trepan.api import debug;
-    # dd = trepan.debugger.Trepan()
-    # my_frame = inspect.currentframe()
-    # dd.core.processor.stack =  [(my_frame, 100)]
-    # dd.core.processor.curframe =  my_frame
-    # debug()
+    from trepan.debugger import Trepan
+
+    dd = Trepan()
+    my_frame = inspect.currentframe()
+    dd.core.processor.stack = [(my_frame, 100)]
+    dd.core.processor.curframe = my_frame
     # print_stack_entry(dd.core.processor, 0, "fruity")
 
-
     # print(format_stack_entry(m, (frame, 10,)))
-    # print(format_stack_entry(m, (frame, 10,), color="dark"))
+    print(
+        format_stack_entry(
+            m,
+            (
+                frame,
+                10,
+            ),
+            style="tango",
+        )
+    )
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))
@@ -495,13 +541,15 @@ if __name__ == "__main__":
     # def sqr(x):
     #     x * x
 
-    # def fn(x):
-    #     frame = inspect.currentframe()
-    #     print(get_call_function_name(frame))
-    #     return
+    def fn(x):
+        frame = inspect.currentframe()
+        print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
+        print(get_call_function_name(frame))
+        return
 
-    # print("=" * 30)
-    # eval("fn(5)")
+    print("=" * 30)
+    fn(5)
+    eval("fn(5)")
     # print("=" * 30)
     # print(print_obj("fn", fn))
     # print("=" * 30)

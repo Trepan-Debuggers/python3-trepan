@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class ConditionCommand(DebuggerCommand):
             condition = " ".join(args[2:])
         else:
             condition = None
-            self.msg("Breakpoint %d is now unconditional." % bp.number)
+            self.msg("Breakpoint %s is now unconditional." % bp.number)
             pass
         bp.condition = condition
         return
@@ -61,6 +61,7 @@ class ConditionCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     import sys
+
     from trepan import debugger as Mdebugger
 
     Mbreak = __import__("trepan.processor.command.break", None, None, ["*"])

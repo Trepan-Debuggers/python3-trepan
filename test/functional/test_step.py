@@ -1,215 +1,233 @@
 """
 Functional test of debugger "step" command.
 """
-import unittest
+
+import os
+from os.path import abspath, basename
 from test.functional.fn_helper import compare_output, strarray_setup
 
-# import tracer
+import pyficache
+import pytest
+import tracer
+from xdis import PYTHON_VERSION_TRIPLE
+
+absolute_path = abspath(__file__)
+short_name = basename(__file__)
+pyficache.update_cache(short_name)
+pyficache.file2file_remap.update({short_name: absolute_path})
 
 
-class TestStep(unittest.TestCase):
-    print("test ", __file__, "skipped")
+def test_step_same_level():
+    # See that we can step with parameter which is the same as 'step 1'
+    cmds = ["step", "continue"]
+    d = strarray_setup(cmds)
+    d.core.start()
+    ##############################
+    x = 5  # NOQA
+    y = 6  # NOQA
+    ##############################
+    d.core.stop()
+    out = ["-- x = 5  # NOQA", "-- y = 6  # NOQA"]
+    compare_output(out, d)
+    return
 
-    @unittest.skip(
-        "FIXME: figure out why this doesn't work in Python 3.0 .. 3.1"
-    )
-    def test_step_same_level(self):
-        # See that we can step with parameter which is the same as 'step 1'
-        cmds = ["step", "continue"]
-        d = strarray_setup(cmds)
-        d.core.start()
-        ##############################
-        x = 5  # NOQA
-        y = 6  # NOQA
-        ##############################
-        d.core.stop()
-        out = ["-- x = 5  # NOQA", "-- y = 6  # NOQA"]
-        compare_output(self, out, d)
+
+def test_step_computed_value():
+    # See that we can step with a computed count value
+    cmds = ["step 5-3", "continue"]
+    d = strarray_setup(cmds)
+    d.core.start()
+    ##############################
+    x = 5
+    y = 6
+    z = 7
+    ##############################
+    d.core.stop(options={"remove": True})
+    out = ["-- x = 5", "-- z = 7"]
+    compare_output(out, d)
+
+    # Test step>
+    cmds = ["step>", "continue"]
+    d = strarray_setup(cmds)
+    d.core.start()
+    ##############################
+    x = 5
+
+    def foo():
         return
 
-    @unittest.skip(
-        "FIXME: figure out why this doesn't work in Python 3.0 .. 3.1"
-    )
-    def test_step_computed_value(self):
-        # See that we can step with a computed count value
-        cmds = ["step 5-3", "continue"]
-        d = strarray_setup(cmds)
-        d.core.start()
-        ##############################
-        x = 5
-        y = 6
-        z = 7
-        ##############################
-        d.core.stop(options={"remove": True})
-        out = ["-- x = 5", "-- z = 7"]
-        compare_output(self, out, d)
+    y = 6  # NOQA
+    foo()
+    ##############################
+    d.core.stop(options={"remove": True})
+    out = ["-- x = 5", "-> def foo():"]
+    compare_output(out, d)
 
-        # Test step>
-        cmds = ["step>", "continue"]
-        d = strarray_setup(cmds)
-        d.core.start()
-        ##############################
-        x = 5
+    # Test step!
+    cmds = ["step!", "continue"]
+    d = strarray_setup(cmds)
+    d.core.start()
+    ##############################
+    x = 5
+    try:
+        y = 2
+        z = 1 / 0
+    except:
+        pass
+    ##############################
+    d.core.stop(options={"remove": True})
+    out = ["-- x = 5", "!! z = 1 / 0"]
+    compare_output(out, d)
 
-        def foo():
-            return
+    # Test "step" with sets of events. Part 1
+    cmds = ["step call exception", "step call exception", "continue"]
+    d = strarray_setup(cmds)
 
-        y = 6  # NOQA
-        foo()
-        ##############################
-        d.core.stop(options={"remove": True})
-        out = ["-- x = 5", "-> def foo():"]
-        compare_output(self, out, d)
+    # d.core.start()
+    ##############################
+    # x = 5  # NOQA
+    # try:
 
-        # Test step!
-        cmds = ["step!", "continue"]
-        d = strarray_setup(cmds)
-        d.core.start()
-        ##############################
-        x = 5
-        try:
-            y = 2
-            z = 1 / 0
-        except:
-            pass
-        ##############################
-        d.core.stop(options={"remove": True})
-        out = ["-- x = 5", "!! z = 1 / 0"]
-        compare_output(self, out, d)
+    #     def foo1():
+    #         y = 2  # NOQA
+    #         raise Exception
+    #         return
 
-        # Test "step" with sets of events. Part 1
-        cmds = ["step call exception", "step call exception", "continue"]
-        d = strarray_setup(cmds)
-        d.core.start()
-        ##############################
-        # x = 5  # NOQA
-        # try:
+    #     foo1()
+    # except:
+    #     pass
+    # z = 1  # NOQA
+    # ##############################
+    # d.core.stop(options={'remove': True})
+    # out = ['-- x = 5  # NOQA',
+    #        '-> def foo1():',
+    #        '!! raise Exception']
+    # compare_output(out, d)
 
-        #     def foo1():
-        #         y = 2  # NOQA
-        #         raise Exception
-        #         return
+    # # Test "step" will sets of events. Part 2
+    # cmds = ['step call exception 1+0',
+    #         'step call exception 1', 'continue']
+    # d = strarray_setup(cmds)
+    # d.core.start()
+    # ##############################
+    # x = 5
+    # try:
+    #     def foo2():
+    #         y = 2
+    #         raise Exception
+    #         return
+    #     foo2()
+    # except:
+    #     pass
+    # z = 1
+    # ##############################
+    # d.core.stop(options={'remove': True})
+    # out = ['-- x = 5',
+    #        '-> def foo2():',
+    #        '!! raise Exception']
+    # compare_output(out, d)
 
-        #     foo1()
-        # except:
-        #     pass
-        # z = 1  # NOQA
-        # ##############################
-        # d.core.stop(options={'remove': True})
-        # out = ['-- x = 5  # NOQA',
-        #        '-> def foo1():',
-        #        '!! raise Exception']
-        # compare_output(self, out, d)
+    return
 
-        # # Test "step" will sets of events. Part 2
-        # cmds = ['step call exception 1+0',
-        #         'step call exception 1', 'continue']
-        # d = strarray_setup(cmds)
-        # d.core.start()
-        # ##############################
-        # x = 5
-        # try:
-        #     def foo2():
-        #         y = 2
-        #         raise Exception
-        #         return
-        #     foo2()
-        # except:
-        #     pass
-        # z = 1
-        # ##############################
-        # d.core.stop(options={'remove': True})
-        # out = ['-- x = 5',
-        #        '-> def foo2():',
-        #        '!! raise Exception']
-        # compare_output(self, out, d)
 
-        return
+@pytest.mark.skipif(
+    "CI" in os.environ, reason="Need to figure out what's up on CircleCI"
+)
+def test_step_between_fn():
+    # Step into and out of a function
+    def sqr(x):
+        return x * x
 
-    # def test_step_between_fn(self):
-    #     # Step into and out of a function
-    #     def sqr(x):
-    #         return x * x
-
-    #     for cmds, out, eventset in (
-    #         (
-    #             ["step", "step", "continue"],
-    #             ["-- x = sqr(4)  # NOQA", "-- return x * x", "-- y = 5  # NOQA"],
-    #             frozenset(("line",)),
-    #         ),
-    #         (
-    #             ["step", "step", "step", "step", "continue"],
-    #             [
-    #                 "-- x = sqr(4)  # NOQA",
-    #                 "-> def sqr(x):",
-    #                 "-- return x * x",
-    #                 "<- return x * x",
-    #                 "-- y = 5  # NOQA",
-    #             ],
-    #             tracer.ALL_EVENTS,
-    #         ),
-    #     ):
-    #         d = strarray_setup(cmds)
-    #         d.settings["events"] = eventset
-    #         d.core.start()
-    #         ##############################
-    #         x = sqr(4)  # NOQA
-    #         y = 5  # NOQA
-    #         ##############################
-    #         d.core.stop(options={"remove": True})
-    #         compare_output(self, out, d)
-    #         pass
-    #     return
-
-    def test_step_in_exception(self):
-        return
-
-        def boom(x):
-            y = 0 / x  # NOQA
-            return
-
-        def bad(x):
-            boom(x)
-            return x * x
-
-        cmds = [
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "step",
-            "continue",
+    if PYTHON_VERSION_TRIPLE < (3, 10):
+        test2_expect = [
+            "-- d.core.start()",
+            "-- x = sqr(4)  # NOQA",
+            "-> def sqr(x):",
+            "-- return x * x",
+            "<- return x * x",
         ]
-        d = strarray_setup(cmds)
-        try:
-            d.core.start()
-            x = bad(0)
-            self.assertTrue(False, "should have raised an exception")
-        except ZeroDivisionError:
-            self.assertTrue(True, "Got the exception")
-        finally:
-            d.core.stop(options={"remove": True})
-            pass
-
-        out = [
-            "-- x = bad(0)  # NOQA",  # line event
-            "-> def bad(x):",  # call event
-            "-- boom(x)",  # line event
-            "-> def boom(x):",  # call event
-            "-- y = 0/x  # NOQA",  # line event
-            "!! y = 0/x  # NOQA",  # exception event
-            "<- y = 0/x  # NOQA",  # return event
-            "!! boom(x)",  # exception event
-            "<- boom(x)",  # return event
-            "!! x = bad(0)  # NOQA",  # exception event
-            "-- except ZeroDivisionError:",
+    else:
+        test2_expect = [
+            "-- x = sqr(4)  # NOQA",
+            "-> def sqr(x):",
+            "-- return x * x",
+            "<- return x * x",
+            "-- y = 5  # NOQA",
         ]
-        compare_output(self, out, d)
+
+    for cmds, out, eventset in (
+        (
+            ["step", "step", "continue"],
+            [
+                "-- x = sqr(4)  # NOQA",
+                "-- return x * x",
+                "-- y = 5  # NOQA",
+            ],
+            frozenset(("line",)),
+        ),
+        (
+            ["step", "step", "step", "step", "continue"],
+            test2_expect,
+            tracer.ALL_EVENTS,
+        ),
+    ):
+        d = strarray_setup(cmds)
+        d.settings["events"] = eventset
+        d.core.start()
+        ##############################
+        x = sqr(4)  # NOQA
+        y = 5  # NOQA
+        ##############################
+        d.core.stop(options={"remove": True})
+        compare_output(out, d)
+        pass
+    return
+
+
+def test_step_in_exception():
+    return
+
+    def boom(x):
+        y = 0 / x  # NOQA
         return
 
-    pass
+    def bad(x):
+        boom(x)
+        return x * x
+
+    cmds = [
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "continue",
+    ]
+    d = strarray_setup(cmds)
+    with pytest.raises(ZeroDivisionError):
+        d.core.start()
+        x = bad(0)
+        assert False, "should have raised an exception"
+
+    d.core.stop(options={"remove": True})
+
+    out = [
+        "-- x = bad(0)  # NOQA",  # line event
+        "-> def bad(x):",  # call event
+        "-- boom(x)",  # line event
+        "-> def boom(x):",  # call event
+        "-- y = 0/x  # NOQA",  # line event
+        "!! y = 0/x  # NOQA",  # exception event
+        "<- y = 0/x  # NOQA",  # return event
+        "!! boom(x)",  # exception event
+        "<- boom(x)",  # return event
+        "!! x = bad(0)  # NOQA",  # exception event
+        "-- except ZeroDivisionError:",
+    ]
+    compare_output(out, d)
+    return

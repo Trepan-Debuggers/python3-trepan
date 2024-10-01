@@ -4,7 +4,7 @@ bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 
-function setup_version {
+function setup_version_trepan3k {
     local repo=$1
     version=$2
     echo Running setup $version on $repo ...
@@ -14,7 +14,7 @@ function setup_version {
 
 function checkout_finish {
     branch=$1
-    cd $trepan3_owd
+    cd $trepan3k_owd
     git checkout $branch && pyenv local $PYTHON_VERSION && git pull
     rc=$?
     return $rc

@@ -1,11 +1,15 @@
 """Unit test for trepan.processor.command.list"""
 
 import os  # NOQA
+import sys
 from test.unit.cmdhelper import setup_unit_test_debugger
+
+import pytest
 
 from trepan.processor.command.list import ListCommand
 
 
+@pytest.mark.skipif(sys.platform in ("win32",), reason="$Need to go over on MS Windows")
 def test_list_command():
     listsize = 8
     errors = []

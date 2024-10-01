@@ -12,7 +12,7 @@ function checkout_version {
 }
 
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
-owd=$(pwd)
+trepan3k_owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
@@ -24,12 +24,12 @@ fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
      checkout_version python-spark master && \
      checkout_version python-xdis && \
-     checkout_version python-filecache python-3.1-to-3.2 && \
+     checkout_version shell-term-background python-3.0-to-3.2 && \
      checkout_version pycolumnize python-3.0-to-3.5 && \
-     checkout_version python-uncompyle6 \
+     checkout_version python-uncompyle6 python-3.0-to-3.2 \
     )
-cd $owd
-rm -v */.python-version || true
+
+cd $trepan3k_owd
+rm -v */.python-version 2>/dev/null || true
 
 git checkout python-3.2-to-3.5 && pyenv local $PYTHON_VERSION && git pull
-cd $owd

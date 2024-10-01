@@ -109,8 +109,7 @@ class FrameCommand(DebuggerCommand):
         not needed and we have an explicit position number as a string"""
         frame_num = self.proc.get_an_int(
             position_str,
-            ("The 'frame' command requires a" + " frame number. Got: %s")
-            % position_str,
+            "The 'frame' command requires a frame number. Got: %s" % position_str,
         )
         if frame_num is None:
             return False
@@ -122,7 +121,7 @@ class FrameCommand(DebuggerCommand):
 
         if frame_num < -i_stack or frame_num > i_stack - 1:
             self.errmsg(
-                ("Frame number has to be in the range %d to %d." + " Got: %d (%s).")
+                "Frame number has to be in the range %d to %d; got: %d (%s)."
                 % (-i_stack, i_stack - 1, frame_num, position_str)
             )
             return False
@@ -154,7 +153,7 @@ class FrameCommand(DebuggerCommand):
         frame = threads.get(thread_id)
         if frame is None and report_error:
             self.errmsg(
-                "I don't know about thread number %s (%d)." % name_or_id, thread_id
+                "I don't know about thread number %s (%d)." % (name_or_id, thread_id)
             )
             # self.info_thread_terse()
             return None, None

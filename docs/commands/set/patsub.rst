@@ -1,8 +1,8 @@
 .. index:: set; patsub
 .. _set_patsub:
 
-Set Substition Pattern
-----------------------
+Set Substitution Pattern
+------------------------
 
 **set patsub** *from-re* *replace-string*
 

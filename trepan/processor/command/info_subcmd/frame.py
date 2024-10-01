@@ -16,10 +16,14 @@
 
 import inspect
 
+from pyficache import getline, highlight_string
+
+from trepan.lib.complete import complete_token
+from trepan.lib.stack import format_function_name
+from trepan.processor import frame as Mframe
+
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
-from trepan.processor import frame as Mframe
 
 
 class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
@@ -50,7 +54,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
     `info locals`, `info globals`, `info args`"""
 
     min_abbrev = 2
-    max_args = 2
+    max_args = 3
     need_stack = True
     short_help = """Show detailed info about the current frame"""
 
@@ -59,10 +63,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         low, high = Mframe.frame_low_high(proc_obj, None)
         ary = [str(low + i) for i in range(high - low + 1)]
         # FIXME: add in Thread names
-        return Mcomplete.complete_token(ary, prefix)
+        return complete_token(ary, prefix)
 
     def run(self, args):
-
         # FIXME: should DRY this with code.py
         proc = self.proc
         frame = proc.curframe
@@ -70,11 +73,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.errmsg("No frame selected.")
             return False
 
-        show_lists = False
+        is_verbose = False
         if len(args) >= 1 and args[0] == "-v":
             args.pop(0)
-            show_lists = True
+            is_verbose = True
 
+        style = self.settings["style"]
         frame_num = None
         if len(args) == 1:
             try:
@@ -111,20 +115,53 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             else "Frame Info"
         )
         self.section(mess)
+
+        function_name, formatted_func_name = format_function_name(frame, style=style)
+        f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
+        self.msg("  function name: %s" % formatted_func_name)
+        func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
+        formatted_func_signature = highlight_string(func_args, style=style).strip()
+        self.msg("  function args: %s" % formatted_func_signature)
+
+        # signature = highlight_string(inspect.signature(frame))
+        # self.msg(f"  signature : {signature}")
+
         if hasattr(frame, "f_restricted"):
             self.msg("  restricted execution: %s" % frame.f_restricted)
         self.msg("  current line number: %d" % frame.f_lineno)
+
+        line_number = frame.f_lineno
+        code = frame.f_code
+        file_path = code.co_filename
+
+        line_text = getline(file_path, line_number, {"style": style})
+        if line_text is None:
+            self.msg("  current line number: %s" % frame.f_lineno)
+        else:
+            formatted_text = highlight_string(line_text.strip())
+            self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
+
         self.msg("  last instruction: %d" % frame.f_lasti)
         self.msg("  code: %s" % frame.f_code)
         self.msg("  previous frame: %s" % frame.f_back)
         self.msg("  tracing function: %s" % frame.f_trace)
 
-        if show_lists:
+        if hasattr(frame, "f_restricted"):
+            self.msg("  restricted execution: %s" % frame.f_restricted)
+
+        if is_verbose:
             for name, field in [
                 ("Globals", "f_globals"),
                 ("Builtins", "f_builtins"),
             ]:
-                vals = getattr(frame, field).keys()
+                # FIXME: not sure this is quite right.
+                # For now we'll strip out values that start with the option
+                # prefix "-".
+                vals = [
+                    field
+                    for field in getattr(frame, field).keys()
+                    if not field.startswith("-")
+                ]
                 if vals:
                     self.section(name)
                     m = self.columnize_commands(vals)
@@ -136,7 +173,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
 
 if __name__ == "__main__":
-    from trepan.processor.command import mock, info as Minfo
+    from trepan.processor.command import info as Minfo, mock
 
     d, cp = mock.dbg_setup()
     cp.setup()

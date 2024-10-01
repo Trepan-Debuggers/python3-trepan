@@ -26,8 +26,7 @@ flake8:
 	flake8 trepan
 
 #: Run all tests: unit, functional and integration verbosely
-# check: test-unit test-functional test-integration # flake8
-check: test-unit test-functional
+check: test-unit test-functional test-integration
 
 #: Run unit (transparent-box) tests
 test-unit:
@@ -35,23 +34,11 @@ test-unit:
 
 #: Run functional tests
 check-functional test-functional:
-	@echo "Function needs fixup after highlight work"
-	# (cd test/functional && $(PYTHON) -m pytest .)
-
-#: Run functional tests
-test-functional-short:
-	@echo "Function needs fixup after highlight work"
-	# (cd test/functional && $(PYTHON) ./setup.py nosetests) | \
-	# $(PYTHON) ./make-check-filter.py
+	(cd test/functional && $(PYTHON) -m pytest .)
 
 #: Run integration (black-box) tests
 test-integration:
-	 (cd test/integration && $(PYTHON) ./setup.py nosetests)
-
-#: Run integration (black-box) tests
-test-integration-short:
-	(cd test/integration && $(PYTHON) ./setup.py nosetests) | \
-	$(PYTHON) ./make-check-filter.py
+	 (cd test/integration && $(PYTHON) -m pytest .)
 
 #: Clean up temporary files
 clean:

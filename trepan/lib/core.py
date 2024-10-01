@@ -137,7 +137,7 @@ class TrepanCore:
         """Add `frame_or_fn' to the list of functions that are not to
         be debugged"""
         for frame_or_fn in frames_or_fns:
-            rc = self.ignore_filter.add_include(frame_or_fn)
+            rc = self.ignore_filter.add(frame_or_fn)
             pass
         return rc
 
@@ -213,7 +213,7 @@ class TrepanCore:
     def remove_ignore(self, frame_or_fn):
         """Remove `frame_or_fn' to the list of functions that are not to
         be debugged"""
-        return self.ignore_filter.remove_include(frame_or_fn)
+        return self.ignore_filter.remove(frame_or_fn)
 
     def start(self, opts=None):
         """We've already created a debugger object, but here we start
@@ -236,12 +236,10 @@ class TrepanCore:
 
             # Has tracer been started?
             if not tracer.is_started() or get_option("force"):
-                # FIXME: should filter out opts not for tracer
-
                 tracer_start_opts = START_OPTS.copy()
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))
-                tracer_start_opts["trace_fn"] = self.trace_dispatch
+                tracer_start_opts["trace_func"] = self.trace_dispatch
                 tracer_start_opts["add_hook_opts"] = add_hook_opts
                 tracer.start(tracer_start_opts)
             elif not tracer.find_hook(self.trace_dispatch):
@@ -284,7 +282,10 @@ class TrepanCore:
             # The below could be done as a list comprehension, but
             # I'm feeling in Fortran mood right now.
             for fn in self.bpmgr.fnlist:
-                if fn.__name__ == find_name:
+                # For <module>, fn is a string
+                if not isinstance(fn, str):
+                    fn = fn.__name__
+                if fn == find_name:
                     self.current_bp = bp = self.bpmgr.fnlist[fn][0]
                     if bp.temporary:
                         msg = "temporary "
@@ -391,7 +392,9 @@ class TrepanCore:
         return False
 
     def set_next(self, frame, step_ignore=0, step_events=None):
-        "Sets to stop on the next event that happens in frame 'frame'."
+        """Sets to stop on the next event that happens in frame `frame`.
+        an raises an exception return to a frame below `frame`
+        """
         self.step_events = None  # Consider all events
         self.stop_level = count_frames(frame)
         self.last_level = self.stop_level
@@ -400,43 +403,68 @@ class TrepanCore:
         self.step_ignore = step_ignore
         return
 
-    def trace_dispatch(self, frame, event, arg):
+    def trace_dispatch(self, frame, event: str, arg):
         """A trace event occurred. Filter or pass the information to a
         specialized event processor. Note that there may be more filtering
         that goes on in the command processor (e.g. to force a
         different line). We could put that here, but since that seems
         processor-specific I think it best to distribute the checks."""
 
+        # for debugging
+        # print("XXX+ trace dispatch:", frame.f_code.co_name, frame.f_lineno, event, arg)
+
+        # Check to see if are in a call but we should be stepping over the call
+        # using "next" of "finish". If so, then we can speed tracing by
+        # removing futher tracing. Not though that we *also* must make sure
+        # that we don't have any breakpoint set, since we have to check
+        # for breakpoints in a kind of slow way of checking all events.
+
+        # TODO: add thread check
+        if (
+            event == "call"
+            and self.last_frame != frame
+            and len(self.bpmgr.bplist) == 0
+            and self.stop_level is not None
+            and self.stop_level < count_frames(frame)
+        ):
+            # We are "finish"ing or "next"ing and should not be tracing into this call
+            # or any other calls from this. Return Nont to not trace further.
+            return None
+
+        self.event = event
+
+        # FIXME: Understand what's going on here better.
+        # When None gets returned, the frame's f_trace seems to get set
+        # to None. Somehow this is changing other frames when get passed
+        # to this routine which also have their f_trace set to None.
+        # This will disallow a command like "jump" from working properly,
+        # which will give a cryptic the message on setting f_lineno:
+        #   f_lineno can only be set by a trace function
+        if self.ignore_filter and self.ignore_filter.is_excluded(frame):
+            # print("XXX- trace dispatch ignored - frame", frame, frame.f_lineno, event, arg) # for debugging
+            return self
+
+        if self.trace_hook_suspend:
+            return None
+
+        # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
+
+        if self.debugger.settings["trace"]:
+            print_event_set = self.debugger.settings["printset"]
+            if self.event in print_event_set:
+                self.trace_processor.event_processor(frame, self.event, arg)
+                pass
+            pass
+
+        if self.until_condition:
+            if not self.matches_condition(frame):
+                return self
+            pass
+
         # For now we only allow one instance in a process
         # In Python 2.6 and beyond one can use "with threading.Lock():"
         try:
             self.debugger_lock.acquire()
-
-            if self.trace_hook_suspend:
-                return None
-
-            self.event = event
-            # FIXME: Understand what's going on here better.
-            # When None gets returned, the frame's f_trace seems to get set
-            # to None. Somehow this is changing other frames when get passed
-            # to this routine which also have their f_trace set to None.
-            # This will disallow a command like "jump" from working properly,
-            # which will give a cryptic the message on setting f_lineno:
-            #   f_lineno can only be set by a trace function
-            if self.ignore_filter and self.ignore_filter.is_included(frame):
-                return self
-
-            if self.debugger.settings["trace"]:
-                print_event_set = self.debugger.settings["printset"]
-                if self.event in print_event_set:
-                    self.trace_processor.event_processor(frame, self.event, arg)
-                    pass
-                pass
-
-            if self.until_condition:
-                if not self.matches_condition(frame):
-                    return self
-                pass
 
             trace_event_set = self.debugger.settings["events"]
             if trace_event_set is None or self.event not in trace_event_set:

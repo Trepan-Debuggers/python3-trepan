@@ -20,7 +20,7 @@ demonstrating how the command works."""
 import sys
 
 # External Egg packages
-import tracefilter
+import tracer.tracefilter as tracefilter
 
 from trepan.lib import breakpoint, default
 

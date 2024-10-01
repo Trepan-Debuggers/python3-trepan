@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009, 2013, 2015, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2023-2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -47,18 +47,20 @@ class JumpCommand(DebuggerCommand):
             return False
 
         if self.proc.curframe.f_trace is None:
-            self.errmsg("Sigh - operation can't be done here.")
+            self.errmsg(
+                "Sigh - operation can't be done here; frame f_trace is not set."
+            )
             return False
 
         lineno = self.proc.get_an_int(
-            args[1], ("jump: a line number is required, " + "got %s.") % args[1]
+            args[1], "jump: a line number is required; got %s." % args[1]
         )
+
         if lineno is None:
             return False
         try:
             # Set to change position, update our copy of the stack,
             # and display the new position
-            print(self.proc.curframe.f_trace)
             self.proc.curframe.f_lineno = lineno
             self.proc.stack[self.proc.curindex] = (
                 self.proc.stack[self.proc.curindex][0],

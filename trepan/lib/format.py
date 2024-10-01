@@ -100,7 +100,7 @@ def format_token(token_type, token_value: str, style) -> str:
     Decorate ``token_value`` with coloring matching `token_type` and return
     the resulting string.
     """
-    if style == "none":
+    if style == "none" or style is None:
         return token_value
     terminal_256_formatter = Terminal256Formatter(style=style)
     return format([[token_type, token_value]], terminal_256_formatter)
