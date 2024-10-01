@@ -91,69 +91,25 @@ class ReloadCommand(DebuggerCommand):
     def run(self, args):
         cmd_name = args[1]
         proc = self.proc
-        if len(args) == 2:
-            cmd_name = proc.aliases.get(cmd_name, cmd_name)
-            if cmd_name not in proc.commands:
-                self.errmsg('command "%s" not found as a debugger command' % cmd_name)
-                return
-
-            # FIGURE out how to get module. Use sys.module from Mathics debugger project??
-            self.msg("need to fix up")
-            return
-
-            reload(proc.commands[cmd_name].__module__)
-            classnames = [
-                tup[0]
-                for tup in inspect.getmembers(command_module, inspect.isclass)
-                if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
-                    self.errmsg(
-                        "Error loading %s from module name, sys.exc_info()[0]"
-                        % classnames[0]
+        if cmd_name in proc.commands:
+            command_module = importlib.import_module(proc.commands[cmd_name].__module__)
+            # importlib.reload(command_module)
+            classnames = [tup[0] for tup in inspect.getmembers(command_module, inspect.isclass) if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))]
+            if len(classnames) == 1:
+                try:
+                    instance = getattr(command_module, classnames[0])(proc)
+                except Exception:
+                    print(
+                        "Error loading %s from mod_name, sys.exc_info()[0]" % classnames[0]
                     )
                     return
 
                 # FIXME: should we also replace object in proc.cmd_instances?
                 proc.commands[cmd_name] = instance
-                self.msg('reloaded command: "%s"' % cmd_name)
-            pass
+                self.msg('reloaded command "%s"' % cmd_name)
         else:
-            assert len(args) == 3
-            subcmd_mgr = proc.commands.get(cmd_name)
-            if subcmd_mgr is None:
-                self.errmsg("cannot find %s in list of commands" % cmd_name)
-                return
-            if not isinstance(subcmd_mgr, SubcommandMgr):
-                self.errmsg("command %s does not have subcommands" % cmd_name)
-                return
-            subcmd_name = args[2]
-            subcmd = subcmd_mgr.cmds.subcmds.get(subcmd_name)
-            if subcmd is None:
-                self.errmsg(
-                    'command "%s" does not have subcommand %s' % (cmd_name, subcmd_name)
-                )
-                return
-
-            subcommand_module = importlib.import_module(subcmd.__module__)
-            importlib.reload(subcommand_module)
-            classnames = [
-                tup[0] for tup in inspect.getmembers(subcommand_module, inspect.isclass)
-            ]
-            if len(classnames) == 1:
-                try:
-                    instance = getattr(subcommand_module, classnames[0])(subcmd)
-                except Exception:
-                    self.errmsg(
-                        "Error loading %s from mod_name, %s"
-                        % (classnames[0], sys.exc_info()[0])
-                    )
-                    return
-
-                subcmd_mgr.cmds.subcmds[subcmd_name] = instance
-                self.msg('reloaded subcommand: "%s %s"' % (cmd_name, subcmd_name))
-            return
-
->>>>>>> python-3.2-to-3.5
-    pass
+            self.errmsg('command "%s" not found as a debugger command"' % cmd_name )
+        return
 
 
 # Demo it
