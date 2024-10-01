@@ -16,7 +16,6 @@
 
 import inspect
 import os.path as osp
-from typing import Optional
 
 import pyficache
 
@@ -26,7 +25,7 @@ from trepan.processor.parse.semantics import Location
 INVALID_LOCATION = None
 
 
-def resolve_location(proc, location) -> Optional[Location]:
+def resolve_location(proc, location):
     """Expand fields in Location namedtuple. If:
     '.':  get fields from stack
     function/module: get fields from evaluation/introspection
@@ -175,7 +174,7 @@ def resolve_location(proc, location) -> Optional[Location]:
     return Location(filename, lineno, is_address, mod_func, offset)
 
 
-def resolve_address_location(proc, location) -> Optional[Location]:
+def resolve_address_location(proc, location):
     """Expand fields in Location namedtuple. If:
     '.':  get fields from stack
     function/module: get fields from evaluation/introspection
