@@ -15,7 +15,7 @@ cd $mydir
 fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
      setup_version_trepan3k python-uncompyle6 master && \
-     setup_version_trepan3k xdis master && \
+     setup_version_trepan3k python-xdis master && \
      setup_version_trepan3k python-filecache master && \
      setup_version_trepan3k shell-term-background master && \
      setup_version_trepan3k pytracer master && \
