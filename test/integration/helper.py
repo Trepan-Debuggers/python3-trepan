@@ -29,15 +29,15 @@ def run_debugger(
 
     sys.path.insert(0, osp.join(srcdir, "..", ".."))
     os.environ["PYTHONPATH"] = os.pathsep.join(sys.path)
-    cmdfile = osp.join(datadir, f"{testname}.cmd")
-    outfile = osp.join(srcdir, f"{testname}.out")
+    cmdfile = osp.join(datadir, "%s.cmd" % testname)
+    outfile = osp.join(srcdir, "%s.out" % testname)
     if python_file:
         programfile = osp.join(progdir, python_file)
     else:
         programfile = ""
         pass
 
-    outfile_opt = f"--output={outfile} "
+    outfile_opt = "--output=%s " % outfile
 
     if osp.exists(outfile):
         os.unlink(outfile)
