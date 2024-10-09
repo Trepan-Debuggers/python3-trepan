@@ -16,4 +16,4 @@ Example:
 
 .. seealso::
 
-   :ref:`set_asmfmt <set_asmfmt>``
+   :ref:`set_asmfmt <set_asmfmt>`

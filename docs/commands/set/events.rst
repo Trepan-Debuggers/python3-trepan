@@ -10,13 +10,13 @@ Sets the events that the debugger will stop on. Event names are:
 .. hlist::
    :columns: 3
 
-   * `c_call`
-   * `c_exception`
-   * `c_return`
-   * `call`
-   * `exception`
-   * `line`
-   * `return`
+   * ``c_call``
+   * ``c_exception``
+   * ``c_return``
+   * `call``
+   * ``exception``
+   * ``line``
+   * ``return``
 
 `all` can be used as an abbreviation for listing all event names.
 
