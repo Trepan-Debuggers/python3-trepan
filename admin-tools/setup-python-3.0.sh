@@ -1,5 +1,5 @@
 #!/bin/bash
-# Check out 3.0-to-3.1 branch and dependent development branches
+# Check out 3.0-to-3.2 branch and dependent development branches
 
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
@@ -7,7 +7,7 @@ if [[ $0 == $bs ]] ; then
     exit 1
 fi
 
-PYTHON_VERSION=3.1
+PYTHON_VERSION=3.0
 
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3k_owd=$(pwd)
@@ -22,4 +22,4 @@ fulldir=$(readlink -f $mydir)
      setup_version_trepan3k pycolumnize python-3.0 \
     )
 
-checkout_finish python-3.0-to-3.1
+checkout_finish python-3.0-to-3.2
