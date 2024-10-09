@@ -29,7 +29,7 @@ decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
 if (3, 0) <= SYS_VERSION < (3, 3):
-    pygments_version = "== 2.0.0"  # version hacked by rocky
+    pygments_version = ">1.6,< 2.1"  # version hacked by rocky
 else:
     pygments_version = ">= 2.2.0"
 
@@ -54,6 +54,7 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Debuggers",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.0",
     "Programming Language :: Python :: 3.1",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
