@@ -4,7 +4,7 @@ bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
 fulldir=$(readlink -f $mydir)
 
-function setup_version_trepan3k {
+function setup_version {
     local repo=$1
     version=$2
     echo Running setup $version on $repo ...
