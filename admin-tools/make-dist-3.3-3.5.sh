@@ -3,22 +3,22 @@ PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
-  cd $make_dist_32_owd
+  cd $make_dist_33_owd
 }
 
-make_trepan_dist_32_owd=$(pwd)
+make_trepan_dist_33_owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-if ! source ./pyenv-3.2-3.5-versions ; then
+if ! source ./pyenv-3.3-3.5-versions ; then
     exit $?
 fi
-if ! source ./setup-python-3.2.sh ; then
+if ! source ./setup-python-3.3.sh ; then
     exit $?
 fi
 
-. ./setup-python-3.2.sh
+. ./setup-python-3.3.sh
 
 cd ..
 source trepan/version.py
@@ -51,6 +51,6 @@ python ./setup.py sdist
 tarball=dist/${PACKAGE}-${__version__}.tar.gz
 
 if [[ -f $tarball ]]; then
-    mv -v $tarball dist/${PACKAGE}_32-${__version__}.tar.gz
+    mv -v $tarball dist/${PACKAGE}_33-${__version__}.tar.gz
 fi
 finish
