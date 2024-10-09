@@ -28,10 +28,7 @@ import sys
 decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
-if SYS_VERSION < (3, 2):
-    pygments_version = "pygments==2.0.0" # I have my own patch for this
-else:
-    pygments_version = "pygments>= 2.2.0"
+pygments_version = "pygments==2.0.0" # I have my own patch for this
 
 
 # Python-version | package  | last-version |
@@ -54,6 +51,7 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Debuggers",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.0",
     "Programming Language :: Python :: 3.1",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
@@ -86,7 +84,7 @@ install_requires = [
     "pyficache >= 2.3.0",
     "xdis >= 6.1.1,<6.2.0",
     pygments_version,
-    "spark_parser >= 1.8.9, <1.9.0",
+    "spark_parser >= 1.8.9, <1.9.1",
     "tracer >= 1.9.0",
     "term-background >= 1.0.1",
 ]

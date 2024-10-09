@@ -14,12 +14,12 @@ cd $mydir
 . ./checkout_common.sh
 fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
-     setup_version_trepan3k python-uncompyle6 master && \
-     setup_version_trepan3k xdis master && \
-     setup_version_trepan3k python-filecache master && \
-     setup_version_trepan3k shell-term-background master && \
-     setup_version_trepan3k pytracer master && \
-     setup_version_trepan3k pycolumnize master \
+     setup_version python-uncompyle6 master && \
+     setup_version python-xdis master && \
+     setup_version python-filecache master && \
+     setup_version shell-term-background master && \
+     setup_version pytracer master && \
+     setup_version pycolumnize master \
 )
 
 checkout_finish master
