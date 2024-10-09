@@ -18,7 +18,7 @@ fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
      setup_version_trepan3k python-uncompyle6 python-3.0 \
      setup_version trepan3k python-xdis python-3.0 && \
-     setup_version_trepan3k python-filecache python-3.1 && \
+     setup_version_trepan3k python-filecache python-3.0 && \
      setup_version_trepan3k pycolumnize python-3.0 \
     )
 
