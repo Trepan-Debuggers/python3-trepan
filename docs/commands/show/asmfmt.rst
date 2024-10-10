@@ -11,9 +11,10 @@ Show the disassembly format style used in the ``disassemble`` command.
 Example:
 ++++++++
 
-::
+.. code-block::
+
     show asmfmt
 
 .. seealso::
 
-   :ref:`set_asmfmt <set_asmfmt>``
+   :ref:`set asmfmt <set_asmfmt>`
