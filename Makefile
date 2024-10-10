@@ -50,6 +50,10 @@ clean:
 dist: check-rst
 	bash ./admin-tools/make-dist-newer.sh
 
+#: HTML document via Sphinx
+doc html htmldoc:
+	$(MAKE) -C docs html
+
 #: Create source tarball
 sdist: check-rst
 	$(PYTHON) ./setup.py sdist
