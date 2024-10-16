@@ -89,7 +89,6 @@ install_requires = [
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
->>>>>>> Stashed changes
     "term-background >= 1.0.1",
 ]
 
