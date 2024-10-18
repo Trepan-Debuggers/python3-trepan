@@ -68,6 +68,7 @@ class TrepanCore:
 
         self.bpmgr = BreakpointManager()
         self.current_bp = None
+        self.current_thread = None
         self.debugger = debugger
 
         # Threading lock ensures that we don't have other traced threads
@@ -106,6 +107,7 @@ class TrepanCore:
         # We also will cache the last frame and thread number encountered
         # so we don't have to compute the current level all the time.
         self.last_frame = None
+        self.current_thread = threading.current_thread()
         self.last_level = 10000
         self.last_thread = None
         self.stop_level = None
@@ -420,13 +422,13 @@ class TrepanCore:
         # that we don't have any breakpoint set, since we have to check
         # for breakpoints in a kind of slow way of checking all events.
 
-        # TODO: add thread check
         if (
             event == "call"
             and self.last_frame != frame
             and len(self.bpmgr.bplist) == 0
             and self.stop_level is not None
             and self.stop_level < count_frames(frame)
+            and self.current_thread == threading.current_thread()
         ):
             # We are "finish"ing or "next"ing and should not be tracing into this call
             # or any other calls from this. Return Nont to not trace further.
