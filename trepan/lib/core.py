@@ -289,7 +289,10 @@ class TrepanCore:
                 if not isinstance(fn, str):
                     fn = fn.__name__
                 if fn == find_name:
-                    self.current_bp = bp = self.bpmgr.fnlist[fn][0]
+                    bp_fn = self.bpmgr.fnlist.get(fn)
+                    if not bp_fn:
+                        return False
+                    self.current_bp = bp = bp_fn[0]
                     if bp.temporary:
                         msg = "temporary "
                         self.bpmgr.delete_breakpoint(bp)
