@@ -177,7 +177,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 pass
             s += "\n    "
             s += Mstack.format_stack_entry(
-                self, (frame, frame.f_lineno), color=self.settings["highlight"]
+                self, (frame, frame.f_lineno), style=self.settings["style"]
             )
             self.section("-" * 40)
             self.msg(s)
