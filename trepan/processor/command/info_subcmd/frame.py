@@ -21,6 +21,7 @@ from pyficache import getline, highlight_string
 from trepan.lib.complete import complete_token
 from trepan.lib.stack import format_function_name
 from trepan.processor import frame as Mframe
+from trepan.processor.print import format_code, format_frame
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
@@ -137,12 +138,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if line_text is None:
             self.msg(f"  current line number: {frame.f_lineno}")
         else:
-            formatted_text = highlight_string(line_text.strip())
+            formatted_text = highlight_string(line_text.strip(), style=style)
             self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
 
         self.msg(f"  last instruction: {frame.f_lasti}")
-        self.msg(f"  code: {code}")
-        self.msg(f"  previous frame: {frame.f_back}")
+        self.msg(f"  code: {format_code(code, style)}")
+        self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
         self.msg(f"  tracing function: {frame.f_trace}")
 
         if is_verbose:

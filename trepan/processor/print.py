@@ -21,12 +21,21 @@ import re
 import sys
 from inspect import ismodule
 from tempfile import NamedTemporaryFile
+from types import CodeType
 
 import pyficache
 
 from trepan.lib.stack import check_path_with_frame, frame2file
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
+
+from trepan.lib.format import (  # Opcode,
+    Filename,
+    Hex,
+    LineNumber,
+    Symbol,
+    format_token,
+)
 
 try:
     from trepan.lib.deparse import deparse_and_cache
@@ -37,6 +46,35 @@ except ImportError:
     pass
 
 warned_file_mismatches = set()
+
+
+def format_code(code_object: CodeType, style) -> str:
+    """
+    Format according to "style" a Python code object. The
+    formatted string is returned.
+    """
+    formatted_line = format_token(LineNumber, str(code_object.co_firstlineno), style=style)
+    formatted_id = format_token(Hex, hex(id(code_object)), style=style)
+    formatted_name = format_token(Symbol, code_object.co_name, style=style)
+    formatted_filename = format_token(Filename, code_object.co_filename, style=style)
+    return (
+        f"<code object {formatted_name} at {formatted_id} "
+        f"file {formatted_filename}, line {formatted_line}"
+    )
+
+
+def format_frame(frame_object, style) -> str:
+    """
+    Format according to "style" a Python frame object. The
+    formatted string is returned.
+    """
+    formatted_line = format_token(LineNumber, str(frame_object.f_lineno), style=style)
+    formatted_id = format_token(Hex, hex(id(frame_object)), style=style)
+    formatted_filename = format_token(Filename, frame_object.f_code.co_filename, style=style)
+    return (
+        f"<frame at {formatted_id} "
+        f"file {formatted_filename}, line {formatted_line}"
+    )
 
 
 def print_source_line(msg, lineno, line, event_str=None):
