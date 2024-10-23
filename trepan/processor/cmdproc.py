@@ -15,7 +15,6 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import importlib
 import inspect
 import linecache
 import os.path as osp
@@ -1125,6 +1124,7 @@ class CommandProcessor(Processor):
                 pass
             import_name = "%s.%s" % (Mcommand.__name__, mod_name)
             try:
+                import importlib
                 command_module = importlib.import_module(import_name)
             except Exception:
                 if mod_name not in self.optional_modules:
