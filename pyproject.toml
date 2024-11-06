@@ -67,3 +67,10 @@ Downloads = "https://github.com/rocky/python-trepan3k/releases"
 
 [tool.setuptools.dynamic]
 version = {attr = "trepan.version.__version__"}
+
+[tool.pyright]
+include = ["trepan"]
+# exclude = []
+ignore = ["dist", "docs", "tmp", ".cache"]
+# defineConstant = { DEBUG = true }
+# stubPath = "src/stubs"
