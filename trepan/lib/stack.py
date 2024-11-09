@@ -540,6 +540,8 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
+        is_module, mess = format_function_and_parameters(frame, dd, style="tango")
+        print(mess)
         print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
         print(get_call_function_name(frame))
         return

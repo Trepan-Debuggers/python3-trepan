@@ -59,7 +59,7 @@ def format_code(code_object: CodeType, style) -> str:
     formatted_filename = format_token(Filename, code_object.co_filename, style=style)
     return (
         f"<code object {formatted_name} at {formatted_id} "
-        f"file {formatted_filename}, line {formatted_line}"
+        f"file {formatted_filename}, line {formatted_line}>"
     )
 
 
@@ -73,7 +73,7 @@ def format_frame(frame_object, style) -> str:
     formatted_filename = format_token(Filename, frame_object.f_code.co_filename, style=style)
     return (
         f"<frame at {formatted_id} "
-        f"file {formatted_filename}, line {formatted_line}"
+        f"file {formatted_filename}, line {formatted_line}>"
     )
 
 
