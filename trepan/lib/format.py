@@ -27,7 +27,7 @@ from pygments.filter import Filter
 from pygments.formatter import Formatter
 from pygments.formatters import Terminal256Formatter, TerminalFormatter
 from pygments.formatters.terminal import TERMINAL_COLORS
-from pygments.lexers import RstLexer
+from pygments.lexers import PythonLexer, RstLexer
 from pygments.token import (
     Comment,
     Generic,
@@ -398,7 +398,17 @@ rst_filt = RstFilter()
 rst_lex.add_filter(rst_filt)
 color_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 mono_tf = MonoRSTTerminalFormatter()
+python_lexer = PythonLexer()
 
+
+def format_python(python_str: str, style) -> str:
+    """Add terminial formatting for a Python string
+    ``python_str``, using pygments style ``style``.
+    """
+    if style is None:
+        return python_str
+    terminal_formatter = Terminal256Formatter(style=style)
+    return highlight(python_str, python_lexer, terminal_formatter)
 
 def rst_text(text, mono, width=80):
     if mono:

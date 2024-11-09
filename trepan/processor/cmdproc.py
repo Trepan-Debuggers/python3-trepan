@@ -15,6 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import importlib
 import inspect
 import linecache
@@ -22,7 +23,6 @@ import os.path as osp
 import re
 import shlex
 import sys
-import tempfile
 import traceback
 
 # Note: the module name pre 3.2 is repr
@@ -35,24 +35,12 @@ from tracer import EVENT2SHORT, remove_hook
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
 import trepan.lib.file as Mfile
-import trepan.lib.stack as Mstack
 import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
-import trepan.processor.complete as Mcomplete
 from trepan.lib.bytecode import is_class_def, is_def_stmt
-from trepan.processor import cmdfns
-from trepan.processor.cmdfns import deparse_fn
+from trepan.processor.complete import completer
+from trepan.processor.print import print_location
 from trepan.vprocessor import Processor
-
-try:
-    from trepan.lib.deparse import deparse_and_cache
-
-    have_deparse_and_cache = True
-except ImportError:
-    have_deparse_and_cache = False
-    pass
-
-warned_file_mismatches = set()
 
 
 def get_srcdir() -> str:
@@ -390,6 +378,8 @@ def print_location(proc_obj):
     return True
 
 
+=======
+>>>>>>> python-3.6-to-3.10
 # Default settings for command processor method call
 DEFAULT_PROC_OPTS = {
     # A list of debugger initialization files to read on first command
@@ -431,7 +421,7 @@ class CommandProcessor(Processor):
         # command name before alias or macro resolution
         self.cmd_name = ""
         self.cmd_queue = []  # Queued debugger commands
-        self.completer = lambda text, state: Mcomplete.completer(self, text, state)
+        self.completer = lambda text, state: completer(self, text, state)
         self.current_command = ""  # Current command getting run
         self.debug_nest = 1
         self.display_mgr = Mdisplay.DisplayMgr()
