@@ -38,6 +38,7 @@ import trepan.lib.display as Mdisplay
 import trepan.lib.file as Mfile
 import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
+from trepan.interfaces.script import ScriptInterface
 from trepan.lib.bytecode import is_class_def, is_def_stmt
 from trepan.processor.complete import completer
 from trepan.processor.print import print_location
@@ -547,7 +548,7 @@ class CommandProcessor(Processor):
                     self.last_command = ""
                 else:
                     if self.debugger.intf[-1].output:
-                        self.debugger.intf[-1].output.writeline("Leaving")
+                        self.debugger.intf[-1].msg("Leaving")
                         raise SystemExit
                         pass
                     break
@@ -560,7 +561,7 @@ class CommandProcessor(Processor):
             while frame:
                 del frame.f_trace
                 frame = frame.f_back
-            self.debugger.intf[-1].output.writeline("Fast continue...")
+            self.debugger.intf[-1].msg("Fast continue...")
             remove_hook(self.core.trace_dispatch, True)
 
         return
@@ -702,6 +703,8 @@ class CommandProcessor(Processor):
             pass
         if self.event in ["exception", "c_exception"]:
             exc_type, exc_value, exc_traceback = self.event_arg
+        elif self.event == "finished":
+            self.frame = exc_traceback = None
         else:
             _, _, exc_traceback = (
                 None,
@@ -749,7 +752,11 @@ class CommandProcessor(Processor):
         expanded_cmdfile = osp.expanduser(cmdfile)
         is_readable = Mfile.readable(expanded_cmdfile)
         if is_readable:
-            self.cmd_queue.append("source " + expanded_cmdfile)
+            script_intf = ScriptInterface(
+                expanded_cmdfile, out=self.debugger.intf[-1].output
+            )
+            self.debugger.intf.append(script_intf)
+            # self.cmd_queue.append("source " + expanded_cmdfile)
         elif is_readable is None:
             self.errmsg(f"source file '{expanded_cmdfile}' doesn't exist")
         else:

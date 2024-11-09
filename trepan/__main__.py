@@ -39,7 +39,7 @@ package = "trepan"
 # The name of the debugger we are currently going by.
 __title__ = package
 
-
+os.environ["PYTHONBREAKPOINT"] = "trepan.api.debug"
 def main(dbg=None, sys_argv=list(sys.argv)):
     """Routine which gets run if we were invoked directly"""
 
@@ -247,8 +247,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 pass
 
             dbg.core.execution_status = "Terminated"
+            dbg.core.processor.event = "finished"
             dbg.intf[-1].msg("The program finished - quit or restart")
             dbg.core.processor.process_commands()
+
         except DebuggerQuit:
             break
         except DebuggerRestart:
