@@ -16,8 +16,8 @@ cd $mydir
 . ./checkout_common.sh
 fulldir=$(readlink -f $mydir)
 (cd $fulldir/.. && \
-     setup_version_trepan3k python-uncompyle6 python-3.0 \
-     setup_version_trepan3k python-filecache python-3.0 && \
+     setup_version python-uncompyle6 python-3.0 \
+     setup_version python-filecache python-3.0 && \
      setup_version shell-term-background python-3.0 && \
      setup_version pytracer python-3.0 \
      setup_version pycolumnize python-3.0 && \
