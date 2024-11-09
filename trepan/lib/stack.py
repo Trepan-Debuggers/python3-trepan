@@ -37,6 +37,7 @@ from trepan.lib.format import (
     Function,
     LineNumber,
     Return,
+    format_python,
     format_token,
 )
 from trepan.lib.pp import pp
@@ -156,14 +157,16 @@ def format_function_and_parameters(frame, debugger, style: str) -> Tuple[bool, s
         is_module = False
         try:
             params = inspect.formatargvalues(args, varargs, varkw, local_vars)
+            formatted_params = format_python(params, style=style)
         except Exception:
             pass
         else:
             maxargstrsize = debugger.settings["maxargstrsize"]
             if len(params) >= maxargstrsize:
                 params = f"{params[0:maxargstrsize]}...)"
+                formatted_params = format_python(params, style=style)
                 pass
-            s += params
+            s += formatted_params
         pass
 
     return is_module, s
@@ -537,6 +540,8 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
+        is_module, mess = format_function_and_parameters(frame, dd, style="tango")
+        print(mess)
         print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
         print(get_call_function_name(frame))
         return
