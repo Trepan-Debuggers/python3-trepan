@@ -169,7 +169,6 @@ def format_function_and_parameters(frame, debugger, style: str) -> tuple:
             maxargstrsize = debugger.settings["maxargstrsize"]
             if len(params) >= maxargstrsize:
                 params = "%s...)" % params[0:maxargstrsize]
-                params = f"{params[0:maxargstrsize]}...)"
                 formatted_params = format_python(params, style=style)
                 pass
             s += formatted_params

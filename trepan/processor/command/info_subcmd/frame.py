@@ -144,20 +144,11 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         self.msg("  last instruction: %d" % frame.f_lasti)
         self.msg("  code: %s" % frame.f_code)
-        self.msg("  previous frame: %s" % frame.f_back)
+        self.msg("  previous frame: %s" % format_frame(frame.f_back))
         self.msg("  tracing function: %s" % frame.f_trace)
 
         if hasattr(frame, "f_restricted"):
             self.msg("  restricted execution: %s" % frame.f_restricted)
-=======
-            formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
-
-        self.msg(f"  last instruction: {frame.f_lasti}")
-        self.msg(f"  code: {format_code(code, style)}")
-        self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
-        self.msg(f"  tracing function: {frame.f_trace}")
->>>>>>> python-3.6-to-3.10
 
         if is_verbose:
             for name, field in [
