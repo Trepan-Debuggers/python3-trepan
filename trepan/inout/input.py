@@ -59,7 +59,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         return
 
     def use_history(self):
-        return self.use_raw
+        return self.use_raw or self.session
 
     def open(self, inp, opts={}):
         """Use this to set where to read from.
