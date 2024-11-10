@@ -63,7 +63,7 @@ class Trepan:
     Class for a top-level object.
     """
 
-    def __init__(self, opts=None):
+    def __init__(self, opts=dict()):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash 'opts', we may or may not initially
         start debugging.
