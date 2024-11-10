@@ -99,10 +99,13 @@ class Trepan:
 
         # How are I/O for this debugger handled? This should
         # be set before calling DebuggerCore.
-        interface_opts = {
-            "complete": completer,
+        interface_opts = opts.get("interface_opts", {
             "debugger_name": "trepan3k",
-        }
+            "readline": opts.get("readline")
+        })
+        if "complete" not in interface_opts:
+            interface_opts["complete"] = completer
+
         # FIXME when I pass in opts=opts things break
 
         inp = opts.get("input", None) if opts else None

@@ -27,6 +27,18 @@ from trepan.clifns import path_expanduser_abs
 from trepan.inout.output import DebuggerUserOutput
 from trepan.lib.file import readable
 
+try:
+    import prompt_toolkit  # NOQA
+    have_prompt_toolkit = True
+except ImportError:
+    have_prompt_toolkit = False
+
+try:
+    import prompt_toolkit  # NOQA
+    have_gnu_readline = True
+except ImportError:
+    have_gnu_readline = False
+
 
 def default_configfile(base_filename: str) -> str:
     """Return fully expanded configuration filename location for
@@ -313,6 +325,39 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         "--annotate", default=0, type="int", help="Use annotations to work inside emacs"
     )
 
+    readline = None
+    if have_gnu_readline:
+        optparser.add_option(
+            "--gnu-readline",
+            dest="use_gnu_readline",
+            action="store_true",
+            default=True,
+            help="Try using GNU-Readline",
+        )
+        optparser.add_option(
+            "--no-gnu-readline",
+            dest="use_gnu_readline",
+            action="store_false",
+            default=True,
+            help="Do not use GNU-Readline",
+        )
+    if have_prompt_toolkit:
+        optparser.add_option(
+            "--prompt-toolkit",
+            dest="use_prompt_toolkit",
+            action="store_true",
+            default=True,
+            help="Try using prompt_toolkit",
+        )
+        optparser.add_option(
+            "--no-prompt-toolkit",
+            dest="use_prompt_toolkit",
+            action="store_false",
+            default=True,
+            help="Do not use prompt_toolkit",
+        )
+
+
     # Set up to stop on the first non-option because that's the name
     # of the script to be debugged on arguments following that are
     # that scripts options that should be left untouched.  We would
@@ -323,7 +368,20 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
 
     sys.argv = list(sys_argv)
     (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
-    dbg_opts = {"from_ipython": opts.from_ipython}
+    if hasattr(opts, "use_prompt_toolkit") and opts.use_prompt_toolkit:
+        readline = "prompt_toolkit"
+    elif hasattr(opts, "use_gnu_readline") and opts.use_gnu_readline:
+        readline = "gnu_readline"
+    else:
+        readline = None
+
+    dbg_opts = {
+        "from_ipython": opts.from_ipython,
+        "interface_opts": {
+            "readline": readline,
+            "debugger_name": "trepan3k",
+        }
+    }
 
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []

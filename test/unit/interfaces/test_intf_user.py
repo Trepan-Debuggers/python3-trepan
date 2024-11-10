@@ -24,7 +24,7 @@ def test_confirm():
 
     for s in ["y", "Y", "Yes", "  YES  "]:
 
-        def readline_with_prompt(prompt=None):
+        def readline_with_prompt(prompt=None, use_raw: bool=False):
             return readline(s)
 
         u.input.readline = readline_with_prompt
@@ -33,7 +33,7 @@ def test_confirm():
         pass
     for s in ["n", "N", "No", "  NO  "]:
 
-        def readline_with_prompt(prompt=None):
+        def readline_with_prompt(prompt=None, use_raw: bool=False):
             return readline(s)
 
         u.input.readline = readline_with_prompt
