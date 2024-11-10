@@ -43,7 +43,7 @@ try:
         write_history_file,
     )
 except ImportError:
-    pass
+        pass
 
 
 class UserInterface(TrepanInterface):
@@ -51,25 +51,25 @@ class UserInterface(TrepanInterface):
     process as the debugged program."""
 
     def __init__(self, inp=None, out=None, opts={}):
-        user_opts = DEFAULT_USER_SETTINGS.copy()
-        user_opts.update(opts)
+        self.user_opts = DEFAULT_USER_SETTINGS.copy()
+        self.user_opts.update(opts)
 
         atexit.register(self.finalize)
         self.interactive = True  # Or at least so we think initially
-        self.input = inp or DebuggerUserInput()
+        self.input = inp or DebuggerUserInput(self.user_opts.get("input", {}), self.user_opts)
         self.output = out or DebuggerUserOutput()
-        self.debugger_name = user_opts.get("debugger_name", "trepan3k")
+        self.debugger_name = self.user_opts.get("debugger_name", "trepan3k")
 
         if self.input.use_history():
-            self.complete = user_opts["complete"]
+            self.complete = self.user_opts["complete"]
             if self.complete:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
                 pass
-            self.histfile = user_opts["histfile"]
+            self.histfile = self.user_opts["histfile"]
             if self.histfile:
                 try:
-                    read_history_file(histfile)
+                    read_history_file(self.histfile)
                 except IOError:
                     pass
                 except Exception:
@@ -158,16 +158,14 @@ class UserInterface(TrepanInterface):
         return line
 
     def readline(self, prompt=""):
+        use_raw = hasattr(self.input, "use_raw") and self.input.use_raw
         if (
-            hasattr(self.input, "use_raw")
-            and not self.input.use_raw
-            and prompt
-            and len(prompt) > 0
+            use_raw and prompt and len(prompt) > 0 or not self.readline == "prompt_toolkit"
         ):
             self.output.write(prompt)
             self.output.flush()
             pass
-        return self.input.readline(prompt=prompt)
+        return self.input.readline(prompt=prompt, use_raw=use_raw)
 
     pass
 

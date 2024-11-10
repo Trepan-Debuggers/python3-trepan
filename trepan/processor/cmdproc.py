@@ -270,7 +270,8 @@ class CommandProcessor(Processor):
             pass
         self.prompt_str = f"{'(' * self.debug_nest}{prompt}{')' * self.debug_nest}"
         highlight = self.debugger.settings["highlight"]
-        if highlight and highlight in ("light", "dark"):
+        using_prompt_toolkit = self.intf[-1].input.session is not None
+        if not using_prompt_toolkit and highlight and highlight in ("light", "dark"):
             self.prompt_str = colorize("underline", self.prompt_str)
         self.prompt_str += " "
 
