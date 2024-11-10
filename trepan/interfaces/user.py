@@ -31,6 +31,7 @@ histfile = osp.expanduser("~/.trepan3k_hist")
 
 DEFAULT_USER_SETTINGS = {
     "histfile": histfile,  # Where do we save the history?
+    "histsize": 50,  # How many history items do we save
     "complete": None,  # Function which handles tab completion, or None
 }
 
@@ -59,6 +60,7 @@ class UserInterface(TrepanInterface):
         self.input = inp or DebuggerUserInput(self.user_opts.get("input", {}), self.user_opts)
         self.output = out or DebuggerUserOutput()
         self.debugger_name = self.user_opts.get("debugger_name", "trepan3k")
+        self.histfile = None
 
         if self.input.use_history():
             self.complete = self.user_opts["complete"]
@@ -76,7 +78,7 @@ class UserInterface(TrepanInterface):
                     # PyPy read_history_file fails
                     return
                 try:
-                    set_history_length(50)
+                    set_history_length(DEFAULT_USER_SETTINGS["histsize"])
                 except Exception:
                     pass
                 atexit.register(self.user_write_history_file)

@@ -41,6 +41,7 @@ class MockUserInterface:
         self.io = MockIO()
         self.output = MockIO()
         self.debugger_name = "trepan3k"
+        self.histfile = "/tmp/.trepanrc"
         return
 
     def confirm(self, msg, default):

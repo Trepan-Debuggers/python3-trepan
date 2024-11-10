@@ -131,7 +131,7 @@ def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_
 
 
 def debug(
-    dbg_opts=None,
+    dbg_opts={},
     start_opts=None,
     post_mortem: bool = True,
     step_ignore: int = 1,
