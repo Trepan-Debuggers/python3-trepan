@@ -23,25 +23,34 @@ import sys
 from trepan.inout import base as Mbase
 
 try:
-    from prompt_toolkit import PromptSession, HTML
-    from prompt_toolkit.styles import Style
+    from prompt_toolkit import HTML, PromptSession
+    from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.history import FileHistory
+    from prompt_toolkit.styles import Style
 except:
     PromptSession = lambda history: None
     FileHistory = lambda history: None
     HTML = lambda string: string
+
 
 class DebuggerUserInput(Mbase.DebuggerInputBase):
     """Debugger input connected to what we think of as a end-user input
     as opposed to a relay mechanism to another process. Input could be
     interactive terminal, but it might be file input."""
 
-    def __init__(self, inp=None, opts=None):
+    def __init__(self, inp=None, opts=dict()):
 
-        if opts and opts.get("readline") == "prompt_toolkit":
-            self.session = PromptSession(history=FileHistory(opts.get("histfile")))
+        self.edit_mode = opts.get("edit_mode", "emacs")
+        if opts.get("readline") == "prompt_toolkit":
+            prompt_editing_mode = (
+                EditingMode.EMACS if self.edit_mode == "emacs" else EditingMode.VI
+            )
+            self.session = PromptSession(
+                editing_mode=prompt_editing_mode,
+                enable_history_search=True,
+                history=FileHistory(opts.get("histfile")),
+            )
             self.input = self.session.input
-            self.session.enable_history_search = True
             self.line_edit = True
             self.closed = False
             self.use_raw = False

@@ -174,6 +174,14 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     #                          help="Write debugger's error output "
     #                          + "(stderr) to FILE")
     optparser.add_option(
+        "--edit-mode",
+        default="emacs",
+        dest="edit_mode",
+        type="string",
+        help='input edit mode. This should be either "emacs" or "vi"',
+    )
+
+    optparser.add_option(
         "-e",
         "--exec",
         dest="execute",
@@ -347,7 +355,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             dest="use_prompt_toolkit",
             action="store_true",
             default=True,
-            help="Try using prompt_toolkit",
+            help="Try using prompt_toolkit. This take precedence over the --gnu-readline option",
         )
         optparser.add_option(
             "--no-prompt-toolkit",
@@ -367,7 +375,18 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
+
+    # Here is where we *parse* arguments
     (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
+
+    if opts.edit_mode not in ("vi", "emacs"):
+        sys.stderr.write(
+            'Option --editmode should be either "emacs" or "vi"; assuming "emacs".\n'
+            f'Got: "{opts.edit_mode}".\n'
+        )
+        opts.edit_mode = "emacs"
+
+
     if hasattr(opts, "use_prompt_toolkit") and opts.use_prompt_toolkit:
         readline = "prompt_toolkit"
     elif hasattr(opts, "use_gnu_readline") and opts.use_gnu_readline:
@@ -380,6 +399,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         "interface_opts": {
             "readline": readline,
             "debugger_name": "trepan3k",
+            "edit_mode": opts.edit_mode,
         }
     }
 
