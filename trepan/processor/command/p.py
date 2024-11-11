@@ -18,7 +18,7 @@
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.lib.printing import printf
-from trepan.processor.complete import complete_identifier
+from trepan.processor.complete_rl import complete_identifier
 
 
 class PCommand(DebuggerCommand):

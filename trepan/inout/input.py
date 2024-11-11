@@ -35,7 +35,7 @@ except:
     FileHistory = lambda history: None
     HTML = lambda string: string
 else:
-    from trepan.inout.prompt_bindkeys import bindings, read_inputrc, read_init_file
+    from trepan.inout.ptk_bindkeys import bindings, read_inputrc, read_init_file
 
     USER_INPUTRC = os.environ.get("TREPAN3K_INPUTRC", default_configfile("inputrc"))
 
@@ -119,12 +119,8 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
         Note: some user interfaces may decide to arrange to call
         DebuggerOutput.write() first with the prompt rather than pass
-        it here.. If `use_raw' is set raw_input() will be used in that
-        is supported by the specific input input. If this option is
-        left None as is normally expected the value from the class
-        initialization is used.
+        it here
         """
-        # FIXME we don't do command completion.
         if self.session:
             # Using prompt_toolkit
             html_prompt = HTML(f"<u>{prompt.strip()}</u> ")
@@ -133,7 +129,6 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
         try:
             inp = input(prompt)
-            # import pdb; pdb.set_trace()
             return inp
         except ValueError:
             raise EOFError

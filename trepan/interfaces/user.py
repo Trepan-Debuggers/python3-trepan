@@ -164,14 +164,10 @@ class UserInterface(TrepanInterface):
         return line
 
     def readline(self, prompt=""):
-        use_raw = hasattr(self.input, "use_raw") and self.input.use_raw
-        if (
-            use_raw and prompt and len(prompt) > 0 or not self.readline == "prompt_toolkit"
-        ):
-            self.output.write(prompt)
+        if not self.readline == "prompt_toolkit":
             self.output.flush()
             pass
-        return self.input.readline(prompt=prompt, use_raw=use_raw)
+        return self.input.readline(prompt=prompt)
 
     pass
 
