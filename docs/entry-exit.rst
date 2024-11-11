@@ -255,7 +255,7 @@ and call the debugger on signal *USR1*:
           signal.signal(signal.SIGUSR1, signal_handler)
           # Go about your business...
 
-However, if you have entered the debugger either by running intially or
+However, if you have entered the debugger either by running initially or
 previously via a debug() call, trepan has already set up such default
 handlers for many of the popular signals, like *SIGINT*. To see what
 *trepan3k* has installed use the ``info signals`` command:
@@ -272,7 +272,7 @@ handlers for many of the popular signals, like *SIGINT*. To see what
         SIGSYS        Yes     Yes     No      No      Bad system call
         ...
 
-Commonly occuring signals like *CHILD* and unmaskable signals like
+Commonly occurring signals like *CHILD* and unmaskable signals like
 *KILL* are not intercepted.
 
 Set up an exception handler allow remote connections
@@ -372,7 +372,7 @@ example it might look like this:
       $
 
 
-By default, the file `$HOME/.config/trepanpy/profile/profile.py` is
-loaded, and that a file exists `trepan3k` starts up. To change this
+By default, the file ``$HOME/.config/trepan3k/profile/profile.py`` is
+loaded, and that a file exists ``trepan3k`` starts up. To change this
 default behavior and *not* have the default profile loaded, use the
-option `-n`, or `--nx` in the `trepan3k` invocation.
+option ``-n``, or ``--nx`` in the ``trepan3k`` invocation.

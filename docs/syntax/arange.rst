@@ -4,8 +4,8 @@
 Syntax for Address Ranges
 =========================
 
-Address ranges are used in the `disassemble` command. It is like a
-range but we allow addresses. An add
+Address ranges are used in the :ref:`disassemble <disassemble>` command. It is like a
+range, but we allow addresses.
 
 An address range is in one of the following forms:
 
@@ -16,15 +16,17 @@ An address range is in one of the following forms:
     , last         # ending line only
 
 
-A *location* is described elsewhere. *first* and *last* can also be
-linespecs but they also may be a number or address (bytecode
-offset). And finally *last* can be an (line number) offset.
+See :ref:` location <location>` for a full description of a location.
+
+*first* and *last* can also be line specifications (:ref:`linespec
+<linespec>`), but they also may be a number or address
+(bytecode offset). And finally *last* can be an (line number) offset.
 
 A number is just a decimal number. An offset is a number prefaced with "+" and
 indicates the number to increment the line number found in *first*.
 
-Examples
---------
+Address-Range Examples
+----------------------
 
 ::
 
@@ -35,4 +37,4 @@ Examples
 
 .. seealso::
 
- :ref:`help syntax location <syntax_location>`
+ :ref:`location <syntax_location>`, :ref:`linespec <linespec>`
