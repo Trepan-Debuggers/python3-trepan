@@ -24,11 +24,11 @@ analogous to GNU Readlines' parse_and_bind().
 
 
 import pathlib
+import re
 from prompt_toolkit.key_binding import KeyBindings
 from typing import Callable
 
 bindings = KeyBindings()
-
 
 def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
     """

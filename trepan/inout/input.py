@@ -37,9 +37,7 @@ except:
 else:
     from trepan.inout.prompt_bindkeys import bindings, read_inputrc, read_init_file
 
-    USER_INPUTRC = os.environ.get(
-        "TREPAN3K_INPUTRC", default_configfile("inputrc")
-    )
+    USER_INPUTRC = os.environ.get("TREPAN3K_INPUTRC", default_configfile("inputrc"))
 
     read_inputrc(read_init_file, use_unicode=False)
     if osp.isfile(USER_INPUTRC):
@@ -56,10 +54,11 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
     def __init__(self, inp=None, opts=dict()):
 
-        self.edit_mode = opts.get("edit_mode", "emacs")
         if opts.get("readline") == "prompt_toolkit":
+
+            edit_mode = opts.get("edit_mode", "emacs")
             prompt_editing_mode = (
-                EditingMode.EMACS if self.edit_mode == "emacs" else EditingMode.VI
+                EditingMode.EMACS if edit_mode == "emacs" else EditingMode.VI
             )
             self.session = PromptSession(
                 editing_mode=prompt_editing_mode,
@@ -67,6 +66,16 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
                 history=FileHistory(opts.get("histfile")),
                 key_bindings=bindings,
             )
+
+            @bindings.add("escape", "c-j")
+            def toggle_editmode(_):
+                self.session.editing_mode = (
+                    EditingMode.VI
+                    if self.session.editing_mode == EditingMode.EMACS
+                    else EditingMode.EMACS
+                )
+                print(f"\nedit mode is now {self.session.editing_mode}")
+
             self.input = self.session.input
             self.line_edit = True
             self.closed = False
