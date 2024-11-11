@@ -79,7 +79,6 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
             self.input = self.session.input
             self.line_edit = True
             self.closed = False
-            self.use_raw = False
         else:
             self.session = None
             self.input = inp or sys.stdin
@@ -94,31 +93,20 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         return
 
     def use_history(self):
-        return self.use_raw or self.session
+        return True
 
     def open(self, inp, opts={}):
         """Use this to set where to read from.
 
-        Set opts['use_raw'] if input should use Python's use_raw(). If
-        however 'inp' is a string and opts['use_raw'] is not set, we
-        will assume no raw output. Note that an individual readline
-        may override the setting.
         """
-        if (
+        if isinstance(inp, "string".__class__):  # FIXME
+            inp = open(inp, "r")
+        elif not (
             isinstance(inp, io.TextIOWrapper)
             or isinstance(inp, io.StringIO)
             or hasattr(inp, "isatty")
             and inp.isatty()
         ):
-            self.use_raw = opts and opts.get("use_raw", False)
-        elif isinstance(inp, "string".__class__):  # FIXME
-            if opts is None:
-                self.use_raw = False
-            else:
-                self.use_raw = opts.get("use_raw", False)
-                pass
-            inp = open(inp, "r")
-        else:
             raise IOError("Invalid input type (%s) for %s" % (type(inp), inp))
         self.input = inp
         self.line_edit = bool(opts and opts.get("readline"))
@@ -143,24 +131,13 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
             line = self.session.prompt(html_prompt, style=Style.from_dict({"": ""}))
             return line.rstrip("\n")
 
-        if use_raw is None:
-            use_raw = self.use_raw
-            pass
-        if use_raw:
-            try:
-                inp = input(prompt)
-                # import pdb; pdb.set_trace()
-                return inp
-            except ValueError:
-                raise EOFError
-            pass
-
-        else:
-            line = self.input.readline()
-            if not line:
-                raise EOFError
-            return line.rstrip("\n")
-        pass
+        try:
+            inp = input(prompt)
+            # import pdb; pdb.set_trace()
+            return inp
+        except ValueError:
+            raise EOFError
+        return
 
     pass
 
