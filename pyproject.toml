@@ -17,7 +17,7 @@ dependencies = [
     "pyficache >= 2.3.0",
     "xdis >= 6.1.1,<6.2.0",
     "pygments >= 2.2.0",
-    "spark_parser >= 1.8.9, <1.9.1",
+    "spark_parser >= 1.8.9, <1.9.2",
     "tracer > 1.9.0",
     "term-background >= 1.0.1",
 ]
@@ -46,6 +46,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]

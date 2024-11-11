@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2013-2017, 2021, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2017, 2021, 2023-2024 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@ import time
 from optparse import OptionParser
 
 # Our local modules
+from trepan.api import DEFAULT_DEBUG_PORT
 from trepan.interfaces import client as Mclient, comcodes as Mcomcodes
 from trepan.version import __version__
-
 
 def process_options(pkg_version, sys_argv, option_list=None):
     """Handle debugger options. Set `option_list' if you are writing
@@ -60,7 +60,7 @@ def process_options(pkg_version, sys_argv, option_list=None):
         "-P",
         "--port",
         dest="port",
-        default=1027,
+        default=DEFAULT_DEBUG_PORT,
         action="store",
         type="int",
         metavar="NUMBER",
@@ -92,7 +92,7 @@ DEFAULT_CLIENT_CONNECTION_OPTS = {
     "open": True,
     "IO": "TCP",
     "HOST": "127.0.0.1",
-    "PORT": 1027,
+    "PORT": DEFAULT_DEBUG_PORT,
 }
 
 

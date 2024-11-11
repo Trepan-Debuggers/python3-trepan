@@ -156,8 +156,34 @@ program is called, sometimes the differences matter. Also the debugger
 adds overhead and slows down your program.
 
 Another possibility then is to add statements into your program to call
+the debugger at the spot in the program you want.
+
+Python 3.7 and later
+--------------------
+
+In Python 3.7 and later, a ``breakpoint()`` builtin was added. Add a ``breakpoint()`` function call to your python code, then then set set environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug`` before running the program.
+
+For example, here is some Python code:
+
+.. code:: python
+
+        # Code run here trepan3k/trepan3k doesn't even see at all.
+        # work, work, work...
+        debugger() # Get thee to thyne debugger!
+
+
+Now run Python with ``PYTHONBREAKPOINT`` set to ``trepan.api``:
+
+.. code:: shell
+
+	  PYTHONBREAKPOINT=trepan.api.debug_for_remote_access python test/example/gcd-breakpoint.py 3 5
+
+Before Python 3.7
+-----------------
+
+Before Python 3.7 you still add statements into your program to call
 the debugger at the spot in the program you want. To do this,
-``import trepan.api`` and make a call to *trepan.api.debug()*. For
+``import trepan.api`` and make a call to ``trepan.api.debug()``. For
 example:
 
 .. code:: python
@@ -188,11 +214,10 @@ inside the *debug()* call:
           foo()  # Note there's no statement following foo()
 
 If you want a startup profile to get run, you can pass a list of file
-names in option `start_opts`. For example, let's say I want to set the
+names in option ``start_opts``. For example, let's say I want to set the
 formatting style and automatic source code listing in my debugger
 session I would put the trepan debugger commands in a file, say
-`/home/rocky/trepan-startup` and then list that file like this:
-
+``/home/rocky/trepan-startup`` and then list that file like this:
 
 .. code:: python
 
@@ -201,37 +226,18 @@ session I would put the trepan debugger commands in a file, say
 Calling the debugger from pytest
 ================================
 
-Install `pytest-trepan <https://pypi.python.org/pypi/pytest-trepan>`_::
+The only thing needed here is to ensure you add the ``-s`` option and add an explicit
+``breakpoint()`` or ``debug()`` function call.
 
-    pip install pytest-trepan
-
-After installing, to set a breakpoint to enter the trepan debugger::
+To set a breakpoint to enter the trepan debugger::
 
     import pytest
+    from trepan.api import debug
     def test_function():
         ...
-        pytest.trepan()    # get thee to thyne debugger!
+        debug()    # get thee to thyne debugger!
         x = 1
         ...
-
-The above will look like it is stopped at the *pytest.trepan()*
-call. This is most useful when this is the last statement of a
-scope. If you want to stop instead before ``x = 1`` pass ``immediate=False`` or just ``False``::
-
-    import pytest
-    def test_function():
-        ...
-        pytest.trepan(immediate=False)
-	# same as py.trepan(False)
-	x = 1
-	...
-
-You can also pass as keyword arguments any parameter accepted by *trepan.api.debug()*.
-
-To have the debugger entered on error, use the ``--trepan`` option::
-
-    $ py.test --trepan ...
-
 
 
 Set up an exception handler to enter the debugger on a signal
