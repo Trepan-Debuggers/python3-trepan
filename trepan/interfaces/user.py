@@ -18,6 +18,8 @@
 """Interface when communicating with the user in the same process as
     the debugged program."""
 import atexit
+import os.path as osp
+import pathlib
 
 from os import environ
 
@@ -27,6 +29,10 @@ from trepan.inout.output import DebuggerUserOutput
 from trepan.interface import TrepanInterface
 
 histfile = environ.get("TREPAN3KHISTFILE", default_configfile("history"))
+
+# Create HISTFILE if it doesn't exist already
+if not osp.isfile(histfile):
+    pathlib.Path(histfile).touch()
 
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
@@ -45,7 +51,8 @@ try:
         write_history_file,
     )
 except ImportError:
-        pass
+    def write_history_file(histfile: str):
+        return
 
 class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
@@ -86,10 +93,7 @@ class UserInterface(TrepanInterface):
         return
 
     def user_write_history_file(self):
-        try:
-            write_history_file(self.histfile)
-        except Exception:
-            pass
+        write_history_file(self.histfile)
 
     def close(self):
         """Closes both input and output"""

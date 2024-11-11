@@ -17,7 +17,7 @@
 from trepan.processor.location import resolve_location
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
-from trepan.processor.parse.semantics import Location, build_location, build_range
+from trepan.processor.parse.semantics import Location, RangeError, build_location, build_range
 
 INVALID_PARSE_LIST = (None, None, None)
 
@@ -63,6 +63,9 @@ def parse_list_cmd(proc, args, listsize=10):
             proc.errmsg(e.text)
             proc.errmsg(e.text_cursor)
             return INVALID_PARSE_LIST
+        except RangeError as e:
+            proc.errmsg(e.errmsg)
+            return INVALID_PARSE_LIST
 
         if list_range.first is None:
             # Last must have been given
@@ -100,6 +103,8 @@ def parse_list_cmd(proc, args, listsize=10):
                 last = first + int(last[1:])
             elif not last:
                 last = first + listsize
+            elif first is None:
+                return INVALID_PARSE_LIST
             elif last < first:
                 # Treat as a count rather than an absolute location
                 last = first + last

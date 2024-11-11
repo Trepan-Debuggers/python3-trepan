@@ -197,11 +197,6 @@ class CommandProcessor(Processor):
 
         self._populate_cmd_lists()
 
-        # Note: prompt_str's value set below isn't used. It is
-        # computed dynamically. The value is suggestive of what it
-        # looks like.
-        self.prompt_str = "(trepan3k) "
-
         # Stop only if line/file is different from last time
         self.different_line = None
 
@@ -234,6 +229,8 @@ class CommandProcessor(Processor):
         initfile_list = get_option("initfile_list")
         for init_cmdfile in initfile_list:
             self.queue_startfile(init_cmdfile)
+
+        self.set_prompt()
         return
 
     def _saferepr(self, str, maxwidth=None):
