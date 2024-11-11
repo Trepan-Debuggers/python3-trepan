@@ -18,8 +18,11 @@
 """Debugger input possibly attached to a user or interactive. """
 
 import io
+import os
+import os.path as osp
 import sys
 
+from trepan.clifns import default_configfile
 from trepan.inout import base as Mbase
 
 try:
@@ -31,6 +34,19 @@ except:
     PromptSession = lambda history: None
     FileHistory = lambda history: None
     HTML = lambda string: string
+else:
+    from trepan.inout.prompt_bindkeys import bindings, read_inputrc, read_init_file
+
+    USER_INPUTRC = os.environ.get(
+        "TREPAN3K_INPUTRC", default_configfile("inputrc")
+    )
+
+    read_inputrc(read_init_file, use_unicode=False)
+    if osp.isfile(USER_INPUTRC):
+        if os.access(USER_INPUTRC, os.R_OK):
+            read_init_file(USER_INPUTRC)
+        else:
+            sys.stderr.write(f"Can't read user inputrc file {USER_INPUTRC}; skipping\n")
 
 
 class DebuggerUserInput(Mbase.DebuggerInputBase):
@@ -49,6 +65,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
                 editing_mode=prompt_editing_mode,
                 enable_history_search=True,
                 history=FileHistory(opts.get("histfile")),
+                key_bindings=bindings,
             )
             self.input = self.session.input
             self.line_edit = True

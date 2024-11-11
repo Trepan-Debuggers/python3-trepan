@@ -18,15 +18,16 @@
 """Interface when communicating with the user in the same process as
     the debugged program."""
 import atexit
-import os.path as osp
 
+from os import environ
+
+from trepan.clifns import default_configfile
 from trepan.inout.input import DebuggerUserInput
 from trepan.inout.output import DebuggerUserOutput
-
-# Our local modules
 from trepan.interface import TrepanInterface
 
-histfile = osp.expanduser("~/.trepan3k_hist")
+histfile = environ.get("TREPAN3KHISTFILE", default_configfile("history"))
+
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
 DEFAULT_USER_SETTINGS = {
@@ -45,7 +46,6 @@ try:
     )
 except ImportError:
         pass
-
 
 class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
@@ -174,6 +174,7 @@ class UserInterface(TrepanInterface):
 
 # Demo
 if __name__ == "__main__":
+    print(f"History file is {histfile}")
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
     import sys

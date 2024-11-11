@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2023-2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,16 @@ import linecache
 import os
 import os.path as osp
 
+def default_configfile(base_filename: str) -> str:
+    """Return fully expanded configuration filename location for
+    base_filename directory: ~/.config/trepan3k
+    """
+    file_dir = osp.join(os.environ.get("HOME", "~"), ".config", "trepan3k")
+    file_dir = path_expanduser_abs(file_dir)
+
+    if not osp.isdir(file_dir):
+        os.makedirs(file_dir, mode=0o755)
+    return osp.join(file_dir, base_filename)
 
 # FIXME: do a better job of this. Live parsing?
 def is_ok_line_for_breakpoint(filename, lineno, errmsg_fn):
@@ -96,5 +106,4 @@ if __name__ == "__main__":
     print("\nCan stop at line 1? ", ok)
     ok = is_ok_line_for_breakpoint(__file__, 2, sys.stdout.write)
     print("\nCan stop at line 2? ", ok)
-    print(path_expanduser_abs("./.trepan3krc"))
-    print(path_expanduser_abs("~/.trepan3krc"))
+    print(path_expanduser_abs("./.trepan3k"))

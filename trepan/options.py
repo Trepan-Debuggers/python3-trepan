@@ -16,41 +16,24 @@
 
 import codecs
 import os
-import os.path as osp
 import sys
 from optparse import OptionParser
 
 from pygments.styles import STYLE_MAP
 
 import trepan.api
-from trepan.clifns import path_expanduser_abs
+from trepan.clifns import default_configfile
 from trepan.inout.output import DebuggerUserOutput
 from trepan.lib.file import readable
 
 try:
     import prompt_toolkit  # NOQA
-    have_prompt_toolkit = True
 except ImportError:
     have_prompt_toolkit = False
+else:
+    have_prompt_toolkit = True
 
-try:
-    import prompt_toolkit  # NOQA
-    have_gnu_readline = True
-except ImportError:
-    have_gnu_readline = False
-
-
-def default_configfile(base_filename: str) -> str:
-    """Return fully expanded configuration filename location for
-    base_filename. python2 and  python3 debuggers share the same
-    directory: ~/.config/trepan.py
-    """
-    file_dir = osp.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
-    file_dir = path_expanduser_abs(file_dir)
-
-    if not osp.isdir(file_dir):
-        os.makedirs(file_dir, mode=0o755)
-    return osp.join(file_dir, base_filename)
+have_gnu_readline = False
 
 
 def add_startup_file(dbg_initfiles: list):
@@ -334,21 +317,6 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     )
 
     readline = None
-    if have_gnu_readline:
-        optparser.add_option(
-            "--gnu-readline",
-            dest="use_gnu_readline",
-            action="store_true",
-            default=True,
-            help="Try using GNU-Readline",
-        )
-        optparser.add_option(
-            "--no-gnu-readline",
-            dest="use_gnu_readline",
-            action="store_false",
-            default=True,
-            help="Do not use GNU-Readline",
-        )
     if have_prompt_toolkit:
         optparser.add_option(
             "--prompt-toolkit",
@@ -364,7 +332,6 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             default=True,
             help="Do not use prompt_toolkit",
         )
-
 
     # Set up to stop on the first non-option because that's the name
     # of the script to be debugged on arguments following that are
@@ -386,13 +353,11 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         )
         opts.edit_mode = "emacs"
 
-
-    if hasattr(opts, "use_prompt_toolkit") and opts.use_prompt_toolkit:
-        readline = "prompt_toolkit"
-    elif hasattr(opts, "use_gnu_readline") and opts.use_gnu_readline:
-        readline = "gnu_readline"
-    else:
-        readline = None
+    readline = (
+        "prompt_toolkit"
+        if hasattr(opts, "use_prompt_toolkit") and opts.use_prompt_toolkit
+        else "readline"
+    )
 
     dbg_opts = {
         "from_ipython": opts.from_ipython,
@@ -400,7 +365,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             "readline": readline,
             "debugger_name": "trepan3k",
             "edit_mode": opts.edit_mode,
-        }
+        },
     }
 
     # Handle debugger startup command files: --nx (-n) and --command.
