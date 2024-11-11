@@ -30,7 +30,6 @@ An Emacs interface is available via realgud_.
    entry-exit
    syntax
    commands
-   manpages
 
 Indices and tables
 ==================

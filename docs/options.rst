@@ -63,10 +63,13 @@ will be run under the debugger.
   Consecutive debugger stops should have different positions.
 
 ``--edit-mode=`` { ``emacs`` | ``vi`` }
-  Set debugger-input edit mode, either "emacs" or "vi", used by GNU readline, lineedit, or toolkit-prompt.
+  Set debugger-input edit mode, either "emacs" or "vi", used by GNU
+  readline, lineedit, or toolkit-prompt.  The default is
+  "emacs". Inside the debugger, you can toggle the edit mode using ESC
+  CTRL-j (same as you would in ``gdb``).
 
-``-e`` *debugger-command-string*, ``--exec=`` *debugger-command-string*
-  List of debugger commands to execute. Separate the commands with ``;;``
+``-e`` *debugger-commands-string*, ``--exec=`` *debugger-commands-string*
+  List of debugger commands to execute. Separate the commands with ``;;``.
 
 ``-H`` *IP-or-hostname*, ``--host=`` *IP-or-hostname*
   Connect to *IP* or hostname. Only valid if ``--client`` option is given.
@@ -97,21 +100,21 @@ will be run under the debugger.
    Write debugger's output (stdout) to FILE
 
 ``-P`` *port-number*, ``--port=`` *port-number*
-  Use TCP port number *port-number* for out-of-process connections.
+  Use TCP/IP port number *port-number* for out-of-process connections.
 
 ``--server``
-   Out-of-process server connection mode
+   Out-of-process or "headless" server-connection mode.
 
 ``--style=`` *pygments-style*
 Set output to pygments style; "none" uses 8-color rather than 256-color terminal
 
 ``--sigcheck``
-  Set to watch for signal handler changes
+  Set to watch for signal handler changes.
 
 ``-t`` *target*, ``--target=`` *target*
-  Specify a target to connect to. Arguments should be of form, 'protocol address'.
+  Specify a target to connect to. Arguments should be of form, *protocol*:*address*.
 
-`--from_ipython`` Called from inside ipython
+`--from_ipython`` Called from inside ipython.
 
 ``--annotate=`` *annotate-number*
   Use annotations to work inside GNU Emacs.
@@ -120,10 +123,11 @@ Set output to pygments style; "none" uses 8-color rather than 256-color terminal
   Try using the Python prompt_toolkit module.
 
 ``--no-prompt-toolkit``
-   Do not use prompt_toolkit
+   Do not use prompt_toolkit.
 
 ``--``
-   Use this to separate debugger options from any options your Python script has.
+   Use this to separate debugger options from any options your
+   Python script to be debugged has.
 
 
 

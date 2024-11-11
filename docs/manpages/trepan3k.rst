@@ -34,13 +34,13 @@ Trepan3k Options
    Show file path basenames, e.g. for regression tests.
 
 :\--client:
-   Connect to an existing debugger process started with the --server option. See also options -H and -P.
+   Connect to an existing debugger process started with the --server option. See also options ``-H`` and ``-P``.
 
-:-x *FILE*, \--command\= *FILE*:
-   Execute commands from *FILE*.
+:-x *FILE*, \--command\= *debugger-command-path*:
+   Execute commands from *debugger-command-path*.
 
-:\--cd= *DIR*:
-   Change current directory to *DIR*.
+:\--cd= *directory-path*:
+   Change current directory to *directory-path*.
 
 :\--confirm:
    Confirm potentially dangerous operations.
@@ -54,11 +54,11 @@ Trepan3k Options
 :\--different:
    Consecutive debugger stops should have different positions.
 
-:\--edit-mode=EDIT_MODE:
+:\--edit-mode={emacs|vi}:
    Set debugger-input edit mode, either "emacs" or "vi".
 
-:-e *EXECUTE-CMDS*, \--exec= *EXECUTE-CMDS*:
-   list of debugger commands to execute. Separate the commands with `;;`
+:\-e *debugger-commands-string*, \--exec\= *debugger-commands-string*:
+   list of debugger commands to execute. Separate the commands with `;;`.
 
 :\--highlight={light|dark|plain}:
    Use syntax and terminal highlight output. "plain" is no highlight.
@@ -72,23 +72,32 @@ Trepan3k Options
 :-n, \--nx:
    Don't execute commands found in any initialization files.
 
-:-o *FILE*, \--output= *FILE*:
-   Write debugger's output (stdout) to *FILE*.
+:-o *path*, \--output= *path*:
+   Write debugger's output (stdout) to *path*.
 
-:-p *PORT*,\ --port= *PORT*:
-   Use TCP port number *NUMBER* for out-of-process connections.
+:-p *port-number*,\ --port= *port-number*:
+   Use TCP/IP port number *port-number* for out-of-process connections.
 
 :--server:
-   Out-of-process server connection mode.
+   Out-of-process or "headless" server-connection mode.
 
 :--sigcheck:
    Set to watch for signal handler changes.
 
-:-t *TARGET*, \--target= *TARGET*:
-   Specify a target to connect to. Arguments should be of form, *protocol*:*address*
+:-t *target*, \--target= *target*:
+   Specify a target to connect to. Arguments should be of form, *protocol*:*address*.
 
 :\--from_ipython:
-   Called from inside ipython
+   Called from inside ipython.
+
+:\--annotate=`` *annotate-number*:
+  Use annotations to work inside GNU Emacs.
+
+:--prompt-toolkit:
+  Try using the Python prompt_toolkit module.
+
+:--no-prompt-toolkit:
+   Do not use prompt_toolkit.
 
 :\--:
    Use this to separate debugger options from any options your Python script has.

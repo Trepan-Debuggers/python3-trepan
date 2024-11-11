@@ -270,7 +270,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         "--server",
         dest="server",
         action="store_true",
-        help="Out-of-process server connection mode.",
+        help='Out-of-process or "headless" server-connection mode.',
     )
 
     optparser.add_option(
@@ -340,7 +340,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             dest="use_prompt_toolkit",
             action="store_false",
             default=True,
-            help="Do not use prompt_toolkit",
+            help="Do not use prompt_toolkit.",
         )
 
     # Set up to stop on the first non-option because that's the name
