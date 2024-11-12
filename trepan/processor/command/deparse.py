@@ -138,9 +138,8 @@ class DeparseCommand(DebuggerCommand):
         elif show_offsets:
             deparsed = code_deparse(co)
             self.section("Offsets known:")
-            m = self.columnize_commands(
-                list(sorted(deparsed.offsets.keys(), key=lambda x: str(x[0])))
-            )
+            keys = sorted([str(k[1]) for k in deparsed.offsets.keys()])
+            m = self.columnize_commands(keys)
             self.msg_nocr(m)
             return
         elif offset is not None:
