@@ -232,9 +232,20 @@ class CommandProcessor(Processor):
             self.queue_startfile(init_cmdfile)
 
         self.set_prompt()
+
+        # Set up prompt-toolkit completion
         if self.is_using_prompt_toolkit():
             from trepan.processor.complete_ptk import Trepan3KCompleter
-            trepan3k_completer = Trepan3KCompleter(self.commands.keys())
+
+            trepan3k_completer = Trepan3KCompleter(
+                list(self.commands.keys()) + list(self.aliases.keys())
+            )
+
+            for cmd in self.commands:
+                cmd_obj = self.commands[cmd]
+                if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
+                    trepan3k_completer.add_completions(cmd, cmd_obj.cmds.cmdlist)
+
             for i in self.intf:
                 if i.input.session is not None:
                     i.input.session.completer = trepan3k_completer
@@ -489,7 +500,6 @@ class CommandProcessor(Processor):
 
     def is_using_prompt_toolkit(self) -> bool:
         return self.intf[-1].input.session is not None
-
 
     def ok_for_running(self, cmd_obj, name, nargs):
         """We separate some of the common debugger command checks here:
