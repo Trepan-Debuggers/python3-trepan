@@ -32,8 +32,6 @@ def test_step_same_level():
     return
 
 
-@pytest.mark.skipif(PYTHON_VERSION_TRIPLE[:2] in [(3, 6)],
-                    reason="3.6 needs going over")
 def test_step_computed_value():
     # See that we can step with a computed count value
     cmds = ["step 5-3", "continue"]
