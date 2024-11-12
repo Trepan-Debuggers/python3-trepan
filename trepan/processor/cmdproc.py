@@ -238,13 +238,26 @@ class CommandProcessor(Processor):
             from trepan.processor.complete_ptk import Trepan3KCompleter
 
             trepan3k_completer = Trepan3KCompleter(
-                list(self.commands.keys()) + list(self.aliases.keys())
+                list(self.commands.keys()), self.aliases
             )
 
-            for cmd in self.commands:
-                cmd_obj = self.commands[cmd]
+            for cmd, cmd_obj in self.commands.items():
                 if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
-                    trepan3k_completer.add_completions(cmd, cmd_obj.cmds.cmdlist)
+                    trepan3k_completer.add_completions(cmd, sorted(cmd_obj.cmds.cmdlist))
+                    for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
+                        subcmd_key = f"{cmd} {subcmd_name}"
+                        if hasattr(subcmd_obj, "completion_choices"):
+                            trepan3k_completer.add_completions(
+                                subcmd_key, sorted(subcmd_obj.completion_choices)
+                            )
+                            pass
+                        pass
+                elif hasattr(cmd_obj, "completion_choices"):
+                    trepan3k_completer.add_completions(
+                        cmd, sorted(cmd_obj.completion_choices)
+                    )
+                    pass
+                pass
 
             for i in self.intf:
                 if i.input.session is not None:
