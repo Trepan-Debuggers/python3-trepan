@@ -40,8 +40,8 @@ import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
 from trepan.interfaces.script import ScriptInterface
 from trepan.lib.bytecode import is_class_def, is_def_stmt
-from trepan.processor.complete import completer
 from trepan.processor.print import print_location
+from trepan.processor.complete_rl import completer
 from trepan.vprocessor import Processor
 
 
@@ -232,6 +232,36 @@ class CommandProcessor(Processor):
             self.queue_startfile(init_cmdfile)
 
         self.set_prompt()
+
+        # Set up prompt-toolkit completion
+        if self.is_using_prompt_toolkit():
+            from trepan.processor.complete_ptk import Trepan3KCompleter
+
+            trepan3k_completer = Trepan3KCompleter(
+                list(self.commands.keys()), self.aliases
+            )
+
+            for cmd, cmd_obj in self.commands.items():
+                if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
+                    trepan3k_completer.add_completions(cmd, sorted(cmd_obj.cmds.cmdlist))
+                    for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
+                        subcmd_key = f"{cmd} {subcmd_name}"
+                        if hasattr(subcmd_obj, "completion_choices"):
+                            trepan3k_completer.add_completions(
+                                subcmd_key, sorted(subcmd_obj.completion_choices)
+                            )
+                            pass
+                        pass
+                elif hasattr(cmd_obj, "completion_choices"):
+                    trepan3k_completer.add_completions(
+                        cmd, sorted(cmd_obj.completion_choices)
+                    )
+                    pass
+                pass
+
+            for i in self.intf:
+                if i.input.session is not None:
+                    i.input.session.completer = trepan3k_completer
         return
 
     def _saferepr(self, str, maxwidth=None):
@@ -268,7 +298,7 @@ class CommandProcessor(Processor):
             pass
         self.prompt_str = f"{'(' * self.debug_nest}{prompt}{')' * self.debug_nest}"
         highlight = self.debugger.settings["highlight"]
-        using_prompt_toolkit = self.intf[-1].input.session is not None
+        using_prompt_toolkit = self.is_using_prompt_toolkit()
         if not using_prompt_toolkit and highlight and highlight in ("light", "dark"):
             self.prompt_str = colorize("underline", self.prompt_str)
         self.prompt_str += " "
@@ -480,6 +510,9 @@ class CommandProcessor(Processor):
             self.errmsg(str(f"{exc_type_name}: {arg}"))
             raise
         return
+
+    def is_using_prompt_toolkit(self) -> bool:
+        return self.intf[-1].input.session is not None
 
     def ok_for_running(self, cmd_obj, name, nargs):
         """We separate some of the common debugger command checks here:

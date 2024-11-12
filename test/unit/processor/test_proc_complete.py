@@ -6,7 +6,7 @@ from test.unit.cmdhelper import setup_unit_test_debugger
 import pytest
 from xdis import IS_PYPY
 
-from trepan.processor import complete as module_complete
+from trepan.processor import complete_rl as module_complete
 from trepan.processor.command import base_cmd as module_base_command
 
 line_buffer = ""

@@ -66,6 +66,10 @@ class HelpCommand(DebuggerCommand):
 
     `examine` and `whatis`."""
 
+    # Note: the "completion_choices" name is special and used by prompt_toolkit's completion
+    # FIXME: this is not the full list though. We need something more dynamic instead.
+    completion_choices = sorted(list(categories.keys()) + ["*", "all"])
+
     aliases = ("?",)
     short_help = "Print commands or give help for command(s)"
     HELP_DIR = osp.join(osp.dirname(__file__), "help")
