@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021, 2023 Rocky Bernstein
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2024 Rocky Bernstein
 # <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -67,6 +67,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
@@ -79,6 +80,10 @@ entry_points = {
         "trepan3k   = trepan.__main__:main",
         "trepan3kc  = trepan.client:main",
     ]
+}
+
+extras_require = {
+    "full": ["prompt-toolkit"]
 }
 
 ftp_url = None
