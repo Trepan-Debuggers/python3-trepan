@@ -62,7 +62,7 @@ instructions. I am slowly working on that though.
 
 We use information in Python's code object line number table in byte
 to understand which lines are breakpointable, and in which module or
-function the line appears in. Use `info line <info-line>`_ to see this
+function the line appears in. Use info-line_ to see this
 information. Most if not all other debuggers do go to such lengths,
 and as a result, it is possible to request stopping on a line number
 that can never occur without complaint.
@@ -90,14 +90,22 @@ or ``exec``'d code.*
 
 But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
+<<<<<<< HEAD
 bytecode. See the `set substitute <set-substitute>`_ command for details here.
+=======
+bytecode. See the set-substitute_ command for details here.
+>>>>>>> master
 
 Source-code Syntax Colorization
 -------------------------------
 
 Terminal source code is colorized via pygments_. And with that, you
 can set the pygments color style, e.g. "colorful", "paraiso-dark". See
+<<<<<<< HEAD
 `set style <set-style>`_ . Furthermore, we make use of terminal bold
+=======
+set-style_ . Furthermore, we make use of terminal bold
+>>>>>>> master
 and emphasized text in debugger output and help text. Of course, you
 can also turn this off. You can use your own pygments_style_, provided
 you have a terminal that supports 256 colors. If your terminal
@@ -121,8 +129,12 @@ Terminal Handling
 -----------------
 
 We can adjust debugger output depending on the line width of your
+<<<<<<< HEAD
 terminal. If it changes, or you want to adjust it, see `set width
 <set-width>`_.
+=======
+terminal. If it changes, or you want to adjust it, see set-width_.
+>>>>>>> master
 
 Signal Handling
 -----------------
@@ -138,8 +150,12 @@ When you are stopped inside a thread, the thread name is shown to make
 this fact more clear and you can see and switch between frames in
 different threads. See frame_ for more information.
 
+<<<<<<< HEAD
 And following *gdb*, you can list the threads too. See `info threads
 <info-threads>`_ for more information.
+=======
+And following *gdb*, you can list the threads too. See info-threads_ for more information.
+>>>>>>> master
 
 
 Smart Eval
@@ -251,7 +267,7 @@ We do more in the way of looking at the byte codes to give better information. T
   ``MAKE_FUNCTION`` or ``BUILD_CLASS``.)
 
 Even without "deparsing" mentioned above, the ability to disassemble
-where the PC is currently located (see `info pc <info_pc>`_), by line
+where the PC is currently located (see info-pc_), by line
 number range or byte-offset range lets you tell exactly where you are
 and code is getting run.
 
@@ -345,6 +361,10 @@ See Also
     :alt: License
 .. _deparse:  https://python3-trepan.readthedocs.io/en/latest/commands/data/deparse.html
 .. _info-line:  https://python3-trepan.readthedocs.io/en/latest/commands/info/line.html
+<<<<<<< HEAD
+=======
+.. _info-pc:  https://python3-trepan.readthedocs.io/en/latest/commands/info/pc.html
+>>>>>>> master
 .. _info-threads:  https://python3-trepan.readthedocs.io/en/latest/commands/info/threads.html
 .. _frame:  https://python3-trepan.readthedocs.io/en/latest/commands/stack/frame.html
 .. _set-style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html

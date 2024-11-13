@@ -22,7 +22,7 @@ def test_step():
         right_template = None
     result = run_debugger(
         testname="step",
-        dbgr_opts="--basename --highlight=plain",
+        dbgr_opts="--basename --style=none --highlight=plain",
         python_file="gcd.py",
         right_template=right_template,
     )
