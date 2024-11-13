@@ -36,13 +36,13 @@ if necessary, first.
 
 import os
 import sys
-from typing import Callable, Literal, Optional
+from typing import Callable, Optional
 
 from trepan.debugger import Trepan, debugger_obj
 from trepan.interfaces.server import ServerInterface
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
-DEFAULT_DEBUG_PORT: Literal = 1955
+DEFAULT_DEBUG_PORT = 1955
 
 def debug(
     dbg_opts={},
