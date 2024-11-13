@@ -8,8 +8,8 @@ Show Asmfmt
 
 Show the disassembly format style used in the ``disassemble`` command.
 
-Example:
-++++++++
+Show asmfmt Example:
+++++++++++++++++++++
 
 .. code-block::
 

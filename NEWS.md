@@ -1,7 +1,23 @@
-1.2.11 2024-077-22
+1.3.0 2024-11-13
+================
+
+* Less overhead and faster execution of "continue" and "next" (when
+  possible) using improvements recently made to pytracer.
+* Support prompt-toolkit as an input interface. This is now the default
+  on newer Pythons. Command completion is less featurefull than GNU readline
+  but that will get addressed over time.
+* Add "load" command to support trepan3k plugins from a Python package
+* Add thread name to "info frame"
+* Add "reload" command to reload a debugger command.
+  This allows making changes to the debugger while debugging
+* Improve disassembly output - better tagging and use of xdis extended format
+* Modernize style with more type annotations and flynt-converted f-strings
+* Support up to Python 3.13 (with some help from xdis)
+
+1.2.11 2024-07-22
 ==================
 
-Add `set/show asmfmt` Improve disassembler formatting; allow all of the assembler formats that exits
+Add `set/show asmfmt` Improve disassembler formatting; allow all of the assembler formats that exists
 Track xdis API changes.
 The usual lint and bug fixes
 
