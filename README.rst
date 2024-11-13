@@ -8,9 +8,12 @@ Abstract
 ========
 
 This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
-the ground up. I was disappointed with the flakiness,
-imprecision, and poor quality of coding, modularity, and level of
-documentation when I first looked at *pdb*.
+the ground up. I was disappointed with the flakiness, imprecision, and
+poor quality of coding, modularity, and level of documentation when I
+first looked at *pdb*. (*pdb* has gotten better since then. But a full
+and complete debugger, is way more complex than what you'd expect from
+a Standard Python module; it requires a larger set of supporting
+packages too than is found in the Standard Python library).
 
 ``trepan3k`` is both a high-level debugger as well as a lower-level
 bytecode debugger inspector. The code understands a lot about byte
