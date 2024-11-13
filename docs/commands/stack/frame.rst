@@ -4,7 +4,7 @@
 Frame (absolute frame positioning)
 ----------------------------------
 
-**frame** [*thread-Name*|*thread-number*] [*frame-number*]
+**frame** [ *thread-name* | *thread-number* ] [ *frame-number* ]
 
 Change the current frame to frame *frame-number* if specified, or the
 current frame, 0, if no frame number specified.

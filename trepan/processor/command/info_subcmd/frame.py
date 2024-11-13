@@ -19,7 +19,10 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
+from trepan.lib.format import Function, format_token
+
 from trepan.lib.stack import format_function_name
+from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
 
@@ -111,7 +114,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             frame_num = proc.curindex
 
         mess = (
-            "Frame %d" % Mframe.frame_num(proc, frame_num)
+            f"Frame {Mframe.frame_num(proc, frame_num)}"
             if frame_num is not None and proc.stack is not None
             else "Frame Info"
         )
@@ -124,6 +127,8 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg(f"  function args: {formatted_func_signature}")
 
+        formatted_thread_name = format_token(Function, current_thread_name(), style=style)
+        self.msg(f"  thread: {formatted_thread_name}")
         # signature = highlight_string(inspect.signature(frame))
         # self.msg(f"  signature : {signature}")
 
@@ -145,7 +150,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg(f"  code: {format_code(code, style)}")
         self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
         self.msg(f"  tracing function: {frame.f_trace}")
-
         if is_verbose:
             for name, field in [
                 ("Globals", "f_globals"),
