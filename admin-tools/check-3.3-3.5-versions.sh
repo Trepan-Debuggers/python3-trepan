@@ -1,18 +1,20 @@
 #!/bin/bash
 function finish {
-  cd $owd
+  cd $trepan3k_owd
 }
 
 # FIXME put some of the below in a common routine
-owd=$(pwd)
-trap finish EXIT
+trepan3k_owd=$(pwd)
+# trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
-if ! source ./pyenv-3.2-3.5-versions ; then
+if ! source ./pyenv-3.3-3.5-versions ; then
     exit $?
 fi
 
-. ./setup-python-3.2.sh
+if ! source ./setup-python-3.3.sh ; then
+    exit $?
+fi
 
 cd ..
 for version in $PYVERSIONS; do
@@ -24,4 +26,6 @@ for version in $PYVERSIONS; do
     if ! make check; then
 	exit $?
     fi
+    echo === $version ===
 done
+finish
