@@ -43,6 +43,7 @@ def add_startup_file(dbg_initfiles: list):
     startup_python_file = default_configfile("profile.py")
 
     if readable(startup_python_file):
+        print("XXX")
         with codecs.open(startup_python_file, "r", encoding="utf8") as fp:
             exec(fp.read())
 

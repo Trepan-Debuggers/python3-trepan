@@ -36,6 +36,12 @@ class DebuggerUserOutput(DebuggerInOutBase):
             self.isatty = self.output.isatty
         return
 
+    def close(self):
+        if not self.closed:
+            self.input.close()
+        self.closed = True
+        return
+
     def flush(self):
         return self.output.flush()
 
@@ -57,6 +63,7 @@ class DebuggerUserOutput(DebuggerInOutBase):
             # raise IOError("Invalid output type (%s) for %s" % (type(output),
             #                                                     output))
         self.output = output
+        self.closed = False
         return
 
     def write(self, msg):

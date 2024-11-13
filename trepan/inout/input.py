@@ -88,7 +88,8 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         return
 
     def close(self):
-        self.input.close()
+        if not self.closed:
+            self.input.close()
         self.closed = True
         return
 
