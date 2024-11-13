@@ -72,7 +72,7 @@ def format_frame(frame_object, style) -> str:
     formatted_id = format_token(Hex, hex(id(frame_object)), style=style)
     formatted_filename = format_token(Filename, frame_object.f_code.co_filename, style=style)
     return (
-        ("<frame at %s " % formatted_id)
+        ("<frame at %s " % formatted_id) +
         ("file %s, line %s>" % (formatted_filename, formatted_line))
     )
 
