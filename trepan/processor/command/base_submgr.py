@@ -14,7 +14,6 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import importlib
 import inspect
 import re
 import sys
@@ -88,7 +87,7 @@ class SubcommandMgr(DebuggerCommand):
         for module_name in mod.__modules__:
             import_name = module_dir + "." + module_name
             try:
-                command_mod = importlib.import_module(import_name)
+                command_mod = __import__(import_name, None, None, ['*'])
             except ImportError:
                 print(
                     (

@@ -14,7 +14,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import importlib
 import inspect
 
 # Our local modules
@@ -71,7 +70,7 @@ class LoadCommand(DebuggerCommand):
         module_name = args[1]
         cmd_name_array = module_name.split(".")
         try:
-            command_module = importlib.import_module(module_name)
+            command_module = __import__(module_name, None, None, ['*'])
         except Exception as e:
             self.errmsg(str(e))
             return

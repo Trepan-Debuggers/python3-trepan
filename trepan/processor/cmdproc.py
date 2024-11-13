@@ -894,26 +894,19 @@ class CommandProcessor(Processor):
             pass
         return cmd_instances
 
-    # This is the most-used way of adding commands
+    # This is the most-used way of adding commands.
+    # Python 3.0 does not have importlib, so we do things the
+    # Python 2.x way.
     def populate_commands_easy_install(self, Mcommand):
-        """
-        Add files in filesystem to self.commands.
-        If running from source or from an easy_install'd package, this is used.
-        """
         cmd_instances = []
 
         for mod_name in Mcommand.__modules__:
-            if mod_name in (
-                "info_sub",
-                "set_sub",
-                "show_sub",
-            ):
+            if mod_name in ("info_sub", "set_sub", "show_sub",):
                 pass
-            import_name = "%s.%s" % (Mcommand.__name__, mod_name)
+            import_name = "trepan.processor.command." + mod_name
             try:
-                import importlib
-                command_module = importlib.import_module(import_name)
-            except Exception:
+                command_mod = __import__(import_name, None, None, ["*"])
+            except:
                 if mod_name not in self.optional_modules:
                     print("Error importing %s: %s" % (mod_name, sys.exc_info()[0]))
                     pass
@@ -921,18 +914,23 @@ class CommandProcessor(Processor):
 
             classnames = [
                 tup[0]
-                for tup in inspect.getmembers(command_module, inspect.isclass)
+                for tup in inspect.getmembers(command_mod, inspect.isclass)
                 if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
             ]
             for classname in classnames:
-                try:
-                    instance = getattr(command_module, classname)(self)
+                if False:
+                    instance = getattr(command_mod, classname)(self)
                     cmd_instances.append(instance)
-                except Exception:
-                    print(
-                        "Error loading %s from %s: %s"
-                        % (classname, mod_name, sys.exc_info()[0])
-                    )
+                else:
+                    try:
+                        instance = getattr(command_mod, classname)(self)
+                        cmd_instances.append(instance)
+                    except:
+                        print(
+                            "Error loading %s from %s: %s"
+                            % (classname, mod_name, sys.exc_info()[0])
+                        )
+                        pass
                     pass
                 pass
             pass

@@ -41,7 +41,7 @@ class InfoFiles(DebuggerSubcommand):
 
 
     def run(self, args):
-        """**info files** [*filename* [**all** | **brkpts** | **sha1** | **size**]]
+        """**info files** [*filename* [**all** | **brkpts** | **size**]]
 
         Show information about the current file. If no filename is
         given and the program is running then the current file associated
@@ -50,9 +50,7 @@ class InfoFiles(DebuggerSubcommand):
 
         * **brkpts** Line numbers where there are statement boundaries. These lines can be used in breakpoint commands.
 
-        * **sha1**	A SHA1 hash of the source text.
 
-        The following may be useful in comparing source code.
 
         * **size**	The number of lines in the file.
 
@@ -111,10 +109,6 @@ class InfoFiles(DebuggerSubcommand):
                 if pyficache.size(canonic_name):
                     self.msg("File has %d lines." % pyficache.size(canonic_name))
                     pass
-                processed_arg = True
-                pass
-            if arg in ["all", "sha1"]:
-                self.msg("SHA1 is %s." % pyficache.sha1(canonic_name))
                 processed_arg = True
                 pass
             if arg in ["all", "brkpts"]:

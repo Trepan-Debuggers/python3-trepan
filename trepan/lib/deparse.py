@@ -3,7 +3,8 @@
 
 import sys
 import tempfile
-from hashlib import sha1
+# Python 3.0 does not have hashlib
+# from hashlib import sha1
 from io import StringIO
 
 import pyficache
@@ -35,7 +36,7 @@ def deparse_and_cache(co, errmsg_fn, tempdir=None):
 
     # FIXME: DRY code with version in cmdproc.py print_location
 
-    name_for_code = sha1(co.co_code).hexdigest()[:6]
+    name_for_code = str(id(co.co_code))
     prefix = "deparsed-"
     fd = tempfile.NamedTemporaryFile(
         suffix=".py", prefix=prefix, dir=tempdir, delete=False
