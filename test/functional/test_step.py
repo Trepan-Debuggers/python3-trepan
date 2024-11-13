@@ -2,13 +2,11 @@
 Functional test of debugger "step" command.
 """
 
-import os
 from os.path import abspath, basename
 from test.functional.fn_helper import compare_output, strarray_setup
 
 import pyficache
 import pytest
-import tracer
 from xdis import PYTHON_VERSION_TRIPLE
 
 absolute_path = abspath(__file__)
@@ -34,7 +32,6 @@ def test_step_same_level():
 
 @pytest.mark.skipif(PYTHON_VERSION_TRIPLE[:2] in [(3, 6), (3, 3)],
                     reason="3.6 needs going over")
->>>>>>> python-3.3-to-3.5
 def test_step_computed_value():
     # See that we can step with a computed count value
     cmds = ["step 5-3", "continue"]
