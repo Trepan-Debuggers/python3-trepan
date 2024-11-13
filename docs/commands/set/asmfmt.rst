@@ -22,7 +22,6 @@ Set the style of format to use in disassembly:
 
 
 Frame Examples:
-+++++++++++++++
 
 .. code-block::
 
