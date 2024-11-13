@@ -12,8 +12,7 @@ mydir=$(dirname $bs)
 trepan3k_owd=$(pwd)
 cd $mydir
 . ./checkout_common.sh
-fulldir=$(readlink -f $mydir)
-(cd $fulldir/.. && \
+(cd $mydir/.. && \
      setup_version python-uncompyle6 master && \
      setup_version python-xdis master && \
      setup_version python-filecache master && \
