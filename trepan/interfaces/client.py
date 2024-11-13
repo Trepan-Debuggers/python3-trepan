@@ -57,7 +57,7 @@ class ClientInterface(Muser.UserInterface):
                     sys.exit(1)
             else:
                 self.errmsg(
-                    f"Expecting server type TCP or FIFO. Got: {self.server_type}."
+                    "Expecting server type TCP or FIFO. Got: %s." % self.server_type
                 )
                 sys.exit(1)
             pass

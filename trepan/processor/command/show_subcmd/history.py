@@ -20,6 +20,7 @@ from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 from trepan.interfaces.user import DEFAULT_USER_SETTINGS
 
+
 class ShowHistory(DebuggerSubcommand):
     """**show history** [ *filename* | *save* | *size* ]
 
@@ -55,15 +56,24 @@ class ShowHistory(DebuggerSubcommand):
             show_prefix = True
 
         for arg in args:
-            prefix = f"history {arg}: " if show_prefix else ""
+            prefix = "history %s: " % arg if show_prefix else ""
             if arg == "filename":
-                self.msg(f'{prefix}The filename in which to record the command history is "{self.proc.intf[-1].histfile}".')
+                self.msg(
+                    '%sThe filename in which to record the command history is "%s".'
+                    % (prefix, self.proc.intf[-1].histfile)
+                )
             elif arg == "save":
-                self.msg(f'{prefix}Saving of the history record on exit is {"on" if opts.get("hist_save", False) else "off"}.')
+                self.msg(
+                    "%sSaving of the history record on exit is %s."
+                    % (prefix, "on" if opts.get("hist_save", False) else "off")
+                )
             elif arg == "size":
-                self.msg(f'{prefix}The size of the command history is {DEFAULT_USER_SETTINGS["histsize"]}.')
+                self.msg(
+                    '%sThe size of the command history is {DEFAULT_USER_SETTINGS["histsize"]}.'
+                    % DEFAULT_USER_SETTINGS["histsize"]
+                )
             else:
-                self.errmsg(f"Undefined show history command: {arg}")
+                self.errmsg("Undefined show history command: %s" % arg)
                 pass
         return
 

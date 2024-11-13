@@ -58,9 +58,11 @@ class SetAsmFmt(DebuggerSubcommand):
         if arg in SetAsmFmt.completion_choices:
             return arg
         else:
-            self.errmsg("Expecting one of: %s; got: %s." % (", ".join(choices), arg))
+            self.errmsg(
+                "Expecting one of: %s; got: %s." % (', '.join(SetAsmFmt.completion_choices), arg)
+            )
             return None
-        pass
+        return None
 
     def run(self, args):
         if len(args) == 0:

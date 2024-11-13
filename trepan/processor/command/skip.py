@@ -53,7 +53,7 @@ class SkipCommand(DebuggerCommand):
         if len(args) == 1:
             count = 1
         else:
-            msg = f"skip: expecting a number, got {args[1]}."
+            msg = "skip: expecting a number, got %s." % args[1]
             count = self.proc.get_an_int(args[1], msg)
             pass
         co = self.proc.curframe.f_code
@@ -76,7 +76,7 @@ class SkipCommand(DebuggerCommand):
             )
             print_location(self.proc)
         except ValueError as e:
-            self.errmsg(f"skip failed: {e}")
+            self.errmsg("skip failed: %s" % e)
         return False
 
     pass

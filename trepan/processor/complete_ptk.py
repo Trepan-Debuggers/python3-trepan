@@ -16,11 +16,10 @@
 
 from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
 from prompt_toolkit.document import Document
-from typing import Iterable, Sequence
 
 
 class Trepan3KCompleter(WordCompleter):
-    def __init__(self, top_level_commands: Sequence[str], aliases):
+    def __init__(self, top_level_commands: list, aliases):
 
         # Note: "words" is a parameter WordCompleter uses and sets.
         words = sorted(top_level_commands + list(aliases.keys()))
@@ -29,12 +28,12 @@ class Trepan3KCompleter(WordCompleter):
         self.states = {"top-level-command": words}
         self.aliases = aliases
 
-    def add_completions(self, key: str, words: Sequence[str]):
+    def add_completions(self, key: str, words: list):
         self.states[key] = words
 
     def get_completions(
         self, document: Document, complete_event: CompleteEvent
-    ) -> Iterable[Completion]:
+    ):
         # Get list of words.
         text = document.text_before_cursor
 
@@ -112,7 +111,7 @@ if __name__ == "__main__":
         if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
             trepan3k_completer.add_completions(cmd, cmd_obj.cmds.cmdlist)
             for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
-                subcmd_key = f"{cmd} {subcmd_name}"
+                subcmd_key = "%s %s" % (cmd, subcmd_name)
                 if hasattr(subcmd_obj, "completion_choices"):
                     trepan3k_completer.add_completions(subcmd_key, subcmd_obj.completion_choices)
                 pass

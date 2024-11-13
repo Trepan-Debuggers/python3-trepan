@@ -332,14 +332,14 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             "--prompt-toolkit",
             dest="use_prompt_toolkit",
             action="store_true",
-            default=True,
+            default=False,
             help="Try using prompt_toolkit. This take precedence over the --gnu-readline option",
         )
         optparser.add_option(
             "--no-prompt-toolkit",
             dest="use_prompt_toolkit",
             action="store_false",
-            default=True,
+            default=False,
             help="Do not use prompt_toolkit.",
         )
 
@@ -359,7 +359,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     if opts.edit_mode not in ("vi", "emacs"):
         sys.stderr.write(
             'Option --editmode should be either "emacs" or "vi"; assuming "emacs".\n'
-            f'Got: "{opts.edit_mode}".\n'
+            ('Got: "%s".\n' % opts.edit_mode)
         )
         opts.edit_mode = "emacs"
 

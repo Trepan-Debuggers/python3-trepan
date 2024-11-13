@@ -41,12 +41,6 @@ from trepan.debugger import Trepan, debugger_obj
 from trepan.interfaces.server import ServerInterface
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
-def debugger_on_post_mortem():
-    """Call debugger on an exception that terminates a program"""
-    sys.excepthook = post_mortem_excepthook
-    return
-
-
 DEFAULT_DEBUG_PORT = 1955
 
 def debug(
@@ -202,14 +196,33 @@ def debug_for_remote_access():
     connection_opts = {'IO': 'TCP', 'PORT': os.getenv('TREPAN3K_TCP_PORT', DEFAULT_DEBUG_PORT)}
     intf = ServerInterface(connection_opts=connection_opts)
     dbg_opts = {'interface': intf}
-    print(f'Starting {connection_opts["IO"]} server listening on {connection_opts["PORT"]}.', file=sys.stderr)
-    print(f'Use `python3 -m trepan.client --port {connection_opts["PORT"]}` to enter debugger.', file=sys.stderr)
+    print('Starting %s server listening on %s.' % (connection_opts["IO"], connection_opts["PORT"]),
+          file=sys.stderr)
+    print('Use `python3 -m trepan.client --port %s to enter the debugger.' % connection_opts["PORT"],
+          file=sys.stderr)
     debug(dbg_opts=dbg_opts, step_ignore=0, level=1)
-
 
 def debugger_on_post_mortem():
     """Call debugger on an exception that terminates a program"""
     sys.excepthook = post_mortem_excepthook
+    return
+
+
+def run_call(func, *args, debug_opts=None, start_opts=None, **kwds):
+    """Call the function (a function or method object, not a string)
+    with the given arguments starting with the statement after
+    the place that this appears in your program.
+
+    When run_call() returns, it returns whatever the function call
+    returned.  The debugger prompt appears as soon as the function is
+    entered."""
+
+    dbg = Trepan(opts=debug_opts)
+    try:
+        return dbg.run_call(func, *args, **kwds)
+    except Exception:
+        uncaught_exception(dbg)
+        pass
     return
 
 
@@ -243,33 +256,6 @@ def run_eval(
         uncaught_exception(dbg, tb_fn)
     finally:
         dbg.core.trace_hook_suspend = False
-    return
-
-
-def run_call(
-    func,
-    *args,
-    **kwds
-):
-    """Call the function (a function or method object, not a string)
-    with the given arguments starting with the statement after
-    the place that this appears in your program.
-
-    When run_call() returns, it returns whatever the function call
-    returned.  The debugger prompt appears as soon as the function is
-    entered."""
-
-
-    debug_opts = None
-    if "debug_opts" in kwds:
-        debug_opts = kwds.pop("debug_opts")
-
-    dbg = Trepan(opts=debug_opts)
-    try:
-        return dbg.run_call(func, *args, **kwds)
-    except Exception:
-        uncaught_exception(dbg)
-        pass
     return
 
 

@@ -19,7 +19,6 @@
     the debugged program."""
 import atexit
 import os.path as osp
-import pathlib
 
 from os import environ
 
@@ -32,7 +31,9 @@ histfile = environ.get("TREPAN3KHISTFILE", default_configfile("history"))
 
 # Create HISTFILE if it doesn't exist already
 if not osp.isfile(histfile):
-    pathlib.Path(histfile).touch()
+    # Simulate "touch" on Python 3.3 and before
+    with open(histfile, "w") as f:
+        pass  # Do nothing, just create the file
 
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
@@ -51,6 +52,14 @@ try:
         write_history_file,
     )
 except ImportError:
+    def parse_and_bind(histfile: str):
+        return
+
+
+    def set_completer(_):
+        return
+
+
     def write_history_file(histfile: str):
         return
 
@@ -174,7 +183,7 @@ class UserInterface(TrepanInterface):
 
 # Demo
 if __name__ == "__main__":
-    print(f"History file is {histfile}")
+    print("History file is %s" % histfile)
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
     import sys

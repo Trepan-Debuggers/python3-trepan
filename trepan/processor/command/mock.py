@@ -26,6 +26,9 @@ from trepan.lib import breakpoint, default
 
 
 class MockIO:
+    def __init__(self):
+        self.session = None
+
     def readline(self, prompt="", add_to_history=False):
         print(prompt)
         return "quit"
@@ -42,6 +45,7 @@ class MockUserInterface:
         self.output = MockIO()
         self.debugger_name = "trepan3k"
         self.histfile = "/tmp/.trepanrc"
+        self.input = MockIO()
         return
 
     def confirm(self, msg, default):

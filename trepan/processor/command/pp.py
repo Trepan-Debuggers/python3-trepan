@@ -18,7 +18,6 @@ from trepan.lib.pp import pp
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.pp import pp
 from trepan.processor.complete_rl import complete_identifier
 
 

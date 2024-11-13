@@ -22,27 +22,24 @@ analogous to GNU Readlines' parse_and_bind().
 # NOTE: this same code also exists in mathicsscript. Hopefully in the future
 # we will have a way to avoid the duplication.
 
-
-import pathlib
+import os.path as osp
 import re
 from prompt_toolkit.key_binding import KeyBindings
-from typing import Callable
 
 bindings = KeyBindings()
 
-def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
+def read_inputrc(read_init_file_fn, use_unicode: bool) -> None:
     """
     Read GNU Readline style inputrc for prompt_toolkit
     """
     # GNU Readline inputrc $include's paths are relative to itself,
     # so chdir to its directory before reading the file.
-    parent_dir = pathlib.Path(__file__).parent.absolute()
-    with parent_dir:
-        inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-        try:
-            read_init_file_fn(str(parent_dir / "data" / inputrc))
-        except Exception:
-            pass
+    parent_dir = osp.abspath(osp.join(__file__, ".."))
+    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+    try:
+        read_init_file_fn(osp.join(parent_dir, "data", inputrc))
+    except Exception:
+        pass
 
 
 def read_init_file(path: str):
@@ -61,15 +58,18 @@ def read_init_file(path: str):
             continue
         fields = re.split(r"\s*: ", line)
         if len(fields) != 2:
-            print(f"{line_no+1}: expecting 2 fields, got {len(fields)} in:\n{line}")
+            print("{line_no+1}: expecting 2 fields, got {len(fields)} in:\n{line}" %
+                  (line_no + 1, len(fields), line))
             continue
         alias, replacement = fields
         if not check_quoted(alias):
-            print(f"{line_no+1}: expecting alias to be quoted, got {alias} in:\n{line}")
+            print("%s: expecting alias to be quoted, got %s in:\n%s" %
+                  (line_no + 1, alias, line))
         alias = alias[1:-1]
         if not check_quoted(replacement):
             print(
-                f"{line_no+1}: expecting replacement to be quoted, got {replacement} in:\n{line}"
+                "%s: expecting replacement to be quoted, got %s in:\n%s" %
+                (line_no + 1, replacement, line)
             )
             continue
         replacement = replacement[1:-1]

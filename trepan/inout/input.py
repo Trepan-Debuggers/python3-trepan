@@ -44,7 +44,7 @@ else:
         if os.access(USER_INPUTRC, os.R_OK):
             read_init_file(USER_INPUTRC)
         else:
-            sys.stderr.write(f"Can't read user inputrc file {USER_INPUTRC}; skipping\n")
+            sys.stderr.write("Can't read user inputrc file %s; skipping\n" % USER_INPUTRC)
 
 
 class DebuggerUserInput(Mbase.DebuggerInputBase):
@@ -74,7 +74,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
                     if self.session.editing_mode == EditingMode.EMACS
                     else EditingMode.EMACS
                 )
-                print(f"\nedit mode is now {self.session.editing_mode}")
+                print("\nedit mode is now %s" % self.session.editing_mode)
 
             self.input = self.session.input
             self.line_edit = True
@@ -123,7 +123,7 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         """
         if self.session:
             # Using prompt_toolkit
-            html_prompt = HTML(f"<u>{prompt.strip()}</u> ")
+            html_prompt = HTML("<u>%s</u> " % prompt.strip())
             line = self.session.prompt(html_prompt, style=Style.from_dict({"": ""}))
             return line.rstrip("\n")
 

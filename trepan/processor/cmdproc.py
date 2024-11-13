@@ -244,7 +244,7 @@ class CommandProcessor(Processor):
                 if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
                     trepan3k_completer.add_completions(cmd, sorted(cmd_obj.cmds.cmdlist))
                     for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
-                        subcmd_key = f"{cmd} {subcmd_name}"
+                        subcmd_key = "%s %s" % (cmd, subcmd_name)
                         if hasattr(subcmd_obj, "completion_choices"):
                             trepan3k_completer.add_completions(
                                 subcmd_key, sorted(subcmd_obj.completion_choices)

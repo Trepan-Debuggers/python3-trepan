@@ -19,7 +19,6 @@ from trepan.lib.printing import printf
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.lib.printing import printf
 from trepan.processor.complete_rl import complete_identifier
 
 
