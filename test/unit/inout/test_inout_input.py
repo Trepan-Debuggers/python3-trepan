@@ -1,5 +1,6 @@
 """Unit test for trepan.inout.input"""
 import os.path as osp
+import pytest
 
 from trepan.inout.input import DebuggerUserInput
 
