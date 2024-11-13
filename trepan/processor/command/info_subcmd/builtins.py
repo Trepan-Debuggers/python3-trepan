@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2024 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 
 
 class InfoBuiltins(Mbase_subcmd.DebuggerSubcommand):
@@ -31,7 +31,7 @@ class InfoBuiltins(Mbase_subcmd.DebuggerSubcommand):
 
     def complete(self, prefix):
         completions = sorted(["*"] + self.proc.curframe.f_builtins.keys())
-        return Mcomplete.complete_token(completions, prefix)
+        return complete_token(completions, prefix)
 
     def run(self, args):
         if not self.proc.curframe:

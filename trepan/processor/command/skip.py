@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdproc import print_location
-from trepan.lib import bytecode as Mbytecode
+from trepan.lib.bytecode import next_linestart
 
 
 class SkipCommand(DebuggerCommand):
@@ -53,14 +53,14 @@ class SkipCommand(DebuggerCommand):
         if len(args) == 1:
             count = 1
         else:
-            msg = "skip: expecting a number, got %s." % args[1]
+            msg = f"skip: expecting a number, got {args[1]}."
             count = self.proc.get_an_int(args[1], msg)
             pass
         co = self.proc.curframe.f_code
         offset = self.proc.curframe.f_lasti
         if count is None:
             return False
-        lineno = Mbytecode.next_linestart(co, offset, count)
+        lineno = next_linestart(co, offset, count)
 
         if lineno < 0:
             self.errmsg("No next line found")
@@ -76,7 +76,7 @@ class SkipCommand(DebuggerCommand):
             )
             print_location(self.proc)
         except ValueError as e:
-            self.errmsg("skip failed: %s" % e)
+            self.errmsg(f"skip failed: {e}")
         return False
 
     pass

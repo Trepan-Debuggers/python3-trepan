@@ -22,7 +22,7 @@ import columnize
 import pyficache
 
 from trepan import misc as Mmisc
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 from trepan.lib.file import file_list
 
 # Our local modules
@@ -34,9 +34,11 @@ class InfoFiles(DebuggerSubcommand):
     need_stack = False
     short_help = "Show information about an imported or loaded Python file"
 
+
     def complete(self, prefix):
         completions = sorted(["."] + file_list())
-        return Mcomplete.complete_token(completions, prefix)
+        return complete_token(completions, prefix)
+
 
     def run(self, args):
         """**info files** [*filename* [**all** | **brkpts** | **sha1** | **size**]]

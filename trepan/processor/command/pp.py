@@ -17,7 +17,7 @@
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.lib.pp import pp
-from trepan.processor.complete import complete_identifier
+from trepan.processor.complete_rl import complete_identifier
 
 
 class PrettyPrintCommand(DebuggerCommand):

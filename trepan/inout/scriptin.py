@@ -30,6 +30,8 @@ class ScriptInput(Mbase.DebuggerInputBase):
         self.input = None
         self.line_edit = False  # Our name for GNU readline capability
         self.name = None
+        self.opts = opts
+        self.session = None
         self.open(inp, opts)
         return
 

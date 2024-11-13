@@ -18,7 +18,7 @@ from pyficache import highlight_string
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 
 
 class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
@@ -39,7 +39,8 @@ class InfoMacro(Mbase_subcmd.DebuggerSubcommand):
 
     def complete(self, prefix):
         m = sorted(list(self.proc.macros.keys()) + ["*"])
-        return Mcomplete.complete_token(m, prefix)
+        return complete_token(m, prefix)
+
 
     def run(self, args):
         if len(args) > 0:

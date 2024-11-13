@@ -12,10 +12,6 @@ from trepan.lib.complete import complete_token
 style_names = sorted(list(STYLE_MAP.keys()))
 
 
-def complete(self, prefix):
-    return complete_token(style_names)
-
-
 class ShowStyle(DebuggerSubcommand):
     """**show style* *pygments-style*
 
@@ -29,6 +25,10 @@ class ShowStyle(DebuggerSubcommand):
     in_list = True
     min_abbrev = len("sty")
     short_help = "Set the pygments style"
+
+    def complete(self, prefix):
+        return complete_token(style_names)
+
 
     def run(self, args):
         if len(args) != 0:

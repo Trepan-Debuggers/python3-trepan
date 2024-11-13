@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015, 2018 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2012-2013, 2015, 2018, 2024
+#   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.processor import complete as Mcomplete
+from trepan.processor.complete_rl import complete_bpnumber
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
@@ -54,11 +55,11 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
 
     """
 
-    min_abbrev = 1  # Min is info b
+    min_abbrev = len("b")
     need_stack = False
     short_help = "Status of user-settable breakpoints"
 
-    complete = Mcomplete.complete_bpnumber
+    complete = complete_bpnumber
 
     def bpprint(self, bp):
         if bp.temporary:

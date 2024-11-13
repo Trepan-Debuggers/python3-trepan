@@ -5,13 +5,13 @@ Debugger Command Syntax
 
 Command names and arguments are separated with spaces like POSIX shell
 syntax. Parenthesis around the arguments and commas between them are
-not used. If the first non-blank character of a line starts with `#`,
+not used. If the first non-blank character of a line starts with ``#``,
 the command is ignored.
 
-Commands are split at whereever `;;` appears. This process disregards
+Commands are split at wherever ``;;`` appears. This process disregards
 any quotes or other symbols that have meaning in Python. The strings
 after the leading command string are put back on a command queue, and
-there should be white space around ';;'.
+there should be white space around ``;;``.
 
 Within a single command, tokens are then white-space split. Again,
 this process disregards quotes or symbols that have meaning in Python.
@@ -38,7 +38,7 @@ are dispatched to that command.
 
 4. If after all of the above, we still don't find a command, the line
 may be evaluated as a Python statement in the current context of the
-program at the point it is stoppped. However this is done only if
+program at the point it is stopped. However, this is done only if
 "auto evaluation" is on.  It is on by default.
 
 If :ref:`auto eval <set_autoeval>` is not set on, or if running the
