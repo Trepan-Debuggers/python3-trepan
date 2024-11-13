@@ -19,7 +19,10 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
+from trepan.lib.format import Function, format_token
+
 from trepan.lib.stack import format_function_name
+from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
 
@@ -111,19 +114,21 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             frame_num = proc.curindex
 
         mess = (
-            "Frame %d" % Mframe.frame_num(proc, frame_num)
+            f"Frame {Mframe.frame_num(proc, frame_num)}"
             if frame_num is not None and proc.stack is not None
             else "Frame Info"
         )
         self.section(mess)
 
-        function_name, formatted_func_name = format_function_name(frame, style=style)
+        _, formatted_func_name = format_function_name(frame, style=style)
         f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
         self.msg("  function name: %s" % formatted_func_name)
         func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg("  function args: %s" % formatted_func_signature)
 
+        formatted_thread_name = format_token(Function, current_thread_name(), style=style)
+        self.msg("  thread: %s" % formatted_thread_name)
         # signature = highlight_string(inspect.signature(frame))
         # self.msg(f"  signature : {signature}")
 
@@ -146,9 +151,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg("  code: %s" % frame.f_code)
         self.msg("  previous frame: %s" % format_frame(frame.f_back))
         self.msg("  tracing function: %s" % frame.f_trace)
-
-        if hasattr(frame, "f_restricted"):
-            self.msg("  restricted execution: %s" % frame.f_restricted)
 
         if is_verbose:
             for name, field in [
