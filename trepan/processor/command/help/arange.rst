@@ -2,7 +2,7 @@ Syntax for Address Ranges
 =========================
 
 Address ranges are used in the `disassemble` command. It is like a
-range but we allow addresses. An add
+range, but we allow addresses.
 
 An address range is in one of the following forms:
 
@@ -22,11 +22,11 @@ Examples
 --------
 
 ::
-  
+
   *5                 # start from bytecode offset 5 of current file
   *5 ,                 # Same as above.
   foo.py:*5            # start from bytecode offset 5 of file foo.py
-  
+
 
 See also
 ---------

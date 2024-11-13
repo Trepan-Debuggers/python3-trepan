@@ -37,9 +37,10 @@ import trepan.lib.display as Mdisplay
 import trepan.lib.file as Mfile
 import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
+from trepan.interfaces.script import ScriptInterface
 from trepan.lib.bytecode import is_class_def, is_def_stmt
-from trepan.processor.complete import completer
 from trepan.processor.print import print_location
+from trepan.processor.complete_rl import completer
 from trepan.vprocessor import Processor
 
 
@@ -196,11 +197,6 @@ class CommandProcessor(Processor):
 
         self._populate_cmd_lists()
 
-        # Note: prompt_str's value set below isn't used. It is
-        # computed dynamically. The value is suggestive of what it
-        # looks like.
-        self.prompt_str = "(trepan3k) "
-
         # Stop only if line/file is different from last time
         self.different_line = None
 
@@ -233,6 +229,38 @@ class CommandProcessor(Processor):
         initfile_list = get_option("initfile_list")
         for init_cmdfile in initfile_list:
             self.queue_startfile(init_cmdfile)
+
+        self.set_prompt()
+
+        # Set up prompt-toolkit completion
+        if self.is_using_prompt_toolkit():
+            from trepan.processor.complete_ptk import Trepan3KCompleter
+
+            trepan3k_completer = Trepan3KCompleter(
+                list(self.commands.keys()), self.aliases
+            )
+
+            for cmd, cmd_obj in self.commands.items():
+                if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
+                    trepan3k_completer.add_completions(cmd, sorted(cmd_obj.cmds.cmdlist))
+                    for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
+                        subcmd_key = f"{cmd} {subcmd_name}"
+                        if hasattr(subcmd_obj, "completion_choices"):
+                            trepan3k_completer.add_completions(
+                                subcmd_key, sorted(subcmd_obj.completion_choices)
+                            )
+                            pass
+                        pass
+                elif hasattr(cmd_obj, "completion_choices"):
+                    trepan3k_completer.add_completions(
+                        cmd, sorted(cmd_obj.completion_choices)
+                    )
+                    pass
+                pass
+
+            for i in self.intf:
+                if i.input.session is not None:
+                    i.input.session.completer = trepan3k_completer
         return
 
     def _saferepr(self, str, maxwidth=None):
@@ -273,7 +301,8 @@ class CommandProcessor(Processor):
             ")" * self.debug_nest,
         )
         highlight = self.debugger.settings["highlight"]
-        if highlight and highlight in ("light", "dark"):
+        using_prompt_toolkit = self.is_using_prompt_toolkit()
+        if not using_prompt_toolkit and highlight and highlight in ("light", "dark"):
             self.prompt_str = colorize("underline", self.prompt_str)
         self.prompt_str += " "
 
@@ -484,6 +513,9 @@ class CommandProcessor(Processor):
             raise
         return
 
+    def is_using_prompt_toolkit(self) -> bool:
+        return self.intf[-1].input.session is not None
+
     def ok_for_running(self, cmd_obj, name, nargs):
         """We separate some of the common debugger command checks here:
         whether it makes sense to run the command in this execution state,
@@ -549,7 +581,7 @@ class CommandProcessor(Processor):
                     self.last_command = ""
                 else:
                     if self.debugger.intf[-1].output:
-                        self.debugger.intf[-1].output.writeline("Leaving")
+                        self.debugger.intf[-1].msg("Leaving")
                         raise SystemExit
                         pass
                     break
@@ -562,7 +594,7 @@ class CommandProcessor(Processor):
             while frame:
                 del frame.f_trace
                 frame = frame.f_back
-            self.debugger.intf[-1].output.writeline("Fast continue...")
+            self.debugger.intf[-1].msg("Fast continue...")
             remove_hook(self.core.trace_dispatch, True)
 
         return
@@ -704,6 +736,8 @@ class CommandProcessor(Processor):
             pass
         if self.event in ["exception", "c_exception"]:
             exc_type, exc_value, exc_traceback = self.event_arg
+        elif self.event == "finished":
+            self.frame = exc_traceback = None
         else:
             _, _, exc_traceback = (
                 None,
@@ -751,7 +785,11 @@ class CommandProcessor(Processor):
         expanded_cmdfile = osp.expanduser(cmdfile)
         is_readable = Mfile.readable(expanded_cmdfile)
         if is_readable:
-            self.cmd_queue.append("source " + expanded_cmdfile)
+            script_intf = ScriptInterface(
+                expanded_cmdfile, out=self.debugger.intf[-1].output
+            )
+            self.debugger.intf.append(script_intf)
+            # self.cmd_queue.append("source " + expanded_cmdfile)
         elif is_readable is None:
             self.errmsg("source file '%s' doesn't exist" % expanded_cmdfile)
         else:

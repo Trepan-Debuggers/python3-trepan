@@ -205,7 +205,8 @@ class LocationGrok(GenericASTTraversal, object):
                     Location(None, last_node.value, False, None, offset=None), None
                 )
             else:
-                assert last_node == "DIRECTION"
+                if last_node != "DIRECTION":
+                    raise RangeError("Expecting a range direction at the end")
                 self.result = ListRange(None, last_node.value)
                 pass
             self.prune()

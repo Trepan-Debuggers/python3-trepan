@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.complete import complete_bpnumber
+from trepan.processor.complete_rl import complete_bpnumber
 
 
 class ConditionCommand(DebuggerCommand):

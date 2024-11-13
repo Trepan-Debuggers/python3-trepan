@@ -73,9 +73,9 @@ def setup_unit_test_debugger(
     return d, cp
 
 
-def readline_yes(prompt=None) -> str:
+def readline_yes(prompt=None, use_raw: bool=False) -> str:
     return "Y"
 
 
-def readline_no(prompt=None) -> str:
+def readline_no(prompt=None, use_raw: bool=False) -> str:
     return "N"

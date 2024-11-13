@@ -56,24 +56,26 @@ class SetHighlight(DebuggerSubcommand):
     ---------
     `show highlight` and `set style`"""
 
+    # Note: the "completion_choices" name is special and used by prompt_toolkit's completion
+    completion_choices = ("reset", "plain", "light", "dark", "off")
+
     in_list = True
     min_abbrev = len("hi")
     short_help = "Set whether we use terminal highlighting"
 
-    highlight_choices = ("reset", "plain", "light", "dark", "off")
 
     def complete(self, prefix):
-        return complete_token(SetHighlight.highlight_choices, prefix)
+        return complete_token(SetHighlight.completion_choices, prefix)
 
     def get_highlight_type(self, arg):
         if not arg:
             return "light"
-        if arg in SetHighlight.highlight_choices:
+        if arg in SetHighlight.completion_choices:
             return arg
         else:
             self.errmsg(
                 'Expecting %s"; got %s'
-                % (", ".join(SetHighlight.highlight_choices), arg)
+                % (", ".join(SetHighlight.completion_choices), arg)
             )
             return None
         pass

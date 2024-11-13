@@ -34,11 +34,12 @@ if necessary, first.
 # functions below.  It also doesn't work once we add the exception handling
 # we see below. So for now, we'll live with the code duplication.
 
+import os
 import sys
 
 from trepan.debugger import Trepan, debugger_obj
+from trepan.interfaces.server import ServerInterface
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
-
 
 def debugger_on_post_mortem():
     """Call debugger on an exception that terminates a program"""
@@ -46,94 +47,10 @@ def debugger_on_post_mortem():
     return
 
 
-def run_eval(
-    expression,
-    debug_opts = None,
-    start_opts = None,
-    globals_ = None,
-    locals_ = None,
-    tb_fn = None,
-):
-    """Evaluate the expression (given as a string) under debugger
-    control starting with the statement after the place that
-    this appears in your program.
-
-    This is a wrapper to Debugger.run_eval(), so see that.
-
-    When run_eval() returns, it returns the value of the expression.
-    Otherwise, this function is similar to run().
-    """
-
-    dbg = Trepan(opts=debug_opts)
-    try:
-        return dbg.run_eval(
-            expression, start_opts=start_opts, globals_=globals_, locals_=locals_
-        )
-    except Exception:
-        dbg.core.trace_hook_suspend = True
-        if start_opts and "tb_fn" in start_opts:
-            tb_fn = start_opts["tb_fn"]
-        uncaught_exception(dbg, tb_fn)
-    finally:
-        dbg.core.trace_hook_suspend = False
-    return
-
-
-def run_call(
-    func,
-    *args,
-    **kwds
-):
-    """Call the function (a function or method object, not a string)
-    with the given arguments starting with the statement after
-    the place that this appears in your program.
-
-    When run_call() returns, it returns whatever the function call
-    returned.  The debugger prompt appears as soon as the function is
-    entered."""
-
-
-    debug_opts = None
-    if "debug_opts" in kwds:
-        debug_opts = kwds.pop("debug_opts")
-
-    dbg = Trepan(opts=debug_opts)
-    try:
-        return dbg.run_call(func, *args, **kwds)
-    except Exception:
-        uncaught_exception(dbg)
-        pass
-    return
-
-
-def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_=None):
-    """Execute the statement (given as a string) under debugger
-    control starting with the statement subsequent to the place that
-    this run_call appears in your program.
-
-    This is a wrapper to Debugger.run_exec(), so see that.
-
-    The debugger prompt appears before any code is executed;
-    you can set breakpoints and type 'continue', or you can step
-    through the statement using 'step' or 'next'
-
-    The optional globals_ and locals_ arguments specify the environment
-    in which the code is executed; by default the dictionary of the
-    module __main__ is used."""
-
-    dbg = Trepan(opts=debug_opts)
-    try:
-        return dbg.run_exec(
-            statement, start_opts=start_opts, globals_=globals_, locals_=locals_
-        )
-    except Exception:
-        uncaught_exception(dbg)
-        pass
-    return
-
+DEFAULT_DEBUG_PORT = 1955
 
 def debug(
-    dbg_opts=None,
+    dbg_opts={},
     start_opts=None,
     post_mortem: bool = True,
     step_ignore: int = 1,
@@ -277,6 +194,109 @@ def debug(
         pass
     return
 
+
+def debug_for_remote_access():
+    """Enter the debugger in a mode that allows connection to it
+    outside of the process being debugged.
+    """
+    connection_opts = {'IO': 'TCP', 'PORT': os.getenv('TREPAN3K_TCP_PORT', DEFAULT_DEBUG_PORT)}
+    intf = ServerInterface(connection_opts=connection_opts)
+    dbg_opts = {'interface': intf}
+    print(f'Starting {connection_opts["IO"]} server listening on {connection_opts["PORT"]}.', file=sys.stderr)
+    print(f'Use `python3 -m trepan.client --port {connection_opts["PORT"]}` to enter debugger.', file=sys.stderr)
+    debug(dbg_opts=dbg_opts, step_ignore=0, level=1)
+
+
+def debugger_on_post_mortem():
+    """Call debugger on an exception that terminates a program"""
+    sys.excepthook = post_mortem_excepthook
+    return
+
+
+def run_eval(
+    expression,
+    debug_opts = None,
+    start_opts = None,
+    globals_ = None,
+    locals_ = None,
+    tb_fn = None,
+):
+    """Evaluate the expression (given as a string) under debugger
+    control starting with the statement after the place that
+    this appears in your program.
+
+    This is a wrapper to Debugger.run_eval(), so see that.
+
+    When run_eval() returns, it returns the value of the expression.
+    Otherwise, this function is similar to run().
+    """
+
+    dbg = Trepan(opts=debug_opts)
+    try:
+        return dbg.run_eval(
+            expression, start_opts=start_opts, globals_=globals_, locals_=locals_
+        )
+    except Exception:
+        dbg.core.trace_hook_suspend = True
+        if start_opts and "tb_fn" in start_opts:
+            tb_fn = start_opts["tb_fn"]
+        uncaught_exception(dbg, tb_fn)
+    finally:
+        dbg.core.trace_hook_suspend = False
+    return
+
+
+def run_call(
+    func,
+    *args,
+    **kwds
+):
+    """Call the function (a function or method object, not a string)
+    with the given arguments starting with the statement after
+    the place that this appears in your program.
+
+    When run_call() returns, it returns whatever the function call
+    returned.  The debugger prompt appears as soon as the function is
+    entered."""
+
+
+    debug_opts = None
+    if "debug_opts" in kwds:
+        debug_opts = kwds.pop("debug_opts")
+
+    dbg = Trepan(opts=debug_opts)
+    try:
+        return dbg.run_call(func, *args, **kwds)
+    except Exception:
+        uncaught_exception(dbg)
+        pass
+    return
+
+
+def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_=None):
+    """Execute the statement (given as a string) under debugger
+    control starting with the statement subsequent to the place that
+    this run_call appears in your program.
+
+    This is a wrapper to Debugger.run_exec(), so see that.
+
+    The debugger prompt appears before any code is executed;
+    you can set breakpoints and type 'continue', or you can step
+    through the statement using 'step' or 'next'
+
+    The optional globals_ and locals_ arguments specify the environment
+    in which the code is executed; by default the dictionary of the
+    module __main__ is used."""
+
+    dbg = Trepan(opts=debug_opts)
+    try:
+        return dbg.run_exec(
+            statement, start_opts=start_opts, globals_=globals_, locals_=locals_
+        )
+    except Exception:
+        uncaught_exception(dbg)
+        pass
+    return
 
 def stop(opts=None):
     if isinstance(debugger_obj, Trepan):

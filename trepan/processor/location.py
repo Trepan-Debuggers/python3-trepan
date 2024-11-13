@@ -156,6 +156,9 @@ def resolve_location(proc, location):
                 print("No offset found for %s %s" % (filename, lineno))
 
     elif location.line_number:
+        if curframe is None:
+            proc.errmsg("Current frame is not set")
+            return INVALID_LOCATION
         filename = frame2file(proc.core, curframe, canonic=False)
         lineno = location.line_number
         is_address = location.is_address

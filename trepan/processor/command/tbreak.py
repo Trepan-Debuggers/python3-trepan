@@ -19,7 +19,7 @@ from trepan.processor.cmdbreak import parse_break_cmd, set_break
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.complete import complete_break_linenumber
+from trepan.processor.complete_rl import complete_break_linenumber
 
 
 class TempBreakCommand(DebuggerCommand):

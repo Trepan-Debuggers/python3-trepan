@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020, 2023-2024 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@ from trepan.processor.cmdbreak import parse_break_cmd, set_break
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.complete import complete_break_linenumber
+from trepan.processor.complete_rl import complete_break_linenumber
 
 
 class BreakCommand(DebuggerCommand):
