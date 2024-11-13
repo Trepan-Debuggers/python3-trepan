@@ -21,8 +21,8 @@ Set the style of format to use in disassembly:
      ``bytes`` format along with ``extended`` format
 
 
-Examples:
-+++++++++
+Frame Examples:
++++++++++++++++
 
 .. code-block::
 
