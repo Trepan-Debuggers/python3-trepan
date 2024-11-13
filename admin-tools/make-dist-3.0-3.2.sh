@@ -12,7 +12,7 @@ trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-if ! source ./pyenv-3.0-3.1-versions ; then
+if ! source ./pyenv-3.0-3.2-versions ; then
     exit $?
 fi
 if ! source ./setup-python-3.0.sh ; then
@@ -27,7 +27,7 @@ fi
 echo $__version__
 
 for pyversion in $PYVERSIONS; do
-o    echo --- $pyversion ---
+    echo --- $pyversion ---
     if [[ ${pyversion:0:4} == "pypy" ]] ; then
 	echo "$pyversion - PyPy does not get special packaging"
 	continue
