@@ -114,7 +114,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             frame_num = proc.curindex
 
         mess = (
-            f"Frame {Mframe.frame_num(proc, frame_num)}"
+            ("Frame %s" % Mframe.frame_num(proc, frame_num))
             if frame_num is not None and proc.stack is not None
             else "Frame Info"
         )
@@ -149,7 +149,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         self.msg("  last instruction: %d" % frame.f_lasti)
         self.msg("  code: %s" % frame.f_code)
-        self.msg("  previous frame: %s" % format_frame(frame.f_back))
+        self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
         self.msg("  tracing function: %s" % frame.f_trace)
 
         if is_verbose:
