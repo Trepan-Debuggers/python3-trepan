@@ -23,8 +23,8 @@ Sets the events that the debugger will stop on. Event names are:
 Changing trace event filters works independently of turning on or off
 tracing-event printing.
 
-Examples:
-+++++++++
+Set Events Examples:
+++++++++++++++++++++
 
 ::
 
