@@ -16,29 +16,24 @@
 
 import codecs
 import os
-import os.path as osp
 import sys
 from optparse import OptionParser
 
 from pygments.styles import STYLE_MAP
 
 import trepan.api
-from trepan.clifns import path_expanduser_abs
+from trepan.clifns import default_configfile
 from trepan.inout.output import DebuggerUserOutput
 from trepan.lib.file import readable
 
+try:
+    import prompt_toolkit  # NOQA
+except ImportError:
+    have_prompt_toolkit = False
+else:
+    have_prompt_toolkit = True
 
-def default_configfile(base_filename: str) -> str:
-    """Return fully expanded configuration filename location for
-    base_filename. python2 and  python3 debuggers share the same
-    directory: ~/.config/trepan.py
-    """
-    file_dir = osp.join(os.environ.get("HOME", "~"), ".config", "trepanpy")
-    file_dir = path_expanduser_abs(file_dir)
-
-    if not osp.isdir(file_dir):
-        os.makedirs(file_dir, mode=0o755)
-    return osp.join(file_dir, base_filename)
+have_gnu_readline = False
 
 
 def add_startup_file(dbg_initfiles: list):
@@ -90,7 +85,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="linetrace",
         action="store_true",
         default=False,
-        help="Show lines before executing them. This option also sets --batch",
+        help="Show lines before executing them. This option also sets --batch.",
     )
     optparser.add_option(
         "-F",
@@ -98,14 +93,14 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="fntrace",
         action="store_true",
         default=False,
-        help="Show functions before executing them. This option also sets --batch",
+        help="Show functions before executing them.",
     )
     optparser.add_option(
         "--basename",
         dest="basename",
         action="store_true",
         default=False,
-        help="Filenames strip off basename, (e.g. for regression tests)",
+        help="Show file path basenames, e.g. for regression tests.",
     )
     #     optparser.add_option("--batch", dest="noninteractive",
     #                          action="store_true", default=False,
@@ -117,7 +112,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         action="store_true",
         help="Connect to an existing debugger process "
         "started with the --server option. "
-        "See options for client.",
+        "See also options -H and -P.",
     )
     optparser.add_option(
         "-x",
@@ -141,32 +136,47 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="confirm",
         action="store_true",
         default=True,
-        help="Confirm potentially dangerous operations",
+        help="Confirm potentially dangerous operations.",
+    )
+    optparser.add_option(
+        "--no-confirm",
+        dest="confirm",
+        action="store_false",
+        default=True,
+        help="Do not confirm potentially dangerous operations.",
     )
     optparser.add_option(
         "--dbg_trepan",
         dest="dbg_trepan",
         action="store_true",
         default=False,
-        help="Debug the debugger",
+        help="Allow debugging the debugger.",
     )
     optparser.add_option(
         "--different",
         dest="different",
         action="store_true",
         default=True,
-        help="Consecutive stops should have different positions",
+        help="Consecutive debugger stops should have different positions.",
     )
     #     optparser.add_option("--error", dest="errors", metavar='FILE',
     #                          action="store", type='string',
     #                          help="Write debugger's error output "
     #                          + "(stderr) to FILE")
     optparser.add_option(
+        "--edit-mode",
+        default="emacs",
+        dest="edit_mode",
+        type="string",
+        help='Set debugger-input edit mode, either "emacs" or "vi".',
+    )
+
+    optparser.add_option(
         "-e",
         "--exec",
         dest="execute",
         type="string",
-        help="list of debugger commands to " + "execute. Separate the commands with ;;",
+        help='list of debugger commands to " + "execute. Separate the commands with ";;".',
     )
 
     optparser.add_option(
@@ -187,7 +197,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         type="string",
         metavar="{light|dark|plain}",
         default="light",
-        help="Use syntax and terminal highlight output. 'plain' is no highlight",
+        help="Use syntax and terminal highlight output. 'plain' is no highlighting.",
     )
 
     optparser.add_option(
@@ -195,7 +205,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="private",
         action="store_true",
         default=False,
-        help="Don't register this as a global debugger",
+        help="Don't register this as a global debugger.",
     )
 
     optparser.add_option(
@@ -203,21 +213,21 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="main",
         action="store_true",
         default=True,
-        help="First stop should be in __main__",
+        help="First stop should be in __main__.",
     )
     optparser.add_option(
         "--no-main",
         dest="main",
         action="store_false",
         default=True,
-        help="First stop should be in __main__",
+        help="First stop should not be in __main__.",
     )
     optparser.add_option(
         "--post-mortem",
         dest="post_mortem",
         action="store_true",
         default=True,
-        help="Enter debugger on an uncaught (fatal) exception",
+        help="Enter debugger on an uncaught (fatal) exception.",
     )
 
     optparser.add_option(
@@ -225,7 +235,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="post_mortem",
         action="store_false",
         default=True,
-        help="Don't enter debugger on an uncaught (fatal) exception",
+        help="Don't enter debugger on an uncaught (fatal) exception.",
     )
 
     optparser.add_option(
@@ -234,7 +244,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="noexecute",
         action="store_true",
         default=False,
-        help="Don't execute commands found in any initialization files",
+        help="Don't execute commands found in any initialization files.",
     )
 
     optparser.add_option(
@@ -244,7 +254,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         metavar="FILE",
         action="store",
         type="string",
-        help="Write debugger's output (stdout) to FILE",
+        help="Write debugger's output (stdout) to FILE.",
     )
     optparser.add_option(
         "-P",
@@ -260,7 +270,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         "--server",
         dest="server",
         action="store_true",
-        help="Out-of-process server connection mode",
+        help='Out-of-process or "headless" server-connection mode.',
     )
 
     optparser.add_option(
@@ -278,7 +288,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="sigcheck",
         action="store_true",
         default=False,
-        help="Set to watch for signal handler changes",
+        help="Set to watch for signal handler changes.",
     )
     optparser.add_option(
         "-t",
@@ -294,7 +304,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
         dest="from_ipython",
         action="store_true",
         default=False,
-        help="Called from inside ipython",
+        help="Called from inside ipython.",
     )
 
     # annotate option produces annotations, used in trepan.el for a
@@ -310,8 +320,28 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     # annotation. A line with only two ^Z ends the annotation (no nesting
     # allowed). See trepan.el for the usage
     optparser.add_option(
-        "--annotate", default=0, type="int", help="Use annotations to work inside emacs"
+        "--annotate",
+        default=0,
+        type="int",
+        help="Use annotations to work inside GNU Emacs.",
     )
+
+    readline = None
+    if have_prompt_toolkit:
+        optparser.add_option(
+            "--prompt-toolkit",
+            dest="use_prompt_toolkit",
+            action="store_true",
+            default=False,
+            help="Try using prompt_toolkit. This take precedence over the --gnu-readline option",
+        )
+        optparser.add_option(
+            "--no-prompt-toolkit",
+            dest="use_prompt_toolkit",
+            action="store_false",
+            default=False,
+            help="Do not use prompt_toolkit.",
+        )
 
     # Set up to stop on the first non-option because that's the name
     # of the script to be debugged on arguments following that are
@@ -322,8 +352,31 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
     optparser.disable_interspersed_args()
 
     sys.argv = list(sys_argv)
+
+    # Here is where we *parse* arguments
     (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
-    dbg_opts = {"from_ipython": opts.from_ipython}
+
+    if opts.edit_mode not in ("vi", "emacs"):
+        sys.stderr.write(
+            'Option --editmode should be either "emacs" or "vi"; assuming "emacs".\n'
+            ('Got: "%s".\n' % opts.edit_mode)
+        )
+        opts.edit_mode = "emacs"
+
+    readline = (
+        "prompt_toolkit"
+        if hasattr(opts, "use_prompt_toolkit") and opts.use_prompt_toolkit
+        else "readline"
+    )
+
+    dbg_opts = {
+        "from_ipython": opts.from_ipython,
+        "interface_opts": {
+            "readline": readline,
+            "debugger_name": "trepan3k",
+            "edit_mode": opts.edit_mode,
+        },
+    }
 
     # Handle debugger startup command files: --nx (-n) and --command.
     dbg_initfiles = []

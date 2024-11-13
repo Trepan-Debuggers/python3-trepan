@@ -22,7 +22,7 @@ from getopt import getopt, GetoptError
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 from trepan.lib import pp as Mpp
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 
 # when the "with" statement is used, there
 # can be get variables having names
@@ -53,7 +53,7 @@ class InfoLocals(Mbase_subcmd.DebuggerSubcommand):
 
     def complete(self, prefix):
         completions = sorted(["*"] + self.proc.curframe.f_locals.keys())
-        return Mcomplete.complete_token(completions, prefix)
+        return complete_token(completions, prefix)
 
     def run(self, args):
         if not self.proc.curframe:

@@ -5,4 +5,4 @@
 # debugger version number.
 
 # fmt: off
-__version__="1.3.0.dev0"  # noqa
+__version__="1.3.0"  # noqa

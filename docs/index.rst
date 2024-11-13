@@ -26,10 +26,10 @@ An Emacs interface is available via realgud_.
 
    features
    install
+   options
    entry-exit
    syntax
    commands
-   manpages
 
 Indices and tables
 ==================

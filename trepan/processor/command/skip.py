@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdproc import print_location
-from trepan.lib import bytecode as Mbytecode
+from trepan.lib.bytecode import next_linestart
 
 
 class SkipCommand(DebuggerCommand):
@@ -60,7 +60,7 @@ class SkipCommand(DebuggerCommand):
         offset = self.proc.curframe.f_lasti
         if count is None:
             return False
-        lineno = Mbytecode.next_linestart(co, offset, count)
+        lineno = next_linestart(co, offset, count)
 
         if lineno < 0:
             self.errmsg("No next line found")

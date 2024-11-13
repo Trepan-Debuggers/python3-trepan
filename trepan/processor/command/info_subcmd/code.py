@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from trepan.lib import complete as Mcomplete
+from trepan.lib.complete import complete_token
 from trepan.processor import frame as Mframe
 
 # Our local modules
@@ -54,7 +54,8 @@ class InfoCode(Mbase_subcmd.DebuggerSubcommand):
         low, high = Mframe.frame_low_high(proc_obj, None)
         ary = [str(low + i) for i in range(high - low + 1)]
         # FIXME: add in Thread names
-        return Mcomplete.complete_token(ary, prefix)
+        return complete_token(ary, prefix)
+
 
     def run(self, args):
         proc = self.proc

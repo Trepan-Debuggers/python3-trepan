@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009-2010, 2013-2015, 2017, 2023 Rocky Bernstein
+#   Copyright (C) 2009-2010, 2013-2015, 2017, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,33 @@
 """Debugger input possibly attached to a user or interactive. """
 
 import io
+import os
+import os.path as osp
 import sys
 
-from trepan import misc as Mmisc
+from trepan.clifns import default_configfile
 from trepan.inout import base as Mbase
 
+try:
+    from prompt_toolkit import HTML, PromptSession
+    from prompt_toolkit.enums import EditingMode
+    from prompt_toolkit.history import FileHistory
+    from prompt_toolkit.styles import Style
+except:
+    PromptSession = lambda history: None
+    FileHistory = lambda history: None
+    HTML = lambda string: string
+else:
+    from trepan.inout.ptk_bindkeys import bindings, read_inputrc, read_init_file
 
-def readline_importable() -> bool:
-    try:
-        import readline  # NOQA
+    USER_INPUTRC = os.environ.get("TREPAN3K_INPUTRC", default_configfile("inputrc"))
 
-        return True
-    except ImportError:
-        return False
-    return  # Not reached
+    read_inputrc(read_init_file, use_unicode=False)
+    if osp.isfile(USER_INPUTRC):
+        if os.access(USER_INPUTRC, os.R_OK):
+            read_init_file(USER_INPUTRC)
+        else:
+            sys.stderr.write("Can't read user inputrc file %s; skipping\n" % USER_INPUTRC)
 
 
 class DebuggerUserInput(Mbase.DebuggerInputBase):
@@ -39,10 +52,39 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
     as opposed to a relay mechanism to another process. Input could be
     interactive terminal, but it might be file input."""
 
-    def __init__(self, inp=None, opts=None):
-        self.input = inp or sys.stdin
-        self.line_edit = None  # Our name for GNU readline capability
-        self.open(self.input, opts)
+    def __init__(self, inp=None, opts=dict()):
+
+        if opts.get("readline") == "prompt_toolkit":
+
+            edit_mode = opts.get("edit_mode", "emacs")
+            prompt_editing_mode = (
+                EditingMode.EMACS if edit_mode == "emacs" else EditingMode.VI
+            )
+            self.session = PromptSession(
+                editing_mode=prompt_editing_mode,
+                enable_history_search=True,
+                history=FileHistory(opts.get("histfile")),
+                key_bindings=bindings,
+            )
+
+            @bindings.add("escape", "c-j")
+            def toggle_editmode(_):
+                self.session.editing_mode = (
+                    EditingMode.VI
+                    if self.session.editing_mode == EditingMode.EMACS
+                    else EditingMode.EMACS
+                )
+                print("\nedit mode is now %s" % self.session.editing_mode)
+
+            self.input = self.session.input
+            self.line_edit = True
+            self.closed = False
+        else:
+            self.session = None
+            self.input = inp or sys.stdin
+            self.line_edit = None  # Our name for GNU readline capability
+            self.open(self.input, opts)
+
         return
 
     def close(self):
@@ -50,49 +92,25 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
         self.closed = True
         return
 
-    DEFAULT_OPEN_READ_OPTS = {
-        "use_raw": True,
-        "try_readline": True,
-    }
-
     def use_history(self):
-        return self.use_raw and readline_importable()
+        return True
 
     def open(self, inp, opts={}):
         """Use this to set where to read from.
 
-        Set opts['try_lineedit'] if you want this input to interact
-        with GNU-like readline library. By default, we will assume to
-        try importing and using readline. If readline is not
-        importable, line editing is not available whether or not
-        opts['try_readline'] is set.
-
-        Set opts['use_raw'] if input should use Python's use_raw(). If
-        however 'inp' is a string and opts['use_raw'] is not set, we
-        will assume no raw output. Note that an individual readline
-        may override the setting.
         """
-        get_option = lambda key: Mmisc.option_set(
-            opts, key, self.DEFAULT_OPEN_READ_OPTS
-        )
-        if (
+        if isinstance(inp, "string".__class__):  # FIXME
+            inp = open(inp, "r")
+        elif not (
             isinstance(inp, io.TextIOWrapper)
             or isinstance(inp, io.StringIO)
             or hasattr(inp, "isatty")
             and inp.isatty()
         ):
-            self.use_raw = get_option("use_raw")
-        elif isinstance(inp, "string".__class__):  # FIXME
-            if opts is None:
-                self.use_raw = False
-            else:
-                self.use_raw = get_option("use_raw")
-                pass
-            inp = open(inp, "r")
-        else:
             raise IOError("Invalid input type (%s) for %s" % (type(inp), inp))
         self.input = inp
-        self.line_edit = get_option("try_readline") and readline_importable()
+        self.line_edit = bool(opts and opts.get("readline"))
+
         self.closed = False
         return
 
@@ -101,37 +119,26 @@ class DebuggerUserInput(Mbase.DebuggerInputBase):
 
         Note: some user interfaces may decide to arrange to call
         DebuggerOutput.write() first with the prompt rather than pass
-        it here.. If `use_raw' is set raw_input() will be used in that
-        is supported by the specific input input. If this option is
-        left None as is normally expected the value from the class
-        initialization is used.
+        it here
         """
-        # FIXME we don't do command completion.
-        if use_raw is None:
-            use_raw = self.use_raw
-            pass
-        if use_raw:
-            try:
-                inp = input(prompt)
-                # import pdb; pdb.set_trace()
-                return inp
-            except ValueError:
-                raise EOFError
-            pass
-
-        else:
-            line = self.input.readline()
-            if not line:
-                raise EOFError
+        if self.session:
+            # Using prompt_toolkit
+            html_prompt = HTML("<u>%s</u> " % prompt.strip())
+            line = self.session.prompt(html_prompt, style=Style.from_dict({"": ""}))
             return line.rstrip("\n")
-        pass
+
+        try:
+            inp = input(prompt)
+            return inp
+        except ValueError:
+            raise EOFError
+        return
 
     pass
 
 
 # Demo
 if __name__ == "__main__":
-    print("readline importable: ", readline_importable())
     inp = DebuggerUserInput(__file__)
     line = inp.readline()
     print(line)

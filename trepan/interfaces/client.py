@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2013-2014, 2017, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2014, 2017, 2023-2024 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 """Module for client (i.e. user to communication-device) interaction.
 The debugged program is at the other end of the communication."""
 
+import sys
 from trepan.inout import fifoclient as Mfifoclient, tcpclient as Mtcpclient
 
 # Our local modules
@@ -49,12 +50,16 @@ class ClientInterface(Muser.UserInterface):
             if "FIFO" == self.server_type:
                 self.inout = Mfifoclient.FIFOClient(opts=opts)
             elif "TCP" == self.server_type:
-                self.inout = Mtcpclient.TCPClient(opts=opts)
+                try:
+                    self.inout = Mtcpclient.TCPClient(opts=opts)
+                except OSError as e:
+                    self.errmsg(str(e))
+                    sys.exit(1)
             else:
                 self.errmsg(
                     "Expecting server type TCP or FIFO. Got: %s." % self.server_type
                 )
-                return
+                sys.exit(1)
             pass
         return
 

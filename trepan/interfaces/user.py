@@ -20,17 +20,26 @@
 import atexit
 import os.path as osp
 
+from os import environ
+
+from trepan.clifns import default_configfile
 from trepan.inout.input import DebuggerUserInput
 from trepan.inout.output import DebuggerUserOutput
-
-# Our local modules
 from trepan.interface import TrepanInterface
 
-histfile = osp.expanduser("~/.trepan3k_hist")
+histfile = environ.get("TREPAN3KHISTFILE", default_configfile("history"))
+
+# Create HISTFILE if it doesn't exist already
+if not osp.isfile(histfile):
+    # Simulate "touch" on Python 3.3 and before
+    with open(histfile, "w") as f:
+        pass  # Do nothing, just create the file
+
 # is_pypy = '__pypy__' in sys.builtin_module_names
 
 DEFAULT_USER_SETTINGS = {
     "histfile": histfile,  # Where do we save the history?
+    "histsize": 50,  # How many history items do we save
     "complete": None,  # Function which handles tab completion, or None
 }
 
@@ -43,40 +52,49 @@ try:
         write_history_file,
     )
 except ImportError:
-    pass
+    def parse_and_bind(histfile: str):
+        return
 
+
+    def set_completer(_):
+        return
+
+
+    def write_history_file(histfile: str):
+        return
 
 class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
     process as the debugged program."""
 
     def __init__(self, inp=None, out=None, opts={}):
-        user_opts = DEFAULT_USER_SETTINGS.copy()
-        user_opts.update(opts)
+        self.user_opts = DEFAULT_USER_SETTINGS.copy()
+        self.user_opts.update(opts)
 
         atexit.register(self.finalize)
         self.interactive = True  # Or at least so we think initially
-        self.input = inp or DebuggerUserInput()
+        self.input = inp or DebuggerUserInput(self.user_opts.get("input", {}), self.user_opts)
         self.output = out or DebuggerUserOutput()
-        self.debugger_name = user_opts.get("debugger_name", "trepan3k")
+        self.debugger_name = self.user_opts.get("debugger_name", "trepan3k")
+        self.histfile = None
 
         if self.input.use_history():
-            self.complete = user_opts["complete"]
+            self.complete = self.user_opts["complete"]
             if self.complete:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
                 pass
-            self.histfile = user_opts["histfile"]
+            self.histfile = self.user_opts["histfile"]
             if self.histfile:
                 try:
-                    read_history_file(histfile)
+                    read_history_file(self.histfile)
                 except IOError:
                     pass
                 except Exception:
                     # PyPy read_history_file fails
                     return
                 try:
-                    set_history_length(50)
+                    set_history_length(DEFAULT_USER_SETTINGS["histsize"])
                 except Exception:
                     pass
                 atexit.register(self.user_write_history_file)
@@ -84,10 +102,7 @@ class UserInterface(TrepanInterface):
         return
 
     def user_write_history_file(self):
-        try:
-            write_history_file(self.histfile)
-        except Exception:
-            pass
+        write_history_file(self.histfile)
 
     def close(self):
         """Closes both input and output"""
@@ -158,13 +173,7 @@ class UserInterface(TrepanInterface):
         return line
 
     def readline(self, prompt=""):
-        if (
-            hasattr(self.input, "use_raw")
-            and not self.input.use_raw
-            and prompt
-            and len(prompt) > 0
-        ):
-            self.output.write(prompt)
+        if not self.readline == "prompt_toolkit":
             self.output.flush()
             pass
         return self.input.readline(prompt=prompt)
@@ -174,6 +183,7 @@ class UserInterface(TrepanInterface):
 
 # Demo
 if __name__ == "__main__":
+    print("History file is %s" % histfile)
     intf = UserInterface()
     intf.errmsg("Houston, we have a problem here!")
     import sys

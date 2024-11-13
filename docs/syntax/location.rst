@@ -12,6 +12,7 @@ A location can be either a *linespec* an explicit function, or a *module linespe
 
 Linespec
 --------
+.. index:: linespec
 
 A linespec has a colon-separated pair of a source-location parameter
 and a line number.  A source location is a file path or a module name.
@@ -32,8 +33,8 @@ blanks (" "), backslashes ("\"), or quotes, in there are a number of
 quoting mechanisms one can use. You can enclose the path in single
 quotes, double quotes or triple double as you would do in Python
 
-Examples
-++++++++
+Location Examples
++++++++++++++++++
 
 ::
 
@@ -108,8 +109,8 @@ explicitly tag names as a file path or Python module name. We, but not
 *gdb*, make a distinction between functions versus modules and file
 paths.
 
-Examples
-++++++++
+Linespec Examples
++++++++++++++++++
 
 ::
 
