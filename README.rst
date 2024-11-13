@@ -24,7 +24,7 @@ reliable operations.
 A command-line interface (CLI) is provided as well as remote access
 interface over TCP/IP.
 
-See the entry_exit_ for the various ways you can enter the debugger.
+See the entry-exit_ for the various ways you can enter the debugger.
 
 This code supports versions of Python back to version 3.0 using
 different *git* branches. See trepan2_ for the same code modified to
@@ -62,7 +62,7 @@ instructions. I am slowly working on that though.
 
 We use information in Python's code object line number table in byte
 to understand which lines are breakpointable, and in which module or
-function the line appears in. Use info_line_ to see this
+function the line appears in. Use `info line <info-line>`_ to see this
 information. Most if not all other debuggers do go to such lengths,
 and as a result, it is possible to request stopping on a line number
 that can never occur without complaint.
@@ -90,19 +90,19 @@ or ``exec``'d code.*
 
 But if you happen to know where the source code is located, you can
 associate a file source code with the current name listed in the
-bytecode. See the set_substitute_ command for details here.
+bytecode. See the `set substitute <set-substitute>`_ command for details here.
 
 Source-code Syntax Colorization
 -------------------------------
 
 Terminal source code is colorized via pygments_. And with that, you
 can set the pygments color style, e.g. "colorful", "paraiso-dark". See
-set_style_ . Furthermore, we make use of terminal bold and emphasized
-text in debugger output and help text. Of course, you can also turn
-this off. You can use your own
-pygments_style_, provided you have a terminal that supports 256
-colors. If your terminal supports the basic ANSI color sequences only,
-we support that too in both dark and light themes.
+`set style <set-style>`_ . Furthermore, we make use of terminal bold
+and emphasized text in debugger output and help text. Of course, you
+can also turn this off. You can use your own pygments_style_, provided
+you have a terminal that supports 256 colors. If your terminal
+supports the basic ANSI color sequences only, we support that too in
+both dark and light themes.
 
 
 Command Completion
@@ -121,7 +121,26 @@ Terminal Handling
 -----------------
 
 We can adjust debugger output depending on the line width of your
-terminal. If it changes, or you want to adjust it, see set_width_.
+terminal. If it changes, or you want to adjust it, see `set width
+<set-width>`_.
+
+Signal Handling
+-----------------
+
+Following *gdb*, we provide its rich set of signal handling. From the *gdb* documentation:
+
+  GDB has the ability to detect any occurrence of a signal in your program. You can tell GDB in advance what to do for each kind of signal.
+
+Better Support for Thread Debugging
+------------------------------------
+
+When you are stopped inside a thread, the thread name is shown to make
+this fact more clear and you can see and switch between frames in
+different threads. See frame_ for more information.
+
+And following *gdb*, you can list the threads too. See `info threads
+<info-threads>`_ for more information.
+
 
 Smart Eval
 ----------
@@ -314,7 +333,7 @@ See Also
 .. _trepanning: https://rubygems.org/gems/trepanning
 .. _debuggers: https://metacpan.org/pod/Devel::Trepan
 .. _this: https://bashdb.sourceforge.net/pydb/features.html
-.. _entry_exit: https://python3-trepan.readthedocs.io/en/latest/entry-exit.html
+.. _entry-exit: https://python3-trepan.readthedocs.io/en/latest/entry-exit.html
 .. _trepanxpy: https://pypi.python.org/pypi/trepanxpy
 .. |downloads| image:: https://img.shields.io/pypi/dd/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
@@ -325,10 +344,12 @@ See Also
     :target: https://pypi.python.org/pypi/trepan3k
     :alt: License
 .. _deparse:  https://python3-trepan.readthedocs.io/en/latest/commands/data/deparse.html
-.. _info_line:  https://python3-trepan.readthedocs.io/en/latest/commands/info/line.html
-.. _set_style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
-.. _set_substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
-.. _set_width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
+.. _info-line:  https://python3-trepan.readthedocs.io/en/latest/commands/info/line.html
+.. _info-threads:  https://python3-trepan.readthedocs.io/en/latest/commands/info/threads.html
+.. _frame:  https://python3-trepan.readthedocs.io/en/latest/commands/stack/frame.html
+.. _set-style:  https://python3-trepan.readthedocs.org/en/latest/commands/set/style.html
+.. _set-substitute:  https://python3-trepan.readthedocs.org/en/latest/commands/set/substitute.html
+.. _set-width:  https://python3-trepan.readthedocs.org/en/latest/commands/set/width.html
 .. _eval: https://python3-trepan.readthedocs.org/en/latest/commands/data/eval.html
 .. _step: https://python3-trepan.readthedocs.org/en/latest/commands/running/step.html
 .. _subst: https://python3-trepan.readthedocs.io/en/latest/commands/set/substitute.html
