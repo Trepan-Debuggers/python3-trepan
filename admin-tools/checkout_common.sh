@@ -2,7 +2,6 @@
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
-fulldir=$(readlink -f $mydir)
 
 function setup_version {
     local repo=$1
