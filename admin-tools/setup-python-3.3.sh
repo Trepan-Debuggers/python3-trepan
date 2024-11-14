@@ -20,8 +20,7 @@ if [[ $0 == $bs ]] ; then
 fi
 
 mydir=$(dirname $bs)
-fulldir=$(readlink -f $mydir)
-(cd $fulldir/.. && \
+(cd $mydir/.. && \
      setup_version python-uncompyle6 python-3.3 && \
      setup_version python-xdis python-3.3 && \
      setup_version python-filecache python-3.3 && \
