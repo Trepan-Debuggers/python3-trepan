@@ -23,6 +23,7 @@ import linecache
 import os
 import os.path as osp
 import re
+from opcode import opname
 from reprlib import repr
 from typing import Optional, Tuple
 
@@ -324,6 +325,7 @@ def get_call_function_name(frame) -> Optional[str]:
 
     if not frame:
         return None
+    # FIXME: also handle CALL_EX, CALL_FUNCTION_KW, CALL_FUNCTION_KW_EX?
     if op_at_frame(frame) not in ("CALL_FUNCTION", "CALL"):
         return None
 
@@ -332,33 +334,41 @@ def get_call_function_name(frame) -> Optional[str]:
     # labels     = dis.findlabels(code)
     linestarts = dict(dis.findlinestarts(co))
     offset = frame.f_lasti
+    last_LOAD_NAME_offset = -1
     while offset >= 0:
+        opcode = code[offset]
+        if opname[opcode] == "LOAD_NAME":
+            last_LOAD_NAME_offset = offset
         if offset in linestarts:
-            op = code[offset]
-            offset += 1
-            arg = code[offset]
-            # FIXME: put this code in xdis
-            extended_arg = 0
-            while True:
-                if PYTHON_VERSION_TRIPLE >= (3, 6):
-                    if op == opc.EXTENDED_ARG:
-                        extended_arg += arg << 8
-                        continue
-                    arg = code[offset] + extended_arg
-                    # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
-                else:
-                    if op == opc.EXTENDED_ARG:
-                        extended_arg += arg << 256
-                        continue
-                    arg = code[offset] + code[offset + 1] * 256 + extended_arg
-                break
-
-            if arg < len(co.co_names):
-                return co.co_names[arg]
-            else:
-                return None
+            break
         offset -= 2
         pass
+
+    if last_LOAD_NAME_offset != -1:
+        offset = last_LOAD_NAME_offset + 1
+        arg = code[offset]
+
+        # FIXME: Calculate arg value with EXTENDED_ARG
+        extended_arg = 0
+        extended_arg_offset = last_LOAD_NAME_offset - 2
+        opcode = code[extended_arg_offset]
+        while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
+            extended_arg_offset -= 2
+            opcode = code[extended_arg_offset]
+
+        while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
+            extended_arg_offset += 1
+            if PYTHON_VERSION_TRIPLE >= (3, 6):
+                extended_arg += code[extended_arg_offset] << 8
+                # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
+            else:
+                extended_arg += code[extended_arg_offset] << 256
+            extended_arg_offset += 1
+            opcode = code[extended_arg_offset]
+
+        arg += extended_arg
+        if arg < len(co.co_names):
+            return co.co_names[arg]
     return None
 
 

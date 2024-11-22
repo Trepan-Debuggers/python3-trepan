@@ -467,7 +467,7 @@ class TrepanCore:
 
         if self.until_condition:
             if not self.matches_condition(frame):
-                print(f"XXX trace until condition not met for {frame}") # for debugging
+                # print(f"XXX trace until condition not met for {frame}") # for debugging
                 return self
             pass
 

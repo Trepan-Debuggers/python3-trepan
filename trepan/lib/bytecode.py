@@ -35,10 +35,12 @@ def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
 
 
 
-def op_at_frame(frame, offset: Optional[int]=None):
+def op_at_frame(frame, offset: Optional[int]=None, skip_cache=True):
     bytecode = frame.f_code.co_code
     if offset is None:
         offset = frame.f_lasti
+    while skip_cache and offset != 0 and opname_at_code_offset(bytecode, offset) == "CACHE":
+        offset -= 2
     return opname_at_code_offset(bytecode, offset)
 
 
