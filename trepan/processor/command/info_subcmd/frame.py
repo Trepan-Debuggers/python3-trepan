@@ -150,6 +150,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg(f"  code: {format_code(code, style)}")
         self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
         self.msg(f"  tracing function: {frame.f_trace}")
+        self.msg_nocr(f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}")
+        self.msg(f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}")
+
         if is_verbose:
             for name, field in [
                 ("Globals", "f_globals"),
