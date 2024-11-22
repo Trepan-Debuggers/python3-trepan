@@ -119,10 +119,13 @@ def format_function_name(frame, style: str) -> Tuple[str, str]:
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
     """
-    if frame.f_code.co_name:
+    if is_eval_or_exec_stmt(frame):
+        funcname = get_call_function_name(frame)
+    elif frame.f_code.co_name:
         funcname = frame.f_code.co_name
     else:
-        funcname = "<lambda>"
+        funcname = get_call_function_name(frame)
+        # funcname = "<lambda>"
         pass
     return funcname, format_token(Function, funcname, style=style)
 
@@ -142,7 +145,7 @@ def format_function_and_parameters(frame, debugger, style: str) -> Tuple[bool, s
         varkw,
     ):
         is_module = True
-        if is_exec_stmt(frame):
+        if is_eval_or_exec_stmt(frame):
             fn_name = format_token(Function, "exec", style=style)
             source_text = deparse_source_from_code(frame.f_code)
             s += f" {format_token(Function, fn_name, style=style)}({source_text})"
@@ -202,10 +205,10 @@ def format_return_and_location(
         if is_module:
             if filename == "<string>":
                 s += " in exec"
-            elif not is_exec_stmt(frame) and not is_pseudo_file:
+            elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_exec_stmt(frame):
+            if is_eval_or_exec_stmt(frame):
                 s = "in exec"
                 # exec_str = get_exec_string(frame.f_back)
                 # if exec_str != None:
@@ -301,9 +304,15 @@ def check_path_with_frame(frame, path):
     return True, None
 
 
-def is_exec_stmt(frame) -> bool:
-    """Return True if we are looking at an exec statement"""
-    return hasattr(frame, "f_back") and get_call_function_name(frame) == "exec"
+def is_eval_or_exec_stmt(frame) -> bool:
+    """Return True if we are looking at an eval() or exec() statement"""
+    if not hasattr(frame, "f_back"):
+        return False
+    back_frame = frame.f_back
+    return (
+        get_call_function_name(back_frame) in ("exec", "eval")
+        and frame.f_code.co_filename == "<string>"
+    )
 
 
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
@@ -313,17 +322,16 @@ def get_call_function_name(frame) -> Optional[str]:
     """If f_back is looking at a call function, return
     the name for it. Otherwise, return None"""
 
-    f_back = frame.f_back
-    if not f_back:
+    if not frame:
         return None
-    if op_at_frame(f_back) not in ("CALL_FUNCTION", "CALL", "CACHE"):
+    if op_at_frame(frame) not in ("CALL_FUNCTION", "CALL"):
         return None
 
-    co = f_back.f_code
+    co = frame.f_code
     code = co.co_code
     # labels     = dis.findlabels(code)
     linestarts = dict(dis.findlinestarts(co))
-    offset = f_back.f_lasti
+    offset = frame.f_lasti
     while offset >= 0:
         if offset in linestarts:
             op = code[offset]
@@ -349,7 +357,7 @@ def get_call_function_name(frame) -> Optional[str]:
                 return co.co_names[arg]
             else:
                 return None
-        offset -= 1
+        offset -= 2
         pass
     return None
 
@@ -506,10 +514,10 @@ if __name__ == "__main__":
     )
     # print(pyc_file, getsourcefile(pyc_file))
 
+    from trepan.debugger import Trepan
     m = MockDebugger()
 
     # For testing print_stack_entry()
-    from trepan.debugger import Trepan
 
     dd = Trepan()
     my_frame = inspect.currentframe()
@@ -540,9 +548,12 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
+        if is_eval_or_exec_stmt(frame.f_back):
+            print("Caller is exec/eval stmt")
+            print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
+
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
-        print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
         print(get_call_function_name(frame))
         return
 
