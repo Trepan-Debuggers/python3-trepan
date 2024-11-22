@@ -316,7 +316,7 @@ def get_call_function_name(frame) -> Optional[str]:
     f_back = frame.f_back
     if not f_back:
         return None
-    if "CALL_FUNCTION" != op_at_frame(f_back):
+    if op_at_frame(f_back) not in ("CALL_FUNCTION", "CALL", "CACHE"):
         return None
 
     co = f_back.f_code
@@ -540,7 +540,7 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
-        is_module, mess = format_function_and_parameters(frame, dd, style="tango")
+        _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
         print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
         print(get_call_function_name(frame))
