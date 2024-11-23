@@ -338,23 +338,25 @@ def get_call_function_name(frame) -> Optional[str]:
     # labels     = dis.findlabels(code)
     linestarts = dict(dis.findlinestarts(co))
     offset = frame.f_lasti
-    last_LOAD_NAME_offset = -1
+    last_LOAD_offset = -1
+    is_load_global = None
     while offset >= 0:
         opcode = code[offset]
-        if opname[opcode] == "LOAD_NAME":
-            last_LOAD_NAME_offset = offset
+        if opname[opcode] in ("LOAD_NAME", "LOAD_GLOBAL"):
+            last_LOAD_offset = offset
+            is_load_global = opname[opcode] == "LOAD_GLOBAL"
         if offset in linestarts:
             break
         offset -= 2
         pass
 
-    if last_LOAD_NAME_offset != -1:
-        offset = last_LOAD_NAME_offset + 1
+    if last_LOAD_offset != -1:
+        offset = last_LOAD_offset + 1
         arg = code[offset]
 
         # FIXME: Calculate arg value with EXTENDED_ARG
         extended_arg = 0
-        extended_arg_offset = last_LOAD_NAME_offset - 2
+        extended_arg_offset = last_LOAD_offset - 2
         opcode = code[extended_arg_offset]
         while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
             extended_arg_offset -= 2
@@ -371,6 +373,9 @@ def get_call_function_name(frame) -> Optional[str]:
             opcode = code[extended_arg_offset]
 
         arg += extended_arg
+        if PYTHON_VERSION_TRIPLE >= (3, 11):
+            if is_load_global:
+                arg >>= 1
         if arg < len(co.co_names):
             return co.co_names[arg]
     return None
@@ -380,6 +385,7 @@ def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
     frame, lineno = frame_lineno
     intf = proc_obj.intf[-1]
+    name = "??"
     if frame is proc_obj.curframe:
         intf.msg_nocr(format_token(Arrow, "->", style=style))
     else:
