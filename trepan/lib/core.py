@@ -280,14 +280,11 @@ class TrepanCore:
     def is_break_here(self, frame):
         filename = self.canonic(frame.f_code.co_filename)
         if "call" == self.event:
-            find_name = frame.f_code.co_name
+            find_name = frame.f_code
             # Could check code object or decide not to
             # The below could be done as a list comprehension, but
             # I'm feeling in Fortran mood right now.
             for fn in self.bpmgr.fnlist:
-                # For <module>, fn is a string
-                if not isinstance(fn, str):
-                    fn = fn.__name__
                 if fn == find_name:
                     bp_fn = self.bpmgr.fnlist.get(fn)
                     if not bp_fn:
@@ -357,18 +354,21 @@ class TrepanCore:
         filename = frame.f_code.co_filename
         if self.different_line and event == "line":
             if self.last_lineno == lineno and self.last_filename == filename:
+                # print("is_stop_here(): not different")
                 return False
             pass
         self.last_lineno = lineno
         self.last_filename = filename
 
         if self.stop_level is not None:
+
             if frame and frame != self.last_frame:
                 # Recompute stack_depth
                 self.last_level = count_frames(frame)
                 self.last_frame = frame
                 pass
             if self.last_level > self.stop_level:
+                # print("is_stop_here(): last_level > stop_level")
                 return False
             elif (
                 self.last_level == self.stop_level
@@ -385,6 +385,7 @@ class TrepanCore:
             self.stop_reason = "at a stepping statement"
             return True
 
+        # print("is_stop_here: no reason set to stop")
         return False
 
     def _is_step_next_stop(self, event):
@@ -435,6 +436,7 @@ class TrepanCore:
         ):
             # We are "finish"ing or "next"ing and should not be tracing into this call
             # or any other calls from this. Return Nont to not trace further.
+            # print("""trace_dispatch: "finish"ing or "next"ing from call event""")
             return None
 
         self.event = event
@@ -447,10 +449,11 @@ class TrepanCore:
         # which will give a cryptic the message on setting f_lineno:
         #   f_lineno can only be set by a trace function
         if self.ignore_filter and self.ignore_filter.is_excluded(frame):
-            # print("XXX- trace dispatch ignored - frame", frame, frame.f_lineno, event, arg) # for debugging
+            # print("trace_dispatch: ignore_filter", self.ignore_filter, frame, frame.f_lineno, event, arg) # for debugging
             return self
 
         if self.trace_hook_suspend:
+            # print("XXX trace_dispatch: hook suspended")
             return None
 
         # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
@@ -464,6 +467,7 @@ class TrepanCore:
 
         if self.until_condition:
             if not self.matches_condition(frame):
+                # print(f"XXX trace until condition not met for {frame}") # for debugging
                 return self
             pass
 
@@ -474,6 +478,7 @@ class TrepanCore:
 
             trace_event_set = self.debugger.settings["events"]
             if trace_event_set is None or self.event not in trace_event_set:
+                # print(f"trace_dispatch: self.event not in {trace_event_set}")
                 return self
 
             # I think we *have* to run is_stop_here() before
@@ -485,6 +490,8 @@ class TrepanCore:
             if self.is_stop_here(frame, event) or self.is_break_here(frame):
                 # Run the event processor
                 return self.processor.event_processor(frame, self.event, arg)
+            # else:
+            #     print("XXX no stop or break here")
             return self
         finally:
             try:
