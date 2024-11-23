@@ -364,18 +364,13 @@ def get_call_function_name(frame) -> Optional[str]:
 
         while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
             extended_arg_offset += 1
-            if PYTHON_VERSION_TRIPLE >= (3, 6):
-                extended_arg += code[extended_arg_offset] << 8
-                # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
-            else:
-                extended_arg += code[extended_arg_offset] << 256
+            extended_arg += code[extended_arg_offset] << 8
             extended_arg_offset += 1
             opcode = code[extended_arg_offset]
 
         arg += extended_arg
-        if PYTHON_VERSION_TRIPLE >= (3, 11):
-            if is_load_global:
-                arg >>= 1
+        if is_load_global:
+            arg >>= 1
         if arg < len(co.co_names):
             return co.co_names[arg]
     return None
