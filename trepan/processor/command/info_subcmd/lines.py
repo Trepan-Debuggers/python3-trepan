@@ -15,6 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+from dis import findlinestarts
 from getopt import getopt, GetoptError
 
 # Our local modules
@@ -100,7 +101,7 @@ class InfoOffsets(DebuggerSubcommand):
             filename, toplevel_only=False, include_offsets=True
         )
         if file_info:
-            self.section(f"Line - (fn, start offset) table for {filename}")
+            self.section(f"Line:   fn, offset for table for {filename}")
             lines = []
             for line_number, line_info in file_info.line_numbers.items():
                 if not name or any(li.name == name for li in line_info):
@@ -110,7 +111,7 @@ class InfoOffsets(DebuggerSubcommand):
                             line_number,
                             ", ".join(
                                 [
-                                    "%s @%d"
+                                    "%s *%d"
                                     % (pretty_modfunc_name(li.name), li.offsets[0])
                                     for li in line_info
                                     if not name or li.name == name
@@ -121,7 +122,14 @@ class InfoOffsets(DebuggerSubcommand):
             m = self.columnize_commands(list(sorted(lines)))
             self.msg(m)
         else:
-            self.errmsg(f"haven't recorded info for offset file {filename}")
+            self.section(f"Line:   offset for table for {filename}")
+            lines = []
+            for offset, line_number in findlinestarts(curframe.f_code):
+                lines.append(
+                    "%4d: *%d" % (line_number, offset)
+                    )
+            m = self.columnize_commands(list(sorted(lines)))
+            self.msg(m)
             pass
         pass
 

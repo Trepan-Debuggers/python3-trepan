@@ -15,6 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+from dis import findlinestarts
 from pyficache import code_line_info, code_offset_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
 from trepan.processor.parse.semantics import build_bp_expr
@@ -49,17 +50,23 @@ def set_break(
         if lineno:
             line_info = code_line_info(filename, lineno)
             if not line_info:
-                part1 = f"File {cmd_obj.core.filename(filename)}"
-                msg = wrapped_lines(
-                    part1,
-                    f"is not stoppable at line {lineno}.",
-                    cmd_obj.settings["width"],
-                )
-                cmd_obj.errmsg(msg)
-                if force:
-                    cmd_obj.msg("Breakpoint set although it may never be reached")
+                linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
+                if lineno not in linestarts.values():
+                    part1 = f"File {cmd_obj.core.filename(filename)}"
+                    msg = wrapped_lines(
+                        part1,
+                        f"is not stoppable at line {lineno}.",
+                        cmd_obj.settings["width"],
+                    )
+                    cmd_obj.errmsg(msg)
+                    if force:
+                        cmd_obj.msg("Breakpoint set although it may never be reached.")
+                    else:
+                        return False
                 else:
+                    cmd_obj.errmsg("Breakpoint when no file available not implemented yet.")
                     return False
+
         else:
             assert offset is not None
             lineno = code_offset_info(filename, offset)
