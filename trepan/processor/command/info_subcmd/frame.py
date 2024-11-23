@@ -121,6 +121,8 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.section(mess)
 
         function_name, formatted_func_name = format_function_name(frame, style=style)
+        if function_name is None:
+            formatted_func_name = "??"
         f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
         self.msg(f"  function name: {formatted_func_name}")
         func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
@@ -148,7 +150,10 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         self.msg(f"  last instruction: {frame.f_lasti}")
         self.msg(f"  code: {format_code(code, style)}")
-        self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
+        if frame.f_back:
+            self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
+        else:
+            self.msg("  no previous frame")
         self.msg(f"  tracing function: {frame.f_trace}")
         self.msg_nocr(f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}")
         self.msg(f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}")

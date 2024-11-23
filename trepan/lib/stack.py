@@ -115,7 +115,7 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame, style: str) -> Tuple[str, str]:
+def format_function_name(frame, style: str) -> Tuple[Optional[str], Optional[str]]:
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
@@ -128,6 +128,8 @@ def format_function_name(frame, style: str) -> Tuple[str, str]:
         funcname = get_call_function_name(frame)
         # funcname = "<lambda>"
         pass
+    if funcname is None:
+        return None, None
     return funcname, format_token(Function, funcname, style=style)
 
 
@@ -305,15 +307,17 @@ def check_path_with_frame(frame, path):
     return True, None
 
 
-def is_eval_or_exec_stmt(frame) -> bool:
-    """Return True if we are looking at an eval() or exec() statement"""
+def is_eval_or_exec_stmt(frame) -> Optional[str]:
+    """Return "eval" or "exec" if we are inside an eval() or exec()
+    statement. None is returned if not.
+    """
     if not hasattr(frame, "f_back"):
-        return False
+        return None
     back_frame = frame.f_back
-    return (
-        get_call_function_name(back_frame) in ("exec", "eval")
-        and frame.f_code.co_filename == "<string>"
-    )
+    func_name = get_call_function_name(back_frame)
+    if func_name and frame.f_code.co_filename == "<string>":
+        return func_name
+    return None
 
 
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
@@ -558,8 +562,9 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
-        if is_eval_or_exec_stmt(frame.f_back):
-            print("Caller is exec/eval stmt")
+        eval_str = is_eval_or_exec_stmt(frame.f_back)
+        if eval_str:
+            print(f"Caller is {eval_str} stmt")
             print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
@@ -570,6 +575,7 @@ if __name__ == "__main__":
     print("=" * 30)
     fn(5)
     eval("fn(5)")
+    exec("fn(5)")
     # print("=" * 30)
     # print(print_obj("fn", fn))
     # print("=" * 30)

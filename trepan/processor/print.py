@@ -25,7 +25,7 @@ from types import CodeType
 
 import pyficache
 
-from trepan.lib.stack import check_path_with_frame, frame2file
+from trepan.lib.stack import check_path_with_frame, frame2file, is_eval_or_exec_stmt
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 
@@ -169,6 +169,9 @@ def print_location(proc_obj):
             pass
         elif "<string>" == filename:
             source_text = deparse_fn(frame.f_code)
+            if source_text is None and (eval_kind := is_eval_or_exec_stmt(frame)):
+                source_text = f"{eval_kind}(...)"
+
             filename = f"<string: '{source_text}'>"
             pass
         else:
