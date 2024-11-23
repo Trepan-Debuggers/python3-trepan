@@ -1,7 +1,7 @@
 """Unit test for "trepan.frame" """
 import inspect
 
-from trepan.lib.stack import count_frames
+from trepan.lib.stack import count_frames, is_eval_or_exec_stmt
 
 
 def test_count_frames():
@@ -13,12 +13,10 @@ def test_count_frames():
     return
 
 
-# FIXME fix up is_exec_stmt() ?
-# def test_stack_misc():
-#     f = inspect.currentframe()
-#     # assert "test_stack_misc" == get_call_function_name(f))
-#     assert not is_exec_stmt(f)
-#     result = False
-#     exec("result = is_exec_stmt(inspect.currentframe())")
-#     assert result
-#     return
+def test_stack_misc():
+    f = inspect.currentframe()
+    # assert "test_stack_misc" == get_call_function_name(f))
+    assert is_eval_or_exec_stmt(f) is None
+    exec("result = is_eval_or_exec_stmt(inspect.currentframe())")
+    assert "eval" == eval(" is_eval_or_exec_stmt(inspect.currentframe())")
+    return

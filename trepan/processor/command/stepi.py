@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,11 +13,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import tracer
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.cmdfns import want_different_line
 
 
 class StepICommand(DebuggerCommand):
@@ -106,19 +104,19 @@ if __name__ == "__main__":
     from mock import MockDebugger
 
     d = MockDebugger()
-    cmd = StepCommand(d.core.processor)
-    for c in (["s", "5"], ["step", "1+2"], ["s", "foo"]):
+    cmd = StepICommand(d.core.processor)
+    for c in (["si", "5"], ["stepi", "1+2"], ["si", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)
-        print("Execute result: %s" % result)
-        print("step_ignore %s" % repr(d.core.step_ignore))
-        print("continue_running: %s" % cmd.proc.continue_running)
+        print(f"Execute result: {result}")
+        print(f"step_ignore {repr(d.core.step_ignore)}")
+        print(f"continue_running: {cmd.proc.continue_running}")
         pass
-    for c in (["s"], ["step+"], ["s-"], ["s!"], ["s>"], ["s<"]):
+    for c in (["si"], ["stepi"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print("different line %s:" % c[0], cmd.core.different_line)
+        print(f"different line {c[0]}:", cmd.core.different_line)
         pass
     pass
