@@ -15,6 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
+from xdis import PYTHON_VERSION_TRIPLE, PYTHON_VERSION_STR
 from trepan.processor.command.base_cmd import DebuggerCommand
 
 
@@ -67,6 +68,10 @@ class StepICommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
+        if PYTHON_VERSION_TRIPLE < (3, 7):
+            self.errmsg(f"Instruction stepping works starting with Python 3.7, you have) {PYTHON_VERSION_STR}")
+            return
+
         if len(args) <= 1:
             self.proc.debugger.core.step_ignore = 0
         else:
@@ -81,7 +86,7 @@ class StepICommand(DebuggerCommand):
                 self.core.step_ignore -= 1
                 pass
             elif pos != len(args):
-                self.errmsg("Invalid additional parameters %s" % " ".join(args[pos]))
+                self.errmsg(f"Invalid additional parameters {' '.join(args[pos])}")
                 return False
             pass
 
