@@ -344,12 +344,10 @@ def get_call_function_name(frame):
     linestarts = dict(dis.findlinestarts(co))
     offset = frame.f_lasti
     last_LOAD_offset = -1
-    is_load_global = None
     while offset >= 0:
         opcode = code[offset]
         if opname[opcode] in ("LOAD_NAME", "LOAD_GLOBAL"):
             last_LOAD_offset = offset
-            is_load_global = opname[opcode] == "LOAD_GLOBAL"
         if offset in linestarts:
             break
         offset -= 2
@@ -369,11 +367,7 @@ def get_call_function_name(frame):
 
         while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
             extended_arg_offset += 1
-            if PYTHON_VERSION_TRIPLE >= (3, 6):
-                extended_arg += code[extended_arg_offset] << 8
-                # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
-            else:
-                extended_arg += code[extended_arg_offset] << 256
+            extended_arg += code[extended_arg_offset] << 256
             extended_arg_offset += 1
             opcode = code[extended_arg_offset]
 
