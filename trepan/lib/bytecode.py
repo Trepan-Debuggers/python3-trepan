@@ -25,19 +25,22 @@ from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
 opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
 
 
-def op_at_code_loc(code, loc):
+def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
     try:
-        op = code[loc]
+        opcode = bytecode_bytes[offset]
     except IndexError:
         return "got IndexError"
-    return opname[op]
+    return opname[opcode]
 
 
-def op_at_frame(frame, loc=None):
-    code = frame.f_code.co_code
-    if loc is None:
-        loc = frame.f_lasti
-    return op_at_code_loc(code, loc)
+
+def op_at_frame(frame, offset=None, skip_cache=True):
+    bytecode = frame.f_code.co_code
+    if offset is None:
+        offset = frame.f_lasti
+    while skip_cache and offset != 0 and opname_at_code_offset(bytecode, offset) == "CACHE":
+        offset -= 2
+    return opname_at_code_offset(bytecode, offset)
 
 
 def next_opcode(code, offset):

@@ -25,7 +25,7 @@ from types import CodeType
 
 import pyficache
 
-from trepan.lib.stack import check_path_with_frame, frame2file
+from trepan.lib.stack import check_path_with_frame, frame2file, is_eval_or_exec_stmt
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 
@@ -58,7 +58,7 @@ def format_code(code_object: CodeType, style) -> str:
     formatted_name = format_token(Symbol, code_object.co_name, style=style)
     formatted_filename = format_token(Filename, code_object.co_filename, style=style)
     return (
-        ("<code object %s at %s " % (formatted_name, formatted_id))
+        ("<code object %s at %s " % (formatted_name, formatted_id)) +
         ("file %s, line %s>" % (formatted_filename, formatted_line))
     )
 
@@ -169,6 +169,9 @@ def print_location(proc_obj):
             pass
         elif "<string>" == filename:
             source_text = deparse_fn(frame.f_code)
+            eval_kind = is_eval_or_exec_stmt(frame)
+            if source_text is None and eval_kind:
+                source_text = "%s(...)" % eval_kind
             filename = "<string: '%s'>" % source_text
             pass
         else:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -15,6 +15,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+from dis import findlinestarts
 from pyficache import code_line_info, code_offset_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
 from trepan.processor.parse.semantics import build_bp_expr
@@ -35,10 +36,7 @@ def set_break(
     offset=None,
 ):
     if lineno is None and offset is None:
-        part1 = (
-            "I don't understand '%s' as a line number, offset, or function name,"
-            % " ".join(args[1:])
-        )
+        part1 = """I don't understand '%s' as a line number, offset, or function name""" % {" ".join(args[1:])}
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
         )
@@ -52,17 +50,23 @@ def set_break(
         if lineno:
             line_info = code_line_info(filename, lineno)
             if not line_info:
-                part1 = "File %s" % cmd_obj.core.filename(filename)
-                msg = wrapped_lines(
-                    part1,
-                    "is not stoppable at line %d." % lineno,
-                    cmd_obj.settings["width"],
-                )
-                cmd_obj.errmsg(msg)
-                if force:
-                    cmd_obj.msg("Breakpoint set although it may never be reached")
+                linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
+                if lineno not in linestarts.values():
+                    part1 = "File %s" % cmd_obj.core.filename(filename)
+                    msg = wrapped_lines(
+                        part1,
+                        "is not stoppable at line %s." % lineno,
+                        cmd_obj.settings["width"],
+                    )
+                    cmd_obj.errmsg(msg)
+                    if force:
+                        cmd_obj.msg("Breakpoint set although it may never be reached.")
+                    else:
+                        return False
                 else:
+                    cmd_obj.errmsg("Breakpoint when no file available not implemented yet.")
                     return False
+
         else:
             assert offset is not None
             lineno = code_offset_info(filename, offset)
@@ -70,7 +74,7 @@ def set_break(
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
-                    "has no line associated with offset %d." % offset,
+                    "has no line associated with offset %s." % offset,
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
@@ -86,16 +90,14 @@ def set_break(
         func=func,
     )
     if func and inspect.isfunction(func):
-        cmd_obj.msg(
-            "Breakpoint %d set on calling function %s()" % (bp.number, func.__name__)
-        )
-        part1 = "Currently this is line %d of file" % lineno
+        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func.__name__))
+        part1 = "Currently this is line %d of the file" % lineno
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
     else:
-        part1 = "Breakpoint %d set at line %d of file" % (bp.number, lineno)
+        part1 = "Breakpoint %d set at line %s of file" % (bp.number, lineno)
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -105,7 +107,7 @@ def set_break(
         else:
             func_str = ""
         if offset is not None and offset >= 0:
-            cmd_obj.msg("Breakpoint is at offset %d%s " % (offset, func_str))
+            cmd_obj.msg("Breakpoint is at offset %d%s" % (offset, func_str))
         pass
     return True
 

@@ -23,6 +23,7 @@ import linecache
 import os
 import os.path as osp
 import re
+from opcode import opname
 from reprlib import repr
 
 import xdis
@@ -113,16 +114,21 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame, style: str) -> tuple:
+def format_function_name(frame, style: str):
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
     """
-    if frame.f_code.co_name:
+    if is_eval_or_exec_stmt(frame):
+        funcname = get_call_function_name(frame)
+    elif frame.f_code.co_name:
         funcname = frame.f_code.co_name
     else:
-        funcname = "<lambda>"
+        funcname = get_call_function_name(frame)
+        # funcname = "<lambda>"
         pass
+    if funcname is None:
+        return None, None
     return funcname, format_token(Function, funcname, style=style)
 
 
@@ -141,7 +147,7 @@ def format_function_and_parameters(frame, debugger, style: str) -> tuple:
         varkw,
     ):
         is_module = True
-        if is_exec_stmt(frame):
+        if is_eval_or_exec_stmt(frame):
             fn_name = format_token(Function, "exec", style=style)
             source_text = deparse_source_from_code(frame.f_code)
             s += " %s(%s)" % (
@@ -207,10 +213,10 @@ def format_return_and_location(
         if is_module:
             if filename == "<string>":
                 s += " in exec"
-            elif not is_exec_stmt(frame) and not is_pseudo_file:
+            elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_exec_stmt(frame):
+            if is_eval_or_exec_stmt(frame):
                 s = "in exec"
                 # exec_str = get_exec_string(frame.f_back)
                 # if exec_str != None:
@@ -306,9 +312,17 @@ def check_path_with_frame(frame, path):
     return True, None
 
 
-def is_exec_stmt(frame) -> bool:
-    """Return True if we are looking at an exec statement"""
-    return hasattr(frame, "f_back") and get_call_function_name(frame) == "exec"
+def is_eval_or_exec_stmt(frame):
+    """Return "eval" or "exec" if we are inside an eval() or exec()
+    statement. None is returned if not.
+    """
+    if not hasattr(frame, "f_back"):
+        return None
+    back_frame = frame.f_back
+    func_name = get_call_function_name(back_frame)
+    if func_name and frame.f_code.co_filename == "<string>":
+        return func_name
+    return None
 
 
 opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
@@ -318,44 +332,54 @@ def get_call_function_name(frame):
     """If f_back is looking at a call function, return
     the name for it. Otherwise, return None"""
 
-    f_back = frame.f_back
-    if not f_back:
+    if not frame:
         return None
-    if "CALL_FUNCTION" != op_at_frame(f_back):
+    # FIXME: also handle CALL_EX, CALL_FUNCTION_KW, CALL_FUNCTION_KW_EX?
+    if op_at_frame(frame) not in ("CALL_FUNCTION", "CALL"):
         return None
 
-    co = f_back.f_code
+    co = frame.f_code
     code = co.co_code
     # labels     = dis.findlabels(code)
     linestarts = dict(dis.findlinestarts(co))
-    offset = f_back.f_lasti
+    offset = frame.f_lasti
+    last_LOAD_offset = -1
+    is_load_global = None
     while offset >= 0:
+        opcode = code[offset]
+        if opname[opcode] in ("LOAD_NAME", "LOAD_GLOBAL"):
+            last_LOAD_offset = offset
+            is_load_global = opname[opcode] == "LOAD_GLOBAL"
         if offset in linestarts:
-            op = code[offset]
-            offset += 1
-            arg = code[offset]
-            # FIXME: put this code in xdis
-            extended_arg = 0
-            while True:
-                if PYTHON_VERSION_TRIPLE >= (3, 6):
-                    if op == opc.EXTENDED_ARG:
-                        extended_arg += arg << 8
-                        continue
-                    arg = code[offset] + extended_arg
-                    # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
-                else:
-                    if op == opc.EXTENDED_ARG:
-                        extended_arg += arg << 256
-                        continue
-                    arg = code[offset] + code[offset + 1] * 256 + extended_arg
-                break
-
-            if arg < len(co.co_names):
-                return co.co_names[arg]
-            else:
-                return None
-        offset -= 1
+            break
+        offset -= 2
         pass
+
+    if last_LOAD_offset != -1:
+        offset = last_LOAD_offset + 1
+        arg = code[offset]
+
+        # FIXME: Calculate arg value with EXTENDED_ARG
+        extended_arg = 0
+        extended_arg_offset = last_LOAD_offset - 2
+        opcode = code[extended_arg_offset]
+        while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
+            extended_arg_offset -= 2
+            opcode = code[extended_arg_offset]
+
+        while extended_arg_offset >= 0 and opcode == opc.EXTENDED_ARG:
+            extended_arg_offset += 1
+            if PYTHON_VERSION_TRIPLE >= (3, 6):
+                extended_arg += code[extended_arg_offset] << 8
+                # FIXME: Python 3.6.0a1 is 2, for 3.6.a3 we have 1
+            else:
+                extended_arg += code[extended_arg_offset] << 256
+            extended_arg_offset += 1
+            opcode = code[extended_arg_offset]
+
+        arg += extended_arg
+        if arg < len(co.co_names):
+            return co.co_names[arg]
     return None
 
 
@@ -363,6 +387,7 @@ def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
     frame, lineno = frame_lineno
     intf = proc_obj.intf[-1]
+    name = "??"
     if frame is proc_obj.curframe:
         intf.msg_nocr(format_token(Arrow, "->", style=style))
     else:
@@ -512,10 +537,10 @@ if __name__ == "__main__":
     )
     # print(pyc_file, getsourcefile(pyc_file))
 
+    from trepan.debugger import Trepan
     m = MockDebugger()
 
     # For testing print_stack_entry()
-    from trepan.debugger import Trepan
 
     dd = Trepan()
     my_frame = inspect.currentframe()
@@ -546,15 +571,20 @@ if __name__ == "__main__":
 
     def fn(x):
         frame = inspect.currentframe()
-        is_module, mess = format_function_and_parameters(frame, dd, style="tango")
+        eval_str = is_eval_or_exec_stmt(frame.f_back)
+        if eval_str:
+            print("Caller is %s stmt" % eval_str)
+            print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
+
+        _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
-        print(format_stack_entry(dd, (frame, frame.f_code.co_firstlineno + 2)))
         print(get_call_function_name(frame))
         return
 
     print("=" * 30)
     fn(5)
     eval("fn(5)")
+    exec("fn(5)")
     # print("=" * 30)
     # print(print_obj("fn", fn))
     # print("=" * 30)

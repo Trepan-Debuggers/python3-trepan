@@ -120,7 +120,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         )
         self.section(mess)
 
-        _, formatted_func_name = format_function_name(frame, style=style)
+        function_name, formatted_func_name = format_function_name(frame, style=style)
+        if function_name is None:
+            formatted_func_name = "??"
         f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
         self.msg("  function name: %s" % formatted_func_name)
         func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
@@ -148,8 +150,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
 
         self.msg("  last instruction: %d" % frame.f_lasti)
-        self.msg("  code: %s" % frame.f_code)
-        self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
+        self.msg("  code: %s" % format_code(code, style))
+        if frame.f_back:
+            self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
         self.msg("  tracing function: %s" % frame.f_trace)
 
         if is_verbose:
