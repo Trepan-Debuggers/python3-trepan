@@ -126,7 +126,8 @@ If you see the above `.pythonrc.py` message, great! If not, it might be that *PY
 
 and you should see the ".pythonrc.py" message as shown above.
 
-Once that code is loaded, the *debug()* function is defined. To debug some python code, you can call that function. Here is an example:
+Once that code is loaded, the *debug()* function is defined. To debug
+some Python code, you can call that function. Here is an example:
 
 .. code:: console
 
@@ -161,22 +162,37 @@ the debugger at the spot in the program you want.
 Python 3.7 and later
 --------------------
 
-In Python 3.7 and later, a ``breakpoint()`` builtin was added. Add a ``breakpoint()`` function call to your python code, then then set set environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug`` before running the program.
+In Python 3.7 and later, a ``breakpoint()`` builtin was added. Add a ``breakpoint()`` function call to your python code, then then set environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug`` before running the program.
 
 For example, here is some Python code:
 
 .. code:: python
 
-        # Code run here trepan3k/trepan3k doesn't even see at all.
+        # Code run here; pdb or trepan3k is not loaded yet at all!
         # work, work, work...
-        debugger() # Get thee to thyne debugger!
+        breakpoint() # Get thee to thyne debugger!
 
 
-Now run Python with ``PYTHONBREAKPOINT`` set to ``trepan.api``:
+Now run Python with ``PYTHONBREAKPOINT`` set to ``trepan.api.debug``:
 
 .. code:: shell
 
-	  PYTHONBREAKPOINT=trepan.api.debug_for_remote_access python test/example/gcd-breakpoint.py 3 5
+	  PYTHONBREAKPOINT=trepan.api.debug python test/example/gcd-breakpoint.py 3 5
+
+Or, if you don't wan to the variable each time you run some Python code:
+
+.. code:: shell
+
+	  $ export PYTHONBREAKPOINT=trepan.api.debug
+	  $ python test/example/gcd-breakpoint.py 3 5
+
+
+If you want to set up to debug remotely, set ``PYTHONBREAKPOINT`` to ``trepan.api.debug_for_remote_access``:
+
+
+.. code:: shell
+
+	  export PYTHONBREAKPOINT=trepan.api.debug_for_remote_access
 
 Before Python 3.7
 -----------------
@@ -227,9 +243,9 @@ Calling the debugger from pytest
 ================================
 
 The only thing needed here is to ensure you add the ``-s`` option and add an explicit
-``breakpoint()`` or ``debug()`` function call.
+a ``debug()`` function call; (or a ``breakpoint`` function call after setting environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug``).
 
-To set a breakpoint to enter the trepan debugger::
+For example::
 
     import pytest
     from trepan.api import debug

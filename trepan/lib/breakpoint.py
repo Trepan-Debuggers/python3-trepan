@@ -176,13 +176,11 @@ class BreakpointManager:
             filename = os.path.realpath(filename)
 
         assert (
-            isinstance(lineno, int) or func is not None
-        ), "You must either supply a function name or give a line number"
-
-        assert (
             isinstance(filename, str) or func is not None
         ), "You must either supply a filename or give a line number"
+
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, func, offset)
+
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
         if (filename, lineno) in self.bplist:
@@ -192,9 +190,9 @@ class BreakpointManager:
             pass
         if func and offset in [None, -1]:
             if func in self.fnlist:
-                self.fnlist[func].append(brkpt)
+                self.fnlist[func.__code__].append(brkpt)
             else:
-                self.fnlist[func] = [brkpt]
+                self.fnlist[func.__code__] = [brkpt]
                 pass
         return brkpt
 
@@ -355,28 +353,31 @@ class BreakpointManager:
     pass  # BreakpointManager
 
 
-def checkfuncname(b, frame):
-    """Check whether we should break here because of `b.funcname`."""
-    if not b.funcname:
+def checkfuncname(brkpt: Breakpoint, frame):
+    """
+      Check whether we should break at `frame` because the frame's
+      code object matches `brkpt.funcname`.
+    """
+    if not brkpt.funcname:
         # Breakpoint was set via line number.
-        if b.line != frame.f_lineno:
+        if brkpt.line != frame.f_lineno:
             # Breakpoint was set at a line with a def statement and the function
             # defined is called: don't break.
             return False
         return True
 
-    # Breakpoint set via function name.
+    # Breakpoint set via function code object
 
-    if frame.f_code.co_name != b.funcname:
+    if frame.f_code != brkpt.funcname.__code__:
         # It's not a function call, but rather execution of def statement.
         return False
 
     # We are in the right frame.
-    if not b.func_first_executable_line:
+    if not brkpt.func_first_executable_line:
         # The function is entered for the 1st time.
-        b.func_first_executable_line = frame.f_lineno
+        brkpt.func_first_executable_line = frame.f_lineno
 
-    if b.func_first_executable_line != frame.f_lineno:
+    if brkpt.func_first_executable_line != frame.f_lineno:
         # But we are not at the first line number: don't break.
         return False
     return True
@@ -411,6 +412,7 @@ if __name__ == "__main__":
 
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
+        assert frame
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
@@ -418,7 +420,7 @@ if __name__ == "__main__":
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, -1,  None, "foo")
+    bp2 = bpmgr.add_breakpoint(None, None, -1,  False, None, foo)
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint("foo", 5, 2, temporary=True)
     print(bp3.icon_char())
@@ -426,6 +428,7 @@ if __name__ == "__main__":
 
     bp = bpmgr.add_breakpoint("bar", 10, 3)
     filename = bp.filename
+    assert filename
     for i in range(3):
         bp = bpmgr.add_breakpoint("bar", 2, 6)
     print(bpmgr.delete_breakpoints_by_lineno(filename, 6))

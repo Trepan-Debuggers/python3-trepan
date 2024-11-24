@@ -37,7 +37,7 @@ def test_breakpoint():
     assert ["2"] == bpmgr.bpnumbers(), "Extracting breakpoint-numbers"
 
     count = 3
-    for i in range(count):
+    for _ in range(count):
         bp = bpmgr.add_breakpoint("bar", 10)
     filename = bp.filename
     assert count == len(
@@ -69,6 +69,6 @@ def test_checkfuncname():
         assert not checkfuncname(bp3, current_frame)
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, "foo")
+    bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, foo)
     foo(bp2, bpmgr)
     return

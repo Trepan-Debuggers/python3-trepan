@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import tracer
 
 # Our local modules
+from xdis import PYTHON_VERSION_TRIPLE, PYTHON_VERSION_STR
 from trepan.processor.command.base_cmd import DebuggerCommand
-from trepan.processor.cmdfns import want_different_line
 
 
-class StepCommand(DebuggerCommand):
-    """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
+class StepICommand(DebuggerCommand):
+    """**stepi**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
 
     Execute the current line, stopping at the next event.
 
@@ -62,48 +61,24 @@ class StepCommand(DebuggerCommand):
     `next`, `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
     `finish` for other ways to progress execution."""
 
-    aliases = (
-        "step+",
-        "step-",
-        "step>",
-        "step<",
-        "step!",
-        "s",
-        "s+",
-        "s-",
-        "s<",
-        "s>",
-        "s!",
-    )
+    aliases = ("si",)
     execution_set = ["Running"]
-    short_help = "Step program (possibly entering called functions)"
+    short_help = "Step bytecode instruction (possibly entering called functions)"
 
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
-        step_events = []
-        if args[0][-1] == ">":
-            step_events = ["call"]
-        elif args[0][-1] == "<":
-            step_events = ["return"]
-        elif args[0][-1] == "!":
-            step_events = ["exception"]
-            pass
+        if PYTHON_VERSION_TRIPLE < (3, 7):
+            self.errmsg(f"Instruction stepping works starting with Python 3.7, you have) {PYTHON_VERSION_STR}")
+            return
+
         if len(args) <= 1:
             self.proc.debugger.core.step_ignore = 0
         else:
             pos = 1
-            while pos < len(args):
-                arg = args[pos]
-                if arg in tracer.ALL_EVENT_NAMES:
-                    step_events.append(arg)
-                else:
-                    break
-                pos += 1
-                pass
             if pos == len(args) - 1:
                 self.core.step_ignore = self.proc.get_int(
-                    args[pos], default=1, cmdname="step"
+                    args[pos], default=1, cmdname="stepi"
                 )
                 if self.core.step_ignore is None:
                     return False
@@ -115,15 +90,12 @@ class StepCommand(DebuggerCommand):
                 return False
             pass
 
-        if [] == step_events:
-            self.core.step_events = None
-        else:
-            self.core.step_events = step_events
-            pass
+        self.core.step_events = None
 
-        self.core.different_line = want_different_line(
-            args[0], self.settings["different"]
-        )
+        self.core.different_line = False
+        # print("XXX", self.proc.frame)
+        if self.proc.frame is not None:
+            self.proc.frame.f_trace_opcodes = True
         self.core.stop_level = None
         self.core.last_frame = None
         self.core.stop_on_finish = False
@@ -137,8 +109,8 @@ if __name__ == "__main__":
     from mock import MockDebugger
 
     d = MockDebugger()
-    cmd = StepCommand(d.core.processor)
-    for c in (["s", "5"], ["step", "1+2"], ["s", "foo"]):
+    cmd = StepICommand(d.core.processor)
+    for c in (["si", "5"], ["stepi", "1+2"], ["si", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)
@@ -146,7 +118,7 @@ if __name__ == "__main__":
         print(f"step_ignore {repr(d.core.step_ignore)}")
         print(f"continue_running: {cmd.proc.continue_running}")
         pass
-    for c in (["s"], ["step+"], ["s-"], ["s!"], ["s>"], ["s<"]):
+    for c in (["si"], ["stepi"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
