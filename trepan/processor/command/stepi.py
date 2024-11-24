@@ -69,7 +69,7 @@ class StepICommand(DebuggerCommand):
 
     def run(self, args):
         if PYTHON_VERSION_TRIPLE < (3, 7):
-            self.errmsg(f"Instruction stepping works starting with Python 3.7, you have) {PYTHON_VERSION_STR}")
+            self.errmsg(f"Instruction stepping works starting with Python 3.7, you have: {PYTHON_VERSION_STR}.")
             return
 
         if len(args) <= 1:
