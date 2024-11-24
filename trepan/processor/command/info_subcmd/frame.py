@@ -146,7 +146,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg(f"  current line number: {frame.f_lineno}")
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
+            self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
 
         self.msg(f"  last instruction: {frame.f_lasti}")
         self.msg(f"  code: {format_code(code, style)}")
