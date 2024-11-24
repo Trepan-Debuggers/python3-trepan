@@ -81,7 +81,7 @@ class StepICommand(DebuggerCommand):
                 self.core.step_ignore -= 1
                 pass
             elif pos != len(args):
-                self.errmsg("Invalid additional parameters %s" % " ".join(args[pos]))
+                self.errmsg(f"Invalid additional parameters {' '.join(args[pos])}")
                 return False
             pass
 

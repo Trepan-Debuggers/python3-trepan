@@ -111,7 +111,7 @@ class StepCommand(DebuggerCommand):
                 self.core.step_ignore -= 1
                 pass
             elif pos != len(args):
-                self.errmsg("Invalid additional parameters %s" % " ".join(args[pos]))
+                self.errmsg(f"Invalid additional parameters {' '.join(args[pos])}")
                 return False
             pass
 
@@ -142,14 +142,14 @@ if __name__ == "__main__":
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)
-        print("Execute result: %s" % result)
-        print("step_ignore %s" % repr(d.core.step_ignore))
-        print("continue_running: %s" % cmd.proc.continue_running)
+        print(f"Execute result: {result}")
+        print(f"step_ignore {repr(d.core.step_ignore)}")
+        print(f"continue_running: {cmd.proc.continue_running}")
         pass
     for c in (["s"], ["step+"], ["s-"], ["s!"], ["s>"], ["s<"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print("different line %s:" % c[0], cmd.core.different_line)
+        print(f"different line {c[0]}:", cmd.core.different_line)
         pass
     pass
