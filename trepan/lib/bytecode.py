@@ -20,7 +20,6 @@
 import re
 
 from opcode import HAVE_ARGUMENT, opname
-from typing import Optional
 from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
 
 opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
@@ -35,7 +34,7 @@ def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
 
 
 
-def op_at_frame(frame, offset: Optional[int]=None, skip_cache=True):
+def op_at_frame(frame, offset=None, skip_cache=True):
     bytecode = frame.f_code.co_code
     if offset is None:
         offset = frame.f_lasti

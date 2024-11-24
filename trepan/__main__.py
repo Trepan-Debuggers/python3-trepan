@@ -114,8 +114,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
                     print(
-                        f"Bytecode is for version {version_tuple_to_str(python_version)} but we are "
-                        f"version {version_tuple_to_str()}."
+                        "Bytecode is for version %s but we are version %s."
+                        % (python_version, version_tuple_to_str())
                     )
                     print("For a cross-version debugger, trepan-xpy with x-python might work.")
                     sys.exit(2)

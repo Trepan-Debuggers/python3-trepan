@@ -36,7 +36,7 @@ def set_break(
     offset=None,
 ):
     if lineno is None and offset is None:
-        part1 = f"""I don't understand '{" ".join(args[1:])}' as a line number, offset, or function name"""
+        part1 = """I don't understand '%s' as a line number, offset, or function name""" % {" ".join(args[1:])}
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
         )
@@ -52,10 +52,10 @@ def set_break(
             if not line_info:
                 linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
                 if lineno not in linestarts.values():
-                    part1 = f"File {cmd_obj.core.filename(filename)}"
+                    part1 = "File %s" % cmd_obj.core.filename(filename)
                     msg = wrapped_lines(
                         part1,
-                        f"is not stoppable at line {lineno}.",
+                        "is not stoppable at line %s." % lineno,
                         cmd_obj.settings["width"],
                     )
                     cmd_obj.errmsg(msg)
@@ -71,10 +71,10 @@ def set_break(
             assert offset is not None
             lineno = code_offset_info(filename, offset)
             if lineno is None:
-                part1 = f"File {cmd_obj.core.filename(filename)}"
+                part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
-                    f"has no line associated with offset {offset}.",
+                    "has no line associated with offset %s." % offset,
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
@@ -90,24 +90,24 @@ def set_break(
         func=func,
     )
     if func and inspect.isfunction(func):
-        cmd_obj.msg(f"Breakpoint {bp.number} set on calling function {func.__name__}()")
-        part1 = f"Currently this is line {lineno} of file"
+        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func.__name__))
+        part1 = "Currently this is line %d of the file" % lineno
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
     else:
-        part1 = f"Breakpoint {bp.number} set at line {lineno} of file"
+        part1 = "Breakpoint %d set at line %s of file" % (bp.number, lineno)
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
         if func:
-            func_str = f" of {pretty_modfunc_name(func)}"
+            func_str = " of %s" % pretty_modfunc_name(func)
         else:
             func_str = ""
         if offset is not None and offset >= 0:
-            cmd_obj.msg(f"Breakpoint is at offset {offset}{func_str}")
+            cmd_obj.msg("Breakpoint is at offset %d%s" % (offset, func_str))
         pass
     return True
 

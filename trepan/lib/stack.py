@@ -114,7 +114,7 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame, style: str) -> tuple:
+def format_function_name(frame, style: str):
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
@@ -312,7 +312,7 @@ def check_path_with_frame(frame, path):
     return True, None
 
 
-def is_eval_or_exec_stmt(frame) -> Optional[str]:
+def is_eval_or_exec_stmt(frame):
     """Return "eval" or "exec" if we are inside an eval() or exec()
     statement. None is returned if not.
     """
@@ -573,7 +573,7 @@ if __name__ == "__main__":
         frame = inspect.currentframe()
         eval_str = is_eval_or_exec_stmt(frame.f_back)
         if eval_str:
-            print(f"Caller is {eval_str} stmt")
+            print("Caller is %s stmt" % eval_str)
             print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")

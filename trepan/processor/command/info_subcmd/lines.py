@@ -122,7 +122,7 @@ class InfoOffsets(DebuggerSubcommand):
             m = self.columnize_commands(list(sorted(lines)))
             self.msg(m)
         else:
-            self.section(f"Line:   offset for table for %s" % filename)
+            self.section("Line:   offset for table for %s" % filename)
             lines = []
             for offset, line_number in findlinestarts(curframe.f_code):
                 lines.append(
@@ -130,7 +130,6 @@ class InfoOffsets(DebuggerSubcommand):
                     )
             m = self.columnize_commands(list(sorted(lines)))
             self.msg(m)
->>>>>>> python-3.6-to-3.10
             pass
         pass
 
