@@ -273,6 +273,9 @@ def print_location(proc_obj):
                     intf_obj.msg(f"remapped file {filename} to {remapped_file}")
 
                     pass
+
+            if isinstance(proc_obj.curframe, int):
+                breakpoint()
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
             if not line:
                 m = re.search("^<frozen (.*)>", filename)
@@ -357,7 +360,6 @@ if __name__ == "__main__":
         cmdproc.setup()
         print_location(cmdproc)
         cmdproc.curindex = 1
-        breakpoint()
         cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
         print_location(cmdproc)
 
