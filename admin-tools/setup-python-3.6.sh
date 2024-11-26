@@ -14,7 +14,7 @@ trepan3k_owd=$(pwd)
 mydir=$(dirname $bs)
 cd $mydir
 . ./checkout_common.sh
-(cd $fulldir/.. && \
+(cd $mydir/.. && \
      setup_version python-uncompyle6 python-3.6 && \
      setup_version python-filecache python-3.6 && \
      setup_version shell-term-background python-3.3 && \
