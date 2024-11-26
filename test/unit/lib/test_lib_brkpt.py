@@ -10,15 +10,20 @@ from trepan.lib.breakpoint import BreakpointManager, checkfuncname
 
 def test_breakpoint():
     """Test breakpoint"""
+
+    def foo():
+        return
+
     bpmgr = BreakpointManager()
     assert 0 == bpmgr.last()
-    bp = bpmgr.add_breakpoint("foo", 10, 5)
+    line_number = foo.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=foo)
 
-    assert re.search(r"1\s+breakpoint\s+keep\s+yes .* at .*foo:10", str(bp)), str(bp)
+    assert re.search(r"1\s+breakpoint\s+keep\s+yes .*0 at.*%d" % line_number, str(bp)), str(bp)
     assert "B" == bp.icon_char()
     assert bp.enabled
     bp.disable()
-    assert re.search(r"1\s+breakpoint\s+keep\s+no .* at .*foo:10", str(bp)), str(bp)
+    assert re.search(r"1\s+breakpoint\s+keep\s+no .*0 at.*%d" % line_number, str(bp)), str(bp)
     assert not bp.enabled
     assert "b" == bp.icon_char()
     assert 1 == bpmgr.last()
@@ -32,7 +37,9 @@ def test_breakpoint():
         False,
         "Breakpoint 1 previously deleted.",
     )
-    bp2 = bpmgr.add_breakpoint("foo", 5, 10, temporary=True)
+    line_number = test_breakpoint.__code__.co_firstlineno
+    bp2 = bpmgr.add_breakpoint(__file__, line_number, 0, func=test_breakpoint, temporary=True)
+    breakpoint()
     assert "t" == bp2.icon_char()
     assert ["2"] == bpmgr.bpnumbers(), "Extracting breakpoint-numbers"
 

@@ -76,14 +76,17 @@ if __name__ == "__main__":
     d = Trepan()
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()
-    line_str = str(cmd.proc.frame.f_lineno)
+    line = cmd.proc.frame.f_lineno
+    # Leave this line after line_str blank!
     cmd.proc.setup()
 
     for c in (
-        # ["continue", "wrong", "number", "of", "args"],
-        ["c", line_str],
-        # ["continue", "1+2"],
-        # ["c", "foo"],
+        ["continue", "wrong", "number", "of", "args"],
+        ["c", str(line)],
+        ["c", str(line + 1)], # Invalid
+        ["continue", "1"],
+        ["c", "five"],
+        ["c", "five()"],
     ):
         d.core.step_ignore = 0
         cmd.continue_running = False
