@@ -357,7 +357,8 @@ if __name__ == "__main__":
         cmdproc.setup()
         print_location(cmdproc)
         cmdproc.curindex = 1
-        cmdproc.curframe = cmdproc.stack[cmdproc.curindex][1]
+        breakpoint()
+        cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
         print_location(cmdproc)
 
     exec("five()")
