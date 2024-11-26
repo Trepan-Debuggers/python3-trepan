@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class NextCommand(DebuggerCommand):
     See also:
     ---------
 
-    `step`, `skip`, `jump` (there's no `hop` yet), `continue`, and
+    `step`, `stepi`, `skip`, `jump` (there's no `hop` yet), `continue`, and
     `finish` for other ways to progress execution."""
 
     aliases = ("next+", "next-", "n", "n-", "n+")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print("Run result: %s" % result)
+        print(f"Run result: {result}")
         print(
             "step_ignore %d, continue_running: %s"
             % (

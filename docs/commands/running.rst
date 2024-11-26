@@ -142,3 +142,4 @@ Debugging commands
    running/restart
    running/skip
    running/step
+   running/stepi

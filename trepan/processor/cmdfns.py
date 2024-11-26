@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023 Rocky
+#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023-2024 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -38,19 +38,22 @@ def source_tempfile_remap(prefix, text, tempdir=None):
 
 def deparse_fn(code):
     try:
-        if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
-            from uncompyle6.semantics.linemap import (
-                deparse_code_with_fragments_and_map as deparse_code,
+        if PYTHON_VERSION_TRIPLE >= (3, 9):
+            # Don't have decompiler here yet.
+            return None
+        if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
+            from decompyle3.semantics.linemap import (
+                code_deparse_with_fragments_and_map as deparse_code,
             )
         else:
-            from decompile3.semantics.linemap import (
-                deparse_code_with_fragments_and_map as deparse_code,
+            from uncompyle6.semantics.linemap import (
+                code_deparse_with_fragments_and_map as deparse_code,
             )
 
     except ImportError:
         return None
     try:
-        deparsed = deparse_code(PYTHON_VERSION_TRIPLE, code, is_pypy=IS_PYPY)
+        deparsed = deparse_code(code, is_pypy=IS_PYPY)
         return deparsed
     except Exception:
         raise
@@ -246,4 +249,9 @@ if __name__ == "__main__":
     print(want_different_line("s", False))
     print(want_different_line("s", True))
     print(want_different_line("s", True))
+
+    my_frame = inspect.currentframe()
+    print("=" * 30)
+    print(deparse_fn(my_frame.f_code).text)
+
     pass

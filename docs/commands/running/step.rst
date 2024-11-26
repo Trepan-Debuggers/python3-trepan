@@ -26,8 +26,8 @@ run until the return for that call.)
 If no suffix is given, the debugger setting `different-line`
 determines this behavior.
 
-Examples:
-+++++++++
+Step Examples:
+++++++++++++++
 
 ::
 

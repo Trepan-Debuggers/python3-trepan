@@ -43,6 +43,7 @@ class MockUserInterface:
     def __init__(self):
         self.io = MockIO()
         self.output = MockIO()
+        self.input = MockIO()
         self.debugger_name = "trepan3k"
         self.histfile = "/tmp/.trepanrc"
         self.input = MockIO()
@@ -140,8 +141,10 @@ class MockDebugger:
         self.intf = [MockUserInterface()]
         self.core = MockDebuggerCore(self)
         self.settings = default.DEBUGGER_SETTINGS
+        self.settings["highlight"] = None
         self.orig_sys_argv = None
         self.program_sys_argv = []
+        self.eval_string = None
         return
 
     def stop(self):
