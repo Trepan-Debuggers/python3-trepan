@@ -75,7 +75,7 @@ if __name__ == "__main__":
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)
-        print(f"Run result: {result}")
+        print("Run result: %s" % result)
         print(
             "step_ignore %d, continue_running: %s"
             % (

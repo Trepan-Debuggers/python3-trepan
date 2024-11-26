@@ -288,6 +288,7 @@ def print_location(proc_obj):
                     intf_obj.msg("remapped file %s to %s" %(filename, remapped_file))
                     pass
 
+
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
             if not line:
                 m = re.search("^<frozen (.*)>", filename)

@@ -153,15 +153,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg("  code: %s" % format_code(code, style))
         if frame.f_back:
             self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
-            self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
         else:
             self.msg("  no previous frame")
-        self.msg(f"  tracing function: {frame.f_trace}")
-        if hasattr(frame, "f_trace_opcodes"):
-            self.msg_nocr(f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}")
-        if hasattr(frame, "f_trace_lines"):
-            self.msg(f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}")
->>>>>>> python-3.6-to-3.10
+        self.msg("  tracing function: %s" % frame.f_trace)
 
         if is_verbose:
             for name, field in [
