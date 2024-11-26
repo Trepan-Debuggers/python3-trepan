@@ -204,10 +204,10 @@ def print_location(proc_obj):
                 eval_kind = is_eval_or_exec_stmt(frame)
                 deparsed = deparse_fn(frame.f_code)
                 if deparsed is not None:
-                    print(f"XXX2 {deparsed.text}")
                     source_text = deparsed.text
-                else:
-                    print("Can't deparse", frame.f_code)
+                # else:
+                #   print("Can't deparse", frame.f_code)
+>>>>>>> master
                 if source_text is None and eval_kind:
                     source_text = f"{eval_kind}(...)"
                     pass

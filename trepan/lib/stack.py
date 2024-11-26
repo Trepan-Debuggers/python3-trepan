@@ -120,8 +120,10 @@ def format_function_name(frame, style: str) -> Tuple[Optional[str], Optional[str
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
     """
-    if is_eval_or_exec_stmt(frame):
+    if (exec_type := is_eval_or_exec_stmt(frame)):
         funcname = get_call_function_name(frame)
+        if funcname is None:
+            funcname = exec_type
     elif frame.f_code.co_name:
         funcname = frame.f_code.co_name
     else:

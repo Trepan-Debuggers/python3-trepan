@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023 Rocky
+#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023-2024 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -38,6 +38,9 @@ def source_tempfile_remap(prefix, text, tempdir=None):
 
 def deparse_fn(code):
     try:
+        if PYTHON_VERSION_TRIPLE >= (3, 9):
+            # Don't have decompiler here yet.
+            return None
         if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
             from decompyle3.semantics.linemap import (
                 code_deparse_with_fragments_and_map as deparse_code,
