@@ -19,7 +19,7 @@ import linecache
 import os.path as osp
 import re
 import sys
-from inspect import ismodule
+from inspect import ismodule, currentframe
 from tempfile import NamedTemporaryFile
 from types import CodeType
 
@@ -135,6 +135,7 @@ def print_location(proc_obj):
     # once and sometimes twice.
     remapped_file = None
     source_text = None
+    eval_kind = None
     while i_stack >= 0 and len(proc_obj.stack) > 0:
         frame, lineno = proc_obj.stack[i_stack]
 
@@ -155,25 +156,46 @@ def print_location(proc_obj):
 
         filename = frame2file(core_obj, frame, canonic=False)
         if "<string>" == filename and dbgr_obj.eval_string:
+            eval_kind = "string"
             remapped_file = filename
             filename = pyficache.unmap_file(filename)
             if "<string>" == filename:
-                remapped = cmdfns.source_tempfile_remap(
+                remapped_file = cmdfns.source_tempfile_remap(
                     "eval_string",
                     dbgr_obj.eval_string,
                     tempdir=proc_obj.settings("tempdir"),
                 )
-                pyficache.remap_file(filename, remapped)
+                pyficache.remap_file(filename, remapped_file)
                 filename, lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif "<string>" == filename:
-            source_text = deparse_fn(frame.f_code)
-            eval_kind = is_eval_or_exec_stmt(frame)
-            if source_text is None and eval_kind:
-                source_text = f"{eval_kind}(...)"
+            # FIXME: should change filename to disambiguated <string> everywhere.
+            eval_kind = is_eval_or_exec_stmt(frame) or "code-"
+            deparsed = deparse_fn(frame.f_code)
+            if deparsed:
+                # Create a nice prefix for the temporary file to write.
+                # Use the exec type and first line of the deparsed text.
+                first_text_line = deparsed.text.split("\n")[0]
+                # Strip of quotes added by repr and up the first 10 characters
+                # of result.
+                leading_code = proc_obj._saferepr(first_text_line)[1:-1][:10]
+                prefix = f"{eval_kind}-{leading_code}-"
 
-            filename = f"<string: '{source_text}'>"
+                remapped_file = cmdfns.source_tempfile_remap(
+                    prefix,
+                    deparsed.text,
+                    tempdir=proc_obj.settings("tempdir"),
+                )
+                # FIXME: pyficache remaps seems backwards
+                pyficache.remap_file(remapped_file, filename)
+                filename = remapped_file
+            else:
+                eval_kind = is_eval_or_exec_stmt(frame)
+                if source_text is None and eval_kind:
+                    source_text = f"{eval_kind}(...)"
+                    pass
+                pass
             pass
         else:
             m = re.search("^<frozen (.*)>", filename)
@@ -276,16 +298,20 @@ def print_location(proc_obj):
                     pass
             pass
 
-        try:
-            match, reason = check_path_with_frame(frame, filename)
-            if not match:
-                if filename not in warned_file_mismatches:
-                    proc_obj.errmsg(reason)
-                    warned_file_mismatches.add(filename)
-        except Exception:
+        if eval_kind is None:
+            fn_name = frame.f_code.co_name
+            try:
+                match, reason = check_path_with_frame(frame, filename)
+                if not match:
+                    if filename not in warned_file_mismatches:
+                        proc_obj.errmsg(reason)
+                        warned_file_mismatches.add(filename)
+            except Exception:
+                pass
             pass
+        else:
+            fn_name = eval_kind
 
-        fn_name = frame.f_code.co_name
         last_i = frame.f_lasti
         print_source_location_info(
             intf_obj.msg,
@@ -318,3 +344,20 @@ def print_location(proc_obj):
         except Exception:
             pass
     return True
+
+# Demo it
+if __name__ == "__main__":
+    def five():
+        from trepan.processor.cmdproc import CommandProcessor
+        from trepan.processor.command.mock import MockDebugger
+        d = MockDebugger()
+        cmdproc = CommandProcessor(d.core)
+        cmdproc.frame = currentframe()
+        cmdproc.event = "line"
+        cmdproc.setup()
+        print_location(cmdproc)
+        cmdproc.curindex = 1
+        cmdproc.curframe = cmdproc.stack[cmdproc.curindex][1]
+        print_location(cmdproc)
+
+    exec("five()")
