@@ -38,19 +38,19 @@ def source_tempfile_remap(prefix, text, tempdir=None):
 
 def deparse_fn(code):
     try:
-        if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
-            from uncompyle6.semantics.linemap import (
-                deparse_code_with_fragments_and_map as deparse_code,
+        if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
+            from decompyle3.semantics.linemap import (
+                code_deparse_with_fragments_and_map as deparse_code,
             )
         else:
-            from decompile3.semantics.linemap import (
+            from uncompyle6.semantics.linemap import (
                 deparse_code_with_fragments_and_map as deparse_code,
             )
 
     except ImportError:
         return None
     try:
-        deparsed = deparse_code(PYTHON_VERSION_TRIPLE, code, is_pypy=IS_PYPY)
+        deparsed = deparse_code(code, is_pypy=IS_PYPY)
         return deparsed
     except Exception:
         raise
