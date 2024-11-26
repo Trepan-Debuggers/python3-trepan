@@ -75,6 +75,6 @@ class Processor:
         return self.msg(message, opts)
 
     def settings(self, setting):
-        return self.core.debugger.settings[setting]
+        return self.core.debugger.settings.get(setting)
 
     pass
