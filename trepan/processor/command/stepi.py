@@ -20,45 +20,25 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 
 
 class StepICommand(DebuggerCommand):
-    """**stepi**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
+    """**stepi** [*count*]
 
-    Execute the current line, stopping at the next event.
+    Execute the current line, stopping at the instruction bytecode.
 
-    With an integer argument, step that many times.
+    With an integer argument, step bytecode instructions that many times.
 
-    *event* is list of an event name which is one of: `call`,
-    `return`, `line`, `exception` `c-call`, `c-return` or `c-exception`.
-    If specified, only those stepping events will be considered. If no
-    list of event names is given, then any event triggers a stop when the
-    count is 0.
-
-    There is however another way to specify a *single* event, by
-    suffixing one of the symbols `<`, `>`, or `!` after the command or on
-    an alias of that.  A suffix of `+` on a command or an alias forces a
-    move to another line, while a suffix of `-` disables this requirement.
-    A suffix of `>` will continue until the next call. (`finish` will run
-    run until the return for that call.)
-
-    If no suffix is given, the debugger setting `different-line`
-    determines this behavior.
 
     Examples:
     ---------
 
-      step        # step 1 event, *any* event
-      step 1      # same as above
-      step 5/5+0  # same as above
-      step line   # step only line events
-      step call   # step only call events
-      step>       # same as above
-      step call line # Step line *and* call events
+      stepi        # step 1 bytecode instruction
+      si 1         # same as above
 
-    Related and similar is the `next` command.
+    Related and similar is the `step` command.
 
     See also:
     ---------
 
-    `next`, `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
+    `step`, `next`, `skip`, `jump` (there's no `hop` yet), `continue`, `return` and
     `finish` for other ways to progress execution."""
 
     aliases = ("si",)

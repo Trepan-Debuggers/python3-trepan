@@ -25,8 +25,8 @@ that support, 256 colors. But even here, it is useful to set
 the highlight to tell the debugger for bold and emphasized text what
 values to use.
 
-Examples:
-+++++++++
+Set Highlight Examples:
++++++++++++++++++++++++
 
 ::
 
