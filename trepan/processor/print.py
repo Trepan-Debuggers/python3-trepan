@@ -116,12 +116,25 @@ def print_source_location_info(
     print_fn(mess)
     return
 
-
 def print_location(proc_obj):
     """Show where we are. GUI's and front-end interfaces often
     use this to update displays. So it is helpful to make sure
     we give at least some place that's located in a file.
     """
+
+    def prefix_for_filename(deparsed_text: str) -> str:
+        """
+        Return a reasonable filename-friendly string from some
+        deparsed text. We do this so that the user gets some idea of
+        what the string (source code text) is contained in the file.
+
+        """
+        lines = deparsed_text.split("\n")
+        # FIXME Rather than blindly take the first line,
+        # check if it is blank and if so use other lines.
+        first_text_line = lines[0]
+        return proc_obj._saferepr(first_text_line)[1:-1][:10]
+
     i_stack = proc_obj.curindex
     if i_stack is None or proc_obj.stack is None:
         return False
@@ -176,11 +189,8 @@ def print_location(proc_obj):
             if deparsed:
                 # Create a nice prefix for the temporary file to write.
                 # Use the exec type and first line of the deparsed text.
-                first_text_line = deparsed.text.split("\n")[0]
-                # Strip of quotes added by repr and up the first 10 characters
-                # of result.
-                leading_code = proc_obj._saferepr(first_text_line)[1:-1][:10]
-                prefix = f"{eval_kind}-{leading_code}-"
+                leading_code_str = prefix_for_filename(deparsed.text)
+                prefix = f"{eval_kind}-{leading_code_str}-"
 
                 remapped_file = cmdfns.source_tempfile_remap(
                     prefix,
@@ -192,6 +202,12 @@ def print_location(proc_obj):
                 filename = remapped_file
             else:
                 eval_kind = is_eval_or_exec_stmt(frame)
+                deparsed = deparse_fn(frame.f_code)
+                if deparsed is not None:
+                    print(f"XXX2 {deparsed.text}")
+                    source_text = deparsed.text
+                else:
+                    print("Can't deparse", frame.f_code)
                 if source_text is None and eval_kind:
                     source_text = f"{eval_kind}(...)"
                     pass
@@ -251,7 +267,7 @@ def print_location(proc_obj):
                 # FIXME:
                 if source_text:
                     lines = source_text.split("\n")
-                    temp_name = "string-"
+                    temp_name = "string-" + prefix_for_filename(source_text)
                 else:
                     # try with good ol linecache and consider fixing pyficache
                     lines = linecache.getlines(filename)

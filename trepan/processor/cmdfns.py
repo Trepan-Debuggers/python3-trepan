@@ -44,7 +44,7 @@ def deparse_fn(code):
             )
         else:
             from uncompyle6.semantics.linemap import (
-                deparse_code_with_fragments_and_map as deparse_code,
+                code_deparse_with_fragments_and_map as deparse_code,
             )
 
     except ImportError:
@@ -246,4 +246,9 @@ if __name__ == "__main__":
     print(want_different_line("s", False))
     print(want_different_line("s", True))
     print(want_different_line("s", True))
+
+    my_frame = inspect.currentframe()
+    print("=" * 30)
+    print(deparse_fn(my_frame.f_code).text)
+
     pass
