@@ -14,6 +14,9 @@ def test_breakpoint():
     def foo():
         return
 
+    def bar():
+        return
+
     bpmgr = BreakpointManager()
     assert 0 == bpmgr.last()
     line_number = foo.__code__.co_firstlineno
@@ -39,16 +42,16 @@ def test_breakpoint():
     )
     line_number = test_breakpoint.__code__.co_firstlineno
     bp2 = bpmgr.add_breakpoint(__file__, line_number, 0, func=test_breakpoint, temporary=True)
-    breakpoint()
     assert "t" == bp2.icon_char()
     assert ["2"] == bpmgr.bpnumbers(), "Extracting breakpoint-numbers"
 
     count = 3
+    line_number = bar.__code__.co_firstlineno
     for _ in range(count):
-        bp = bpmgr.add_breakpoint("bar", 10)
+        bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=bar)
     filename = bp.filename
     assert count == len(
-        bpmgr.delete_breakpoints_by_lineno(os.path.realpath(filename), 10)
+        bpmgr.delete_breakpoints_by_lineno(os.path.realpath(filename), line_number)
     ), "delete_breakpoints_by_line when there are none"
     assert 0 != len(bpmgr.bplist), "There should still be some breakpoints before reset"
     bpmgr.reset()
@@ -61,7 +64,7 @@ def test_checkfuncname():
 
     bpmgr = BreakpointManager()
     frame = inspect.currentframe()
-    bp = bpmgr.add_breakpoint("test_funcname", frame.f_lineno + 1, -1)
+    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno + 1, -1, func=test_checkfuncname)
     assert checkfuncname(bp, frame)
 
     def foo(brkpt, bpmgr):
@@ -70,12 +73,12 @@ def test_checkfuncname():
         # current_frame.f_lineno is constantly updated. So adjust for line
         # the difference between the add_breakpoint and the check.
         bp3 = bpmgr.add_breakpoint(
-            os.path.realpath(__file__), current_frame.f_lineno + 2, -1, False, None
+            os.path.realpath(__file__), current_frame.f_lineno + 2, -1, False, func=foo
         )
         assert checkfuncname(bp3, current_frame), str(bp3)
         assert not checkfuncname(bp3, current_frame)
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, foo)
+    bp2 = bpmgr.add_breakpoint(__file__, None, -1, False, None, func=foo)
     foo(bp2, bpmgr)
     return
