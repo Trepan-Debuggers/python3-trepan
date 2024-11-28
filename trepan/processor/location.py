@@ -159,13 +159,13 @@ def resolve_location(proc, location) -> Optional[Location]:
         filename = frame2file(proc.core, curframe, canonic=False)
         lineno = location.line_number
         is_address = location.is_address
-        mod_func = curframe
+        mod_func = curframe.f_code
         if offset is None:
             lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
                 mod_func_name = lineinfo[0].name
-                if mod_func.f_code.co_name != mod_func_name:
+                if mod_func.co_name != mod_func_name:
                     print("FIXME: resolve_location needs update to pick out function")
                 pass
     elif location.offset is not None:
