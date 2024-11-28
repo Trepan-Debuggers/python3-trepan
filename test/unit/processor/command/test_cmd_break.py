@@ -4,8 +4,6 @@ import os
 import platform
 from test.unit.cmdhelper import errmsg, msg, reset_output, setup_unit_test_debugger
 
-from xdis import PYTHON_VERSION_TRIPLE
-
 from trepan.processor.cmdbreak import parse_break_cmd
 
 # We have to use this subterfuge because "break" is Python reserved word,
@@ -29,48 +27,58 @@ def test_parse_break_cmd():
     cmd.errmsg = errmsg
     proc = cmd.proc
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break")
-    assert fi.endswith("test_cmd_break.py")
-    assert (None, None, True, True) == (fn, cond, li > 1, offset > 0)
+    expected_code = test_parse_break_cmd.__code__
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break")
 
+    assert isinstance(fi, str)
+    assert isinstance(li, int)
+    assert isinstance(offset, int)
+    assert fi.endswith("test_cmd_break.py")
+    assert (expected_code, None, True, True) == (code, cond, li > 1, offset > 0)
     assert fi.endswith(__file__)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break 11")
-    assert (None, None, 11, None) == (fn, cond, li, offset)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break 11")
+    assert isinstance(fi, str)
+    assert (expected_code, None, 11, None) == (code, cond, li, offset)
 
     if platform.system() == "Windows":
         brk_cmd = f'b """{__file__}""":8'
     else:
         brk_cmd = f"b {__file__}:8"
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
-
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
     assert (True, 8) == (isinstance(fi, str), li)
     # FIXME: This varies. Why?
-    # assert "<module>" == fn
+    # assert "<module>" == code
 
     def foo():
         return "bar"
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break foo()")
-    assert (foo, True, True) == (fn, fi.endswith(__file__), li > 1)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break foo()")
+    assert isinstance(fi, str)
+    assert isinstance(li, int)
+    assert (foo, True, True) == (code, fi.endswith(__file__), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break food()")
-    assert (None, None, None, None) == (fn, fi, li, cond)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break food()")
+    assert (None, None, None, None) == (code, fi, li, cond)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path:5")
-    assert (os.path, True, 5) == (fn, isinstance(fi, str), li)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path:5")
+    assert (os.path, True, 5) == (code, isinstance(fi, str), li)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path.join()")
-    assert (os.path.join, True, True) == (fn, isinstance(fi, str), li > 1)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b os.path.join()")
+    assert (os.path.join, True, True) == (code, isinstance(fi, str), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break if True")
-    assert (None, True, True) == (fn, fi.endswith(__file__), li > 1)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break if True")
+    assert isinstance(fi, str)
+    assert isinstance(li, int)
+    assert (expected_code, True, True) == (code, fi.endswith(__file__), li > 1)
 
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b foo() if True")
-    assert (foo, True, True) == (fn, fi.endswith(__file__), li > 1)
-
-    fn, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "br os.path:10 if True")
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "b foo() if True")
+    assert isinstance(fi, str)
+    assert isinstance(li, int)
+    assert (foo, True, True) == (code, fi.endswith(__file__), li > 1)
+    assert isinstance(fi, str)
+    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "br os.path:10 if True")
     assert (True, 10) == (isinstance(fi, str), li)
 
     # FIXME:

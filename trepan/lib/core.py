@@ -284,9 +284,9 @@ class TrepanCore:
             # Could check code object or decide not to
             # The below could be done as a list comprehension, but
             # I'm feeling in Fortran mood right now.
-            for fn in self.bpmgr.fnlist:
+            for fn in self.bpmgr.code_list:
                 if fn == find_name:
-                    bp_fn = self.bpmgr.fnlist.get(fn)
+                    bp_fn = self.bpmgr.code_list.get(fn)
                     if not bp_fn:
                         return False
                     self.current_bp = bp = bp_fn[0]
