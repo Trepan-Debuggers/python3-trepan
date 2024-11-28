@@ -68,21 +68,29 @@ class ContinueCommand(DebuggerCommand):
 if __name__ == "__main__":
     import sys
 
+    def five():
+        return 5
+
     from trepan.debugger import Trepan
 
     d = Trepan()
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()
+    line = cmd.proc.frame.f_lineno
+    # Leave this line after line_str blank!
     cmd.proc.setup()
 
     for c in (
         ["continue", "wrong", "number", "of", "args"],
-        ["c", "5"],
-        ["continue", "1+2"],
-        ["c", "foo"],
+        ["c", str(line)],
+        ["c", str(line + 1)], # Invalid
+        ["continue", "1"],
+        ["c", "five"],
+        ["c", "five()"],
     ):
         d.core.step_ignore = 0
         cmd.continue_running = False
+        cmd.proc.current_command = " ".join(c)
         result = cmd.run(c)
         print("Run result: %s" % result)
         print(
