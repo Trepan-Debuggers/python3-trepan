@@ -7,6 +7,7 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path
+from types import CodeType
 
 
 class Breakpoint:
@@ -27,7 +28,7 @@ class Breakpoint:
         line,
         temporary=False,
         condition=None,
-        funcname=None,
+        code=None,
         offset=None,
     ):
         self.offset = offset
@@ -40,7 +41,7 @@ class Breakpoint:
 
         # Needed if funcname is not None.
         self.func_first_executable_line = None
-        self.funcname = funcname
+        self.code = code
 
         # Number of time breakpoint has been hit
         self.hits = 0
@@ -112,7 +113,7 @@ class BreakpointManager:
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
     through a (file,line) tuple which is a key in the `bplist'
-    dictionary. If the breakpoint is a function it is in `fnlist' as
+    dictionary. If the breakpoint is a function it is in `code_list' as
     well.  Note there may be more than one breakpoint per line which
     may have different conditions associated with them.
     """
@@ -127,7 +128,7 @@ class BreakpointManager:
 
         self.bpbynumber = [None]
         self.bplist = {}
-        self.fnlist = {}
+        self.code_list = {}
         return
 
     def bpnumbers(self):
@@ -179,7 +180,15 @@ class BreakpointManager:
             isinstance(filename, str) or func is not None
         ), "You must either supply a filename or give a line number"
 
-        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, func, offset)
+        if isinstance(func, CodeType):
+            code = func
+        elif hasattr(func, "__code__"):
+            code = func.__code__
+        elif hasattr(func, "f_code"):
+            code = func.f_code
+        else:
+            print(f"Don't know what to do with {func}, {type(func)}")
+        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
@@ -189,10 +198,10 @@ class BreakpointManager:
             self.bplist[filename, lineno] = [brkpt]
             pass
         if func and offset in [None, -1]:
-            if func in self.fnlist:
-                self.fnlist[func.__code__].append(brkpt)
+            if code in self.code_list:
+                self.code_list[code].append(brkpt)
             else:
-                self.fnlist[func.__code__] = [brkpt]
+                self.code_list[code] = [brkpt]
                 pass
         return brkpt
 
@@ -346,7 +355,7 @@ class BreakpointManager:
 
         # A list of breakpoints indexed by (file, lineno) tuple
         self.bplist = {}
-        self.fnlist = {}
+        self.code_list = {}
 
         return
 
@@ -356,9 +365,9 @@ class BreakpointManager:
 def checkfuncname(brkpt: Breakpoint, frame):
     """
       Check whether we should break at `frame` because the frame's
-      code object matches `brkpt.funcname`.
+      code object matches `brkpt.code`.
     """
-    if not brkpt.funcname:
+    if not brkpt.code:
         # Breakpoint was set via line number.
         if brkpt.line != frame.f_lineno:
             # Breakpoint was set at a line with a def statement and the function
@@ -368,7 +377,7 @@ def checkfuncname(brkpt: Breakpoint, frame):
 
     # Breakpoint set via function code object
 
-    if frame.f_code != brkpt.funcname.__code__:
+    if frame.f_code != brkpt.code:
         # It's not a function call, but rather execution of def statement.
         return False
 

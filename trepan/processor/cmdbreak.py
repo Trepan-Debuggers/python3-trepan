@@ -78,7 +78,26 @@ def set_break(
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
+                if force:
+                    cmd_obj.msg("Breakpoint set although it may never be reached.")
+                else:
+                    return False
+            else:
+                cmd_obj.errmsg("Breakpoint when no file available not implemented yet.")
                 return False
+
+    else:
+        assert offset is not None
+        lineno = code_offset_info(filename, offset)
+        if lineno is None:
+            part1 = f"File {cmd_obj.core.filename(filename)}"
+            msg = wrapped_lines(
+                part1,
+                f"has no line associated with offset {offset}.",
+                cmd_obj.settings["width"],
+            )
+            cmd_obj.errmsg(msg)
+            return False
 
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(
