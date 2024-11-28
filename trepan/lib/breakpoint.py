@@ -6,9 +6,10 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 
 __all__ = ["BreakpointManager", "Breakpoint"]
 
-import os.path
-from types import CodeType
+import os.path as osp
+from types import CodeType, ModuleType
 from typing import Optional
+from xdis import load_module
 
 
 class Breakpoint:
@@ -38,7 +39,7 @@ class Breakpoint:
 
         self.filename = filename
         if filename:
-            self.filename = os.path.realpath(filename)
+            self.filename = osp.realpath(filename)
 
         # Needed if funcname is not None.
         self.func_first_executable_line = None
@@ -70,12 +71,21 @@ class Breakpoint:
             offset_str = " any"
         else:
             offset_str = "%4d" % self.offset
-        msg = "%-4dbreakpoint   %s %s at %s:%d" % (
+        if self.offset is None:
+            offset_str = " any"
+        else:
+            offset_str = "%4d" % self.offset
+        if self.line is None:
+            line_str = ""
+        else:
+            line_str = ":%d" % self.line
+
+        msg = "%-4dbreakpoint   %s %s at %s%s" % (
             self.number,
             disp,
             offset_str,
             self.filename,
-            self.line,
+            line_str,
         )
         if self.condition:
             msg += f"\n\tstop only if {self.condition}"
@@ -175,7 +185,7 @@ class BreakpointManager:
         """
         bpnum = len(self.bpbynumber)
         if filename:
-            filename = os.path.realpath(filename)
+            filename = osp.realpath(filename)
 
         assert (
             isinstance(filename, str) or func is not None
@@ -183,12 +193,21 @@ class BreakpointManager:
 
         if isinstance(func, CodeType):
             code = func
+        elif isinstance(func, ModuleType):
+            if hasattr(func, "__cached__"):
+                # FIXME: we can probably do better hooking into importlib
+                # or something lower-level
+                _, _, _, code, _, _, _ = load_module(func.__cached__, fast_load=True, get_code=True)
+            else:
+                print(f"Don't know what to do with frozen module {func}")
+                return
         elif hasattr(func, "__code__"):
             code = func.__code__
         elif hasattr(func, "f_code"):
             code = func.f_code
         else:
             print(f"Don't know what to do with {func}, {type(func)}")
+            return
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
@@ -392,15 +411,34 @@ def checkfuncname(brkpt: Breakpoint, frame):
 # Demo
 
 if __name__ == "__main__":
+    def foo(bp, bpmgr):
+        frame = inspect.currentframe()
+        assert frame
+        print(f"Stop at bp2: {checkfuncname(bp, frame)}")
+        # frame.f_lineno is constantly updated. So adjust for the
+        # line difference between the add_breakpoint and the check.
+        bp3 = bpmgr.add_breakpoint(__file__, 0, frame.f_lineno + 1, func=foo)
+        print(f"Stop at bp3: {checkfuncname(bp3, frame)}")
+        return
+
+    def bar() -> int:
+        frame = inspect.currentframe()
+        assert frame is not None
+        return frame.f_lasti
+
     bpmgr = BreakpointManager()
     print(bpmgr.last())
-    bp = bpmgr.add_breakpoint("foo", 0, 5)
+    line_number = foo.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number, func=foo)
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
     print(str(bp))
     bp.disable()
     print(str(bp))
+    import xdis
+    bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func=xdis)
+    print(bp)
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
         print(
@@ -411,27 +449,19 @@ if __name__ == "__main__":
     frame = inspect.currentframe()
     print(f"Stop at bp: {checkfuncname(bp, frame)}")
 
-    def foo(bp, bpmgr):
-        frame = inspect.currentframe()
-        assert frame
-        print(f"Stop at bp2: {checkfuncname(bp, frame)}")
-        # frame.f_lineno is constantly updated. So adjust for the
-        # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint("foo", 0, frame.f_lineno + 1)
-        print(f"Stop at bp3: {checkfuncname(bp3, frame)}")
-        return
-
     bp2 = bpmgr.add_breakpoint(None, None, -1,  False, None, foo)
     foo(bp2, bpmgr)
-    bp3 = bpmgr.add_breakpoint("foo", 5, 2, temporary=True)
+    bp3 = bpmgr.add_breakpoint(__file__, line_number, 0, temporary=True, func=foo)
     print(bp3.icon_char())
     print(bpmgr.bpnumbers())
 
-    bp = bpmgr.add_breakpoint("bar", 10, 3)
+    line_number = bar.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=bar)
     filename = bp.filename
     assert filename
+    line_number = bar()
     for i in range(3):
-        bp = bpmgr.add_breakpoint("bar", 2, 6)
-    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
-    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
+        bp = bpmgr.add_breakpoint(None, None, line_number, func=bar)
+    print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
+    print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.bpnumbers())
