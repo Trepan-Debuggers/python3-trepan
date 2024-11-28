@@ -187,7 +187,7 @@ class BreakpointManager:
         elif hasattr(func, "f_code"):
             code = func.f_code
         else:
-            print(f"Don't know what to do with {func}, {type(func)}")
+            print("Don't know what to do with %s, %s" % (func, type(func)))
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
