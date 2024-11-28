@@ -46,39 +46,39 @@ def set_break(
         filename = cmd_obj.proc.curframe.f_code.co_filename
         filename = cmd_obj.core.canonic(filename)
         pass
-    if func is None:
-        if lineno:
-            line_info = code_line_info(filename, lineno)
-            if not line_info:
-                linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
-                if lineno not in linestarts.values():
-                    part1 = "File %s" % cmd_obj.core.filename(filename)
-                    msg = wrapped_lines(
-                        part1,
-                        "is not stoppable at line %s." % lineno,
-                        cmd_obj.settings["width"],
-                    )
-                    cmd_obj.errmsg(msg)
-                    if force:
-                        cmd_obj.msg("Breakpoint set although it may never be reached.")
-                    else:
-                        return False
-                else:
-                    cmd_obj.errmsg("Breakpoint when no file available not implemented yet.")
-                    return False
 
-        else:
-            assert offset is not None
-            lineno = code_offset_info(filename, offset)
-            if lineno is None:
+    if lineno:
+        line_info = code_line_info(filename, lineno)
+        if not line_info:
+            linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
+            if lineno not in linestarts.values():
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
-                    "has no line associated with offset %s." % offset,
+                    "is not stoppable at line %s." % lineno,
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
+                if force:
+                    cmd_obj.msg("Breakpoint set although it may never be reached.")
+                else:
+                    return False
+            else:
+                cmd_obj.errmsg("Breakpoint when no file available not implemented yet.")
                 return False
+
+    else:
+        assert offset is not None
+        lineno = code_offset_info(filename, offset)
+        if lineno is None:
+            part1 = "File %s" % cmd_obj.core.filename(filename)
+            msg = wrapped_lines(
+                part1,
+                "has no line associated with offset %s." % offset,
+                cmd_obj.settings["width"],
+            )
+            cmd_obj.errmsg(msg)
+            return False
 
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(

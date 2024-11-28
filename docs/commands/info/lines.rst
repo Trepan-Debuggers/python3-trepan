@@ -10,8 +10,8 @@ Show line - function/offset information.
 Use **-n** *function-or-module* to filter results.
 
 
-Examples
-++++++++
+Info Lines Examples
+++++++++++++++++++++
 
 ::
 

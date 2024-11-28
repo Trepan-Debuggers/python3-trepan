@@ -153,6 +153,8 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg("  code: %s" % format_code(code, style))
         if frame.f_back:
             self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
+        else:
+            self.msg("  no previous frame")
         self.msg("  tracing function: %s" % frame.f_trace)
 
         if is_verbose:

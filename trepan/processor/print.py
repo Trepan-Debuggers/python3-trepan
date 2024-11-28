@@ -19,7 +19,7 @@ import linecache
 import os.path as osp
 import re
 import sys
-from inspect import ismodule
+from inspect import ismodule, currentframe
 from tempfile import NamedTemporaryFile
 from types import CodeType
 
@@ -116,12 +116,25 @@ def print_source_location_info(
     print_fn(mess)
     return
 
-
 def print_location(proc_obj):
     """Show where we are. GUI's and front-end interfaces often
     use this to update displays. So it is helpful to make sure
     we give at least some place that's located in a file.
     """
+
+    def prefix_for_filename(deparsed_text: str) -> str:
+        """
+        Return a reasonable filename-friendly string from some
+        deparsed text. We do this so that the user gets some idea of
+        what the string (source code text) is contained in the file.
+
+        """
+        lines = deparsed_text.split("\n")
+        # FIXME Rather than blindly take the first line,
+        # check if it is blank and if so use other lines.
+        first_text_line = lines[0]
+        return proc_obj._saferepr(first_text_line)[1:-1][:10]
+
     i_stack = proc_obj.curindex
     if i_stack is None or proc_obj.stack is None:
         return False
@@ -135,6 +148,7 @@ def print_location(proc_obj):
     # once and sometimes twice.
     remapped_file = None
     source_text = None
+    eval_kind = None
     while i_stack >= 0 and len(proc_obj.stack) > 0:
         frame, lineno = proc_obj.stack[i_stack]
 
@@ -155,24 +169,48 @@ def print_location(proc_obj):
 
         filename = frame2file(core_obj, frame, canonic=False)
         if "<string>" == filename and dbgr_obj.eval_string:
+            eval_kind = "string"
             remapped_file = filename
             filename = pyficache.unmap_file(filename)
             if "<string>" == filename:
-                remapped = cmdfns.source_tempfile_remap(
+                remapped_file = cmdfns.source_tempfile_remap(
                     "eval_string",
                     dbgr_obj.eval_string,
                     tempdir=proc_obj.settings("tempdir"),
                 )
-                pyficache.remap_file(filename, remapped)
+                pyficache.remap_file(filename, remapped_file)
                 filename, lineno = pyficache.unmap_file_line(filename, lineno)
                 pass
             pass
         elif "<string>" == filename:
-            source_text = deparse_fn(frame.f_code)
-            eval_kind = is_eval_or_exec_stmt(frame)
-            if source_text is None and eval_kind:
-                source_text = "%s(...)" % eval_kind
-            filename = "<string: '%s'>" % source_text
+            # FIXME: should change filename to disambiguated <string> everywhere.
+            eval_kind = is_eval_or_exec_stmt(frame) or "code-"
+            deparsed = deparse_fn(frame.f_code)
+            if deparsed:
+                # Create a nice prefix for the temporary file to write.
+                # Use the exec type and first line of the deparsed text.
+                leading_code_str = prefix_for_filename(deparsed.text)
+                prefix = "%s-%s-" % (eval_kind, leading_code_str)
+
+                remapped_file = cmdfns.source_tempfile_remap(
+                    prefix,
+                    deparsed.text,
+                    tempdir=proc_obj.settings("tempdir"),
+                )
+                # FIXME: pyficache remaps seems backwards
+                pyficache.remap_file(remapped_file, filename)
+                filename = remapped_file
+            else:
+                eval_kind = is_eval_or_exec_stmt(frame)
+                deparsed = deparse_fn(frame.f_code)
+                if deparsed is not None:
+                    source_text = deparsed.text
+                # else:
+                #   print("Can't deparse", frame.f_code)
+                if source_text is None and eval_kind:
+                    source_text = "%s(...)" % eval_kind
+                    pass
+                pass
             pass
         else:
             m = re.search("^<frozen (.*)>", filename)
@@ -228,7 +266,7 @@ def print_location(proc_obj):
                 # FIXME:
                 if source_text:
                     lines = source_text.split("\n")
-                    temp_name = "string-"
+                    temp_name = "string-" + prefix_for_filename(source_text)
                 else:
                     # try with good ol linecache and consider fixing pyficache
                     lines = linecache.getlines(filename)
@@ -249,6 +287,7 @@ def print_location(proc_obj):
                     fd.close()
                     intf_obj.msg("remapped file %s to %s" %(filename, remapped_file))
                     pass
+
 
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
             if not line:
@@ -275,16 +314,20 @@ def print_location(proc_obj):
                     pass
             pass
 
-        try:
-            match, reason = check_path_with_frame(frame, filename)
-            if not match:
-                if filename not in warned_file_mismatches:
-                    proc_obj.errmsg(reason)
-                    warned_file_mismatches.add(filename)
-        except Exception:
+        if eval_kind is None:
+            fn_name = frame.f_code.co_name
+            try:
+                match, reason = check_path_with_frame(frame, filename)
+                if not match:
+                    if filename not in warned_file_mismatches:
+                        proc_obj.errmsg(reason)
+                        warned_file_mismatches.add(filename)
+            except Exception:
+                pass
             pass
+        else:
+            fn_name = eval_kind
 
-        fn_name = frame.f_code.co_name
         last_i = frame.f_lasti
         print_source_location_info(
             intf_obj.msg,
@@ -317,3 +360,20 @@ def print_location(proc_obj):
         except Exception:
             pass
     return True
+
+# Demo it
+if __name__ == "__main__":
+    def five():
+        from trepan.processor.cmdproc import CommandProcessor
+        from trepan.processor.command.mock import MockDebugger
+        d = MockDebugger()
+        cmdproc = CommandProcessor(d.core)
+        cmdproc.frame = currentframe()
+        cmdproc.event = "line"
+        cmdproc.setup()
+        print_location(cmdproc)
+        cmdproc.curindex = 1
+        cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
+        print_location(cmdproc)
+
+    exec("five()")

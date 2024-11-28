@@ -19,5 +19,5 @@ the debugger setting 'different-line' determines this behavior.
 
 .. seealso::
 
-   :ref:`skip <step>`, :ref:`jump <jump>`, :ref:`continue <continue>`, and
+   :ref:`stepi <stepi>`, ref:`skip <step>`, :ref:`jump <jump>`, :ref:`continue <continue>`, and
    :ref:`finish <finish>` provide other ways to progress execution.

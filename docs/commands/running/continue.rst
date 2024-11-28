@@ -13,8 +13,8 @@ breakpoints or explicit calls, or exceptions.
 If a line position or function is given, a temporary breakpoint is set at that
 position before continuing.
 
-Examples:
-+++++++++
+Continue Examples:
+++++++++++++++++++
 
 ::
 

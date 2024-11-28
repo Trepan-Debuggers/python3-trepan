@@ -10,8 +10,8 @@ Show line information for location *location*.
 
 If no location is given, use the the current stopped line.
 
-Examples
-++++++++
+Info Line Examples
+++++++++++++++++++
 
 ::
 

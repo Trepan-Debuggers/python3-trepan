@@ -40,7 +40,7 @@ def resolve_location(proc, location):
         filename = frame2file(proc.core, curframe, canonic=False)
         lineno = inspect.getlineno(curframe)
         offset = curframe.f_lasti
-        return Location(filename, lineno, False, None, offset)
+        return Location(filename, lineno, False, curframe.f_code, offset)
 
     assert isinstance(location, Location)
     is_address = location.is_address
@@ -162,12 +162,15 @@ def resolve_location(proc, location):
         filename = frame2file(proc.core, curframe, canonic=False)
         lineno = location.line_number
         is_address = location.is_address
-        mod_func = None
+        mod_func = curframe.f_code
         if offset is None:
             lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
-                mod_func = lineinfo[0].name
+                mod_func_name = lineinfo[0].name
+                if mod_func.co_name != mod_func_name:
+                    print("FIXME: resolve_location needs update to pick out function")
+                pass
     elif location.offset is not None:
         filename = frame2file(proc.core, curframe, canonic=False)
         is_address = True

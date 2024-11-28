@@ -1,5 +1,6 @@
 """Unit test for trepan.lib.complete"""
 
+import inspect
 from trepan.lib.breakpoint import BreakpointManager
 from trepan.lib.complete import (
     complete_brkpts,
@@ -59,7 +60,8 @@ def test_next_token():
 
 def test_complete_brkpts():
     bpmgr = BreakpointManager()
-    bp = bpmgr.add_breakpoint("foo", 10, 5)
+    frame = inspect.currentframe()
+    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno, 10, func=test_complete_brkpts)
     assert bp
     for find in "1":
         assert complete_brkpts(bpmgr, find) == [
