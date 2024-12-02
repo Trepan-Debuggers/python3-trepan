@@ -154,9 +154,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if f_lasti >= 0:
             opname = opc.opname[code.co_code[f_lasti]]
             opname_formatted = format_token(Keyword, opname, style=style)
-            self.msg(f"  last instruction: {frame.f_lasti} {opname_formatted}")
+            self.msg(f"  instruction offset and opname: {frame.f_lasti} {opname_formatted}")
         else:
-            self.msg(f"  last instruction: {frame.f_lasti}")
+            self.msg(f"  instruction offset: {frame.f_lasti}")
 
         self.msg(f"  code: {format_code(code, style)}")
         if frame.f_back:
