@@ -55,7 +55,7 @@ def wrapped_lines(msg_part1: str, msg_part2: str, width: int) -> str:
 
 
 def pretty_modfunc_name(s) -> str:
-    if s == "<module>":
+    if str(s).startswith("<"):
         # FIXME:
         # Pick replace with something more custom to modname?
         return str(s)
