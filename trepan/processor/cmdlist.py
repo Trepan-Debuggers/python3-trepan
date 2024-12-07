@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from trepan.lib.stack import frame2file
 from trepan.processor.location import resolve_location
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
@@ -90,10 +91,20 @@ def parse_list_cmd(proc, args, listsize=10):
         else:
             # First is location. Last may be empty or a number
             assert isinstance(list_range.first, Location)
-            location = resolve_location(proc, list_range.first)
-            if not location:
-                return INVALID_PARSE_LIST
-            first = location.line_number
+            first = list_range.first.line_number
+            if list_range.first.path is None:
+                if list_range.first.method is None:
+                    filename = frame2file(proc.core, proc.curframe, canonic=False)
+                else:
+                    location = resolve_location(proc, list_range.first)
+                    if location is None or location == INVALID_PARSE_LOCATION:
+                        return INVALID_PARSE_LIST
+                    filename = location.path
+                    if first is None:
+                        first = location.line_number
+            else:
+                filename = list_range.first.path
+
             last = list_range.last
             # if location.method:
             #     first -= listsize // 2
@@ -109,7 +120,7 @@ def parse_list_cmd(proc, args, listsize=10):
                 # Treat as a count rather than an absolute location
                 last = first + last
 
-            return location.path, first, last
+            return filename, first, last
         pass
     return
 

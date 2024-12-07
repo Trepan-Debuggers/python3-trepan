@@ -18,14 +18,13 @@ import inspect
 import linecache
 import os.path as osp
 import sys
-from trepan.processor.cmd_addrlist import INVALID_PARSE_LIST
 
 import pyficache
 
 # Our local modules
 from pygments.console import colorize
 
-from trepan.processor.cmdlist import parse_list_cmd
+from trepan.processor.cmdlist import INVALID_PARSE_LIST, parse_list_cmd
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
