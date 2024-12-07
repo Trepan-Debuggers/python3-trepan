@@ -28,7 +28,7 @@ import sys
 decompiler = "uncompyle6 >= 3.9.2"
 
 SYS_VERSION = sys.version_info[0:2]
-pygments_version = "Pygments" # I have my own patch for this
+pygments_version = "pygments>1.9,<2.1" # I have my own patch for this
 
 
 # Python-version | package  | last-version |
