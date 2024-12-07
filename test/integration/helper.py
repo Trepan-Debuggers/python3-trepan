@@ -17,7 +17,7 @@ def run_debugger(
     progdir = osp.join(srcdir, "..", "example")
     dbgrdir = osp.join(srcdir, "..", "..", "trepan")
     dbgr_short = "__main__.py"
-    dbgr_path = osp.join(dbgrdir, dbgr_short)
+    dbgr_path = osp.normpath(osp.join(dbgrdir, dbgr_short))
 
     if not right_template:
         if IS_PYPY:
@@ -27,17 +27,17 @@ def run_debugger(
 
     rightfile = osp.join(datadir, right_template % testname)
 
-    sys.path.insert(0, osp.join(srcdir, "..", ".."))
+    sys.path.insert(0, osp.normpath(osp.join(srcdir, "..", "..", "bin")))
     os.environ["PYTHONPATH"] = os.pathsep.join(sys.path)
-    cmdfile = osp.join(datadir, "%s.cmd" % testname)
-    outfile = osp.join(srcdir, "%s.out" % testname)
+    cmdfile = osp.normpath(osp.join(datadir, "%s.cmd" % testname))
+    outfile = osp.normpath(osp.join(srcdir, "%s.out" % testname))
     if python_file:
-        programfile = osp.join(progdir, python_file)
+        programfile = osp.normpath(osp.join(progdir, python_file))
     else:
         programfile = ""
         pass
 
-    outfile_opt = "--output=%s " % outfile
+    outfile_opt = "> %s " % outfile
 
     if osp.exists(outfile):
         os.unlink(outfile)
