@@ -9,7 +9,6 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 import os.path as osp
 from collections import defaultdict
 from types import CodeType, ModuleType
-from typing import Optional
 from xdis import load_module
 
 
@@ -200,14 +199,15 @@ class BreakpointManager:
                 # or something lower-level
                 _, _, _, code, _, _, _ = load_module(func_or_code.__cached__, fast_load=True, get_code=True)
             else:
-                print(f"Don't know what to do with frozen module {func_or_code}")
+                print("Don't know what to do with frozen module %s" % func_or_code)
                 return
         elif hasattr(func_or_code, "__code__"):
             code = func_or_code.__code__
         elif hasattr(func_or_code, "f_code"):
             code = func_or_code.f_code
         else:
-            print("Don't know what to do with %s, %s" % (func, type(func_func_or_code)))
+            print("Don't know what to do with %s, %s" % (func_or_code, type(func_or_code)))
+            return
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
@@ -410,11 +410,11 @@ if __name__ == "__main__":
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
         assert frame
-        print(f"Stop at bp2: {checkfuncname(bp, frame)}")
+        print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
         bp3 = bpmgr.add_breakpoint(__file__, 0, frame.f_lineno + 1, func=foo)
-        print(f"Stop at bp3: {checkfuncname(bp3, frame)}")
+        print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
     def bar() -> int:
@@ -425,7 +425,7 @@ if __name__ == "__main__":
     bpmgr = BreakpointManager()
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
-    bp = bpmgr.add_breakpoint(__file__, line_number, func=foo)
+    bp = bpmgr.add_breakpoint(__file__, line_number, func_or_code=foo)
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
@@ -433,7 +433,7 @@ if __name__ == "__main__":
     bp.disable()
     print(str(bp))
     import xdis
-    bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func=xdis)
+    bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func_or_code=xdis)
     print(bp)
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
@@ -456,7 +456,7 @@ if __name__ == "__main__":
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint("foo", 0, frame.f_lineno + 1)
+        bp3 = bpmgr.add_breakpoint(__file__, 0, frame.f_lineno + 1, func_or_code=foo)
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 

@@ -39,7 +39,7 @@ def test_parse_break_cmd():
     result = parse_break_cmd_wrapper(proc, "break 2")
     assert result == INVALID_PARSE_BREAK
 
-    brk_cmd = f'b """{__file__}""":1'
+    brk_cmd = 'b """%s""":1' % __file__
 
     code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
     assert (__file__, 1) == (fi, li)

@@ -99,25 +99,20 @@ def set_break(
         )
         cmd_obj.msg(msg)
     else:
-        part1 = "Breakpoint %d set at line %s of file" % (bp.number, lineno)
         if hasattr(func_or_code, "co_name"):
             code_name = func_or_code.co_name
             if not code_name.startswith("<"):
                 code_name += "()"
-            func_str = f" in {code_name}"
+            func_str = " in %s" % code_name
         else:
             func_str = ""
-        part1 = f"Breakpoint {bp.number} set at line {lineno}{func_str} of file"
+        part1 = "Breakpoint %s set at line %d%s of file" % (bp.number, lineno, func_str)
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
         if func_or_code:
-            func_str = " of %s" % pretty_modfunc_name(func)
-=======
-        if func_or_code:
-            func_str = f" of {pretty_modfunc_name(func_or_code)}"
->>>>>>> python-3.6-to-3.10
+            func_str = " of %s" % pretty_modfunc_name(func_or_code)
         else:
             func_str = ""
         if offset is not None and offset >= 0:
@@ -198,18 +193,18 @@ if __name__ == "__main__":
         "break",
         "break 10",
         "break if True",
-        f"break {__file__}:5",
-        f"break {__file__}:{cmdproc.frame.f_lineno}",
+        "break %s:5" % __file__,
+        "break %s:%d" % (__file__, cmdproc.frame.f_lineno),
         "break set_break()",
         "break 4 if i==5",
         "break cmdproc.setup()",
     ):
         args = cmd.split(" ")
         cmdproc.current_command = cmd
-        print(f"cmd: {cmd}")
+        print("cmd: %s" % cmd)
         break_info = parse_break_cmd(cmdproc, args)
         print(break_info)
         if break_info != INVALID_PARSE_BREAK:
             code, filename, line_number, condition, offset = break_info
-            set_break(cmdproc, code, filename, line_number, condition, False, [], offset=offset)
+            # set_break(cmdproc, code, filename, line_number, condition, False, [], offset=offset)
     pass

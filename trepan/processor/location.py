@@ -218,7 +218,7 @@ def resolve_address_location(proc, location):
         except Exception:
             split_names = location_method.split(".")
             if len(split_names) > 1:
-                proc.msg(f'Try importing {".".join(split_names[:-1])}?')
+                proc.msg('Try importing %s?' % ".".join(split_names[:-1]))
             proc.errmsg(msg)
             return INVALID_LOCATION
 

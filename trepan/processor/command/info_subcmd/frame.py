@@ -153,12 +153,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if f_lasti >= 0:
             opname = opc.opname[code.co_code[f_lasti]]
             opname_formatted = format_token(Keyword, opname, style=style)
-            self.msg("  instruction offset and opname: %d" % (frame.f_lasti, opname_formatted)
+            self.msg("  instruction offset and opname: %d %s" % (frame.f_lasti, opname_formatted))
             self.msg("  code: %s" % format_code(code, style))
         else:
-            self.msg(f"  instruction offset: {frame.f_lasti}")
+            self.msg("  instruction offset: %s" % frame.f_lasti)
 
-        self.msg(f"  code: {format_code(code, style)}")
+        self.msg("  code: %s" % format_code(code, style))
 
         if frame.f_back:
             self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
@@ -167,13 +167,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         self.msg("  tracing function: %s" % frame.f_trace)
         if hasattr(frame, "f_trace_opcodes"):
             self.msg_nocr(
-                f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}"
+                "  tracing opcodes: %s" % highlight_string(str(frame.f_trace_opcodes), style=style)
             )
         if hasattr(frame, "f_trace_lines"):
             self.msg(
-                f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}"
+                "  tracing lines: %s" % highlight_string(str(frame.f_trace_lines), style=style)
             )
->>>>>>> python-3.6-to-3.10
 
         if is_verbose:
             for name, field in [

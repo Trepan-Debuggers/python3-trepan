@@ -537,7 +537,7 @@ class SigHandler:
             core = self.dbgr.core
             old_trace_hook_suspend = core.trace_hook_suspend
             core.trace_hook_suspend = True
-            core.stop_reason = f"intercepting signal {self.signame} ({signum})"
+            core.stop_reason = "intercepting signal %s (%d)" % (self.signame, signum)
             core.processor.event_processor(frame, "signal", signum)
             core.trace_hook_suspend = old_trace_hook_suspend
             pass
@@ -574,11 +574,11 @@ if __name__ == "__main__":
         pass
 
     for i in (15, -15, 300):
-        print(f"lookup_signame({i}): {lookup_signame}")
+        print("lookup_signame(%d): %s" % (i, lookup_signame(i)))
         pass
 
     for i in ("term", "TERM", "NotThere"):
-        print("lookup_signum(%s): %s" % (i, repr(lookup_signum(i))))
+        print("lookup_signum(%s): %s" % (i, lookup_signum(i)))
         pass
 
     for i in ("15", "-15", "term", "sigterm", "TERM", "300", "bogus"):

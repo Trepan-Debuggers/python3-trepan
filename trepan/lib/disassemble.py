@@ -227,8 +227,8 @@ opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 def print_instruction(
     instr,
     instructions: list,
-    msg: Callable,
-    msg_nocr: Callable,
+    msg,
+    msg_nocr,
     labels: list,
     lasti: int=-1,
     line_starts = {},
@@ -278,7 +278,7 @@ def print_instruction(
     # Column: Instruction bytes
     if asm_format in ("extended-bytes", "bytes"):
         msg_nocr(format_token(Symbol, "|", style=style))
-        msg_nocr(format_token(Hex, f"{instr.opcode:02x}", style=style))
+        msg_nocr(format_token(Hex, "%02x" % instr.opcode, style=style))
         if instr.inst_size == 1:
             # Not 3.6 or later
             msg_nocr(" " * (2 * 3))
@@ -286,15 +286,15 @@ def print_instruction(
             # Must by Python 3.6 or later
             msg_nocr(" ")
             if instr.has_arg:
-                msg_nocr(format_token(Hex, f"{instr.arg % 256:02x}", style=style))
+                msg_nocr(format_token(Hex, "%02x" % instr.arg % 256, style=style))
             else:
                 msg_nocr(format_token(Hex, "00", style=style))
         elif instr.inst_size == 3:
             # Not 3.6 or later
             opbyte, operand_byte = divmod(instr.arg, 256)
-            msg_nocr(format_token(Hex, f"{opbyte:02x}", style=style))
+            msg_nocr(format_token(Hex, "%02x" % opbyte, style=style))
             msg_nocr(" ")
-            msg_nocr(format_token(Hex, f"{operand_byte:02x}", style=style))
+            msg_nocr(format_token(Hex, "%02x" % operand_byte, style=style))
 
         msg_nocr(format_token(Symbol, "|", style=style))
         msg_nocr(" ")
@@ -317,7 +317,7 @@ def print_instruction(
                 msg(
                     format_token(
                         Details,
-                        f"{instr.argrepr}, line {line_starts[instr.argval]}",
+                        "%s, line %s" % (instr.argrepr, line_starts[instr.argval]),
                         style=style,
                     )
                 )
@@ -447,13 +447,12 @@ def disassemble_bytes(
             opc=opc,
             asm_format=asm_format,
         )
->>>>>>> python-3.6-to-3.10
 
     return code, offset
 
 def disassemble_instruction(
-    orig_msg: Callable,
-    orig_msg_nocr: Callable,
+    orig_msg,
+    orig_msg_nocr,
     code,
     offset,
     lasti=-1,
