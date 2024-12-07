@@ -34,7 +34,6 @@ def test_list_command():
         # print_lines()
 
         if len(nums) != len(msgs):
-            breakpoint()
             print_lines()
             assert not f"len(msg): {len(msgs)} vs. len(check): {len(nums)}"
             return

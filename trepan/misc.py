@@ -15,8 +15,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import inspect
 import os
 from glob import glob
+from types import CodeType
 from typing import Any
 
 
@@ -55,7 +57,11 @@ def wrapped_lines(msg_part1: str, msg_part2: str, width: int) -> str:
 
 
 def pretty_modfunc_name(s) -> str:
-    if str(s).startswith("<"):
+    if isinstance(s, CodeType):
+        return f"{s.co_name}()"
+    elif inspect.isfunction(s):
+        return f"{s.__name__}()"
+    elif str(s).startswith("<"):
         # FIXME:
         # Pick replace with something more custom to modname?
         return str(s)
@@ -91,4 +97,6 @@ if __name__ == "__main__":
     print(wrapped_lines("hi", "there", 80))
     print(wrapped_lines("hi", "there", 5))
     print(pyfiles(__file__))
+    print(pretty_modfunc_name(pretty_modfunc_name.__code__))
+    print(pretty_modfunc_name(pyfiles))
     pass
