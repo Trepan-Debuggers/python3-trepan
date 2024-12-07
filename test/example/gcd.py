@@ -13,7 +13,7 @@ import sys
 def check_args():
     if len(sys.argv) != 3:
         # Rather than use sys.exit let's just raise an error
-        raise Exception("Need to give two numbers")
+        raise Exception(f"Need to give two numbers; got: {sys.argv}")
     for i in range(2):
         try:
             sys.argv[i+1] = int(sys.argv[i+1])

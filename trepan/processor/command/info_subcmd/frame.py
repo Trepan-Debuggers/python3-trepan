@@ -19,8 +19,8 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
-from trepan.lib.format import Function, format_token
-
+from trepan.lib.disassemble import opc
+from trepan.lib.format import Function, Keyword, format_token
 from trepan.lib.stack import format_function_name
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
@@ -129,7 +129,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg(f"  function args: {formatted_func_signature}")
 
-        formatted_thread_name = format_token(Function, current_thread_name(), style=style)
+        formatted_thread_name = format_token(
+            Function, current_thread_name(), style=style
+        )
         self.msg(f"  thread: {formatted_thread_name}")
         # signature = highlight_string(inspect.signature(frame))
         # self.msg(f"  signature : {signature}")
@@ -148,7 +150,14 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             formatted_text = highlight_string(line_text.strip(), style=style)
             self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
 
-        self.msg(f"  last instruction: {frame.f_lasti}")
+        f_lasti = frame.f_lasti
+        if f_lasti >= 0:
+            opname = opc.opname[code.co_code[f_lasti]]
+            opname_formatted = format_token(Keyword, opname, style=style)
+            self.msg(f"  instruction offset and opname: {frame.f_lasti} {opname_formatted}")
+        else:
+            self.msg(f"  instruction offset: {frame.f_lasti}")
+
         self.msg(f"  code: {format_code(code, style)}")
         if frame.f_back:
             self.msg(f"  previous frame: {format_frame(frame.f_back, style)}")
@@ -156,9 +165,13 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg("  no previous frame")
         self.msg(f"  tracing function: {frame.f_trace}")
         if hasattr(frame, "f_trace_opcodes"):
-            self.msg_nocr(f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}")
+            self.msg_nocr(
+                f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}"
+            )
         if hasattr(frame, "f_trace_lines"):
-            self.msg(f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}")
+            self.msg(
+                f"  tracing lines: {highlight_string(str(frame.f_trace_lines), style=style)}"
+            )
 
         if is_verbose:
             for name, field in [

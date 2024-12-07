@@ -7,6 +7,7 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path as osp
+from collections import defaultdict
 from types import CodeType, ModuleType
 from typing import Optional
 from xdis import load_module
@@ -138,8 +139,8 @@ class BreakpointManager:
         # class unless it is put inside __init__
 
         self.bpbynumber: list = [None]
-        self.bplist = {}
-        self.code_list = {}
+        self.bplist = defaultdict(list)
+        self.code_list = defaultdict(list)
         return
 
     def bpnumbers(self):
@@ -174,7 +175,7 @@ class BreakpointManager:
         offset: int = -1,
         temporary: bool = False,
         condition: Optional[str] = None,
-        func = None,
+        func_or_code = None,
     ):
         """
         Add a breakpoint in ``filename`` at line number ``lineno``.
@@ -188,41 +189,33 @@ class BreakpointManager:
             filename = osp.realpath(filename)
 
         assert (
-            isinstance(filename, str) or func is not None
+            isinstance(filename, str) or func_or_code is not None
         ), "You must either supply a filename or give a line number"
 
-        if isinstance(func, CodeType):
-            code = func
-        elif isinstance(func, ModuleType):
-            if hasattr(func, "__cached__"):
+        if isinstance(func_or_code, CodeType):
+            code = func_or_code
+        elif isinstance(func_or_code, ModuleType):
+            if hasattr(func_or_code, "__cached__"):
                 # FIXME: we can probably do better hooking into importlib
                 # or something lower-level
-                _, _, _, code, _, _, _ = load_module(func.__cached__, fast_load=True, get_code=True)
+                _, _, _, code, _, _, _ = load_module(func_or_code.__cached__, fast_load=True, get_code=True)
             else:
-                print(f"Don't know what to do with frozen module {func}")
+                print(f"Don't know what to do with frozen module {func_or_code}")
                 return
-        elif hasattr(func, "__code__"):
-            code = func.__code__
-        elif hasattr(func, "f_code"):
-            code = func.f_code
+        elif hasattr(func_or_code, "__code__"):
+            code = func_or_code.__code__
+        elif hasattr(func_or_code, "f_code"):
+            code = func_or_code.f_code
         else:
-            print(f"Don't know what to do with {func}, {type(func)}")
+            print(f"Don't know what to do with {func_or_code}, {type(func_or_code)}")
             return
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
-        if (filename, lineno) in self.bplist:
-            self.bplist[filename, lineno].append(brkpt)
-        else:
-            self.bplist[filename, lineno] = [brkpt]
-            pass
-        if func and offset in [None, -1]:
-            if code in self.code_list:
-                self.code_list[code].append(brkpt)
-            else:
-                self.code_list[code] = [brkpt]
-                pass
+        self.bplist[filename, lineno].append(brkpt)
+        if func_or_code and offset in [None, -1]:
+            self.code_list[code].append(brkpt)
         return brkpt
 
     def delete_all_breakpoints(self) -> str:
