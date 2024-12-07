@@ -20,7 +20,7 @@ def test_breakpoint():
     bpmgr = BreakpointManager()
     assert 0 == bpmgr.last()
     line_number = foo.__code__.co_firstlineno
-    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=foo)
+    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func_or_code=foo)
 
     assert re.search(r"1\s+breakpoint\s+keep\s+yes .*0 at.*%d" % line_number, str(bp)), str(bp)
     assert "B" == bp.icon_char()
@@ -41,14 +41,14 @@ def test_breakpoint():
         "Breakpoint 1 previously deleted.",
     )
     line_number = test_breakpoint.__code__.co_firstlineno
-    bp2 = bpmgr.add_breakpoint(__file__, line_number, 0, func=test_breakpoint, temporary=True)
+    bp2 = bpmgr.add_breakpoint(__file__, line_number, 0, func_or_code=test_breakpoint, temporary=True)
     assert "t" == bp2.icon_char()
     assert ["2"] == bpmgr.bpnumbers(), "Extracting breakpoint-numbers"
 
     count = 3
     line_number = bar.__code__.co_firstlineno
     for _ in range(count):
-        bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=bar)
+        bp = bpmgr.add_breakpoint(__file__, line_number, 0, func_or_code=bar)
     filename = bp.filename
     assert count == len(
         bpmgr.delete_breakpoints_by_lineno(os.path.realpath(filename), line_number)
@@ -64,7 +64,7 @@ def test_checkfuncname():
 
     bpmgr = BreakpointManager()
     frame = inspect.currentframe()
-    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno + 1, -1, func=test_checkfuncname)
+    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno + 1, -1, func_or_code=test_checkfuncname)
     assert checkfuncname(bp, frame)
 
     def foo(brkpt, bpmgr):
@@ -73,12 +73,12 @@ def test_checkfuncname():
         # current_frame.f_lineno is constantly updated. So adjust for line
         # the difference between the add_breakpoint and the check.
         bp3 = bpmgr.add_breakpoint(
-            os.path.realpath(__file__), current_frame.f_lineno + 2, -1, False, func=foo
+            os.path.realpath(__file__), current_frame.f_lineno + 2, -1, False, func_or_code=foo
         )
         assert checkfuncname(bp3, current_frame), str(bp3)
         assert not checkfuncname(bp3, current_frame)
         return
 
-    bp2 = bpmgr.add_breakpoint(__file__, None, -1, False, None, func=foo)
+    bp2 = bpmgr.add_breakpoint(__file__, None, -1, False, None, func_or_code=foo)
     foo(bp2, bpmgr)
     return

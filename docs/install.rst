@@ -50,8 +50,8 @@ Basically the same as using *pip*, but change "pip install" to "easy_install":
 
 .. code:: console
 
-	  $ git clone https://github.com/rocky/python3k-trepan.git
-	  $ cd python-trepan
+	  $ git clone https://github.com/Trepan-Debuggers/python3-trepan
+	  $ cd python3-trepan
 	  $ make check-short # to run tests
 	  $ make install # if pythonbrew or you don't need root access
 	  $ sudo make install # if pythonbrew or you do need root access

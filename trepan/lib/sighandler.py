@@ -522,7 +522,7 @@ class SigHandler:
     def handle(self, signum, frame):
         """This method is called when a signal is received."""
         if self.print_method:
-            self.print_method("\nProgram received signal %s." % self.signame)
+            self.print_method("\n(trepan3k) Program received signal %s." % self.signame)
         if self.print_stack:
             import traceback
 
@@ -578,7 +578,7 @@ if __name__ == "__main__":
         pass
 
     for i in ("term", "TERM", "NotThere"):
-        print("lookup_signum(%s): %s" % (i, repr(lookup_signum(i))))
+        print("lookup_signum(%s): %s" % (i, lookup_signum(i)))
         pass
 
     for i in ("15", "-15", "term", "sigterm", "TERM", "300", "bogus"):

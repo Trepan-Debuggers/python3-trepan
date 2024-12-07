@@ -78,11 +78,16 @@ def resolve_location(proc, location):
                     return INVALID_LOCATION
 
         if mod_func is None:
+            # [1] DRY similar code [2] below
             msg = "Object %s is not known yet as a function, " % location_method
             try:
                 mod_func = eval(location_method, g, locals_dict)
             except Exception:
                 proc.errmsg(msg)
+                split_names = location_method.split(".")
+                if len(split_names) > 1:
+                    proc.msg('Try importing %s?' % ".".join(split_names[:-1]))
+
                 return INVALID_LOCATION
 
             try:
@@ -148,12 +153,12 @@ def resolve_location(proc, location):
             return INVALID_LOCATION
         offset = location.offset
         if offset is None:
-            lineinfo = pyficache.code_line_info(filename, lineno)
+            code_info, lineinfo = pyficache.code_line_info(filename, lineno)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
-                mod_func = lineinfo[0].name
+                mod_func = code_info[lineinfo[0].name]
             else:
-                print("No offset found for %s %s" % (filename, lineno))
+                return INVALID_LOCATION
 
     elif location.line_number:
         if curframe is None:
@@ -164,13 +169,15 @@ def resolve_location(proc, location):
         is_address = location.is_address
         mod_func = curframe.f_code
         if offset is None:
-            lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
+            code_info, lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
             if lineinfo:
                 offset = lineinfo[0].offsets[0]
                 mod_func_name = lineinfo[0].name
                 if mod_func.co_name != mod_func_name:
                     print("FIXME: resolve_location needs update to pick out function")
                 pass
+            else:
+                return INVALID_LOCATION
     elif location.offset is not None:
         filename = frame2file(proc.core, curframe, canonic=False)
         is_address = True
@@ -209,6 +216,9 @@ def resolve_address_location(proc, location):
         try:
             mod_func = eval(location.method, g, locals_dict)
         except Exception:
+            split_names = location_method.split(".")
+            if len(split_names) > 1:
+                proc.msg('Try importing %s?' % ".".join(split_names[:-1]))
             proc.errmsg(msg)
             return INVALID_LOCATION
 

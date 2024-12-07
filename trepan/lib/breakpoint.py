@@ -6,8 +6,10 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 
 __all__ = ["BreakpointManager", "Breakpoint"]
 
-import os.path
-from types import CodeType
+import os.path as osp
+from collections import defaultdict
+from types import CodeType, ModuleType
+from xdis import load_module
 
 
 class Breakpoint:
@@ -37,7 +39,7 @@ class Breakpoint:
 
         self.filename = filename
         if filename:
-            self.filename = os.path.realpath(filename)
+            self.filename = osp.realpath(filename)
 
         # Needed if funcname is not None.
         self.func_first_executable_line = None
@@ -69,12 +71,21 @@ class Breakpoint:
             offset_str = " any"
         else:
             offset_str = "%4d" % self.offset
-        msg = "%-4dbreakpoint   %s %s at %s:%d" % (
+        if self.offset is None:
+            offset_str = " any"
+        else:
+            offset_str = "%4d" % self.offset
+        if self.line is None:
+            line_str = ""
+        else:
+            line_str = ":%d" % self.line
+
+        msg = "%-4dbreakpoint   %s %s at %s%s" % (
             self.number,
             disp,
             offset_str,
             self.filename,
-            self.line,
+            line_str,
         )
         if self.condition:
             msg += "\n\tstop only if %s" % self.condition
@@ -127,8 +138,8 @@ class BreakpointManager:
         # class unless it is put inside __init__
 
         self.bpbynumber = [None]
-        self.bplist = {}
-        self.code_list = {}
+        self.bplist = defaultdict(list)
+        self.code_list = defaultdict(list)
         return
 
     def bpnumbers(self):
@@ -163,7 +174,7 @@ class BreakpointManager:
         offset: int = -1,
         temporary: bool = False,
         condition = None,
-        func = None,
+        func_or_code = None,
     ):
         """
         Add a breakpoint in ``filename`` at line number ``lineno``.
@@ -174,35 +185,36 @@ class BreakpointManager:
         """
         bpnum = len(self.bpbynumber)
         if filename:
-            filename = os.path.realpath(filename)
+            filename = osp.realpath(filename)
 
         assert (
-            isinstance(filename, str) or func is not None
+            isinstance(filename, str) or func_or_code is not None
         ), "You must either supply a filename or give a line number"
 
-        if isinstance(func, CodeType):
-            code = func
-        elif hasattr(func, "__code__"):
-            code = func.__code__
-        elif hasattr(func, "f_code"):
-            code = func.f_code
+        if isinstance(func_or_code, CodeType):
+            code = func_or_code
+        elif isinstance(func_or_code, ModuleType):
+            if hasattr(func_or_code, "__cached__"):
+                # FIXME: we can probably do better hooking into importlib
+                # or something lower-level
+                _, _, _, code, _, _, _ = load_module(func_or_code.__cached__, fast_load=True, get_code=True)
+            else:
+                print("Don't know what to do with frozen module %s" % func_or_code)
+                return
+        elif hasattr(func_or_code, "__code__"):
+            code = func_or_code.__code__
+        elif hasattr(func_or_code, "f_code"):
+            code = func_or_code.f_code
         else:
-            print("Don't know what to do with %s, %s" % (func, type(func)))
+            print("Don't know what to do with %s, %s" % (func_or_code, type(func_or_code)))
+            return
         brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
 
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
-        if (filename, lineno) in self.bplist:
-            self.bplist[filename, lineno].append(brkpt)
-        else:
-            self.bplist[filename, lineno] = [brkpt]
-            pass
-        if func and offset in [None, -1]:
-            if code in self.code_list:
-                self.code_list[code].append(brkpt)
-            else:
-                self.code_list[code] = [brkpt]
-                pass
+        self.bplist[filename, lineno].append(brkpt)
+        if func_or_code and offset in [None, -1]:
+            self.code_list[code].append(brkpt)
         return brkpt
 
     def delete_all_breakpoints(self) -> str:
@@ -395,15 +407,34 @@ def checkfuncname(brkpt: Breakpoint, frame):
 # Demo
 
 if __name__ == "__main__":
+    def foo(bp, bpmgr):
+        frame = inspect.currentframe()
+        assert frame
+        print("Stop at bp2: %s" % checkfuncname(bp, frame))
+        # frame.f_lineno is constantly updated. So adjust for the
+        # line difference between the add_breakpoint and the check.
+        bp3 = bpmgr.add_breakpoint(__file__, 0, frame.f_lineno + 1, func=foo)
+        print("Stop at bp3: %s" % checkfuncname(bp3, frame))
+        return
+
+    def bar() -> int:
+        frame = inspect.currentframe()
+        assert frame is not None
+        return frame.f_lasti
+
     bpmgr = BreakpointManager()
     print(bpmgr.last())
-    bp = bpmgr.add_breakpoint("foo", 0, 5)
+    line_number = foo.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number, func_or_code=foo)
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
     print(str(bp))
     bp.disable()
     print(str(bp))
+    import xdis
+    bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func_or_code=xdis)
+    print(bp)
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
         print(
@@ -425,21 +456,23 @@ if __name__ == "__main__":
         print("Stop at bp2: %s" % checkfuncname(bp, frame))
         # frame.f_lineno is constantly updated. So adjust for the
         # line difference between the add_breakpoint and the check.
-        bp3 = bpmgr.add_breakpoint("foo", 0, frame.f_lineno + 1)
+        bp3 = bpmgr.add_breakpoint(__file__, 0, frame.f_lineno + 1, func_or_code=foo)
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
     bp2 = bpmgr.add_breakpoint(None, None, -1,  False, None, foo)
     foo(bp2, bpmgr)
-    bp3 = bpmgr.add_breakpoint("foo", 5, 2, temporary=True)
+    bp3 = bpmgr.add_breakpoint(__file__, line_number, 0, temporary=True, func=foo)
     print(bp3.icon_char())
     print(bpmgr.bpnumbers())
 
-    bp = bpmgr.add_breakpoint("bar", 10, 3)
+    line_number = bar.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=bar)
     filename = bp.filename
     assert filename
+    line_number = bar()
     for i in range(3):
-        bp = bpmgr.add_breakpoint("bar", 2, 6)
-    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
-    print(bpmgr.delete_breakpoints_by_lineno(filename, 6))
+        bp = bpmgr.add_breakpoint(None, None, line_number, func=bar)
+    print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
+    print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.bpnumbers())

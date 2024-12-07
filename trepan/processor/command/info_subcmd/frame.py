@@ -19,8 +19,8 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
-from trepan.lib.format import Function, format_token
-
+from trepan.lib.disassemble import opc
+from trepan.lib.format import Function, Keyword, format_token
 from trepan.lib.stack import format_function_name
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
@@ -149,13 +149,30 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             formatted_text = highlight_string(line_text.strip(), style=style)
             self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
 
-        self.msg("  last instruction: %d" % frame.f_lasti)
+        f_lasti = frame.f_lasti
+        if f_lasti >= 0:
+            opname = opc.opname[code.co_code[f_lasti]]
+            opname_formatted = format_token(Keyword, opname, style=style)
+            self.msg("  instruction offset and opname: %d %s" % (frame.f_lasti, opname_formatted))
+            self.msg("  code: %s" % format_code(code, style))
+        else:
+            self.msg("  instruction offset: %s" % frame.f_lasti)
+
         self.msg("  code: %s" % format_code(code, style))
+
         if frame.f_back:
             self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
         else:
             self.msg("  no previous frame")
         self.msg("  tracing function: %s" % frame.f_trace)
+        if hasattr(frame, "f_trace_opcodes"):
+            self.msg_nocr(
+                "  tracing opcodes: %s" % highlight_string(str(frame.f_trace_opcodes), style=style)
+            )
+        if hasattr(frame, "f_trace_lines"):
+            self.msg(
+                "  tracing lines: %s" % highlight_string(str(frame.f_trace_lines), style=style)
+            )
 
         if is_verbose:
             for name, field in [

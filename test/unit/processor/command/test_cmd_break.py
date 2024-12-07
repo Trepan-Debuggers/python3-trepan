@@ -1,10 +1,9 @@
 """Unit test for trepan.processor.command.break"""
 
 import os
-import platform
 from test.unit.cmdhelper import errmsg, msg, reset_output, setup_unit_test_debugger
 
-from trepan.processor.cmdbreak import parse_break_cmd
+from trepan.processor.cmdbreak import INVALID_PARSE_BREAK, parse_break_cmd
 
 # We have to use this subterfuge because "break" is Python reserved word,
 # so it can't be used as a module-name component.
@@ -37,17 +36,13 @@ def test_parse_break_cmd():
     assert (expected_code, None, True, True) == (code, cond, li > 1, offset > 0)
     assert fi.endswith(__file__)
 
-    code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, "break 11")
-    assert isinstance(fi, str)
-    assert (expected_code, None, 11, None) == (code, cond, li, offset)
+    result = parse_break_cmd_wrapper(proc, "break 2")
+    assert result == INVALID_PARSE_BREAK
 
-    if platform.system() == "Windows":
-        brk_cmd = 'b """%s""":8' % __file__
-    else:
-        brk_cmd = "b %s:8" % __file__
+    brk_cmd = 'b """%s""":1' % __file__
 
     code, fi, li, cond, offset = parse_break_cmd_wrapper(proc, brk_cmd)
-    assert (True, 8) == (isinstance(fi, str), li)
+    assert (__file__, 1) == (fi, li)
     # FIXME: This varies. Why?
     # assert "<module>" == code
 
