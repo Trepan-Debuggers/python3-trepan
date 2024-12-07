@@ -522,7 +522,7 @@ class SigHandler:
     def handle(self, signum, frame):
         """This method is called when a signal is received."""
         if self.print_method:
-            self.print_method("\nProgram received signal %s." % self.signame)
+            self.print_method("\n(trepan3k) Program received signal %s." % self.signame)
         if self.print_stack:
             import traceback
 
@@ -537,7 +537,7 @@ class SigHandler:
             core = self.dbgr.core
             old_trace_hook_suspend = core.trace_hook_suspend
             core.trace_hook_suspend = True
-            core.stop_reason = "intercepting signal %s (%d)" % (self.signame, signum)
+            core.stop_reason = f"intercepting signal {self.signame} ({signum})"
             core.processor.event_processor(frame, "signal", signum)
             core.trace_hook_suspend = old_trace_hook_suspend
             pass
@@ -574,7 +574,7 @@ if __name__ == "__main__":
         pass
 
     for i in (15, -15, 300):
-        print("lookup_signame(%d): %s" % (i, lookup_signame(i)))
+        print(f"lookup_signame({i}): {lookup_signame}")
         pass
 
     for i in ("term", "TERM", "NotThere"):

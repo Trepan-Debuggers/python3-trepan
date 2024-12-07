@@ -61,7 +61,7 @@ def test_next_token():
 def test_complete_brkpts():
     bpmgr = BreakpointManager()
     frame = inspect.currentframe()
-    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno, 10, func=test_complete_brkpts)
+    bp = bpmgr.add_breakpoint(__file__, frame.f_lineno, 10, func_or_code=test_complete_brkpts)
     assert bp
     for find in "1":
         assert complete_brkpts(bpmgr, find) == [

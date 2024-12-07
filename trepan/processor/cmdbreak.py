@@ -26,7 +26,7 @@ from trepan.processor.location import resolve_location
 
 def set_break(
     cmd_obj,
-    func,
+    func_or_code,
     filename,
     lineno,
     condition,
@@ -48,7 +48,9 @@ def set_break(
         pass
 
     if lineno:
-        line_info = code_line_info(filename, lineno)
+        code_map, line_info = code_line_info(filename, lineno)
+        if isinstance(func_or_code, str):
+            func_or_code = code_map.get(func_or_code, func_or_code)
         if not line_info:
             linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
             if lineno not in linestarts.values():
@@ -87,10 +89,10 @@ def set_break(
         offset=offset,
         temporary=temporary,
         condition=condition,
-        func=func,
+        func_or_code=func_or_code,
     )
-    if func and inspect.isfunction(func):
-        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func.__name__))
+    if func_or_code and inspect.isfunction(func_or_code):
+        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func_or_code.__name__))
         part1 = "Currently this is line %d of the file" % lineno
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
@@ -98,12 +100,24 @@ def set_break(
         cmd_obj.msg(msg)
     else:
         part1 = "Breakpoint %d set at line %s of file" % (bp.number, lineno)
+        if hasattr(func_or_code, "co_name"):
+            code_name = func_or_code.co_name
+            if not code_name.startswith("<"):
+                code_name += "()"
+            func_str = f" in {code_name}"
+        else:
+            func_str = ""
+        part1 = f"Breakpoint {bp.number} set at line {lineno}{func_str} of file"
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
-        if func:
+        if func_or_code:
             func_str = " of %s" % pretty_modfunc_name(func)
+=======
+        if func_or_code:
+            func_str = f" of {pretty_modfunc_name(func_or_code)}"
+>>>>>>> python-3.6-to-3.10
         else:
             func_str = ""
         if offset is not None and offset >= 0:
@@ -175,18 +189,27 @@ if __name__ == "__main__":
     # print '-' * 10
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
+    # FIXME: we should not need ot set setting
+    cmdproc.settings = d.settings
+    set_break(cmdproc, "set_break", __file__, 50, True, False, [])
     for cmd in (
         "break '''c:\\tmp\\foo.bat''':1",
         'break """/Users/My Documents/foo.py""":2',
         "break",
         "break 10",
         "break if True",
-        "break cmdproc.py:5",
+        f"break {__file__}:5",
+        f"break {__file__}:{cmdproc.frame.f_lineno}",
         "break set_break()",
         "break 4 if i==5",
-        # "break cmdproc.setup()",
+        "break cmdproc.setup()",
     ):
         args = cmd.split(" ")
         cmdproc.current_command = cmd
-        print(parse_break_cmd(cmdproc, args))
+        print(f"cmd: {cmd}")
+        break_info = parse_break_cmd(cmdproc, args)
+        print(break_info)
+        if break_info != INVALID_PARSE_BREAK:
+            code, filename, line_number, condition, offset = break_info
+            set_break(cmdproc, code, filename, line_number, condition, False, [], offset=offset)
     pass
