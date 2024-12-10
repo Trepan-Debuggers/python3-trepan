@@ -43,18 +43,17 @@ from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
 from trepan.processor.trace import PrintProcessor
 
+DEFAULT_INIT_OPTS = {
+    "processor": None,
+    # How many step events to skip before
+    # entering event processor? Zero (0) means stop at the next one.
+    # A negative number indicates no eventual stopping.
+    "step_ignore": 0,
+    "ignore_filter": None,  # But see debugger.py
+}
 
 class TrepanCore:
-    DEFAULT_INIT_OPTS = {
-        "processor": None,
-        # How many step events to skip before
-        # entering event processor? Zero (0) means stop at the next one.
-        # A negative number indicates no eventual stopping.
-        "step_ignore": 0,
-        "ignore_filter": None,  # But see debugger.py
-    }
-
-    def __init__(self, debugger, opts=None):
+    def __init__(self, debugger, opts=DEFAULT_INIT_OPTS.copy()):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash `opts', we may or may not initially
         start tracing events (i.e. enter the debugger).
@@ -63,7 +62,7 @@ class TrepanCore:
         """
 
         def get_option(key: str):
-            return option_set(opts, key, self.DEFAULT_INIT_OPTS)
+            return option_set(opts, key, DEFAULT_INIT_OPTS)
 
         self.bpmgr = BreakpointManager()
         self.current_bp = None
@@ -135,9 +134,10 @@ class TrepanCore:
 
         return
 
-    def add_ignore(self, *frames_or_fns):
+    def add_ignore(self, *frames_or_fns) -> Optional[Any]:
         """Add `frame_or_fn' to the list of functions that are not to
         be debugged"""
+        rc = None
         for frame_or_fn in frames_or_fns:
             rc = self.ignore_filter.add(frame_or_fn)
             pass
@@ -217,7 +217,7 @@ class TrepanCore:
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self, opts=None):
+    def start(self, opts: InitOptions=DEFAULT_INIT_OPTS):
         """We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
@@ -252,7 +252,7 @@ class TrepanCore:
             self.trace_hook_suspend = False
         return
 
-    def stop(self, options=None):
+    def stop(self, options=DEFAULT_INIT_OPTS):
         # Our version of:
         #    sys.settrace(None)
         try:
@@ -315,7 +315,6 @@ class TrepanCore:
                 return True
             else:
                 return False
-            pass
         return False
 
     def matches_condition(self, frame):
@@ -401,7 +400,7 @@ class TrepanCore:
         """Sets to stop on the next event that happens in frame `frame`.
         an raises an exception return to a frame below `frame`
         """
-        self.step_events = None  # Consider all events
+        self.step_events = step_events
         self.stop_level = count_frames(frame)
         self.last_level = self.stop_level
         self.last_frame = frame
@@ -421,7 +420,7 @@ class TrepanCore:
 
         # Check to see if are in a call but we should be stepping over the call
         # using "next" of "finish". If so, then we can speed tracing by
-        # removing futher tracing. Not though that we *also* must make sure
+        # removing further tracing. Not though that we *also* must make sure
         # that we don't have any breakpoint set, since we have to check
         # for breakpoints in a kind of slow way of checking all events.
 
@@ -498,7 +497,6 @@ class TrepanCore:
             except Exception:
                 pass
             pass
-        pass
 
     pass
 
@@ -509,7 +507,7 @@ if __name__ == "__main__":
     class MockProcessor:
         pass
 
-    opts = {"processor": MockProcessor()}
+    opts: InitOptions = {"processor": MockProcessor()}
     dc = TrepanCore(None, opts=opts)
     dc.step_ignore = 1
     print("dc._is_step_next_stop():", dc._is_step_next_stop("line"))

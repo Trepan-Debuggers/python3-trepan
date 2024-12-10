@@ -43,6 +43,12 @@ which produces when *autoeval* is on:
 because by default, ``s`` is an alias for the debugger ``step`` command.
 It is possible to remove that alias if this causes constant problem.
 
+If you want to run a series Python statements or expressions
+without the possibility of the debugger commands getting in the
+way, use the :ref:`python <python>` command.
+
 .. seealso::
 
-   :ref:`show autoeval <show_autoeval>`
+   :ref:`show autoeval <show_autoeval>`,
+   :ref:`eval <eval>`, and
+   :ref:`python <python>`.
