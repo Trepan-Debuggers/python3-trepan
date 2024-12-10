@@ -376,6 +376,8 @@ def get_call_function_name(frame) -> Optional[str]:
             opcode = code[extended_arg_offset]
 
         arg += extended_arg
+        if is_load_global:
+            arg >>= 1
         if arg < len(co.co_names):
             return co.co_names[arg]
     return None
