@@ -52,7 +52,19 @@ class SetAutoEval(Mbase_subcmd.DebuggerSetBoolSubcommand):
     problem.
 
     Another possibility is to go into a real Python shell via the `python`
-    or `ipython` commands."""
+    or `ipython` commands.
+
+
+    If you want to run a series Python statements or expressions
+    without the possibility of the debugger commands getting in the
+    way, use the `python` command.
+
+    See also:
+    ---------
+
+    `show autoeval`, `eval`, `python`
+
+    """
 
     short_help = "Evaluate unrecognized debugger commands."
     in_list = True
