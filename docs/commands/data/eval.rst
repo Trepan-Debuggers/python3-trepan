@@ -14,7 +14,7 @@ given, the following translations occur:
 
 ::
 
-   assert = <expr>       => <expr>
+   assert <expr>         => <expr>
    {if|elif} <expr> :    => <expr>
    while <expr> :        => <expr>
    return <expr>         => <expr>
@@ -37,5 +37,6 @@ Eval Examples
 
 .. seealso::
 
+   :ref:`python <python>`,
    :ref:`set autoeval <set_autoeval>`, :ref:`pr <pr>`,
    :ref:`pp <pp>` and :ref:`examine <examine>`.

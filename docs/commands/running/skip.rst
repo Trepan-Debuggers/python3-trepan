@@ -6,9 +6,9 @@ Skip
 
 **skip** [*count*]
 
-Set the next line that will be executed. The line must be within the
-stopped or bottom-most execution frame.
+Skip over (don't run) the next line that will be executed.
 
 .. seealso::
 
-   :ref:`step <step>` :ref:`jump <jump>`, :ref:`continue <continue>`, and :ref:`finish <finish>` provide other ways to progress execution.
+   :ref:`next <next>`, :ref:`step <step>`, :ref:`jump <jump>`, :ref:`continue <continue>`, and
+   :ref:`finish <finish>` provide other ways to progress execution.

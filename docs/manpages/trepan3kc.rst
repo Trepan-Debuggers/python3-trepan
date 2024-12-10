@@ -36,6 +36,4 @@ Options
 See also
 --------
 
-:ref:`trepan3k` (1)
-
 Full Documentation is available at http://python3-trepan.readthedocs.org
