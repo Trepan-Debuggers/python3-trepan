@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012-2013, 2015, 2017, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2012-2013, 2015, 2017, 2020, 2023-2024 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class EvalCommand(DebuggerCommand):
     about to be run. If the command ends `?` (via an alias) and no string is
     given, the following translations occur:
 
-       assert = <expr>       => <expr>
+       assert <expr>         => <expr>
        {if|elif} <expr> :    => <expr>
        while <expr> :        => <expr>
        return <expr>         => <expr>
@@ -53,7 +53,7 @@ class EvalCommand(DebuggerCommand):
     See also:
     ---------
 
-    `deval`, `set autoeval`, `pr`, `pp` and `examine`."""
+    `python`, `deval`, `set autoeval`, `pr`, `pp` and `examine`."""
 
     aliases = ("eval?", "?")
     short_help = "Print value of expression EXP"

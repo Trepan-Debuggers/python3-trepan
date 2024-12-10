@@ -26,8 +26,21 @@ from trepan.processor.command.base_cmd import DebuggerCommand
 class JumpCommand(DebuggerCommand):
     """**jump** *lineno*
 
-    Set the next line that will be executed. The line must be within the
-    stopped or bottom-most execution frame."""
+    Set the next line that will be executed.
+
+    There are a number of limitations on what line can be set.
+
+    You can't jump:
+      - into the body of a for loop
+      - into an 'except' block from outside
+      - outside or inside of a code block you are stopped
+
+    See also:
+    ---------
+
+    `skip`, `next`, `step`, `jump`, `continue`, `return` and
+    `finish` for other ways to progress execution.
+    """
 
     aliases = ("j",)
     category = "running"
