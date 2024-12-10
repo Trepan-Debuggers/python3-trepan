@@ -11,22 +11,41 @@ line - gcd.py:11
  11  ->	import sys
 Set stopping is on.
 call - <frozen importlib._bootstrap>:1044
-(/home/rocky/.pyenv/versions/pypy3.5-5.8.0/lib-python/3/importlib/_bootstrap.py:1044 remapped <frozen importlib._bootstrap>): __import__
+(/home/rocky/.pyenv/versions/pypy3.5-7.0.0/lib-python/3/importlib/_bootstrap.py:1044 remapped <frozen importlib._bootstrap>): __import__
 -> 1044 def __import__(name, globals=None, locals=None, fromlist=(), level=0):
 
-** /src/external-vcs/github/rocky/python3-trepan/test/integration/../data/step.cmd:13: Error in source command file:
-** No file importlib._bootstrap found; using "deparse" command instead to show source
-*instruction:*  1055 0 LOAD_FAST 'level' 
+fromlist = None
+globals =
+  {'__builtins__': <module 'builtins' (built-in)>,
+ '__doc__': 'Greatest Common Divisor\n'
+            '\n'
+            'Some characterstics of this program used for testing check_args() '
+            'does\n'
+            'not ...',
+ '__file__': '/src/external-vcs/github/Trepan-Debuggers/python3-trepan/test/example/gcd.py',
+ '__name__': '__main__'}
+level = 0
+locals =
+  {'__builtins__': <module 'builtins' (built-in)>,
+ '__doc__': 'Greatest Common Divisor\n'
+            '\n'
+            'Some characterstics of this program used for testing check_args() '
+            'does\n'
+            'not ...',
+ '__file__': '/src/external-vcs/github/Trepan-Debuggers/python3-trepan/test/example/gcd.py',
+ '__name__': '__main__'}
+name = 'sys'
+** /src/external-vcs/github/Trepan-Debuggers/python3-trepan/test/integration/../data/step.cmd:13: Error in source command file:
+** No file <frozen importlib._bootstrap> found; using "deparse" command instead to show source
+*instruction:*   L.1055 0 LOAD_FAST 'level' 
 if level == 0:
    -----
 Set stopping is off.
 line - <frozen importlib._bootstrap>:1055
-(/home/rocky/.pyenv/versions/pypy3.5-5.8.0/lib-python/3/importlib/_bootstrap.py:1055 remapped <frozen importlib._bootstrap>): __import__
+(/home/rocky/.pyenv/versions/pypy3.5-7.0.0/lib-python/3/importlib/_bootstrap.py:1055 remapped <frozen importlib._bootstrap>): __import__
 -- 1055     if level == 0:
 
-** /src/external-vcs/github/rocky/python3-trepan/test/integration/../data/step.cmd:16: Error in source command file:
-** No file importlib._bootstrap found; using "deparse" command instead to show source
-*instruction:*  1055 0 LOAD_FAST 'level' 
+*instruction:*   L.1055 0 LOAD_FAST 'level' 
 if level == 0:
    -----
 trepan3k: That's all, folks...

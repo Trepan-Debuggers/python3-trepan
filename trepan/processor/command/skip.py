@@ -23,8 +23,7 @@ from trepan.lib.bytecode import next_linestart
 class SkipCommand(DebuggerCommand):
     """**skip** [*count*]
 
-    Set the next line that will be executed. The line must be within the
-    stopped or bottom-most execution frame.
+    Skip over (don't run) the next line that will be executed.
 
     See also:
     ---------

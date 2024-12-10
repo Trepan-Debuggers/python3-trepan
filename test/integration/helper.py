@@ -42,7 +42,8 @@ def run_debugger(
     if osp.exists(outfile):
         os.unlink(outfile)
 
-    cmd = "%s --command %s %s %s %s %s" % (
+    cmd = "%s %s --command %s %s %s %s %s" % (
+        sys.executable,
         dbgr_path,
         cmdfile,
         outfile_opt,

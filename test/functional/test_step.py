@@ -35,7 +35,7 @@ def test_step_between_fn():
     def sqr(x):
         return x * x
 
-    if PYTHON_VERSION_TRIPLE < (3, 10):
+    if not (IS_PYPY and PYTHON_VERSION_TRIPLE[:2] == (3, 5)) and PYTHON_VERSION_TRIPLE < (3, 10):
         test2_expect = [
             "-- d.core.start()",
             "-- x = sqr(4)  # NOQA",

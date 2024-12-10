@@ -20,4 +20,6 @@ To issue a debugger command use function *dbgr()*. For example:
 
 .. seealso::
 
+   :ref:`eval <eval>`,
+   :ref:`set autoeval <set_autoeval>`,
    :ref:`ipython <ipython>`, and :ref:`bpython <bpython>`.
