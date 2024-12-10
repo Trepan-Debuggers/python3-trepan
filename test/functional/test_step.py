@@ -7,6 +7,8 @@ from test.functional.fn_helper import compare_output, strarray_setup
 
 import pyficache
 import pytest
+import tracer
+
 from xdis import PYTHON_VERSION_TRIPLE
 
 absolute_path = abspath(__file__)
@@ -35,7 +37,7 @@ def test_step_between_fn():
     def sqr(x):
         return x * x
 
-    if not (IS_PYPY and PYTHON_VERSION_TRIPLE[:2] == (3, 5)) and PYTHON_VERSION_TRIPLE < (3, 10):
+    if PYTHON_VERSION_TRIPLE[:2] == (3, 2):
         test2_expect = [
             "-- d.core.start()",
             "-- x = sqr(4)  # NOQA",
@@ -51,34 +53,33 @@ def test_step_between_fn():
             "<- return x * x",
             "-- y = 5  # NOQA",
         ]
-
-    # for cmds, out, eventset in (
-    #     (
-    #         ["step", "step", "continue"],
-    #         [
-    #             "-- x = sqr(4)  # NOQA",
-    #             "-- return x * x",
-    #             "-- y = 5  # NOQA",
-    #         ],
-    #         frozenset(("line",)),
-    #     ),
-    #     (
-    #         ["step", "step", "step", "step", "continue"],
-    #         test2_expect,
-    #         tracer.ALL_EVENTS,
-    #     ),
-    # ):
-    #     d = strarray_setup(cmds)
-    #     d.settings["events"] = eventset
-    #     d.core.start()
-    #     ##############################
-    #     x = sqr(4)  # NOQA
-    #     y = 5  # NOQA
-    #     ##############################
-    #     d.core.stop(options={"remove": True})
-    #     compare_output(out, d)
-    #     pass
-    # return
+    for cmds, out, eventset in (
+        (
+            ["step", "step", "continue"],
+            [
+                "-- x = sqr(4)  # NOQA",
+                "-- return x * x",
+                "-- y = 5  # NOQA",
+            ],
+            frozenset(("line",)),
+        ),
+        (
+            ["step", "step", "step", "step", "continue"],
+            test2_expect,
+            tracer.ALL_EVENTS,
+        ),
+    ):
+        d = strarray_setup(cmds)
+        d.settings["events"] = eventset
+        d.core.start()
+        ##############################
+        x = sqr(4)  # NOQA
+        y = 5  # NOQA
+        ##############################
+        d.core.stop(options={"remove": True})
+        compare_output(out, d)
+        pass
+    return
 
 
 def test_step_in_exception():
