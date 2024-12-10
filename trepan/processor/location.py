@@ -174,7 +174,9 @@ def resolve_location(proc, location) -> Optional[Location]:
                 offset = lineinfo[0].offsets[0]
                 mod_func_name = lineinfo[0].name
                 if mod_func.co_name != mod_func_name:
-                    print("FIXME: resolve_location needs update to pick out function")
+                    # Breakpoint is in a nested function/method.
+                    # Get new code object
+                    mod_func = code_info.get(mod_func_name, mod_func)
                 pass
             else:
                 return INVALID_LOCATION
