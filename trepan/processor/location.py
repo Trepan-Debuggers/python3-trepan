@@ -219,7 +219,7 @@ def resolve_address_location(proc, location) -> Optional[Location]:
         try:
             mod_or_func_or_code = eval(location.method, g, locals_dict)
         except Exception:
-            split_names = location_method.split(".")
+            split_names = location.method.split(".")
             if len(split_names) > 1:
                 proc.msg(f'Try importing {".".join(split_names[:-1])}?')
             proc.errmsg(msg)
