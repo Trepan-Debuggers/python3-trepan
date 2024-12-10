@@ -42,6 +42,7 @@ def test_complete_identifier():
     ]
 
 
+@pytest.mark.skipif(IS_PYPY, reason="readline completion not available on PyPy")
 def test_completion():
     dbgr, _ = setup_unit_test_debugger()
 
