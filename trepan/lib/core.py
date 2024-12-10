@@ -134,7 +134,7 @@ class TrepanCore:
 
         return
 
-    def add_ignore(self, *frames_or_fns):
+    def add_ignore(self, *frames_or_fns) -> Optional[Any]:
         """Add `frame_or_fn' to the list of functions that are not to
         be debugged"""
         rc = None
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     class MockProcessor:
         pass
 
-    opts = {"processor": MockProcessor()}
+    opts: InitOptions = {"processor": MockProcessor()}
     dc = TrepanCore(None, opts=opts)
     dc.step_ignore = 1
     print("dc._is_step_next_stop():", dc._is_step_next_stop("line"))
