@@ -134,7 +134,7 @@ class TrepanCore:
 
         return
 
-    def add_ignore(self, *frames_or_fns) -> Optional[Any]:
+    def add_ignore(self, *frames_or_fns):
         """Add `frame_or_fn' to the list of functions that are not to
         be debugged"""
         rc = None
@@ -217,7 +217,7 @@ class TrepanCore:
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self, opts: InitOptions=DEFAULT_INIT_OPTS):
+    def start(self, opts=DEFAULT_INIT_OPTS.copy()):
         """We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     class MockProcessor:
         pass
 
-    opts: InitOptions = {"processor": MockProcessor()}
+    opts = {"processor": MockProcessor()}
     dc = TrepanCore(None, opts=opts)
     dc.step_ignore = 1
     print("dc._is_step_next_stop():", dc._is_step_next_stop("line"))
