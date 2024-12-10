@@ -17,7 +17,7 @@ def test_contains_make_function():
 
 def test_op_at_frame():
     frame = inspect.currentframe()
-    if IS_PYPY or PYTHON_VERSION_TRIPLE >= (3, 9):
+    if (IS_PYPY and PYTHON_VERSION_TRIPLE > (3, 6)) or PYTHON_VERSION_TRIPLE >= (3, 9):
         if PYTHON_VERSION_TRIPLE > (3, 9):
             call_opcode = "CALL_FUNCTION"
         else:
