@@ -149,7 +149,8 @@ def print_location(proc_obj):
     remapped_file = None
     source_text = None
     eval_kind = None
-    while i_stack >= 0 and len(proc_obj.stack) > 0:
+    i_stack = min(i_stack, len(proc_obj.stack) - 1)
+    while i_stack >= 0:
         frame, lineno = proc_obj.stack[i_stack]
 
         # Before starting a program a location for a module with
@@ -253,7 +254,7 @@ def print_location(proc_obj):
                 # into the corresponding line of the tempfile
                 co = proc_obj.curframe.f_code
                 tempdir = proc_obj.settings("tempdir")
-                temp_filename, name_for_code = deparse_and_cache(
+                temp_filename, _ = deparse_and_cache(
                     co, proc_obj.errmsg, tempdir=tempdir
                 )
                 lineno = 1

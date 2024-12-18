@@ -31,15 +31,25 @@ class JumpCommand(DebuggerCommand):
     There are a number of limitations on what line can be set.
 
     You can't jump:
+
       - into the body of a for loop
+
       - into an 'except' block from outside
+
       - outside or inside of a code block you are stopped
+
+    Jumping to a previous line is one way to reexecuting code.
+    Jumping to a return statement may be similar to you back to the caller
+    without running more code in the current frame.
 
     See also:
     ---------
 
     `skip`, `next`, `step`, `jump`, `continue`, `return` and
     `finish` for other ways to progress execution.
+
+    `eval` can be used to run Python code without changing the
+    execution line.
     """
 
     aliases = ("j",)
