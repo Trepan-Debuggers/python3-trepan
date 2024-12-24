@@ -1,5 +1,4 @@
 .. index:: restart
-.. _restart:
 
 Restart
 -------
