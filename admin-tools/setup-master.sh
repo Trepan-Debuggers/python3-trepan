@@ -12,7 +12,7 @@ mydir=$(dirname $bs)
 trepan3k_owd=$(pwd)
 cd $mydir
 . ./checkout_common.sh
-(cd $mydir/.. && \
+(cd $mydir/../../../rocky && \
      setup_version python-uncompyle6 master && \
      setup_version python-xdis master && \
      setup_version python-filecache master && \
@@ -20,5 +20,4 @@ cd $mydir
      setup_version pytracer master && \
      setup_version pycolumnize master \
 )
-
 checkout_finish master
