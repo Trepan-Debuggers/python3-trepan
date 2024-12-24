@@ -430,11 +430,18 @@ def disassemble_bytes(
                 (start_line > cur_line) or start_offset and start_offset > offset
             ):
                 continue
+            else:
+                msg_nocr = orig_msg_nocr
+                msg = orig_msg
 
             if (cur_line > end_line) or (end_offset and offset > end_offset):
                 break
-        elif start_offset and offset and start_offset <= offset:
-            continue
+        elif start_offset and offset:
+            if offset >= start_offset:
+                msg_nocr = orig_msg_nocr
+                msg = orig_msg
+            else:
+                continue
 
         print_instruction(
             instr,
