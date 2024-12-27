@@ -16,7 +16,8 @@ line - gcd.py:11
 Set stopping is off.
 line - gcd.py:13
 line - gcd.py:26
-(gcd.py:26): <module>
--- 26 def gcd(a,b):
- 26  ->	def gcd(a,b):
+line - gcd.py:40
+(gcd.py:40): <module>
+-- 40 if __name__=='__main__':
+ 40  ->	if __name__=='__main__':
 trepan3k: That's all, folks...
