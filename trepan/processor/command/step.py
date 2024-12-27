@@ -125,6 +125,10 @@ class StepCommand(DebuggerCommand):
         self.core.different_line = want_different_line(
             args[0], self.settings["different"]
         )
+        self.core.last_frame = self.proc.curframe
+        print(f"XXX recording rewind location to {self.core.previous_lineno}")
+
+        self.core.previous_lineno = self.proc.curframe.f_lineno
         self.core.stop_level = None
         self.core.last_frame = None
         self.core.stop_on_finish = False

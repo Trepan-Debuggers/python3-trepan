@@ -115,8 +115,10 @@ class TrepanCore:
         self.stop_on_finish = False
 
         self.last_lineno = None
+        self.previous_lineno = None
         self.last_filename = None
         self.different_line = None
+
 
         # The reason we have stopped, e.g. 'breakpoint hit', 'next',
         # 'finish', 'step', or 'exception'.
@@ -407,6 +409,8 @@ class TrepanCore:
         self.stop_level = count_frames(frame)
         self.last_level = self.stop_level
         self.last_frame = frame
+        self.last_lineno = frame.f_lineno
+        self.previous_lineno = frame.f_lineno
         self.stop_on_finish = False
         self.step_ignore = step_ignore
         return

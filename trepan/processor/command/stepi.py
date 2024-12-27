@@ -71,6 +71,8 @@ class StepICommand(DebuggerCommand):
         # print("XXX", self.proc.frame)
         if self.proc.frame is not None:
             self.proc.frame.f_trace_opcodes = True
+        self.core.last_frame = self.proc.curframe
+        self.core.previous_lineno = self.proc.curframe.f_lineno
         self.core.stop_level = None
         self.core.last_frame = None
         self.core.stop_on_finish = False

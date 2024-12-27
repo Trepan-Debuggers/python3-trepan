@@ -63,6 +63,7 @@ class FinishCommand(DebuggerCommand):
         self.core.stop_on_finish = True
         self.core.stop_level = count_frames(self.proc.frame) + 1 - levels
         self.core.last_frame = self.proc.frame
+        self.core.previous_lineno = self.proc.curframe.f_lineno
         self.proc.continue_running = True  # Break out of command read loop
         return True
 
