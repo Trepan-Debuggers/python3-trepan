@@ -14,10 +14,10 @@ line - gcd.py:11
 -- 11 import sys
  11  ->	import sys
 Set stopping is off.
-line - gcd.py:13
-line - gcd.py:26
-line - gcd.py:40
-(gcd.py:40): <module>
--- 40 if __name__=='__main__':
- 40  ->	if __name__=='__main__':
+line - gcd.py:14
+line - gcd.py:27
+line - gcd.py:42
+(gcd.py:42): <module>
+-- 42 if __name__ == "__main__":
+ 42  ->	if __name__ == "__main__":
 trepan3k: That's all, folks...
