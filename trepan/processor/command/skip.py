@@ -74,6 +74,7 @@ class SkipCommand(DebuggerCommand):
                 lineno,
             )
             print_location(self.proc)
+            self.proc.continue_running = True  # Break out of command read loop
         except ValueError as e:
             self.errmsg(f"skip failed: {e}")
         return False

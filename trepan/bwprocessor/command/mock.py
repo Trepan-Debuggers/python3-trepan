@@ -57,6 +57,10 @@ class MockUserInterface:
         sys.stdout.write(msg)
         return
 
+    def warnsg(self, msg):
+        print("** %s" % msg)
+        return
+
     pass
 
 

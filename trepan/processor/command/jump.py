@@ -16,8 +16,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import inspect
 import os
+from dis import findlinestarts
 
-from trepan.processor import cmdproc as Mcmdproc
+from trepan.processor.cmdproc import print_location
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -81,6 +82,11 @@ class JumpCommand(DebuggerCommand):
 
         if lineno is None:
             return False
+
+        linestarts = dict(findlinestarts(self.proc.curframe.f_code))
+        if lineno not in linestarts.values():
+            self.warnmsg(f"code for line {lineno} not found. Results may be unpredictable.")
+
         try:
             # Set to change position, update our copy of the stack,
             # and display the new position
@@ -89,9 +95,9 @@ class JumpCommand(DebuggerCommand):
                 self.proc.stack[self.proc.curindex][0],
                 lineno,
             )
-            Mcmdproc.print_location(self.proc)
+            print_location(self.proc)
         except ValueError as e:
-            self.errmsg("jump failed: %s" % e)
+            self.errmsg(f"jump failed: {e}")
         return False
 
     pass
@@ -99,6 +105,7 @@ class JumpCommand(DebuggerCommand):
 
 if __name__ == "__main__":
     from trepan.processor.command import mock
+    from trepan.processor.cmdproc import get_stack
 
     d, cp = mock.dbg_setup()
     command = JumpCommand(cp)
@@ -106,7 +113,7 @@ if __name__ == "__main__":
     command.core.execution_status = "Running"
     cp.curframe = inspect.currentframe()
     cp.curindex = 0
-    cp.stack = Mcmdproc.get_stack(cp.curframe, None, None)
+    cp.stack = get_stack(cp.curframe, None, None)
     command.run(["jump", "1"])
     cp.curindex = len(cp.stack) - 1
     command.run(["jump", "1"])

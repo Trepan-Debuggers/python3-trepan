@@ -31,7 +31,8 @@ def test_skip():
     out = [
         "-- x = 3",
         "-- x = 4",
-        "-- y = 5"
+        "-- y = 5",
+        "-- y = 7  # NOQA"
     ]
     compare_output(out, d)
     assert x == 3, "should have skipped x=4"
@@ -51,6 +52,7 @@ def test_skip():
         "-- x = 7",
         "-- x = 8",
         "-- y = 10  # NOQA",
+        '-- d.core.stop(options={"remove": True})',
     ]  # x = 8 is shown in prompt, but not run.
     compare_output(out, d)
     assert x == 7, "x = 8..9 should have been skipped"

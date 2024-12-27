@@ -81,4 +81,10 @@ class Processor:
     def settings(self, setting):
         return self.core.debugger.settings.get(setting)
 
+    def warnrmsg(self, message, opts={}):
+        """Convenience short-hand for self.intf[-1].warnmsg"""
+        if "plain" != self.debugger.settings["highlight"]:
+            message = colorize("standout", message)
+            pass
+        return self.intf[-1].warnmsg(message)
     pass
