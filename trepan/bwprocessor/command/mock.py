@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2013 Rocky Bernstein
+#   Copyright (C) 2013, 2024 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ demonstrating how the command works."""
 import sys
 
 from trepan.lib import breakpoint, default
+from tracer import tracefilter
 
 
 class MockIO:
@@ -56,6 +57,10 @@ class MockUserInterface:
         sys.stdout.write(msg)
         return
 
+    def warnsg(self, msg):
+        print("** %s" % msg)
+        return
+
     pass
 
 
@@ -80,10 +85,6 @@ class MockProcessor:
         return
 
     pass
-
-
-# External Egg packages
-import tracefilter
 
 
 class MockDebuggerCore:

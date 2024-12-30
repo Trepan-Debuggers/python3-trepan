@@ -1,5 +1,5 @@
-Entering the Trepan Debugger
-****************************
+Entering the Debugger
+**********************
 
 .. toctree::
 .. contents::

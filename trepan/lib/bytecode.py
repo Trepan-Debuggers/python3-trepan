@@ -19,7 +19,7 @@
 
 import re
 
-from opcode import HAVE_ARGUMENT, opname
+from opcode import  opname
 from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
 
 opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
@@ -49,10 +49,8 @@ def next_opcode(code, offset):
     n = len(code)
     while offset < n:
         op = code[offset]
-        offset += 1
-        if op >= HAVE_ARGUMENT:
-            offset += 2
-            pass
+        yield op, offset
+        offset = offset + 2
         yield op, offset
         pass
     yield -100, -1000
@@ -63,37 +61,40 @@ def next_linestart(co, offset: int, count=1) -> int:
     code = co.co_code
 
     linestarts = dict(opcode_module.findlinestarts(co))
-    # n = len(code)
+    n = len(code)
     # contains_cond_jump = False
-    for op, offset in next_opcode(code, offset):
+    while offset < len(code):
         if offset in linestarts:
             count -= 1
             if 0 == count:
                 return linestarts[offset]
             pass
-        pass
+        offset += 2
 
     return -1000
 
 
-def stmt_contains_opcode(co, lineno, query_opcode) -> bool:
+def stmt_contains_opcode(co, lineno, query_opname) -> bool:
     linestarts = dict(opcode_module.findlinestarts(co))
     code = co.co_code
     found_start = False
     offset = 0
+    start_line = None
     for offset, start_line in list(linestarts.items()):
         if start_line == lineno:
+            print("=" * 30)
             found_start = True
             break
         pass
     if not found_start:
         return False
     for op, offset in next_opcode(code, offset):
-        if -1000 == offset or linestarts.get(offset):
+        linestart = linestarts.get(offset)
+        if -1000 == offset or linestart and linestart != start_line:
             return False
-        opcode = opname[op]
+        op_name = opname[op]
         # print(opcode)  # debug
-        if query_opcode == opcode:
+        if query_opname == op_name:
             return True
         pass
     return False
@@ -103,7 +104,7 @@ _re_def_str = r"^\s*def\s"
 _re_def = re.compile(_re_def_str)
 
 
-def is_def_stmt(line, frame):
+def is_def_stmt(line, frame) -> bool:
     """Return True if we are looking at a def statement"""
     # Should really also check that operand of 'LOAD_CONST' is a code object
     return (

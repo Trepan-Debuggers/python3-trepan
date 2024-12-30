@@ -89,6 +89,15 @@ class DebuggerCommand:
         """
         raise NotImplementedError(NotImplementedMessage)
 
+    def warnmsg(self, msg, opts={}):
+        """Convenience short-hand for self.debugger.intf.warnmsg"""
+        try:
+            return self.debugger.intf[-1].warnmsg(msg)
+        except EOFError:
+            # FIXME: what do we do here?
+            pass
+        return None
+
     pass
 
 

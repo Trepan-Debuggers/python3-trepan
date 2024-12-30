@@ -27,14 +27,15 @@ class StepCommand(DebuggerCommand):
 
     With an integer argument, step that many times.
 
-    *event* is list of an event name which is one of: `call`,
-    `return`, `line`, `exception` `c-call`, `c-return` or `c-exception`.
+    *event* is list of an event name which is one of: "call",
+    "return", "line", "exception", "c-call`, "c-return" or "c-exception".
+
     If specified, only those stepping events will be considered. If no
     list of event names is given, then any event triggers a stop when the
     count is 0.
 
-    There is however another way to specify a *single* event, by
-    suffixing one of the symbols `<`, `>`, or `!` after the command or on
+    There is however another way to specify an event: you can
+    suffix one of the symbols `<`, `>`, or `!` after the command or on
     an alias of that.  A suffix of `+` on a command or an alias forces a
     move to another line, while a suffix of `-` disables this requirement.
     A suffix of `>` will continue until the next call. (`finish` will run

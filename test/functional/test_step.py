@@ -39,12 +39,10 @@ def test_step_between_fn():
 
     if PYTHON_VERSION_TRIPLE[:2] == (3, 2):
         test2_expect = [
-            "-- d.core.start()",
-            "-- x = sqr(4)  # NOQA",
-            "-> def sqr(x):",
-            "-- return x * x",
-            "<- return x * x",
-        ]
+                "-- x = sqr(4)  # NOQA",
+                "-- return x * x",
+                "-- y = 5  # NOQA"
+            ],
     else:
         test2_expect = [
             "-- x = sqr(4)  # NOQA",
@@ -56,11 +54,7 @@ def test_step_between_fn():
     for cmds, out, eventset in (
         (
             ["step", "step", "continue"],
-            [
-                "-- x = sqr(4)  # NOQA",
-                "-- return x * x",
-                "-- y = 5  # NOQA",
-            ],
+            test2_expect,
             frozenset(("line",)),
         ),
         (

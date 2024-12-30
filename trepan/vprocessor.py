@@ -15,6 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from pygments.console import colorize
 
 NotImplementedMessage = "This method must be overridden in a subclass"
@@ -28,9 +29,11 @@ class Processor:
     the events.
     """
 
-    def __init__(self, core_obj):
+    def __init__(self, core_obj, opts=None):
         self.core = core_obj
         self.debugger = core_obj.debugger
+        self.opts = opts
+        self.intf = []
         return
 
     # Note for errmsg, msg, and msg_nocr we don't want to simply make
@@ -77,4 +80,10 @@ class Processor:
     def settings(self, setting):
         return self.core.debugger.settings.get(setting)
 
+    def warnrmsg(self, message, opts={}):
+        """Convenience short-hand for self.intf[-1].warnmsg"""
+        if "plain" != self.debugger.settings["highlight"]:
+            message = colorize("standout", message)
+            pass
+        return self.intf[-1].warnmsg(message)
     pass

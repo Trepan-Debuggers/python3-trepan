@@ -7,7 +7,7 @@ function setup_version {
     local repo=$1
     version=$2
     echo Running setup $version on $repo ...
-    (cd ../$repo && . ./admin-tools/setup-${version}.sh)
+    (cd ./$repo && . ./admin-tools/setup-${version}.sh)
     return $?
 }
 

@@ -138,6 +138,10 @@ class DebuggerSubcommand:
 
     pass
 
+    def warnmsg(self, msg):
+        """Convenience short-hand for self.debugger.intf[-1].warnmsg"""
+        return self.debugger.intf[-1].warnmsg(msg, prefix="*Warning*: ")
+
 
 class DebuggerSetBoolSubcommand(DebuggerSubcommand):
     max_args = 1

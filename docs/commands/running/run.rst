@@ -1,5 +1,4 @@
 .. index:: run
-.. _run:
 
 Run
 ---

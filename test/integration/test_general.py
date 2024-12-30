@@ -3,16 +3,12 @@
 import unittest
 
 from helper import run_debugger
-from xdis import PYTHON_VERSION_TRIPLE
 
 
 class GeneralTests(unittest.TestCase):
     def test_step(self):
         """Test stepping, set skip, set trace"""
-        if PYTHON_VERSION_TRIPLE >= (3, 8):
-            right_template = "%s-38.right"
-        else:
-            right_template = None
+        right_template = "%s-33.right"
         result = run_debugger(
             testname="step",
             dbgr_opts="--basename --highlight=plain",
