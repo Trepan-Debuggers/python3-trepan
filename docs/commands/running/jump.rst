@@ -22,8 +22,7 @@ function without running more code in the current frame.
 .. seealso::
 
    :ref:`skip <skip>`,
-   :ref:`next <next>`, :ref:`step <step>` :ref:`continue <continue>`, and
+   :ref:`next <next>`, :ref:`step <step>`, :ref:`continue <continue>`, and
    :ref:`finish <finish>` provide other ways to progress.
 
-   :ref:`eval <eval>` can be used to run Python code without changing the
-    execution line.
+   :ref:`eval <eval>` can be used to run Python code without changing the execution line.

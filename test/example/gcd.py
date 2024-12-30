@@ -10,36 +10,38 @@ of parameters.
 """
 import sys
 
+
 def check_args():
     if len(sys.argv) != 3:
         # Rather than use sys.exit let's just raise an error
         raise Exception("Need to give two numbers; got: %s" % sys.argv)
     for i in range(2):
         try:
-            sys.argv[i+1] = int(sys.argv[i+1])
+            sys.argv[i + 1] = int(sys.argv[i + 1])
         except ValueError:
-            print("** Expecting an integer, got: %s" % repr(sys.argv[i]))
+            print(f"** Expecting an integer, got: {repr(sys.argv[i])}")
             sys.exit(2)
-            pass
         pass
 
-def gcd(a,b):
-    """ GCD. We assume positive numbers"""
+
+def gcd(a, b):
+    """GCD. We assume positive numbers"""
 
     # Make: a <= b
     if a > b:
-       (a, b) = (b, a)
-       pass
+        (a, b) = (b, a)
+        pass
 
     if a <= 0:
         return None
-    if a == 1 or b-a == 0:
+    if a == 1 or b - a == 0:
         return a
-    return gcd(b-a, a)
+    return gcd(b - a, a)
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     check_args()
 
     (a, b) = sys.argv[1:3]
-    print("The GCD of %d and %d is %d" % (a, b, gcd(a, b)))
+    print(f"The GCD of {a} and {b} is {gcd(a, b)}")
     pass

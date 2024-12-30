@@ -178,6 +178,10 @@ class UserInterface(TrepanInterface):
             pass
         return self.input.readline(prompt=prompt)
 
+    def warnmsg(self, msg, prefix="* "):
+        """Common routine for reporting debugger warning messages."""
+        return self.msg("%s%s" % (prefix, msg))
+
     pass
 
 

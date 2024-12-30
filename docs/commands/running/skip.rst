@@ -1,5 +1,4 @@
 .. index:: skip
-.. _skip:
 
 Skip
 ----

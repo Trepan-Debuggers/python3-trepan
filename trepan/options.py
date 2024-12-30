@@ -400,9 +400,15 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             dbg_opts["output"] = DebuggerUserOutput(opts.output)
         except IOError:
             _, xxx_todo_changeme, _ = sys.exc_info()
+            if xxx_todo_changeme is not None:
             (errno, strerror) = xxx_todo_changeme.args
             print("I/O in opening debugger output file %s" % opts.output)
             print("error(%s): %s" % (errno, strerror))
+=======
+                (errno, strerror) = xxx_todo_changeme.args
+                print(f"I/O in opening debugger output file {opts.output}")
+                print(f"error({errno}): {strerror}")
+>>>>>>> python-3.6-to-3.10
         except Exception:
             print("Unexpected error in opening debugger output file %s" % opts.output)
             print(sys.exc_info()[0])

@@ -1,5 +1,4 @@
 .. index:: exit
-.. _exit:
 
 Exit
 ----
