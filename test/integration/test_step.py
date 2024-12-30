@@ -19,7 +19,7 @@ def test_step():
     elif PYTHON_VERSION_TRIPLE >= (3, 8):
         right_template = "%s-38.right"
     else:
-        right_template = None
+        right_template = "%s-36.right"
     result = run_debugger(
         testname="step",
         dbgr_opts="--basename --style=none --highlight=plain",

@@ -74,6 +74,7 @@ def compare_output(right: list, d):
                 print("  ", right[i])
                 pass
             pass
+        from trepan.api import debug; debug()
         pass
     assert right == got
     return
