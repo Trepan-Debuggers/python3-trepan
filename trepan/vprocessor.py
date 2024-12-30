@@ -16,7 +16,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
 from pygments.console import colorize
 
 NotImplementedMessage = "This method must be overridden in a subclass"
@@ -30,7 +29,7 @@ class Processor:
     the events.
     """
 
-    def __init__(self, core_obj, opts: Optional[dict]=None):
+    def __init__(self, core_obj, opts=None):
         self.core = core_obj
         self.debugger = core_obj.debugger
         self.opts = opts

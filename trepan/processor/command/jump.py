@@ -85,7 +85,7 @@ class JumpCommand(DebuggerCommand):
 
         linestarts = dict(findlinestarts(self.proc.curframe.f_code))
         if lineno not in linestarts.values():
-            self.warnmsg(f"code for line {lineno} not found. Results may be unpredictable.")
+            self.warnmsg("code for line %d not found. Results may be unpredictable." % lineno)
 
         try:
             # Set to change position, update our copy of the stack,
@@ -97,7 +97,7 @@ class JumpCommand(DebuggerCommand):
             )
             print_location(self.proc)
         except ValueError as e:
-            self.errmsg(f"jump failed: {e}")
+            self.errmsg("jump failed: %s" % e)
         return False
 
     pass

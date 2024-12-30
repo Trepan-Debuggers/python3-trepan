@@ -20,7 +20,6 @@
 import re
 
 from opcode import  opname
-from typing import Optional
 from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
 
 opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
@@ -105,7 +104,7 @@ _re_def_str = r"^\s*def\s"
 _re_def = re.compile(_re_def_str)
 
 
-def is_def_stmt(line: Optional[str], frame) -> bool:
+def is_def_stmt(line, frame) -> bool:
     """Return True if we are looking at a def statement"""
     # Should really also check that operand of 'LOAD_CONST' is a code object
     return (

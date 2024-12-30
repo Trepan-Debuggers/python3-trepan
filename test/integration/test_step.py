@@ -4,7 +4,6 @@ import sys
 
 import pytest
 from helper import run_debugger
-from xdis import PYTHON_VERSION_TRIPLE
 
 
 @pytest.mark.skipif(
@@ -12,14 +11,7 @@ from xdis import PYTHON_VERSION_TRIPLE
 )
 def test_step():
     """Test stepping, set skip, set trace"""
-    if PYTHON_VERSION_TRIPLE >= (3, 11):
-        right_template = "%s-311.right"
-    elif PYTHON_VERSION_TRIPLE >= (3, 10):
-        right_template = "%s-310.right"
-    elif PYTHON_VERSION_TRIPLE >= (3, 8):
-        right_template = "%s-38.right"
-    else:
-        right_template = "%s-36.right"
+    right_template = "%s-33.right"
     result = run_debugger(
         testname="step",
         dbgr_opts="--basename --style=none --highlight=plain",

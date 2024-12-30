@@ -19,7 +19,7 @@ def check_args():
         try:
             sys.argv[i + 1] = int(sys.argv[i + 1])
         except ValueError:
-            print(f"** Expecting an integer, got: {repr(sys.argv[i])}")
+            print("** Expecting an integer, got: %s" % repr(sys.argv[i]))
             sys.exit(2)
         pass
 
@@ -43,5 +43,5 @@ if __name__ == "__main__":
     check_args()
 
     (a, b) = sys.argv[1:3]
-    print(f"The GCD of {a} and {b} is {gcd(a, b)}")
+    print("The GCD of %d and %d is %d" % (a, b, gcd(a, b)))
     pass

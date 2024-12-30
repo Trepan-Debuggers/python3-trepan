@@ -18,7 +18,6 @@
 # 'Helper' function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from typing import Optional
 from trepan.vprocessor import Processor
 
 
@@ -29,7 +28,7 @@ class PrintProcessor(Processor):
     whether it wants any printed at all.
     """
 
-    def __init__(self, debugger, opts: Optional[dict]=None):
+    def __init__(self, debugger, opts=None):
         Processor.__init__(self, debugger, opts)
         return
 
@@ -44,7 +43,7 @@ class PrintProcessor(Processor):
         else:
             out.write("%s - %s:%d" % (event, filename, lineno))
             if arg is not None:
-                out.writeline(f", {repr(arg)} ")
+                out.writeline(", %s " % repr(arg))
             else:
                 out.writeline("")
                 pass
