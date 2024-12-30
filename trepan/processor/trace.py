@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2014, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2014, 2023-2024 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,18 +18,19 @@
 # 'Helper' function for Processor. Put here so we
 # can use this in a couple of processors.
 
-from trepan import vprocessor as Mprocessor
+from typing import Optional
+from trepan.vprocessor import Processor
 
 
-class PrintProcessor(Mprocessor.Processor):
+class PrintProcessor(Processor):
     """A processor that just prints out events as we see them. This
     is suitable for example for line/call tracing. We assume that the
     caller is going to filter out which events it wants printed or
     whether it wants any printed at all.
     """
 
-    def __init__(self, debugger, opts=None):
-        Mprocessor.Processor.__init__(self, debugger)
+    def __init__(self, debugger, opts: Optional[dict]=None):
+        Processor.__init__(self, debugger, opts)
         return
 
     def event_processor(self, frame, event, arg):
@@ -43,7 +44,7 @@ class PrintProcessor(Mprocessor.Processor):
         else:
             out.write("%s - %s:%d" % (event, filename, lineno))
             if arg is not None:
-                out.writeline(", %s " % repr(arg))
+                out.writeline(f", {repr(arg)} ")
             else:
                 out.writeline("")
                 pass

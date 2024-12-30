@@ -56,10 +56,10 @@ def parse_addr_list_cmd(proc, args, listsize=40):
             first = max(1, proc.list_lineno - (2 * listsize) - 1)
         elif text == "":
             # Continue from where we last left off
-            first = proc.list_offset + 1
-            last = first + listsize - 1
+            first = proc.list_offset
+            last = first + listsize
             return filename, first, True, last, True, proc.list_object
-        last = first + listsize - 1
+        last = first + listsize
         return filename, first, True, last, True, proc.list_object
     else:
         try:

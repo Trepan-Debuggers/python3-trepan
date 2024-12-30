@@ -46,7 +46,7 @@ class SkipCommand(DebuggerCommand):
             return False
 
         if self.proc.curframe.f_trace is None:
-            self.errmsg("Sigh - operation can't be done here.")
+            self.errmsg("Sigh - operation can't be done here. Frame tracing is not recorded")
             return False
 
         if len(args) == 1:
@@ -59,7 +59,7 @@ class SkipCommand(DebuggerCommand):
         offset = self.proc.curframe.f_lasti
         if count is None:
             return False
-        lineno = next_linestart(co, offset, count)
+        lineno = next_linestart(co, offset+2, count)
 
         if lineno < 0:
             self.errmsg("No next line found")
@@ -74,6 +74,7 @@ class SkipCommand(DebuggerCommand):
                 lineno,
             )
             print_location(self.proc)
+            self.proc.continue_running = True  # Break out of command read loop
         except ValueError as e:
             self.errmsg(f"skip failed: {e}")
         return False

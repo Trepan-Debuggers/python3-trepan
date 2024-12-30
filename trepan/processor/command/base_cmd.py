@@ -125,6 +125,15 @@ class DebuggerCommand:
         """
         raise NotImplementedError(NotImplementedMessage)
 
+    def warnmsg(self, msg, opts={}):
+        """Convenience short-hand for self.debugger.intf[-1].warnmsg"""
+        try:
+            return self.debugger.intf[-1].warnmsg(msg, prefix="*Warning*: ")
+        except EOFError:
+            # FIXME: what do we do here?
+            pass
+        return None
+
     pass
 
     def section(self, message, opts={}):

@@ -184,10 +184,12 @@ class DisassembleCommand(DebuggerCommand):
             opts["start_offset"] = start
         else:
             opts["start_line"] = start
+            opts["start_offset"] = 0
         if last_is_offset:
             opts["end_offset"] = last
         else:
             opts["end_line"] = last
+            opts["end_offset"] = None
 
         if not obj and (
             bytecode_file

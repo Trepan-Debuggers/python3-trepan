@@ -1,5 +1,4 @@
 .. index:: kill
-.. _kill:
 
 Kill
 ----
@@ -17,8 +16,8 @@ handle them can be sent.
 Giving a negative number is the same as using its
 positive value.
 
-Examples:
-+++++++++
+Kill Examples:
+++++++++++++++
 
 ::
 
