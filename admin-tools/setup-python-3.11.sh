@@ -13,7 +13,11 @@ trepan3k_owd=$(pwd)
 mydir=$(dirname $bs)
 cd $mydir
 . ./checkout_common.sh
+<<<<<<< HEAD
 (cd $mydir/.. && \
+=======
+(cd $mydir/../../rocky && \
+>>>>>>> master
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
      setup_version shell-term-background master && \
