@@ -4,7 +4,7 @@ import sys
 from setuptools import find_packages, setup
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 0) <= SYS_VERSION < (3, 2)):
+if not ((3, 0) <= SYS_VERSION <= (3, 2)):
     my_version = sys.version[0:3]
     mess = "Version %s not supported" % my_version
     if SYS_VERSION >= (3, 12):
