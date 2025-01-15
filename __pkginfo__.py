@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2024 Rocky Bernstein
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2025 Rocky Bernstein
 # <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
