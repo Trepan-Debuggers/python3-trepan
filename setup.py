@@ -4,7 +4,7 @@ import sys
 from setuptools import find_packages, setup
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 3) <= SYS_VERSION < (3, 6)):
+if not ((3, 0) <= SYS_VERSION < (3, 2)):
     my_version = sys.version[0:3]
     mess = "Version %s not supported" % my_version
     if SYS_VERSION >= (3, 12):
@@ -17,11 +17,9 @@ if not ((3, 3) <= SYS_VERSION < (3, 6)):
         mess += "\nFor your Python, version %s, See trepan2" % my_version
     elif SYS_VERSION < (2, 4):
         mess += "\nFor your Python, version %s, see pydb" % my_version
->>>>>>> python-3.3-to-3.5
     print(mess)
     raise Exception(mess)
 
-print# Get the package information used in setup().
 from __pkginfo__ import (
     __version__,
     author,
