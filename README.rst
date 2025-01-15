@@ -1,4 +1,4 @@
-|CircleCI| |Pypi Installs| |license| |docs| |Supported Python Versions|
+|CircleCI| |PyPI Installs| |license| |docs| |Supported Python Versions|
 
 |packagestatus|
 
@@ -355,7 +355,8 @@ See Also
 .. _install: https://python3-trepan.readthedocs.org/en/latest/install.html
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/trepan3k.svg
    :target: https://pypi.python.org/pypi/trepan3k/
-.. |Pypi Installs| image:: https://pepy.tech/badge/trepan3k
+.. |PyPI Installs| image:: https://img.shields.io/pypi/dm/trepan3k
+			   :alt: PyPI - Downloads
 .. |packagestatus| image:: https://repology.org/badge/vertical-allrepos/python:trepan3k.svg
 		 :target: https://repology.org/project/python:trepan3k/versions
 .. |docs| image:: https://readthedocs.org/projects/python3-trepan/badge/?version=latest

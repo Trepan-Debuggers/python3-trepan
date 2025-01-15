@@ -1,3 +1,19 @@
+1.3.1 2025-01-15
+================
+
+* Revise breakpoint handling; Breakpoints now use code objects, not (possibly ambiguous) function names
+* Fix bugs in detecting when stopped at a `def` and in `nextlineno()`
+* Better information when current frame is inside a builtin `eval` or `exec` call
+* Fix some of the many disasm spec problems.
+* Go over "eval", "skip", "step", "jump" and "autoeval" documentation
+* Guard against invalid frame indexing in backtrace
+* Suggest import when a function is not found in getting a location
+* Improve "info frame", for example opcode, add opcode source line
+* Allow breakpoints in a not-frozen module
+* Improve print_location handling via deparsing (in older Python versions*
+* Tolerate missing keys in settings lookup.
+* Temporary file name is now based on some of the deparsed text (when we can deparse)
+
 1.3.0 2024-11-13
 ================
 
@@ -258,7 +274,7 @@ Largely administrative changes
 0.8.3 2018-01-21
 ================
 
-User incompatibilty alert!
+User incompatibility alert!
 
 We have redone location, breakpoint, and list-range parsing.
 
