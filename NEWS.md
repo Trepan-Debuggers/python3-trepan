@@ -1,4 +1,4 @@
-1.3.1 2025-01-15
+1.3.1 2025-01-16
 ================
 
 * Revise breakpoint handling; Breakpoints now use code objects, not (possibly ambiguous) function names
