@@ -1,23 +1,23 @@
-1.3.1 2025-01-15
+1.3.1 2025-01-16
 ================
 
 * Revise breakpoint handling; Breakpoints now use code objects, not (possibly ambiguous) function names
 * Fix bugs in detecting when stopped at a `def` and in `nextlineno()`
 * Better information when current frame is inside a builtin `eval` or `exec` call
 * Fix some of the many disasm spec problems.
-* Go over "eval", "skip", "step", "jump" and "autoeval" documentation
+* Go over `eval`, `skip`, `step`, `jump`, and `autoeval` documentation
 * Guard against invalid frame indexing in backtrace
 * Suggest import when a function is not found in getting a location
-* Improve "info frame", for example opcode, add opcode source line
+* Improve "info frame", for example, opcode, add opcode source line
 * Allow breakpoints in a not-frozen module
-* Improve print_location handling via deparsing (in older Python versions*
+* Improve `print_location()` handling via deparsing (in older Python versions)
 * Tolerate missing keys in settings lookup.
 * Temporary file name is now based on some of the deparsed text (when we can deparse)
 
 1.3.0 2024-11-13
 ================
 
-* Less overhead and faster execution of "continue" and "next" (when
+* Less overhead and faster execution of `continue` and `next`(when
   possible) using improvements recently made to pytracer.
 * Support prompt-toolkit as an input interface. This is now the default
   on newer Pythons. Command completion is less featurefull than GNU readline
