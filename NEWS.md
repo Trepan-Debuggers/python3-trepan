@@ -5,12 +5,12 @@
 * Fix bugs in detecting when stopped at a `def` and in `nextlineno()`
 * Better information when current frame is inside a builtin `eval` or `exec` call
 * Fix some of the many disasm spec problems.
-* Go over `eval`, `skip`, `step`, `jump` and `autoeval` documentation
+* Go over `eval`, `skip`, `step`, `jump`, and `autoeval` documentation
 * Guard against invalid frame indexing in backtrace
 * Suggest import when a function is not found in getting a location
-* Improve "info frame", for example opcode, add opcode source line
+* Improve "info frame", for example, opcode, add opcode source line
 * Allow breakpoints in a not-frozen module
-* Improve print_location handling via deparsing (in older Python versions)
+* Improve `print_location()` handling via deparsing (in older Python versions)
 * Tolerate missing keys in settings lookup.
 * Temporary file name is now based on some of the deparsed text (when we can deparse)
 
