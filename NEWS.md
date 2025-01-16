@@ -1,4 +1,5 @@
-1.3.1 2025-01-16
+1.3.1 2025-01-15
+================
 
 * Revise breakpoint handling; Breakpoints now use code objects, not (possibly ambiguous) function names
 * Fix bugs in detecting when stopped at a `def` and in `nextlineno()`
