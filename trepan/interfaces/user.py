@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2009-2010, 2013-2015,
-#   2017-2018, 2020, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   2017-2018, 2020, 2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -53,6 +53,9 @@ try:
 except ImportError:
     def write_history_file(histfile: str):
         return
+    have_complete = False
+else:
+    have_complete = False
 
 class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
@@ -70,7 +73,7 @@ class UserInterface(TrepanInterface):
         self.histfile = None
 
         if self.input.use_history():
-            self.complete = self.user_opts["complete"]
+            self.complete = self.user_opts["complete"] and have_complete
             if self.complete:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
