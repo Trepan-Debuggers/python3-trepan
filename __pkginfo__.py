@@ -87,6 +87,7 @@ install_requires = [
     "pyficache >= 2.3.0",
     "xdis >= 6.1.1,<6.2.0",
     "pygments %s" % pygments_version,
+    "pygments_zenburn",
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
     "term-background >= 1.0.1",
