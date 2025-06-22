@@ -31,6 +31,7 @@ environment settings with the :ref:`show <show>` command.
    set/confirm
    set/dbg_trepan
    set/different
+   set/disasmflavor
    set/events
    set/flush
    set/highlight

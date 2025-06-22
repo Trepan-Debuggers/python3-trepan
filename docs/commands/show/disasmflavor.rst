@@ -26,7 +26,8 @@ Show disasmflavor Example:
 ++++++++++++++++++++++++++
 
 ::
-    show disasmflavor
+
+   set disasmflavor
 
 .. seealso::
 
