@@ -13,8 +13,8 @@ use `set style none`.
 To list the available pygments styles inside the debugger, omit the style name.
 
 
-Examples:
-+++++++++
+Set Style Examples:
++++++++++++++++++++
 
 ::
 

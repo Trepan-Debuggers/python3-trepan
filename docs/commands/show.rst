@@ -18,7 +18,6 @@ Show
 
    show/aliases
    show/args
-   show/asmfmt
    show/autoeval
    show/autolist
    show/autopc
@@ -28,6 +27,7 @@ Show
    show/confirm
    show/dbg_trepan
    show/different
+   show/disasmflavor
    show/events
    show/flush
    show/highlight

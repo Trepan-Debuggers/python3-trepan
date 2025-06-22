@@ -90,7 +90,7 @@ class DisassembleCommand(DebuggerCommand):
     disassemble that.
 
     Assembly output format is be controlled by the setting of `set
-    asmfmt`. Output formats are those described the `xdis` `pydisasm`
+    disasmflavor`. Output formats are those described the `xdis` `pydisasm`
     disassembler.
 
 
@@ -110,7 +110,7 @@ class DisassembleCommand(DebuggerCommand):
     See also:
     ---------
 
-    `help syntax arange`, `deparse`, `list`, `info pc`, `set asmfmt`.
+    `help syntax arange`, `deparse`, `list`, `info pc`, `set disasmflavor`.
 
     """
 
@@ -132,7 +132,7 @@ class DisassembleCommand(DebuggerCommand):
             "start_offset": None,
             "end_offset": None,
             "relative_pos": False,
-            "asm_format": self.settings["asmfmt"],
+            "asm_format": self.settings["disasmflavor"],
         }
 
         curframe = proc.curframe

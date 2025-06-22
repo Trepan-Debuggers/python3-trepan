@@ -48,7 +48,7 @@ DEBUGGER_SETTINGS = {
     "annotate": 0,
 
     # Format style to use in showing disassembly
-    "asmfmt": "extended",
+    "disasmflavor": "extended",
 
     # Eval as Python the unrecognized debugger commands?
     "autoeval": True,
