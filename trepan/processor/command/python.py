@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023-2024
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023-2025
 #  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -119,11 +119,11 @@ Use dbgr(*string*) to issue debugger command: *string*"""
         finally:
             sys.excepthook = old_sys_excepthook
 
+        interface = proc.intf[-1]
         # restore completion and our history if we can do so.
-        if hasattr(proc.intf[-1], "complete"):
+        if hasattr(interface, "complete") and interface.complete is not None:
             try:
                 from readline import parse_and_bind, set_completer
-
                 parse_and_bind("tab: complete")
                 set_completer(proc.intf[-1].complete)
             except ImportError:
@@ -182,8 +182,11 @@ def runcode(obj, code_obj):
     caller should be prepared to deal with it.
 
     """
+    # In 3.13 FrameProxy was introduced. Not sure
+    my_locals = dict(obj.locals) if not isinstance(obj.locals, dict) else obj.locals
+    my_globals = dict(obj.globals) if not isinstance(obj.globals, dict) else obj.globals
     try:
-        exec(code_obj, obj.locals, obj.globals)
+        exec(code_obj, my_locals, my_globals)
     except SystemExit:
         raise
     except Exception:
