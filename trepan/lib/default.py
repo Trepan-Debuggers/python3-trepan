@@ -35,7 +35,6 @@ if pygments_style_from_environment is not None:
     default_style = pygments_style_from_environment
 else:
     default_style = "zenburn" if is_dark_bg else "tango"
->>>>>>> python-3.6-to-3.10
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to

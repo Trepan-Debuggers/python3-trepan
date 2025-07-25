@@ -280,7 +280,7 @@ class CommandProcessor(Processor):
             pyficache.file2file_remap = {}
 
     # To be overridden in derived debuggers
-    def defaultFile(self) -> Optional[str]:
+    def defaultFile(self):
         """Produce a reasonable default."""
         if self.curframe is None:
             return None

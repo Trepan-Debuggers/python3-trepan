@@ -1,7 +1,6 @@
 """Unit test for trepan.processor.subcmd"""
 import unittest
 
-from typing import Tuple
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.command.mock import MockDebugger
 from trepan.processor.subcmd import Subcmd
@@ -28,7 +27,7 @@ class MyCommand(DebuggerCommand):
 class MySubcommand:
     """Doc string for test testing subcommand"""
 
-    aliases: Tuple = tuple()
+    aliases = tuple()
 
     def __init__(self):
         self.name = "testing"

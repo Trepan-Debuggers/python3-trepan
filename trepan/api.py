@@ -238,7 +238,7 @@ def run_eval(
     start_opts = None,
     globals_ = None,
     locals_ = None,
-    tb_fn = None,
+    _ = None,
 ):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
@@ -267,7 +267,7 @@ def run_eval(
 
 def run_call(
     func, *args, debug_opts = DEBUGGER_SETTINGS, _ = None,
-    **kwds,
+    **kwds
 ):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after

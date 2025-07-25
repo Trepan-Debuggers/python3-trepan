@@ -238,13 +238,7 @@ class Trepan:
             self.core.stop()
         return res
 
-    def run_eval(
-        self,
-        expr: Union[str, types.CodeType],
-        start_opts=None,
-        globals_=None,
-        locals_=None,
-    ):
+    def run_eval(self, expr, start_opts=None, globals_=None, locals_=None):
         """Run debugger on string `expr' which will executed via the
         built-in Python function: eval; `globals_' and `locals_' are
         the dictionaries to use for local and global variables. If

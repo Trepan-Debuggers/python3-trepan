@@ -26,7 +26,6 @@ import re
 
 import columnize
 
-from typing import Tuple
 from pygments.console import colorize
 
 from trepan.lib.complete import complete_token

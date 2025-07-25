@@ -71,7 +71,7 @@ class TempBreakCommand(DebuggerCommand):
             set_break(self, func, filename, lineno, condition, True, args,
                       offset=offset)
         else:
-            self.errmsg(f"Did not find stopping spot for: {' '.join(args[1:])}")
+            self.errmsg("Did not find stopping spot for: %s" % (' '.join(args[1:])))
         return
 
 

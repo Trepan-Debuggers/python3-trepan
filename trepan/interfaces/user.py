@@ -55,6 +55,7 @@ except ImportError:
     def parse_and_bind(histfile: str):
         return
 
+    read_history_file = set_completer = parse_and_bind
 
     def set_completer(_):
         return
@@ -62,9 +63,7 @@ except ImportError:
 
     def write_history_file(_: str):
         return
-    def parse_and_bind(_: str):
-        raise RuntimeError(f"Called {__name__}() when it doesn't exist")
-    read_history_file = set_completer = parse_and_bind
+
     have_complete = False
 else:
     have_complete = False
