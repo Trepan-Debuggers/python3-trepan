@@ -22,7 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         # Until the next xdis release
-        pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
+        # pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
         # Until the next pytracer release
         # pip install git+https://github.com/rocky/pytracer#egg=tracer
         # Until the next pyficache release
