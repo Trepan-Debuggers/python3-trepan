@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2009-2010, 2013-2015,
-#   2017-2018, 2020, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   2017-2018, 2020, 2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -51,8 +51,14 @@ try:
         write_history_file,
     )
 except ImportError:
-    def write_history_file(histfile: str):
+    def write_history_file(_: str):
         return
+    def parse_and_bind(_: str):
+        raise RuntimeError(f"Called {__name__}() when it doesn't exist")
+    read_history_file = set_completer = parse_and_bind
+    have_complete = False
+else:
+    have_complete = False
 
 class UserInterface(TrepanInterface):
     """Interface when communicating with the user in the same
@@ -70,8 +76,8 @@ class UserInterface(TrepanInterface):
         self.histfile = None
 
         if self.input.use_history():
-            self.complete = self.user_opts["complete"]
-            if self.complete:
+            self.complete = self.user_opts["complete"] if have_complete else None
+            if self.complete is not None:
                 parse_and_bind("tab: complete")
                 set_completer(self.complete)
                 pass
@@ -93,7 +99,8 @@ class UserInterface(TrepanInterface):
         return
 
     def user_write_history_file(self):
-        write_history_file(self.histfile)
+        if self.histfile is not None:
+            write_history_file(self.histfile)
 
     def close(self):
         """Closes both input and output"""
@@ -163,7 +170,7 @@ class UserInterface(TrepanInterface):
         # Do something with history?
         return line
 
-    def readline(self, prompt=""):
+    def readline(self, prompt="", add_to_history=True):
         if not self.readline == "prompt_toolkit":
             self.output.flush()
             pass

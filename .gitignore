@@ -6,9 +6,11 @@
 .python-version
 /*.egg
 /.cache
+/.config
 /.coverage
 /.eggs
 /.tox
+/.venv38
 /ChangeLog
 /build
 /dist

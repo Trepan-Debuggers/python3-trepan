@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2024-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -37,12 +37,11 @@ def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
     # GNU Readline inputrc $include's paths are relative to itself,
     # so chdir to its directory before reading the file.
     parent_dir = pathlib.Path(__file__).parent.absolute()
-    with parent_dir:
-        inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-        try:
-            read_init_file_fn(str(parent_dir / "data" / inputrc))
-        except Exception:
-            pass
+    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+    try:
+        read_init_file_fn(str(parent_dir / "data" / inputrc))
+    except Exception:
+        pass
 
 
 def read_init_file(path: str):

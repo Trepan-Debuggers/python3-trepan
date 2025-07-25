@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2024 Rocky
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2025 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -37,12 +37,15 @@ if necessary, first.
 import os
 import sys
 from typing import Callable, Optional
+import traceback
 
 from trepan.debugger import Trepan, debugger_obj
 from trepan.interfaces.server import ServerInterface
+from trepan.lib.default import DEBUGGER_SETTINGS
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
 DEFAULT_DEBUG_PORT = 1955
+
 
 def debug(
     dbg_opts={},
@@ -194,11 +197,20 @@ def debug_for_remote_access():
     """Enter the debugger in a mode that allows connection to it
     outside of the process being debugged.
     """
-    connection_opts = {'IO': 'TCP', 'PORT': os.getenv('TREPAN3K_TCP_PORT', DEFAULT_DEBUG_PORT)}
+    connection_opts = {
+        "IO": "TCP",
+        "PORT": os.getenv("TREPAN3K_TCP_PORT", DEFAULT_DEBUG_PORT),
+    }
     intf = ServerInterface(connection_opts=connection_opts)
-    dbg_opts = {'interface': intf}
-    print(f'Starting {connection_opts["IO"]} server listening on {connection_opts["PORT"]}.', file=sys.stderr)
-    print(f'Use `python3 -m trepan.client --port {connection_opts["PORT"]}` to enter debugger.', file=sys.stderr)
+    dbg_opts = {"interface": intf}
+    print(
+        f'Starting {connection_opts["IO"]} server listening on {connection_opts["PORT"]}.',
+        file=sys.stderr,
+    )
+    print(
+        f'Use `python3 -m trepan.client --port {connection_opts["PORT"]}` to enter debugger.',
+        file=sys.stderr,
+    )
     debug(dbg_opts=dbg_opts, step_ignore=0, level=1)
 
 
@@ -210,7 +222,7 @@ def debugger_on_post_mortem():
 
 def run_eval(
     expression,
-    debug_opts: Optional[dict] = None,
+    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
     start_opts: Optional[dict] = None,
     globals_: Optional[dict] = None,
     locals_: Optional[dict] = None,
@@ -235,7 +247,7 @@ def run_eval(
         dbg.core.trace_hook_suspend = True
         if start_opts and "tb_fn" in start_opts:
             tb_fn = start_opts["tb_fn"]
-        uncaught_exception(dbg, tb_fn)
+        traceback.print_exc()
     finally:
         dbg.core.trace_hook_suspend = False
     return
@@ -244,8 +256,8 @@ def run_eval(
 def run_call(
     func: Callable,
     *args,
-    debug_opts: Optional[dict] = None,
-    start_opts: Optional[dict] = None,
+    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
+    _: Optional[dict] = None,
     **kwds,
 ):
     """Call the function (a function or method object, not a string)
@@ -265,7 +277,13 @@ def run_call(
     return
 
 
-def run_exec(statement, debug_opts=None, start_opts=None, globals_=None, locals_=None):
+def run_exec(
+    statement,
+    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
+    start_opts=None,
+    globals_=None,
+    locals_=None,
+):
     """Execute the statement (given as a string) under debugger
     control starting with the statement subsequent to the place that
     this run_call appears in your program.
