@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021, 2023-2024
+#  Copyright (C) 2009-2010, 2012-2013, 2015, 2021, 2023-2025
 #  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -59,6 +59,11 @@ class DebuggerCommand:
         # the note below on these latter 3 methods.)
         #
         self.core = proc.core
+
+        # "contine_running" is used by step/next/contine to signal breaking out of
+        # the command evaluation loop.
+        self.continue_running = False
+
         self.debugger = proc.debugger
         self.settings = self.debugger.settings
         return

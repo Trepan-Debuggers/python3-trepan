@@ -13,8 +13,8 @@ that would otherwise be ambiguous. For example, by default we make ``s``
 be an alias of ``step`` to force it to be used. Without the alias, ``s``
 might be ``step``, ``show``, or ``set`` among others
 
-Example:
-++++++++
+Alias Examples:
++++++++++++++++
 
 ::
 

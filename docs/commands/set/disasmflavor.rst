@@ -1,10 +1,10 @@
-.. index:: set; asmfmt
-.. _set_asmfmt:
+.. index:: set; disasmflavor
+.. _set_disasmflavor:
 
-Set Asmfmt
------------
+Set DisasmFlavor
+----------------
 
-**set asmfmt** {**classic** | **extended** | **bytes** | **extended-bytes**}
+**set disasmflavor** {**classic** | **extended** | **bytes** | **extended-bytes**}
 
 Set the style of format to use in disassembly:
 
@@ -18,11 +18,11 @@ Set the style of format to use in disassembly:
     like classic but we show the instruction bytes after the offset
 
 ``extended-bytes``
-     ``bytes`` format along with *extended* format
+   ``bytes`` format along with *extended* format
 
 
-Frame Examples:
-+++++++++++++++
+Set disasmflavor Examples:
+++++++++++++++++++++++++++
 
 ::
     set asmfmt extended # this is the default
@@ -30,4 +30,4 @@ Frame Examples:
 
 .. seealso::
 
-   :ref:`show asmfmt <show_asmfmt>`
+   :ref:`show disasmflavor <show_disasmflavor>`

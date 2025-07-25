@@ -21,16 +21,17 @@ environment settings with the :ref:`show <show>` command.
 .. toctree::
    :maxdepth: 1
 
-   set/asmfmt
    set/autoeval
    set/autolist
    set/autopc
    set/autopython
    set/basename
+   set/disasmflavor
    set/cmdtrace
    set/confirm
    set/dbg_trepan
    set/different
+   set/disasmflavor
    set/events
    set/flush
    set/highlight
