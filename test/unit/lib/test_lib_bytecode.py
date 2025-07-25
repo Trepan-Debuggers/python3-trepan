@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Unit test for trepan.lib.bytecode"""
 import inspect
+import platform
+import pytest
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
@@ -15,6 +17,8 @@ def test_contains_make_function():
     return
 
 
+@pytest.mark.skipif(platform.python_implementation() == "GraalVM",
+                    reason="op_at_frame() doesn't work for Graal (JVM) bytecode")
 def test_op_at_frame():
     frame = inspect.currentframe()
 
