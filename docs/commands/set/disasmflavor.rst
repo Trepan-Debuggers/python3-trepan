@@ -1,10 +1,10 @@
-.. index:: set; asmfmt
-.. _set_asmfmt:
+.. index:: set; disasmflavor
+.. _set_disasmflavor:
 
-Set Asmfmt
------------
+Set DisasmFlavor
+----------------
 
-**set asmfmt** {**classic** | **extended** | **bytes** | **extended-bytes**}
+**set disasmflavor** {**classic** | **extended** | **bytes** | **extended-bytes**}
 
 Set the style of format to use in disassembly:
 
@@ -21,7 +21,8 @@ Set the style of format to use in disassembly:
      ``bytes`` format along with ``extended`` format
 
 
-Frame Examples:
+Set disasmflavor Examples:
+++++++++++++++++++++++++++
 
 .. code-block::
 
@@ -30,4 +31,4 @@ Frame Examples:
 
 .. seealso::
 
-   :ref:`show asmfmt <show_asmfmt>`
+   :ref:`show disasmflavor <show_disasmflavor>`

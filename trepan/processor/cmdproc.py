@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2021, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2021, 2023-2025 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -39,8 +39,8 @@ import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
 from trepan.interfaces.script import ScriptInterface
 from trepan.lib.bytecode import is_class_def, is_def_stmt
-from trepan.processor.print import print_location
 from trepan.processor.complete_rl import completer
+from trepan.processor.print import print_location
 from trepan.vprocessor import Processor
 
 
@@ -158,9 +158,6 @@ class CommandProcessor(Processor):
         super().__init__(core_obj)
 
         self.aliases = {}
-        # "contine_running" is used by step/next/contine to signal breaking out of
-        # the command evaluation loop.
-        self.continue_running = False
 
         # "fast_continue" is used if we should try to see if we can
         # remove the debugger callback hook altogether. It is used by
@@ -242,7 +239,9 @@ class CommandProcessor(Processor):
 
             for cmd, cmd_obj in self.commands.items():
                 if hasattr(cmd_obj, "cmds") and hasattr(cmd_obj.cmds, "cmdlist"):
-                    trepan3k_completer.add_completions(cmd, sorted(cmd_obj.cmds.cmdlist))
+                    trepan3k_completer.add_completions(
+                        cmd, sorted(cmd_obj.cmds.cmdlist)
+                    )
                     for subcmd_name, subcmd_obj in cmd_obj.cmds.subcmds.items():
                         subcmd_key = "%s %s" % (cmd, subcmd_name)
                         if hasattr(subcmd_obj, "completion_choices"):
@@ -268,7 +267,7 @@ class CommandProcessor(Processor):
             maxwidth = self.debugger.settings["width"]
         return self._repr.repr(str)[:maxwidth]
 
-    def add_preloop_hook(self, hook, position=-1, nodups=True):
+    def add_preloop_hook(self, hook, position=-1, _=True):
         if hook in self.preloop_hooks:
             return False
         self.preloop_hooks.insert(position, hook)
@@ -281,8 +280,10 @@ class CommandProcessor(Processor):
             pyficache.file2file_remap = {}
 
     # To be overridden in derived debuggers
-    def defaultFile(self):
+    def defaultFile(self) -> Optional[str]:
         """Produce a reasonable default."""
+        if self.curframe is None:
+            return None
         filename = self.curframe.f_code.co_filename
         # Consider using is_exec_stmt(). I just don't understand
         # the conditions under which the below test is true.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2010, 2013, 2015, 2018, 2023 Rocky Bernstein
+#   Copyright (C) 2010, 2013, 2015, 2018, 2023, 2025 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ class TrepanInterface:
         it's okay. `prompt' is printed; user response is returned."""
         raise NotImplementedError(NotImplementedMessage)
 
-    def errmsg(self, str, prefix="** "):
+    def errmsg(self, msg, prefix="** "):
         """Common routine for reporting debugger error messages."""
         raise NotImplementedError(NotImplementedMessage)
 
@@ -74,10 +74,10 @@ class TrepanInterface:
         self.output.write(msg)
         return
 
-    def read_command(self, prompt):
+    def read_command(self, prompt: str):
         raise NotImplementedError(NotImplementedMessage)
 
-    def readline(self, prompt, add_to_history=True):
+    def readline(self, prompt: str, add_to_history=True):
         raise NotImplementedError(NotImplementedMessage)
 
     pass

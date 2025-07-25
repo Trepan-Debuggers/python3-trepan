@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2009-2010, 2012-2013, 2015-2016, 2020,
-#   2023-2024 Rocky Bernstein
+#   2023-2025 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ and storing it as a list of known debugger commands.
 import re
 
 import columnize
+
+from typing import Tuple
 from pygments.console import colorize
 
 from trepan.lib.complete import complete_token
@@ -122,11 +124,11 @@ class DebuggerSubcommand:
         """Convenience short-hand for self.proc.rst_msg(text)"""
         return self.proc.rst_msg(text)
 
-    def run(self):
+    def run(self, *args):
         """The method that implements the debugger command.
         Help on the command comes from the docstring of this method.
         """
-        raise NotImplementedError(NotImplementedMessage)
+        raise NotImplementedError(NotImplementedMessage, *args)
 
     def section(self, message, opts={}):
         if "plain" != self.settings["highlight"]:

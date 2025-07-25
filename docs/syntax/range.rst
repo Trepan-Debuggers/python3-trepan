@@ -20,8 +20,8 @@ offset.
 A number is just a decimal number. An offset is a number prefaced with "+" and
 indicates the number to increment the line number found in *first*.
 
-Examples
---------
+List Range Examples
+--------------------
 
 ::
 

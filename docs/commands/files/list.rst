@@ -23,8 +23,8 @@ in addition you can also use:
   - a '-' for the lines before the last list
   - a '+' for the lines after the last list
 
-Examples:
-+++++++++
+List Examples:
+++++++++++++++
 
 ::
 

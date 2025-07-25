@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020, 2021, 2024 Rocky Bernstein
+#   Copyright (C) 2020, 2021, 2024, 2025 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@ from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.lib.complete import complete_token
 
 
-class SetAsmFmt(DebuggerSubcommand):
-    """**set asmfmt** {**classic** | **extended** | **bytes** | **extended-bytes**}
+class SetDisasmFlavor(DebuggerSubcommand):
+    """**set disasmflavor** {**classic** | **extended** | **bytes** | **extended-bytes**}
 
-    The style of format to use in disassembly:
+    The style of style to use in disassembly:
 
            classic:  fields: line, marker offset, opcode operand
            extended: above, but we try harder to get operand information from previous instructions
@@ -33,29 +33,30 @@ class SetAsmFmt(DebuggerSubcommand):
     Examples:
     --------
 
-        set asmfmt extended # this is the default
-        set asmfmt classic  # no highlight
+        set disasmflavor extended # this is the default
+        set disasmflavor classic  # no highlight
 
     See also:
     ---------
-    `show asmfmt`"""
+    `show disasmflavor`"""
 
     # Note: the "completion_choices" name is special and used by prompt_toolkit's completion
     completion_choices = ["classic", "extended", "extended-bytes", "bytes"]
 
+    aliases = ("disassembly-flavor",)  # This is not quite right.
     in_list = True
     max_args = 1
-    min_abbrev = len("asmf")
+    min_abbrev = len("disas")
     min_args = 0
-    short_help = "Set disassembly style"
+    short_help = "Set disassembly flavor"
 
     def complete(self, prefix):
-        return complete_token(SetAsmFmt.completion_choices, prefix)
+        return complete_token(SetDisasmFlavor.completion_choices, prefix)
 
     def get_format_type(self, arg):
         if not arg:
             return "extended"
-        if arg in SetAsmFmt.completion_choices:
+        if arg in SetDisasmFlavor.completion_choices:
             return arg
         else:
             self.errmsg(
@@ -67,7 +68,7 @@ class SetAsmFmt(DebuggerSubcommand):
     def run(self, args):
         if len(args) == 0:
             self.section("disasembly style types: ")
-            self.msg(self.columnize_commands(SetAsmFmt.completion_choices))
+            self.msg(self.columnize_commands(SetDisasmFlavor.completion_choices))
             return
         format_type = self.get_format_type(args[0])
         if not format_type:
@@ -83,5 +84,5 @@ class SetAsmFmt(DebuggerSubcommand):
 if __name__ == "__main__":
     from trepan.processor.command.set_subcmd.__demo_helper__ import demo_run
 
-    demo_run(SetAsmFmt, ["classic"])
+    demo_run(SetDisasmFlavor, ["classic"])
     pass

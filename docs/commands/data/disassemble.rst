@@ -47,4 +47,4 @@ Disassmble Examples
 
 .. seealso::
 
- :ref:`help syntax arange <syntax_arange>` for the specification of an address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`, and :ref:`set asmfmt <set_asmfmt>`.
+ :ref:`help syntax arange <syntax_arange>` for the specification of an address range :ref:`deparse <deparse>`, :ref:`list <list>`, :ref:`info pc <info_pc>`, and :ref:`set asmfmt <set_disasmflavor>`.

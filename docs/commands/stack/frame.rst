@@ -21,8 +21,8 @@ parsing limitations, the position expression has to be seen as a single
 blank-delimited parameter. That is, the expression `(5*3)-1` is okay
 while `(5 * 3) - 1)` isn't.
 
-Examples:
-+++++++++
+Frame Examples:
++++++++++++++++
 
 ::
 

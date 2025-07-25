@@ -22,8 +22,8 @@ evaluation or source-line listing.
    -h | --help    - give this help
 
 
-Examples:
-+++++++++
+Backtrace Examples:
++++++++++++++++++++
 
 ::
 

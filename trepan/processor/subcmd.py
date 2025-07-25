@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2006-2010, 2013-2015, 2023 Rocky Bernstein
+#   Copyright (C) 2006-2010, 2013-2015, 2023, 2025 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,12 +20,22 @@
 class Subcmd:
     """Gdb-like subcommand handling"""
 
-    def __init__(self, name, cmd_obj):
+    def __init__(self, name, cmd_obj, aliases=[]):
         self.name = name
         self.cmd_obj = cmd_obj
         self.subcmds = {}
         self.cmdlist = []
+        self.aliases = aliases
+
+        # These are filled in later
+        self.cmdproc = None
         return
+
+    def msg(self, mess:str):
+        """
+        Print out message.
+        """
+        print(mess)
 
     def lookup(self, subcmd_prefix):
         """Find subcmd in self.subcmds"""
@@ -68,6 +78,9 @@ class Subcmd:
         so we might not want to show that.
         """
         subcmd_name = subcmd_cb.name
+
+        for alias in subcmd_cb.aliases:
+            self.cmd_obj.proc.aliases[alias] = subcmd_name
         self.subcmds[subcmd_name] = subcmd_cb
 
         # We keep a list of subcommands to assist command completion
@@ -159,7 +172,7 @@ if __name__ == "__main__":
         min_abbrev = 4
         in_list = True
 
-        def run(self, args):
+        def run(self, _):
             print("test testing run")
 
         pass

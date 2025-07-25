@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017-2018, 2020, 2024 Rocky Bernstein
+#   Copyright (C) 2015, 2017-2018, 2020, 2024-2025 Rocky Bernstein
 #
 
+import os
 from pygments.styles import STYLE_MAP
 from trepan.lib.complete import complete_token
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
@@ -51,6 +52,8 @@ class SetStyle(DebuggerSubcommand):
             return
 
         self.debugger.settings[self.name] = args[0]
+        # Set an environment variable so subshells pick up this setting.
+        os.environ["TREPAN_PYGMENTS_STYLE"] = args[0]
         return
 
     pass
