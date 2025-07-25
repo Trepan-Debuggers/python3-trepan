@@ -15,7 +15,7 @@ description = "GDB-like Python Debugger in the Trepan family"
 dependencies = [
     "columnize >= 0.3.10",
     "pyficache > 2.3.5",
-    "xdis >= 6.1.1,<6.2.0",
+    "xdis >= 6.1.5,<6.2.0",
     "Pygments >= 2.2.0",
     "spark_parser >= 1.8.9, <1.9.2",
     "tracer > 1.9.0",
