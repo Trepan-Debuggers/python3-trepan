@@ -21,11 +21,6 @@ Set the style of format to use in disassembly:
      ``bytes`` format along with ``extended`` format
 
 
-Frame Examples:
-=======
-   ``bytes`` format along with *extended* format
-
-
 Set disasmflavor Examples:
 ++++++++++++++++++++++++++
 
