@@ -10,7 +10,7 @@ Abstract
 This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
 the ground up. I was disappointed with the flakiness, imprecision, and
 poor quality of coding, modularity, and level of documentation when I
-first looked at *pdb*. 
+first looked at *pdb*.
 
 *pdb* has gotten better since then. But a complete debugger is way more complex than what you'd expect from
 a Standard Python module; it requires a larger set of supporting packages than is found in the Standard Python library.
@@ -108,7 +108,7 @@ GNU Readline is not just a simple static list but varies depending on
 the context. For example, for frame-changing commands that take
 optional numbers, the list of *valid numbers* is considered.
 
-In time (and perhaps with some volunteers), ``prompt_toolkit will be as good as GNU Readline completion.
+In time (and perhaps with some volunteers), ``prompt_toolkit`` will be as good as GNU Readline completion.
 
 Terminal Handling
 -----------------
