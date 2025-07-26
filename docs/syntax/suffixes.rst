@@ -1,12 +1,12 @@
 .. _syntax_suffixes:
 
-Command suffixes which have special meaning
+Command suffixes that have special meaning
 ===========================================
 
 Some commands like `step`, or `list` do different things when an
-alias to the command ends in a particular suffix like `>`.
+An alias to the command ends in a particular suffix, such as`>`.
 
-Here are a list of commands and the special suffixes:
+Here is a list of commands and the special suffixes:
 
 =======   ======
 command   suffix

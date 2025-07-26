@@ -10,10 +10,10 @@ Abstract
 This is a gdb-like debugger for Python. It is a rewrite of *pdb* from
 the ground up. I was disappointed with the flakiness, imprecision, and
 poor quality of coding, modularity, and level of documentation when I
-first looked at *pdb*. (*pdb* has gotten better since then. But a full
-and complete debugger, is way more complex than what you'd expect from
-a Standard Python module; it requires a larger set of supporting
-packages too than is found in the Standard Python library).
+first looked at *pdb*. 
+
+*pdb* has gotten better since then. But a complete debugger is way more complex than what you'd expect from
+a Standard Python module; it requires a larger set of supporting packages than is found in the Standard Python library.
 
 ``trepan3k`` is both a high-level debugger as well as a lower-level
 bytecode debugger inspector. The code understands a lot about byte
@@ -45,12 +45,12 @@ More Exact location information
 -------------------------------
 
 Python reports line information on the granularity of a line. For
-Python versions up to 3.8, To get more precise information, we can
-(de)parse into Python the byte code around a bytecode offset such as
+Python versions up to 3.8. To get more precise information, we can
+(de)parse into Python the bytecode around a bytecode offset, such as
 the place you are stopped at.
 
 So far as I know, there is no other debugger that decompiles code at
-runtime to narrow position down to the specific bytecode
+runtime to narrow the position down to the specific bytecode
 instruction.
 
 See the deparse_ command for details on getting this kind of
@@ -58,12 +58,12 @@ information.
 
 The problem with deparsing after 3.8 is that there is no decompiler
 that can deparse code and give associations to bytecode
-instructions. I am slowly working on that though.
+instructions. I am slowly working on that, though.
 
-We use information in Python's code object line number table in byte
+We use information in Python's code object line number table in bytes
 to understand which lines are breakpointable, and in which module or
-function the line appears in. Use info-line_ to see this
-information. Most if not all other debuggers do go to such lengths,
+function the line appears. Use info-line_ to see this
+information. Most, if not all, other debuggers do go to such lengths,
 and as a result, it is possible to request stopping on a line number
 that can never occur without complaint.
 
@@ -75,13 +75,7 @@ number.
 Debugging Python bytecode (no source available)
 -----------------------------------------------
 
-You can pass the debugger the name of Python bytecode and many times,
-the debugger will merrily proceed.  This debugger tries very hard to
-find the source code. Either by using the current executable search
-path (e.g. ``PATH``) or for some by looking inside the bytecode for a
-filename in the main code object (``co_filename``) and applying that
-with a search path that takes into account the directory where the
-bytecode lives.
+You can pass the debugger the name of Python bytecode, and many times, the debugger will merrily proceed.  This debugger tries very hard to find the source code. Either by using the current executable search path (e.g. ``PATH``) or for some by looking inside the bytecode for a filename in the main code object (``co_filename``) and applying that with a search path that takes into account the directory where the bytecode lives.
 
 Failing to find source code this way, and in other situations where
 source code can't be found, the debugger will decompile the bytecode
@@ -96,7 +90,7 @@ Source-code Syntax Colorization
 -------------------------------
 
 Terminal source code is colorized via pygments_. And with that, you
-can set the pygments color style, e.g. "colorful", "paraiso-dark". See
+can set the pygments color style, e.g., "colorful", "paraiso-dark". See
 set-style_ . Furthermore, we make use of terminal bold
 and emphasized text in debugger output and help text. Of course, you
 can also turn this off. You can use your own pygments_style_, provided
@@ -114,13 +108,12 @@ GNU Readline is not just a simple static list but varies depending on
 the context. For example, for frame-changing commands that take
 optional numbers, the list of *valid numbers* is considered.
 
-In time (and perhaps with some volunteers), ``prompt_toolkit``
-completion will be as good as GNU Readline completion.
+In time (and perhaps with some volunteers), ``prompt_toolkit will be as good as GNU Readline completion.
 
 Terminal Handling
 -----------------
 
-We can adjust debugger output depending on the line width of your
+We can adjust the debugger output depending on the line width of your
 terminal. If it changes, or you want to adjust it, see set-width_.
 
 Signal Handling
@@ -134,7 +127,7 @@ Better Support for Thread Debugging
 ------------------------------------
 
 When you are stopped inside a thread, the thread name is shown to make
-this fact more clear and you can see and switch between frames in
+this fact clearer, and you can see and switch between frames in
 different threads. See frame_ for more information.
 
 And following *gdb*, you can list the threads too. See info-threads_ for more information.
@@ -151,9 +144,8 @@ that with ``eval?``. See eval_ for more information.
 Function Breakpoints
 ---------------------
 
-Many Python debuggers only allow setting a breakpoint at a line event
-and functions are treated like line numbers. But functions and lines
-are fundamentally different. If I write::
+Many Python debuggers only allow setting a breakpoint at a line event, and functions are treated like line numbers. But functions and lines
+are fundamentally different. If I write:
 
      def five(): return 5
 
@@ -184,7 +176,7 @@ Step Granularity
 
 There are now ``step`` *event* and ``next`` *event* commands with
 aliases to ``s+``, ``s>``, and so on. The plus-suffixed commands force
-a different line on a subsequent stop, the dash-suffixed commands
+a different line on a subsequent stop; the dash-suffixed commands
 don't.  Suffixes ``>``, ``<``, and ``!`` specify ``call``, ``return``
 and ``exception`` events respectively. And without a suffix, you get
 the default; this is set by the ``set different`` command.
@@ -195,7 +187,7 @@ Event Filtering and Tracing
 By default, the debugger stops at every event: ``call``, ``return``,
 ``line``, ``exception``, ``c-call``, ``c-exception``. If you just want
 to stop at ``line`` events (which is largely what happens in
-*pdb*) you can. If however you just want to stop at calls and returns,
+*pdb*), you can. If, however, you just want to stop at calls and returns,
 that's possible too. Or pick some combination.
 
 In conjunction with handling *all* events by default, the event status is shown when stopped. The reason for stopping is also available via ``info program``.
@@ -203,22 +195,20 @@ In conjunction with handling *all* events by default, the event status is shown 
 Event Tracing of Calls and Returns
 ----------------------------------
 
-I'm not sure why this was not done before. Probably because of the
-lack of the ability to set and move by different granularities,
+I'm not sure why this was not done before. Probably because of the lack of the ability to set and move by different granularities,
 tracing calls and returns leads to too many uninteresting stops (such
-as at the same place you just were at). Also, stopping on function
-definitions probably also added to this tedium.
+as at the same place you just were). Also, stopping on function
+definitions probably added to this tedium.
 
-Because we're really handling return events, we can stop on the
+Because we're handling return events, we can stop on the
 return. This is a little more precise than *pdb*'s *retval* command.
 
-Debugger Macros via Python Lambda expressions
+Debugger Macros via Python Lambda Expressions
 ---------------------------------------------
 
-There are debugger macros.  In *gdb*, there is a *macro* debugger
-command to extend debugger commands.
+There are debugger macros.  In *gdb*, there is a *macro* debugger command to extend debugger commands.
 
-However, Python has its own rich programming language so it seems silly
+However, Python has its own rich programming language, so it seems silly
 to recreate the macro language that is in *gdb*. Simpler and more
 powerful is just to use Python here. A debugger macro here is just a
 lambda expression that returns a string or a list of strings. Each
@@ -226,50 +216,48 @@ string returned should be a debugger command.
 
 We also have *aliases* for the extremely simple situation where you
 want to give an alias to an existing debugger command. But beware:
-Some commands, like step_ inspect command suffixes and change their
+Some commands, like step_ inspect command suffixes, and change their
 behavior accordingly.
 
-We also provide extending the debugger either through additional Python packages.
+We also provide a means to extend the debugger through additional Python packages.
 
 Byte-code Instruction Introspection
 ------------------------------------
 
 We do more in the way of looking at the byte codes to give better information. Through this, we can provide:
 
-* a *skip* command. It is like the *jump* command, but you don't have
+* A *skip* command. It is like the *jump* command, but you don't have
   to deal with line numbers.
-* disassembly of code fragments. You can now disassemble relative to
+* Disassembly of code fragments. You can now disassemble relative to
   the stack frames you are currently stopped at.
 * Better interpretation of where you are when inside *execfile* or
-  *exec*. (But really though this is probably a Python compiler
+  *exec*. (But really, though this is probably a Python compiler
   misfeature.)
 * Check that breakpoints are set only where they make sense.
-* A more accurate determination of if you are at a function-defining
+* A more accurate determination of whether you are at a function-defining
   *def* or *class* statements (because the caller's instruction contains
   ``MAKE_FUNCTION`` or ``BUILD_CLASS``.)
 
 Even without "deparsing" mentioned above, the ability to disassemble
-where the PC is currently located (see info-pc_), by line
-number range or byte-offset range lets you tell exactly where you are
-and code is getting run.
+where the PC is currently located (see info-pc_), by line number range or byte-offset range lets you tell exactly where you are and code is getting run.
 
 Some Debugger Command Arguments can be Variables and Expressions
 ----------------------------------------------------------------
 
 Commands that take integer arguments like *up*, *list*, or
-*disassemble* allow you to use a Python expression which may include
+*disassemble* allow you to use a Python expression that may include
 local or global variables that evaluate to an integer. This
 eliminates the need in *gdb* for special "dollar" debugger
-variables. (Note however because of *shlex* parsing, expressions can't
+variables. (Note, however, because of *shlex* parsing, expressions can't
 have embedded blanks.)
 
 Out-of-Process Debugging
 ------------------------
 
-You can now debug your program in a different process or even a different computer on a different network!
+You can now debug your program in a different process or even on a different computer on a different network!
 
-Related, is flexible support for remapping path names from the file
-system, e.g. the filesystem seen inside a docker container or on a remote filesystem
+Related is flexible support for remapping path names from the file
+system, e.g., the filesystem seen inside a Docker container or on a remote filesystem
 with locally-installed files. See subst_ for more information.
 
 Egg, Wheel, and Tarballs
@@ -288,14 +276,14 @@ for debuggers in other projects. In particular, it is used as a module in trepan
 
 It is also used as a module inside an experimental open-source Wolfram Mathematica interpreter, Mathics3_.
 
-Using pytracer_, the Debugger plays nice with other trace hooks. You
+Using pytracer_, the Debugger plays nicely with other trace hooks. You
 can have several debugger objects.
 
 Many of the things listed below do not directly impact end-users, but
 it does eventually by way of more robust and featureful code. And
 keeping developers happy is a good thing.(TM)
 
-* Commands and subcommands are individual classes now, not methods in a class. This means they now have properties like the context in which they can be run, minimum abbreviation names, or alias names. To add a new command you basically add a file in a directory.
+* Commands and subcommands are individual classes now, not methods in a class. This means they now have properties like the context in which they can be run, minimum abbreviation names, or alias names. To add a new command, you add a file under the command directory.
 * I/O is its own layer. This simplifies interactive readline behavior from reading commands over a TCP socket.
 * An interface is its own layer. Local debugging, remote debugging, and running debugger commands from a file (``source``) are different interfaces. This means, for example, that we are able to give better error reporting if a debugger command file has an error.
 * There is an experimental Python-friendly interface for front-ends
