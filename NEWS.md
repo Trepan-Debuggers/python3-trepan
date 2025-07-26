@@ -1,7 +1,7 @@
 1.4.0 2025-07-26
 ================
 
-* Adjust for changes in the Python 3.13 for debugging, and breakage caused by Python 3.13 and its packaging system.
+* Adjust for changes Python 3.13 for debugging, and breakage caused by Python 3.13 and its packaging system.
 * Environment variable `TREPAN_PYGMENTS_STYLE` now influences the default style used. This is useful in when going from a shell using Pygments goes into the debugger. In particular, the Mathics3 debugger and ``mathicsscript`` work this way.
 * Add set/show disasmflavor to set disassembly style. "Disasmflavor" is the name `gdb` uses.
 * Improve `run_eval()` based on use.
