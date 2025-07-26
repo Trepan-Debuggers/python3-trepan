@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015, 2017 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015, 2017, 2025 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,10 @@ class TempBreakCommand(DebuggerCommand):
     def run(self, args):
         func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
         if not (func is None and filename is None):
-            set_break(self, func, filename, lineno, condition, True, args)
+            set_break(self, func, filename, lineno, condition, True, args,
+                      offset=offset)
+        else:
+            self.errmsg("Did not find stopping spot for: %s" % (' '.join(args[1:])))
         return
 
 

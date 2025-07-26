@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2024
+#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2025
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -98,10 +98,10 @@ class Trepan:
 
         # How are I/O for this debugger handled? This should
         # be set before calling DebuggerCore.
-        interface_opts = opts.get("interface_opts", {
-            "debugger_name": "trepan3k",
-            "readline": opts.get("readline")
-        })
+        interface_opts = opts.get(
+            "interface_opts",
+            {"debugger_name": "trepan3k", "readline": opts.get("readline")},
+        )
         if "complete" not in interface_opts:
             interface_opts["complete"] = completer
 
@@ -249,6 +249,12 @@ class Trepan:
         See also `run_call' if what you to debug a function call and
         `run' if you want to debug general Python statements.
         """
+        if not isinstance(expr, (str, types.CodeType)):
+            self.intf[0].errmsg(
+                "You need to pass either a string or a code type."
+            )
+            return
+
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:

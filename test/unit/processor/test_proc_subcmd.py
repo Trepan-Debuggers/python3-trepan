@@ -27,6 +27,8 @@ class MyCommand(DebuggerCommand):
 class MySubcommand:
     """Doc string for test testing subcommand"""
 
+    aliases = tuple()
+
     def __init__(self):
         self.name = "testing"
         return

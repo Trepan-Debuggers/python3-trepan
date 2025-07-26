@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2017, 2020, 2024 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2017, 2020, 2024-2025 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -51,9 +51,13 @@ class ContinueCommand(DebuggerCommand):
     def run(self, args):
         if len(args) > 1:
             # FIXME: DRY this code. Better is to hook into tbreak.
-            func, filename, lineno, condition, _ = parse_break_cmd(self.proc, args)
-            if not set_break(self, func, filename, lineno, condition, True, args):
-                return False
+            func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
+            if not (func is None and filename is None):
+                set_break(
+                    self, func, filename, lineno, condition, True, args, offset=offset
+                    )
+            else:
+                self.errmsg("Did not find stopping spot for: %s" % (' '.join(args[1:])))
         self.core.step_events = None  # All events
         self.core.step_ignore = -1
         self.proc.continue_running = True  # Break out of command read loop
@@ -83,7 +87,7 @@ if __name__ == "__main__":
     for c in (
         ["continue", "wrong", "number", "of", "args"],
         ["c", str(line)],
-        ["c", str(line + 1)], # Invalid
+        ["c", str(line + 1)],  # Invalid
         ["continue", "1"],
         ["c", "five"],
         ["c", "five()"],

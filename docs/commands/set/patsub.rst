@@ -16,8 +16,8 @@ the mount-point for /home/rocky/project. You are running the code
 from the docker container, but debugging this from outside of that.
 
 
-Example:
-++++++++
+Set Substitution Pattern Example:
++++++++++++++++++++++++++++++++++
 
 ::
 

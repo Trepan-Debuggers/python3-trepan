@@ -87,6 +87,8 @@ class BreakCommand(DebuggerCommand):
                 force=force,
                 offset=offset,
             )
+        else:
+            self.errmsg("Did not find stopping spot for: %s" % (' '.join(args[1:])))
         return
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2017, 2020-2021, 2023-2024
+#   Copyright (C) 2008-2009, 2013, 2015, 2017, 2020-2021, 2023-2025
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,15 @@ from term_background import is_dark_background
 
 width = computed_displaywidth()
 is_dark_bg = is_dark_background()
-default_style = "monokai" if is_dark_bg else "tango"
+
+
+# If TREPAN_PYGMENTS_STYLE has been set, use that as the defalt.
+pygments_style_from_environment = os.environ.get("TREPAN_PYGMENTS_STYLE", None)
+
+if pygments_style_from_environment is not None:
+    default_style = pygments_style_from_environment
+else:
+    default_style = "zenburn" if is_dark_bg else "tango"
 
 # Below are the default debugger settings. The debugger object version
 # of this may change. A setting is something a user may want to
@@ -48,7 +56,7 @@ DEBUGGER_SETTINGS = {
     "annotate": 0,
 
     # Format style to use in showing disassembly
-    "asmfmt": "extended",
+    "disasmflavor": "extended",
 
     # Eval as Python the unrecognized debugger commands?
     "autoeval": True,
