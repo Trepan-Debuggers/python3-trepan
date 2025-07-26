@@ -14,7 +14,7 @@ A list range is in one of the following forms:
 
 
 A *location* is described elsewhere. *first* and *last* can also be
-locations but they also may be a number. And finally *last* can be a (line number)
+locations, but they may also be a number. And finally, *last* can be a (line number)
 offset.
 
 A number is just a decimal number. An offset is a number prefaced with "+" and
@@ -25,7 +25,7 @@ List Range Examples
 
 ::
 
-    5                    # start from line 5 of current file
+    5                    # start from line 5 of the current file
     5 ,                  # Same as above.
     , 5                 # listsize lines before and up to 5
     foo.py:5             # start from line 5 of file foo.py
