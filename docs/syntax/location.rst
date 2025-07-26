@@ -4,10 +4,10 @@
 Syntax for Source-Code Locations
 ================================
 
-A number of commands like "break", and "list" have locations
+Several commands like "break" and "list" have locations
 embedded in them.
 
-A location can be either a *linespec* an explicit function, or a *module linespec*
+A location can be either a *linespec*, an explicit function, or a *module linespec*
 
 
 Linespec
@@ -18,20 +18,19 @@ A linespec has a colon-separated pair of a source-location parameter
 and a line number.  A source location is a file path or a module name.
 
 In [*path*:] *linenum* , the line *linenum* in the source file *path*
-is indicated. When *path* is omitted, some default value is given,
-usually it is the *path* associated with the current frame. Or in
-list-like commands it is the *path* what was most-recently set; the
-most-recently set path starts out as the current frame's path.
+is indicated. When *path* is omitted, some default value is given; usually it is the *path* associated with the current frame. Or in
+list-like commands, it is the *path* that was most recently set; the
+most-recently set path starts as the current frame's path.
 
 If *filename* is a relative file name, then Python's `sys.path` items
-(which are assumed to be a list of directories) is tried in the order
-given. Often the current working directory or `.` is in that
-list. Note that `.` can be set with `cd` debugger command.
+(which are assumed to be a list of directories) are tried in the order
+given. Often, the current working directory or `.` is in that
+list. Note that `.` can be set with the  `cd` debugger command.
 
 To specify a path containing non-alphanumeric characters, specifically
-blanks (" "), backslashes ("\"), or quotes, in there are a number of
+blanks (" "), backslashes ("\"), or quotes, there are several
 quoting mechanisms one can use. You can enclose the path in single
-quotes, double quotes or triple double as you would do in Python
+quotes, double quotes, or triple quotes as you would do in Python
 
 Location Examples
 +++++++++++++++++
@@ -39,31 +38,30 @@ Location Examples
 ::
 
     10                   # line 10 of the most-recently used path
-    myfile.py:2          # line 2 of myfile.py where the directory name is
+    myfile.py:2          # line 2 of myfile.py, where the directory name is
                          #resolved from `sys.path`
     ./../myfile.py:3     # line 3 of the parent of some directory in `sys.path`
     /tmp/foo.py:4        # line 4 of absolute path /tmp/foo.py
     "foo's.py":1"        # One way to specify a path with a quote
     '''foo's.py"''':2    # Another way to specify a path with a quote
     'c:\foo.bat':1"      # One way to specify a Windows file name,
-    '/My Docs/foo.py':1" # One way to specify path with blanks in it
+    '/My Docs/foo.py':1" # One way to specify a path with blanks in it
 
 
 
 function()
 ----------
 
-Specifies the line that function *function* starts on. This is the
+Specifies the line that the function *function* starts on. This is the
 line that contains `def`. We get this information from the Python code
 object, in particular the `co_firstlineno` field.
-
-contrast to *gdb*, use parenthesis at the end of the function name
+In  contrast to *gdb*, use parentheses at the end of the function name
 to indicate this is a function.
 
-You can also specify functions though the values in Python program
+You can also specify functions through the values in a Python program
 variables or the function indicated in an instance method.
 
-For example consider this program:
+For example, consider this program:
 
 ::
 
@@ -90,21 +88,21 @@ means `b[i+1]()` would be invalid because it contains "+".  So would
 `b["foo"]()`, assuming `b` were a dictionary, because of the quote
 symbol.
 
-*Right now we don't allow line offsets from functions. If the need
-arises we may do so in the future.*
+*Right now, we don't allow line offsets from functions. If the need
+arises, we may do so in the future.*
 
 module linespec
 ---------------
 
 While functions need a closing `()` to indicate their function-ness,
 Python module names don't. What we do here is first look up the name
-as a file path.  If that's not found we look up the file as a Python
-module name. Modules have to have been imported before it accepted in
-the debugger. However you can run `eval` (or `autoeval`) to have
-Python import the module inside the debugger.
+as a file path.  If that's not found, we look up the file as a Python
+module name. Modules have to have been imported before it is accepted in
+the debugger. However, you can run `eval` (or `autoeval`) to have
+Python ``1mport`` the module inside the debugger.
 
-In sum file names are distinguished from method names purely by
-semantic means. However *gdb* and thus this debugger has no means to
+In sum, file names are distinguished from method names purely by
+semantic means. However, *gdb* and thus this debugger have no means to
 explicitly tag names as a file path or Python module name. We, but not
 *gdb*, make a distinction between functions versus modules and file
 paths.
@@ -119,6 +117,6 @@ Linespec Examples
     os          # Invalid! (for now)
 
 Note that the last line is invalid. In contrast to functions, you need
-to give a line numbers. Also it is assumed there is not a *file*
+to give line numbers. Also, it is assumed there is no *file*
 called `os` in the last example line. Nor a file called `os.path` in
 the first example.
