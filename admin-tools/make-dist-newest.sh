@@ -36,7 +36,7 @@ for pyversion in $PYVERSIONS; do
     rm -fr build
     # We can't use a universal wheel because depdencies on the decompiler changes
     # for 3.7 and 3.8
-    python setup.py bdist_egg bdist_wheel
+    python wheel .
     if [[ $first_two =~ py* ]]; then
 	if [[ $first_two =~ pypy* ]]; then
 	    # For PyPy, remove the what is after the dash, e.g. pypy37-none-any.whl instead of pypy37-7-none-any.whl
@@ -48,5 +48,6 @@ for pyversion in $PYVERSIONS; do
     fi
 done
 
+pyenv local 3.12
 python ./setup.py sdist
 # mv -v dist/${PACKAGE}-$VERSION.tar.gz dist/${PACKAGE}3k-$VERSION.tar.gz
