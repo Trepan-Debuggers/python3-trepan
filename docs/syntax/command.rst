@@ -4,8 +4,8 @@ Debugger Command Syntax
 =======================
 
 Command names and arguments are separated with spaces like POSIX shell
-syntax. Parentheses around the arguments and commas between them are
-not used. If the first non-blank character of a line starts with ``#``,
+syntax. Parenthesis around the arguments and commas between them are
+not used. If the first non-blank character of a line starts with `#`,
 the command is ignored.
 
 Commands are split at wherever ``;;`` appears. This process disregards
@@ -21,7 +21,7 @@ Resolving a command name involves possibly 4 steps. Some steps may be
 omitted depending on early success or some debugger settings:
 
 1. The leading token is first looked up in the macro table. If it is in the table, the expansion replaces the current command and
-possibly other commands pushed onto a command queue. Run `help macros` for
+possibly other commands pushed onto a command queue. See `help macros` for
 help on how to define macros, and `info macro` for current macro
 definitions.
 
@@ -39,9 +39,9 @@ program at the point it is stopped. However, this is done only if
 
 If :ref:`auto eval <set_autoeval>` is not set on, or if running the Python statement produces an error, we display an error message that the entered string is "undefined".
 
-If you want a python-, ipython-, or bpython-like shell
-command-processing, it's possible to go into a Python shell with the
-corresponding command. It is also possible to arrange to go into a Python shell every time you enter the debugger.
+If you want python-, ipython-, or bpython-like shell
+command-processing, it's possible to go into a ``python`` shell with the
+corresponding command. It is also possible to arrange to go into a ``python`` shell every time you enter the debugger.
 
 .. seealso::
 

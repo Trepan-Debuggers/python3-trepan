@@ -13,7 +13,7 @@ An address range is in one of the following forms:
 
 A *location* is described elsewhere. *first* and *last* can also be
 linespecs but they also may be a number or address (bytecode
-offset). And finally *last* can be an (line number) offset.
+offset). And finally *last* can be a (line number) offset.
 
 A number is just a decimal number. An offset is a number prefaced with "+" and
 indicates the number to increment the line number found in *first*.
@@ -23,7 +23,7 @@ Examples
 
 ::
 
-  *5                 # start from bytecode offset 5 of current file
+  *5                   # start from bytecode offset 5 of the current file
   *5 ,                 # Same as above.
   foo.py:*5            # start from bytecode offset 5 of file foo.py
 
