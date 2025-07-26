@@ -8,8 +8,7 @@ Entering the Debugger
 Invoking the Debugger Initially
 ===============================
 
-The simplest way to debug your program is to call run `trepan3k`. Give
-the name of your program and its options and any debugger options:
+The simplest way to debug your program is to run ``trepan3k``. Give the name of your program and its options, and any debugger options:
 
 .. code:: console
 
@@ -45,7 +44,7 @@ Installing the IPython extension
 
 Use the `trepan IPython extension <https://github.com/rocky/ipython-trepan>`_.
 
-To install execute the the following code snippet in an IPython shell or IPython notebook cell:
+To install, execute the following code snippet in an IPython shell or IPython notebook cell:
 
 .. code:: python
 
@@ -92,7 +91,7 @@ See also the `examples <https://github.com/rocky/ipython-trepan/tree/master/exam
 Calling the debugger from an Interactive Python Shell
 =====================================================
 
-*Note: by "interactive python shell" I mean running "python" or "python -i" and this is distinct from going into IPython which was covered in the last section.*
+*Note: By "interactive Python shell," I mean running "python" or "python -i" and this is distinct from going into IPython, which was covered in the last section.*
 
 Put these lines in a file::
 
@@ -103,7 +102,7 @@ Put these lines in a file::
 	    return run_eval(str, globals_=frame.f_globals, locals_=frame.f_locals)
 	  print(".pythonrc.py loaded") # customize or remove this
 
-A copy of the above can be found `here <https://github.com/rocky/python2-trepan/blob/master/PYTHONSTARTUP/pythonrc>`_. I usually put these line in `$HOME/.pythonrc.py`. Set the environment variable *PYTHONSTARTUP* to `$HOME/.pythonrc.py`.
+A copy of the above can be found `here <https://github.com/rocky/python2-trepan/blob/master/PYTHONSTARTUP/pythonrc>`_. I usually put these lines in `$HOME/.pythonrc.py`. Set the environment variable *PYTHONSTARTUP* to `$HOME/.pythonrc.py`.
 
 After doing this, when you run `python -i` you should see on entry the *print* message from the file. For example:
 
@@ -153,16 +152,15 @@ Calling the debugger from your program
 
 Sometimes it is not feasible to invoke the program from the debugger.
 Although the debugger tries to set things up to make it look like your
-program is called, sometimes the differences matter. Also the debugger
+program is called, sometimes the differences matter. Also, the debugger
 adds overhead and slows down your program.
 
-Another possibility then is to add statements into your program to call
-the debugger at the spot in the program you want.
+Another possibility, then, is to add statements into your program to call the debugger at the spot in the program you want.
 
 Python 3.7 and later
 --------------------
 
-In Python 3.7 and later, a ``breakpoint()`` builtin was added. Add a ``breakpoint()`` function call to your python code, then then set environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug`` before running the program.
+In Python 3.7 and later, a ``breakpoint()`` builtin was added. Add a ``breakpoint()`` function call to your Python code, then set the environment variable ``PYTHONBREAKPOINT`` to ``trepan.api.debug`` before running the program.
 
 For example, here is some Python code:
 
@@ -179,7 +177,7 @@ Now run Python with ``PYTHONBREAKPOINT`` set to ``trepan.api.debug``:
 
 	  PYTHONBREAKPOINT=trepan.api.debug python test/example/gcd-breakpoint.py 3 5
 
-Or, if you don't wan to the variable each time you run some Python code:
+Or, if you don't want to set the variable each time you run some Python code:
 
 .. code:: shell
 
@@ -197,7 +195,7 @@ If you want to set up to debug remotely, set ``PYTHONBREAKPOINT`` to ``trepan.ap
 Before Python 3.7
 -----------------
 
-Before Python 3.7 you still add statements into your program to call
+Before Python 3.7, you still add statements into your program to call
 the debugger at the spot in the program you want. To do this,
 ``import trepan.api`` and make a call to ``trepan.api.debug()``. For
 example:
@@ -211,14 +209,13 @@ example:
         # work, work, work...
         debug() # Get thee to thyne debugger!
 
-Since *debug()* is a function, call it can be nested inside some sort of
-conditional statement allowing one to be very precise about the
+Since *debug()* is a function, a call to it can be nested inside some sort of
+conditional statement, allowing one to be very precise about the
 conditions you want to debug under. And until first call to *debug()*,
 there is no debugger overhead.
 
 *debug()* causes the statement after the call to be stopped at.
-Sometimes though there is no after statement. In this case, adding the
-named parameter ``step_ignore=0`` will cause the debugger to be entered
+Sometimes though, there is no after statement. In this case, adding the named parameter ``step_ignore=0`` will cause the debugger to be entered
 inside the *debug()* call:
 
 .. code:: python
@@ -229,10 +226,9 @@ inside the *debug()* call:
              debug(step_ignore=0) # Stop before even returning from the debug() call
           foo()  # Note there's no statement following foo()
 
-If you want a startup profile to get run, you can pass a list of file
-names in option ``start_opts``. For example, let's say I want to set the
+If you want a startup profile to get run, you can pass a list of file names in the option ``start_opts``. For example, let's say I want to set the
 formatting style and automatic source code listing in my debugger
-session I would put the trepan debugger commands in a file, say
+session, I would put the trepan debugger commands in a file, say
 ``/home/rocky/trepan-startup`` and then list that file like this:
 
 .. code:: python
@@ -327,17 +323,16 @@ Now run that:
     $ python /tmp/foo.py
     8530
 
-From above output we helpfully listed the pid of the Python process we want to debug.
+From the above output, we helpfully listed the pid of the Python process we want to debug.
 
-Now in a shell we send the signal to go into the debugger listening for commands on port 1955. You will have to adjust the
+Now in a shell, we send the signal to go into the debugger listening for commands on port 1955. You will have to adjust the
 process id.
 
 .. code:: console
 
     $ kill -USR1 8530   # Adjust the pid to what you see above
 
-And in the shell where we ran `/tmp/foo.py` you should now see
-the new output:
+And in the shell where we ran `/tmp/foo.py`, you should now see the new output:
 
 .. code:: console
 
@@ -373,8 +368,7 @@ attach to the debugger on port 1955:
 Startup Profile
 ===============
 
-A startup profile is a text file that contains debugger commands. For
-example it might look like this:
+A startup profile is a text file that contains debugger commands. For example, it might look like this:
 
 .. code:: console
 
@@ -389,6 +383,6 @@ example it might look like this:
 
 
 By default, the file ``$HOME/.config/trepan3k/profile/profile.py`` is
-loaded, and that a file exists ``trepan3k`` starts up. To change this
+loaded, and if a file exists ``trepan3k`` starts up. To change this
 default behavior and *not* have the default profile loaded, use the
 option ``-n``, or ``--nx`` in the ``trepan3k`` invocation.

@@ -1,4 +1,4 @@
-name: trepan3k (ubuntu full)
+name: trepan3k (ubuntu)
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.12']
+        python-version: ['3.11', '3.12', '3.13']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -26,8 +26,8 @@ jobs:
         # Until the next pytracer release
         # pip install git+https://github.com/rocky/pytracer#egg=tracer
         # Until the next pyficache release
-        pip install git+https://github.com/rocky/python-filecache#egg=pyficache
-        pip install -e .[dev,full]
+        # pip install git+https://github.com/rocky/python-filecache#egg=pyficache
+        pip install -e .[dev]
     - name: Test trepan3k
       run: |
         make check
