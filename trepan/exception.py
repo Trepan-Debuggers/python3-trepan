@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013-2014, 2020 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013-2014, 2020, 2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -40,6 +40,6 @@ if __name__ == "__main__":
     except DebuggerRestart:
         import sys
 
-        print(sys.exc_info()[1].sys_argv)
+        print(sys.exc_info()[1])
         pass
     pass
