@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2010, 2013-2015, 2020-2021, 2024
+#   Copyright (C) 2008-2010, 2013-2015, 2020-2021, 2024-2025
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ from typing import Any
 def option_set(options: dict, value, default_options) -> Any:
     """
     If ``value`` is found in ``options``, return that, otherwise return the value
-    from ``defaulit_options``.
+    from ``default_options``.
     """
     # Yes, there is probably some fancy dictionary merge operation, that will do this,
     # as a one-shot but this code is simple and clear.
@@ -33,7 +33,6 @@ def option_set(options: dict, value, default_options) -> Any:
         return default_options.get(value)
     else:
         return options.get(value)
-    return None  # Not reached
 
 
 def bool2YN(b: bool) -> str:

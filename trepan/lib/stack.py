@@ -43,8 +43,12 @@ from trepan.lib.format import (
 )
 from trepan.lib.pp import pp
 from trepan.lib.printing import printf
-from trepan.processor.cmdfns import deparse_fn
 
+try:
+    from trepan.processor.cmdfns import deparse_fn
+except ImportError:
+    def deparse_fn(code):
+        raise NotImplementedError
 try:
     from trepan.lib.deparse import deparse_offset
 
