@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2024 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2025 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,9 @@ import sys
 import tempfile
 
 import pyficache
+
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
+from xdis.version_info import version_tuple_to_str
 
 from trepan.client import run
 from trepan.clifns import whence_file
@@ -96,17 +99,14 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
         if is_compiled_py(mainpyfile):
             try:
-                from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
-                from xdis.version_info import version_tuple_to_str
-
                 (
                     python_version,
-                    timestamp,
-                    magic_int,
+                    _,
+                    _,
                     co,
                     is_pypy,
-                    source_size,
-                    sip_hash,
+                    _,
+                    _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
                     print(f"Bytecode is pypy {is_pypy}, but we are {IS_PYPY}.")
@@ -157,7 +157,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         file=sys.stderr,
                     )
                     sys.exit(1)
-                    return
 
                 short_name = osp.basename(mainpyfile).strip(".pyc")
                 fd = tempfile.NamedTemporaryFile(

@@ -44,7 +44,7 @@ from trepan.interfaces.server import ServerInterface
 from trepan.lib.default import DEBUGGER_SETTINGS
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 
-DEFAULT_DEBUG_PORT: Literal = 1955
+DEFAULT_DEBUG_PORT: Literal[1955] = 1955
 
 
 def debug(
@@ -245,8 +245,6 @@ def run_eval(
         )
     except Exception:
         dbg.core.trace_hook_suspend = True
-        if start_opts and "tb_fn" in start_opts:
-            tb_fn = start_opts["tb_fn"]
         traceback.print_exc()
     finally:
         dbg.core.trace_hook_suspend = False

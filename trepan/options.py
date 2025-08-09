@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ def add_startup_file(dbg_initfiles: list):
     return
 
 
-def process_options(pkg_version: str, sys_argv: str, option_list=None):
+def process_options(pkg_version: str, sys_argv: list, option_list=None):
     """Handle debugger options. Set ``option_list`` if you are writing
     another main program and want to extend the existing set of debugger
     options.
@@ -351,7 +351,7 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
 
     optparser.disable_interspersed_args()
 
-    sys.argv = list(sys_argv)
+    sys.argv = sys_argv
 
     # Here is where we *parse* arguments
     (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
@@ -408,7 +408,6 @@ def process_options(pkg_version: str, sys_argv: str, option_list=None):
             print(f"Unexpected error in opening debugger output file {opts.output}")
             print(sys.exc_info()[0])
             sys.exit(2)
-            pass
         pass
 
     return opts, dbg_opts, sys.argv
@@ -486,7 +485,7 @@ if __name__ == "__main__":
     def doit(version, arg_str):
         print(f"options '{arg_str}'")
         args = arg_str.split()
-        opts, dbg_opts, sys_argv = process_options(version, args)
+        opts, _, _ = process_options(version, args)
         pp.pprint(vars(opts))
         print("")
         return
