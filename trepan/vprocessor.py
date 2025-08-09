@@ -16,7 +16,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from abc import ABC
 from pygments.console import colorize
 
 NotImplementedMessage = "This method must be overridden in a subclass"
@@ -24,7 +23,7 @@ NotImplementedMessage = "This method must be overridden in a subclass"
 __all__ = ["Processor"]
 
 
-class Processor(ABC):
+class Processor:
     """A processor is the thing that handles the events that come to
     the debugger.  It has it's own I/O mechanism and a way to handle
     the events.
@@ -58,7 +57,7 @@ class Processor(ABC):
         """Convenience short-hand for self.debugger.intf[-1].msg_nocr"""
         return self.intf[-1].msg_nocr(msg)
 
-    def event_processor(self, frame: FrameType, event, event_arg):
+    def event_processor(self, frame, event, event_arg):
         raise NotImplementedError(NotImplementedMessage)
 
     def rst_msg(self, text, opts={}):
