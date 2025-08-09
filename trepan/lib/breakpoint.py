@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024-2025 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -13,7 +13,6 @@ from xdis import load_module
 
 
 class Breakpoint:
-
     """Breakpoint class implements temporary breakpoints, ignore
     counts, disabling and (re)-enabling breakpoints and breakpoint
     conditionals.
@@ -197,7 +196,9 @@ class BreakpointManager:
             if hasattr(func_or_code, "__cached__"):
                 # FIXME: we can probably do better hooking into importlib
                 # or something lower-level
-                _, _, _, code, _, _, _ = load_module(func_or_code.__cached__, fast_load=True, get_code=True)
+                _, _, _, code, _, _, _ = load_module(
+                    func_or_code.__cached__, fast_load=True, get_code=True
+                )
             else:
                 print("Don't know what to do with frozen module %s" % func_or_code)
                 return
@@ -376,8 +377,8 @@ class BreakpointManager:
 
 def checkfuncname(brkpt: Breakpoint, frame):
     """
-      Check whether we should break at `frame` because the frame's
-      code object matches `brkpt.code`.
+    Check whether we should break at `frame` because the frame's
+    code object matches `brkpt.code`.
     """
     if not brkpt.code:
         # Breakpoint was set via line number.
@@ -407,6 +408,7 @@ def checkfuncname(brkpt: Breakpoint, frame):
 # Demo
 
 if __name__ == "__main__":
+
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
         assert frame
@@ -426,6 +428,7 @@ if __name__ == "__main__":
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
     bp = bpmgr.add_breakpoint(__file__, line_number, func_or_code=foo)
+    assert bp
     print(bp.icon_char())
     print(bpmgr.last())
     print(repr(bp))
@@ -433,6 +436,7 @@ if __name__ == "__main__":
     bp.disable()
     print(str(bp))
     import xdis
+
     bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func_or_code=xdis)
     print(bp)
     for i in 10, 1:
@@ -460,19 +464,23 @@ if __name__ == "__main__":
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
-    bp2 = bpmgr.add_breakpoint(None, None, -1,  False, None, foo)
+    bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, foo)
     foo(bp2, bpmgr)
-    bp3 = bpmgr.add_breakpoint(__file__, line_number, 0, temporary=True, func=foo)
+    bp3 = bpmgr.add_breakpoint(
+        __file__, line_number, 0, temporary=True, func_or_code=foo
+    )
+    assert bp3
     print(bp3.icon_char())
     print(bpmgr.bpnumbers())
 
     line_number = bar.__code__.co_firstlineno
-    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func=bar)
+    bp = bpmgr.add_breakpoint(__file__, line_number, 0, func_or_code=bar)
+    assert bp
     filename = bp.filename
     assert filename
     line_number = bar()
     for i in range(3):
-        bp = bpmgr.add_breakpoint(None, None, line_number, func=bar)
+        bp = bpmgr.add_breakpoint(None, None, line_number, func_or_code=bar)
     print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.bpnumbers())
