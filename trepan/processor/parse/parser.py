@@ -1,4 +1,4 @@
-#  Copyright (c) 2017-2018 Rocky Bernstein
+#  Copyright (c) 2017-2018, 2025 Rocky Bernstein
 """
 Parsing for a trepan2/trepan3k debugger
 "breakpoint' or "list" command arguments
@@ -8,7 +8,7 @@ This is a debugger location along with:
  - a range or count for "list" commands
 """
 
-from __future__ import print_function
+from typing import Final
 
 import sys
 from spark_parser.ast import AST
@@ -17,7 +17,7 @@ from trepan.processor.parse.scanner import LocationScanner, ScannerError
 
 from spark_parser import GenericASTBuilder
 
-DEFAULT_DEBUG = {
+DEFAULT_DEBUG: Final = {
     "rules": False,
     "transition": False,
     "reduce": False,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015, 2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
 """Debugger Socket Input/Output Interface."""
 
 import socket
+from typing import Final
 
-from trepan.lib import default as Mdefault
+from trepan.lib.default import CLIENT_SOCKET_OPTS
 from trepan.inout import tcpfns as Mtcpfns
 from trepan.inout.base import DebuggerInOutBase
 from trepan.misc import option_set
@@ -26,10 +27,10 @@ from trepan.misc import option_set
 class TCPClient(DebuggerInOutBase):
     """Debugger Client Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS = {"open": True}
+    DEFAULT_INIT_OPTS: Final = {"open": True}
 
     def __init__(self, inout=None, opts=None):
-        get_option = lambda key: option_set(opts, key, Mdefault.CLIENT_SOCKET_OPTS)
+        get_option = lambda key: option_set(opts, key, CLIENT_SOCKET_OPTS)
         self.inout = None
         self.addr = None
         self.buf = ""
@@ -52,13 +53,13 @@ class TCPClient(DebuggerInOutBase):
 
     def open(self, opts=None):
 
-        get_option = lambda key: option_set(opts, key, Mdefault.CLIENT_SOCKET_OPTS)
+        get_option = lambda key: option_set(opts, key, CLIENT_SOCKET_OPTS)
 
         HOST = get_option("HOST")
         PORT = get_option("PORT")
         self.inout = None
         for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
+            af, socktype, proto, _, sa = res
             try:
                 self.inout = socket.socket(af, socktype, proto)
                 self.state = "connected"
@@ -72,7 +73,6 @@ class TCPClient(DebuggerInOutBase):
                 self.inout.close()
                 self.inout = None
                 continue
-                break
         if self.inout is None:
             raise IOError("could not open client socket on port %s" % PORT)
         return
