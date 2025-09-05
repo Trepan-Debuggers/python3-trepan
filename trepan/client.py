@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2013-2017, 2021, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2017, 2021, 2023-2025 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 import sys
 import time
 from optparse import OptionParser
+from typing import Final
 
 # Our local modules
 from trepan.api import DEFAULT_DEBUG_PORT
@@ -88,7 +89,7 @@ def process_options(pkg_version, sys_argv, option_list=None):
 #
 
 # DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'FIFO'}
-DEFAULT_CLIENT_CONNECTION_OPTS = {
+DEFAULT_CLIENT_CONNECTION_OPTS: Final = {
     "open": True,
     "IO": "TCP",
     "HOST": "127.0.0.1",

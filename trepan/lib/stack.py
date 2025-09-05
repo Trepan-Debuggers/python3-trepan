@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020-2021,
-#   2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
+from types import FrameType
 from typing import Optional, Tuple
 
 import xdis
@@ -43,15 +44,19 @@ from trepan.lib.format import (
 )
 from trepan.lib.pp import pp
 from trepan.lib.printing import printf
-from trepan.processor.cmdfns import deparse_fn
 
+try:
+    from trepan.processor.cmdfns import deparse_fn
+except ImportError:
+    def deparse_fn(code):
+        raise NotImplementedError
 try:
     from trepan.lib.deparse import deparse_offset
 
     have_deparser = True
 except ImportError:
 
-    def deparse_offset(code, name: str, list_i: int, _) -> tuple:
+    def deparse_offset(_code, _name: str, _list_i: int, _) -> tuple:
         return None, None
 
     have_deparser = False
@@ -59,12 +64,17 @@ except ImportError:
 _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 
-def count_frames(frame, count_start=0):
+def count_frames(frame: FrameType, count_start=0):
     """Return a count of the number of frames"""
     count = -count_start
-    while frame:
-        count += 1
-        frame = frame.f_back
+    for _ in range(1000):
+        if frame is None:
+            break
+        else:
+            count += 1
+            frame = frame.f_back
+    else:
+        return 1000
     return count
 
 
@@ -115,7 +125,7 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame, style: str) -> Tuple[Optional[str], Optional[str]]:
+def format_function_name(frame: FrameType, style: str) -> Tuple[Optional[str], Optional[str]]:
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
@@ -135,7 +145,7 @@ def format_function_name(frame, style: str) -> Tuple[Optional[str], Optional[str
     return funcname, format_token(Function, funcname, style=style)
 
 
-def format_function_and_parameters(frame, debugger, style: str) -> Tuple[bool, str]:
+def format_function_and_parameters(frame: FrameType, debugger, style: str) -> Tuple[bool, str]:
     """ """
 
     funcname, s = format_function_name(frame, style)
@@ -275,16 +285,18 @@ def frame2filesize(frame):
         bc_path = None
     path = frame.f_globals["__file__"]
     source_path = getsourcefile(path)
+    if source_path is None:
+        return None, None
     fs_size = os.stat(source_path).st_size
     if bc_path:
         (
-            version,
-            timestamp,
-            magic_int,
-            co,
-            is_pypy,
+            _version,
+            _timestamp,
+            _magic_int,
+            _co,
+            _is_pypy,
             bc_source_size,
-            sip_hash,
+            _sip_hash,
         ) = xdis.load_module(bc_path, fast_load=True, get_code=False)
         return fs_size, bc_source_size
     elif osp.exists(path):

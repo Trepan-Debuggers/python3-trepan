@@ -1,3 +1,9 @@
+1.4.1 2025-09-04
+================
+
+``PASSTHROUGH_EXCEPTIONS PASSTHROUGH_EXCEPTIONS`` allows the Mathics3 debugger and other debuggers
+to register additional exceptions that can be raised.
+
 1.4.0 2025-07-26
 ================
 

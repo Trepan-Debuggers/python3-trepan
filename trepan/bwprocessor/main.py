@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2016, 2023 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2010, 2013-2016, 2023, 2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import linecache
 import sys
 import traceback
 from reprlib import Repr
+from typing import Final
 
 import pyficache
 
@@ -76,7 +77,7 @@ def resolve_name(obj, command_name):
 
 
 # Default settings for command processor method call
-DEFAULT_PROC_OPTS = {
+DEFAULT_PROC_OPTS: Final = {
     # A list of debugger initialization files to read on first command
     # loop entry.  Often this something like [~/.trepanrc] which the
     # front-end sets.
