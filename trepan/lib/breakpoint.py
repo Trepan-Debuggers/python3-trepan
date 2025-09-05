@@ -10,6 +10,7 @@ import os.path as osp
 from collections import defaultdict
 from types import CodeType, ModuleType
 from typing import Optional
+from types import FrameType
 from xdis import load_module
 
 
@@ -25,13 +26,13 @@ class Breakpoint:
 
     def __init__(
         self,
-        number,
-        filename,
-        line,
+        number: int,
+        filename: str,
+        line: int,
         temporary=False,
         condition=None,
         code=None,
-        offset=None,
+        offset: Optional[int] =None,
     ):
         self.offset = offset
         self.condition = condition
@@ -370,7 +371,7 @@ class BreakpointManager:
     pass  # BreakpointManager
 
 
-def checkfuncname(brkpt: Breakpoint, frame):
+def checkfuncname(brkpt: Breakpoint, frame: FrameType):
     """
     Check whether we should break at `frame` because the frame's
     code object matches `brkpt.code`.

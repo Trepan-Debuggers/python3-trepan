@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2013-2015, 2023 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2015, 2023, 2025 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 import os
 import tempfile
 
+from typing import Final
 from trepan import misc as Mmisc
 from trepan.inout.base import DebuggerInOutBase
 from trepan.lib import default as Mdefault, file as Mfile
@@ -28,7 +29,7 @@ from trepan.lib import default as Mdefault, file as Mfile
 class FIFOClient(DebuggerInOutBase):
     """Debugger Client Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS = {"open": True}
+    DEFAULT_INIT_OPTS: Final = {"open": True}
 
     def __init__(self, inp=None, opts=None):
         get_option = lambda key: Mmisc.option_set(

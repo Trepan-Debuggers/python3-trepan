@@ -11,7 +11,9 @@ import pyficache
 from xdis import PYTHON_VERSION_TRIPLE
 
 if PYTHON_VERSION_TRIPLE >= (3, 9):
-    pass
+    def deparse_and_cache(_co, _errmsg_fn, _tempdir=None):
+        print("Derparsing is not available for Python >= 3.9")
+
 else:
     if (3, 7) <= PYTHON_VERSION_TRIPLE:
         try:
@@ -93,6 +95,7 @@ else:
 
 # Demo it
 if __name__ == "__main__":
+
     import inspect
 
     def msg(msg_str):
@@ -104,8 +107,9 @@ if __name__ == "__main__":
         return
 
     curframe = inspect.currentframe()
-    mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
-    print(pyficache.getline(mapped_name, 7))
+    if curframe is not None:
+        mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
+        print(pyficache.getline(mapped_name, 7))
     # mapped_name, name_for_code = deparse_offset(curframe.f_code,
     #                                             curframe.f_code.co_name,
     #                                             curframe.f_lasti, errmsg)
