@@ -78,6 +78,7 @@ def deparse_offset(co, name: str, last_i: int, errmsg_fn) -> tuple:
 
 # Demo it
 if __name__ == "__main__":
+
     import inspect
 
     def msg(msg_str):
@@ -89,8 +90,9 @@ if __name__ == "__main__":
         return
 
     curframe = inspect.currentframe()
-    mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
-    print(pyficache.getline(mapped_name, 7))
+    if curframe is not None:
+        mapped_name, name_for_code = deparse_and_cache(curframe.f_code, errmsg)
+        print(pyficache.getline(mapped_name, 7))
     # mapped_name, name_for_code = deparse_offset(curframe.f_code,
     #                                             curframe.f_code.co_name,
     #                                             curframe.f_lasti, errmsg)

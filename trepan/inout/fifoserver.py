@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2015, 2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Debugger FIFO Input/Output interface. """
+"""Debugger FIFO Input/Output interface."""
 
 import os
 
@@ -21,7 +21,7 @@ if hasattr(os, "mkfifo"):
     import atexit
     import tempfile
 
-    from trepan import misc as Mmisc
+    from trepan.misc import option_set
     from trepan.inout.base import DebuggerInOutBase
 
     # FIXME: Consider using Python's socketserver/SocketServer?
@@ -31,7 +31,7 @@ if hasattr(os, "mkfifo"):
         DEFAULT_INIT_OPTS = {"open": True}
 
         def __init__(self, opts=None):
-            get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)
+            get_option = lambda key: option_set(opts, key, self.DEFAULT_INIT_OPTS)
             atexit.register(self.close)
             self.flush_after_write = True
             self.line_edit = False  # Our name for GNU readline capability

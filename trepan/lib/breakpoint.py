@@ -24,9 +24,9 @@ class Breakpoint:
 
     def __init__(
         self,
-        number,
-        filename,
-        line,
+        number: int,
+        filename: str,
+        line: int,
         temporary=False,
         condition=None,
         code=None,

@@ -257,8 +257,6 @@ def run_eval(
         )
     except Exception:
         dbg.core.trace_hook_suspend = True
-        if start_opts and "tb_fn" in start_opts:
-            tb_fn = start_opts["tb_fn"]
         traceback.print_exc()
     finally:
         dbg.core.trace_hook_suspend = False
