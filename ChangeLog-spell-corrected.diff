@@ -1,18 +1,5 @@
 --- ChangeLog	2025-07-26 06:12:17.358338744 -0400
 +++ ChangeLog-spell-corrected	2025-07-26 05:23:36.217377790 -0400
-@@ -1,10 +1,9 @@
- 2025-07-26  rocky <rocky@gnu.org>
- 
--	* NEWS.md, README.rst, admin-tools/make-dist-3.11.sh,
--	admin-tools/make-dist-newest.sh, docs/syntax/command.rst,
-+	* docs/syntax/command.rst,
- 	trepan/processor/command/help/arange.rst,
- 	trepan/processor/command/help/command.rst, trepan/version.py: Get
--	ready for release 1.4.0
-+	ready for release 1.3.2
- 
- 2025-07-26  R. Bernstein <rocky@users.noreply.github.com>
- 
 @@ -91,7 +90,7 @@
  	* trepan/interface.py, trepan/interfaces/user.py,
  	trepan/processor/command/python.py: Fix some small bugs and some
@@ -20,133 +7,133 @@
 -	completere.  This happens in Python 3.13 right now In Python 3.13 we need to convert a FrameLocalsProxy to a dictionary
 +	completer.  This happens in Python 3.13 right now In Python 3.13 we need to convert a FrameLocalsProxy to a dictionary
  	in order to call exec.  Some type lint was also done.
- 
+
  2025-07-09  rocky <rocky@gnu.org>
 @@ -199,7 +198,7 @@
- 
+
  2024-12-24  rocky <rocky@gnu.org>
- 
--	* admin-tools/checkout_common.sh, admin-tools/setup-master.sh: 
+
+-	* admin-tools/checkout_common.sh, admin-tools/setup-master.sh:
 +	* admin-tools/checkout_common.sh, admin-tools/setup-master.sh:
  	Administrivia
- 
+
  2024-12-24  rocky <rocky@gnu.org>
 @@ -242,7 +241,7 @@
- 
+
  2024-12-12  rocky <rocky@gnu.org>
- 
--	* docs/commands/running/jump.rst, trepan/processor/command/jump.py: 
+
+-	* docs/commands/running/jump.rst, trepan/processor/command/jump.py:
 +	* docs/commands/running/jump.rst, trepan/processor/command/jump.py:
  	Go over jump command docs
- 
+
  2024-12-10  rocky <rocky@gnu.org>
 @@ -252,12 +251,12 @@
- 
+
  2024-12-10  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh: 
+
+-	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh:
 +	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh:
  	Administrivia
- 
+
  2024-12-10  rocky <rocky@gnu.org>
- 
--	* docs/conf.py, trepan/lib/core.py, trepan/processor/location.py: 
+
+-	* docs/conf.py, trepan/lib/core.py, trepan/processor/location.py:
 +	* docs/conf.py, trepan/lib/core.py, trepan/processor/location.py:
  	Some small lint
- 
+
  2024-12-09  rocky <rocky@gnu.org>
 @@ -281,7 +280,7 @@
  	* docs/commands/data/eval.rst, docs/commands/running/jump.rst,
  	docs/commands/running/skip.rst, docs/commands/support/python.rst,
  	docs/manpages/trepan3kc.rst, trepan/processor/command/eval.py,
--	trepan/processor/command/jump.py, trepan/processor/command/skip.py: 
+-	trepan/processor/command/jump.py, trepan/processor/command/skip.py:
 +	trepan/processor/command/jump.py, trepan/processor/command/skip.py:
  	Go over jump, skip and eval, and python doc
- 
+
  2024-12-09  rocky <rocky@gnu.org>
 @@ -297,7 +296,7 @@
  	test/unit/processor/command/test_cmd_break.py,
  	trepan/lib/breakpoint.py, trepan/misc.py,
  	trepan/processor/cmdbreak.py, trepan/processor/cmdlist.py,
--	trepan/processor/command/list.py, trepan/processor/location.py: 
+-	trepan/processor/command/list.py, trepan/processor/location.py:
 +	trepan/processor/command/list.py, trepan/processor/location.py:
  	Revise breakpoint handling (#73) * Track down code in breakpoint command WARNING -- needs a new
  	filecache API for this.  * Fix up list command range parsing * Use github for pyficache in CI
- 
+
 @@ -376,7 +375,7 @@
  	docs/commands/running/continue.rst, docs/commands/running/exit.rst,
  	docs/commands/running/next.rst, docs/commands/running/step.rst,
  	docs/commands/running/stepi.rst, docs/commands/set/highlight.rst,
--	trepan/processor/command/next.py, trepan/processor/command/stepi.py: 
+-	trepan/processor/command/next.py, trepan/processor/command/stepi.py:
 +	trepan/processor/command/next.py, trepan/processor/command/stepi.py:
  	Go over docs
- 
+
  2024-11-23  rocky <rocky@gnu.org>
 @@ -454,7 +453,7 @@
- 
+
  2024-11-14  rocky <rocky@gnu.org>
- 
--	* admin-tools/checkout_common.sh, admin-tools/setup-python-3.3.sh: 
+
+-	* admin-tools/checkout_common.sh, admin-tools/setup-python-3.3.sh:
 +	* admin-tools/checkout_common.sh, admin-tools/setup-python-3.3.sh:
  	Administrivia
- 
+
  2024-11-13  rocky <rocky@gnu.org>
 @@ -475,7 +474,7 @@
  	admin-tools/setup-python-3.0.sh, docs/commands/set/asmfmt.rst,
  	docs/commands/set/events.rst, docs/commands/show/asmfmt.rst,
  	docs/commands/stack/frame.rst,
--	trepan/processor/command/info_subcmd/frame.py, trepan/version.py: 
+-	trepan/processor/command/info_subcmd/frame.py, trepan/version.py:
 +	trepan/processor/command/info_subcmd/frame.py, trepan/version.py:
  	Get ready for release 1.3.0
- 
+
  2024-11-12  rocky <rocky@gnu.org>
 @@ -532,7 +531,7 @@
  2024-11-11  R. Bernstein <rocky@users.noreply.github.com>
- 
+
  	* docs/entry-exit.rst, pyproject.toml, trepan/__main__.py,
--	trepan/api.py, trepan/client.py, trepan/processor/cmdproc.py: 
+-	trepan/api.py, trepan/client.py, trepan/processor/cmdproc.py:
 +	trepan/api.py, trepan/client.py, trepan/processor/cmdproc.py:
  	Supoprt 3.7+ breakpoint() call (#63)
- 
+
  2024-11-11  rocky <rocky@gnu.org>
 @@ -566,7 +565,7 @@
  	trepan/processor/command/info_subcmd/locals.py,
  	trepan/processor/command/info_subcmd/macro.py,
  	trepan/processor/command/info_subcmd/signals.py,
--	trepan/processor/command/unalias.py, trepan/processor/complete.py: 
+-	trepan/processor/command/unalias.py, trepan/processor/complete.py:
 +	trepan/processor/command/unalias.py, trepan/processor/complete.py:
  	Note "complete" is GNU-Readline complete
- 
+
  2024-11-10  R. Bernstein <rocky@users.noreply.github.com>
 @@ -655,7 +654,7 @@
- 
+
  2024-10-14  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh: 
+
+-	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh:
 +	* admin-tools/setup-python-3.3.sh, admin-tools/setup-python-3.6.sh:
  	Admnisitrivia
- 
+
  2024-10-09  rocky <rocky@gnu.org>
 @@ -684,7 +683,7 @@
  	make-dist-3.3-3.5.sh}, admin-tools/merge-for-3.0.sh,
  	admin-tools/{merge-for-3.2.sh => merge-for-3.3.sh},
  	admin-tools/{pyenv-3.2-3.5-versions => pyenv-3.3-3.5-versions},
--	admin-tools/{setup-python-3.2.sh => setup-python-3.3.sh}: 
+-	admin-tools/{setup-python-3.2.sh => setup-python-3.3.sh}:
 +	admin-tools/{setup-python-3.2.sh => setup-python-3.3.sh}:
  	Administrivia
- 
+
  2024-10-09  rocky <rocky@gnu.org>
 @@ -723,7 +722,7 @@
- 
+
  2024-09-29  rocky <rocky@gnu.org>
- 
--	* trepan/lib/core.py, trepan/processor/command/info_subcmd/frame.py: 
+
+-	* trepan/lib/core.py, trepan/processor/command/info_subcmd/frame.py:
 +	* trepan/lib/core.py, trepan/processor/command/info_subcmd/frame.py:
  	Small changes...  to "info frame" and trace_hook debugging
- 
+
  2024-09-29  rocky <rocky@gnu.org>
 @@ -761,9 +760,9 @@
- 
+
  	* trepan/processor/command/load.py: expand load to handle top-level
  	modules...  Previously we only allowed a single module with a single command.
 -	Now we can put serveral commands/modules under a single
@@ -154,77 +141,77 @@
  	package/module.  For example we handle "load trepan3k_mathics3" in addition to the
 -	previouly supported  "load mathics3k_mathics3.printelement"
 +	previously supported  "load mathics3k_mathics3.printelement"
- 
+
  2024-09-22  rocky <rocky@gnu.org>
- 
+
 @@ -833,7 +832,7 @@
- 
+
  2024-09-21  rocky <rocky@gnu.org>
- 
--	* admin-tools/pyenv-3.6-3.10-versions, test/functional/test_step.py: 
+
+-	* admin-tools/pyenv-3.6-3.10-versions, test/functional/test_step.py:
 +	* admin-tools/pyenv-3.6-3.10-versions, test/functional/test_step.py:
  	Changes for 3.6-3.10 branch
- 
+
  2024-09-21  R. Bernstein <rocky@users.noreply.github.com>
 @@ -867,7 +866,7 @@
  	* Makefile, test/integration/test-highlight.py,
  	test/integration/test-noscript.py,
  	test/integration/test_highlight.py,
--	test/integration/test_noscript.py, test/integration/test_step.py: 
+-	test/integration/test_noscript.py, test/integration/test_step.py:
 +	test/integration/test_noscript.py, test/integration/test_step.py:
  	Get integration tests working again
- 
+
  2024-09-15  rocky <rocky@gnu.org>
 @@ -957,7 +956,7 @@
- 
+
  2024-08-28  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh: 
+
+-	* admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh:
 +	* admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh:
  	Administrivia
- 
+
  2024-08-26  rocky <rocky@gnu.org>
 @@ -1023,7 +1022,7 @@
- 
+
  2024-08-25  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdproc.py, trepan/processor/command/frame.py: 
+
+-	* trepan/processor/cmdproc.py, trepan/processor/command/frame.py:
 +	* trepan/processor/cmdproc.py, trepan/processor/command/frame.py:
  	small tweaks...  Use thread.getName -> name since former is deprecated I messed up in
  	comment on what curindex represents Initialize position_str
- 
+
 @@ -1044,7 +1043,7 @@
  2024-08-24  rocky <rocky@gnu.org>
- 
+
  	* trepan/lib/format.py, trepan/lib/stack.py,
--	trepan/processor/command/frame.py, trepan/processor/frame.py: 
+-	trepan/processor/command/frame.py, trepan/processor/frame.py:
 +	trepan/processor/command/frame.py, trepan/processor/frame.py:
  	Modernize a little ...  more f-strings, more import from's, add more annotations
- 
+
  2024-08-24  rocky <rocky@gnu.org>
 @@ -1150,7 +1149,7 @@
- 
+
  2024-07-25  rocky <rocky@gnu.org>
- 
--	* trepan/processor/command/p.py, trepan/processor/command/pp.py: 
+
+-	* trepan/processor/command/p.py, trepan/processor/command/pp.py:
 +	* trepan/processor/command/p.py, trepan/processor/command/pp.py:
  	Misc
- 
+
  2024-07-25  rocky <rocky@gnu.org>
 @@ -1170,12 +1169,12 @@
- 
+
  	* admin-tools/make-dist-3.0-3.1.sh,
  	admin-tools/make-dist-3.2-3.5.sh, admin-tools/setup-master.sh,
--	admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh: 
+-	admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh:
 +	admin-tools/setup-python-3.0.sh, admin-tools/setup-python-3.6.sh:
  	Administrivia
- 
+
  2024-07-22  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-master.sh, admin-tools/setup-python-3.6.sh: 
+
+-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.6.sh:
 +	* admin-tools/setup-master.sh, admin-tools/setup-python-3.6.sh:
  	Administrivia
- 
+
  2024-07-22  rocky <rocky@gnu.org>
 @@ -1254,7 +1253,7 @@
  	* docs/commands/data/disassemble.rst, trepan/lib/bytecode.py,
@@ -232,40 +219,40 @@
  	trepan/processor/command/disassemble.py: Fix some of the funky
 -	terminal highight problems..  more remain. Doc asmft
 +	terminal highlight problems..  more remain. Doc asmft
- 
+
  2024-03-06  rocky <rocky@gnu.org>
- 
+
 @@ -1306,14 +1305,14 @@
- 
+
  2024-02-11  rocky <rocky@gnu.org>
- 
--	* admin-tools/{check-newer-versions.sh => check-newest-versions.sh}: 
+
+-	* admin-tools/{check-newer-versions.sh => check-newest-versions.sh}:
 +	* admin-tools/{check-newer-versions.sh => check-newest-versions.sh}:
  	Rename check program to something better
- 
+
  2024-02-11  rocky <rocky@gnu.org>
- 
+
  	* test/functional/test_break.py, test/functional/test_finish.py,
  	test/functional/test_jump.py, test/functional/test_sig.py,
 -	test/functional/test_skip.py: Remove exectuable mode bit
 +	test/functional/test_skip.py: Remove executable mode bit
- 
+
  2024-02-11  rocky <rocky@gnu.org>
- 
+
 @@ -1359,12 +1358,12 @@
- 
+
  2024-02-05  rocky <rocky@gnu.org>
- 
+
 -	* __pkginfo__.py, test/unit/test_api.py: 3.10 compatability and
 +	* __pkginfo__.py, test/unit/test_api.py: 3.10 comparability and
  	uncompyle6 selection
- 
+
  2024-02-05  rocky <rocky@gnu.org>
- 
--	* test/functional/test-next.py, test/functional/test_next.py: 
+
+-	* test/functional/test-next.py, test/functional/test_next.py:
 +	* test/functional/test-next.py, test/functional/test_next.py:
  	Convert test_next.py
- 
+
  2024-02-04  rocky <rocky@gnu.org>
 @@ -1455,7 +1454,7 @@
  	test/unit/inout/test_inout_input.py,
@@ -274,143 +261,143 @@
 -	trepan/processor/command/set_subcmd/style.py: Convert remainging
 +	trepan/processor/command/set_subcmd/style.py: Convert remaining
  	unit tests ...  and reduce nose dependency.
- 
+
  2024-01-28  rocky <rocky@gnu.org>
 @@ -1521,7 +1520,7 @@
  	* test/unit/processor/command/test_cmd_alias.py,
  	test/unit/processor/command/test_cmd_info_files.py,
  	test/unit/processor/command/test_cmd_list.py,
--	test/unit/test-cmd-alias.py, trepan/processor/command/alias.py: 
+-	test/unit/test-cmd-alias.py, trepan/processor/command/alias.py:
 +	test/unit/test-cmd-alias.py, trepan/processor/command/alias.py:
  	Convert "alias" unit test to pytest
- 
+
  2024-01-23  rocky <rocky@gnu.org>
 @@ -1546,7 +1545,7 @@
- 
+
  2024-01-16  rocky <rocky@gnu.org>
- 
--	* test/unit/lib/test_lib_stack.py, test/unit/lib/test_lib_thread.py: 
+
+-	* test/unit/lib/test_lib_stack.py, test/unit/lib/test_lib_thread.py:
 +	* test/unit/lib/test_lib_stack.py, test/unit/lib/test_lib_thread.py:
  	Lint more
- 
+
  2024-01-16  rocky <rocky@gnu.org>
 @@ -1630,7 +1629,7 @@
  	test/unit/test_cmd_break.py, test/unit/test_cmd_finish.py,
  	test/unit/test_cmd_run.py, test/unit/test_lib_bytecode.py,
  	test/unit/test_quit.py, trepan/interfaces/user.py,
--	trepan/processor/command/quit.py, trepan/processor/command/run.py: 
+-	trepan/processor/command/quit.py, trepan/processor/command/run.py:
 +	trepan/processor/command/quit.py, trepan/processor/command/run.py:
  	More unit tests converted to pytest
- 
+
  2024-01-15  rocky <rocky@gnu.org>
 @@ -1653,7 +1652,7 @@
  	trepan/lib/default.py, trepan/lib/deparse.py,
  	trepan/lib/disassemble.py, trepan/lib/file.py,
  	trepan/lib/format.py, trepan/lib/pp.py, trepan/lib/printing.py,
--	trepan/lib/sighandler.py, trepan/lib/stack.py, trepan/lib/thred.py: 
+-	trepan/lib/sighandler.py, trepan/lib/stack.py, trepan/lib/thred.py:
 +	trepan/lib/sighandler.py, trepan/lib/stack.py, trepan/lib/thred.py:
  	Another pass over trepan/lib
- 
+
  2024-01-14  rocky <rocky@gnu.org>
 @@ -1687,7 +1686,7 @@
- 
+
  2024-01-14  rocky <rocky@gnu.org>
- 
--	* test/unit/test-completion.py, test/unit/test_completion.py: 
+
+-	* test/unit/test-completion.py, test/unit/test_completion.py:
 +	* test/unit/test-completion.py, test/unit/test_completion.py:
  	Another test converted
- 
+
  2024-01-14  rocky <rocky@gnu.org>
 @@ -1744,12 +1743,12 @@
- 
+
  2023-12-17  rocky <rocky@gnu.org>
- 
--	* .gitignore, test/unit/test-lib-sig.py, trepan/lib/sighandler.py: 
+
+-	* .gitignore, test/unit/test-lib-sig.py, trepan/lib/sighandler.py:
 +	* .gitignore, test/unit/test-lib-sig.py, trepan/lib/sighandler.py:
  	Small lint corrections
- 
+
  2023-09-04  rocky <rocky@gnu.org>
- 
--	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh: 
+
+-	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh:
 +	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh:
  	Bump testing versions
- 
+
  2023-09-04  rocky <rocky@gnu.org>
 @@ -1763,13 +1762,13 @@
- 
+
  2023-07-01  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh: 
+
+-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh:
 +	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh:
  	Checkout of 3.2 branch was missing pyficache and xdis
- 
+
  2023-06-10  rocky <rocky@gnu.org>
- 
+
  	* .pre-commit-config.yaml, admin-tools/pyenv-newer-versions,
--	admin-tools/setup-master.sh, trepan/processor/command/deparse.py: 
+-	admin-tools/setup-master.sh, trepan/processor/command/deparse.py:
 +	admin-tools/setup-master.sh, trepan/processor/command/deparse.py:
  	Bump testing package versions
- 
+
  2023-06-10  rocky <rocky@gnu.org>
 @@ -2073,7 +2072,7 @@
- 
+
  2021-11-25  rocky <rocky@gnu.org>
- 
--	* admin-tools/pyenv-newer-versions, trepan/processor/cmdfns.py: 
+
+-	* admin-tools/pyenv-newer-versions, trepan/processor/cmdfns.py:
 +	* admin-tools/pyenv-newer-versions, trepan/processor/cmdfns.py:
  	Remove PYTHON_VERSION
- 
+
  2021-11-19  rocky <rocky@gnu.org>
 @@ -2091,7 +2090,7 @@
- 
+
  2021-10-30  rocky <rocky@gnu.org>
- 
--	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh: 
+
+-	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh:
 +	* admin-tools/setup-master.sh, admin-tools/setup-python-3.2.sh:
  	Admnistrivia
- 
+
  2021-10-30  R. Bernstein <rocky@users.noreply.github.com>
 @@ -2118,7 +2117,7 @@
- 
+
  	* __pkginfo__.py, docs/conf.py, setup.py,
  	trepan/lib/disassemble.py, trepan/lib/stack.py,
--	trepan/processor/command/deparse.py, trepan/processor/location.py: 
+-	trepan/processor/command/deparse.py, trepan/processor/location.py:
 +	trepan/processor/command/deparse.py, trepan/processor/location.py:
  	More newer xdis compatibility
- 
+
  2021-09-30  rocky <rocky@gnu.org>
 @@ -2208,7 +2207,7 @@
- 
+
  2021-06-23  rocky <rocky@gnu.org>
- 
+
 -	* trepan/version.py: Black shoudn't format version.py
 +	* trepan/version.py: Black shouldn't format version.py
- 
+
  2021-06-23  rocky <rocky@gnu.org>
- 
+
 @@ -2281,7 +2280,7 @@
- 
+
  2021-03-15  rocky <rocky@gnu.org>
- 
--	* admin-tools/how-to-make-a-release.md, trepan/processor/cmdproc.py: 
+
+-	* admin-tools/how-to-make-a-release.md, trepan/processor/cmdproc.py:
 +	* admin-tools/how-to-make-a-release.md, trepan/processor/cmdproc.py:
  	Fix bug encountered in `set patmap` The code is I think a holdover from some earlier code that no longer
  	exists.
- 
+
 @@ -2291,7 +2290,7 @@
  	admin-tools/how-to-make-a-release.md, admin-tools/pyenv-versions,
  	setup.py, tox.ini, trepan/__init__.py, trepan/__main__.py,
  	trepan/client.py, trepan/processor/command/__init__.py,
--	trepan/processor/command/set_subcmd/tempdir.py, trepan/version.py: 
+-	trepan/processor/command/set_subcmd/tempdir.py, trepan/version.py:
 +	trepan/processor/command/set_subcmd/tempdir.py, trepan/version.py:
  	Get ready for release 1.2.3
- 
+
  2021-01-24  rocky <rocky@gnu.org>
 @@ -2490,7 +2489,7 @@
- 
+
  2020-06-16  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdbreak.py, trepan/processor/location.py: 
+
+-	* trepan/processor/cmdbreak.py, trepan/processor/location.py:
 +	* trepan/processor/cmdbreak.py, trepan/processor/location.py:
  	breakpoint-handling fixes...  have to back off adding function into breakpoint structure.
  	Location is returning an "int" sometimes. Need to investigate, but
@@ -419,168 +406,168 @@
  	test/unit/test-cmdbreak.py, trepan/lib/breakpoint.py,
  	trepan/processor/cmdbreak.py, trepan/processor/command/break.py,
  	trepan/processor/command/info_subcmd/line.py,
--	trepan/processor/location.py, trepan/processor/parse/semantics.py: 
+-	trepan/processor/location.py, trepan/processor/parse/semantics.py:
 +	trepan/processor/location.py, trepan/processor/parse/semantics.py:
  	Start adding/reporting code offsets in debugger
- 
+
  2020-06-11  rocky <rocky@gnu.org>
- 
+
  	* .circleci/config.yml, .travis.yml, __pkginfo__.py,
--	requirements.txt, trepan/processor/command/info_subcmd/line.py: 
+-	requirements.txt, trepan/processor/command/info_subcmd/line.py:
 -	Expanded xdis line/offset in "info line"...  using information from xdis. We can now describe * What other offsets are stoppable for that line * what function the line is in * The starting offset and how many intructions are in the line
 +	requirements.txt, trepan/processor/command/info_subcmd/line.py:
 +	Expanded xdis line/offset in "info line"...  using information from xdis. We can now describe * What other offsets are stoppable for that line * what function the line is in * The starting offset and how many instructions are in the line
- 
+
  2020-06-10  rocky <rocky@gnu.org>
- 
+
 @@ -2670,7 +2669,7 @@
  	* trepan/api.py, trepan/processor/command/base_cmd.py,
  	trepan/processor/command/continue.py,
  	trepan/processor/command/deparse.py,
--	trepan/processor/command/next.py, trepan/processor/command/show.py: 
+-	trepan/processor/command/next.py, trepan/processor/command/show.py:
 +	trepan/processor/command/next.py, trepan/processor/command/show.py:
  	Blacken and update trepan.api DRY, DebuggerCommand class vars initialization
- 
+
  2020-06-04  rocky <rocky@gnu.org>
 @@ -2830,7 +2829,7 @@
  2020-05-14  rocky <rocky@gnu.org>
- 
+
  	* trepan/inout/base.py, trepan/inout/output.py,
--	trepan/lib/default.py, trepan/lib/pp.py, trepan/lib/printing.py: 
+-	trepan/lib/default.py, trepan/lib/pp.py, trepan/lib/printing.py:
 +	trepan/lib/default.py, trepan/lib/pp.py, trepan/lib/printing.py:
  	Blacken and lint some files
- 
+
  2020-05-14  rocky <rocky@gnu.org>
 @@ -2847,7 +2846,7 @@
- 
+
  2020-05-13  rocky <rocky@gnu.org>
- 
--	* README.rst, docs/commands/show/autopc.rst, docs/features.rst: 
+
+-	* README.rst, docs/commands/show/autopc.rst, docs/features.rst:
 +	* README.rst, docs/commands/show/autopc.rst, docs/features.rst:
  	Update Docs yet again.
- 
+
  2020-05-13  rocky <rocky@gnu.org>
 @@ -2904,7 +2903,7 @@
- 
+
  	* test/unit/test-lib-format.py, trepan/lib/deparse.py,
  	trepan/processor/command/continue.py,
--	trepan/processor/command/quit.py, trepan/processor/command/step.py: 
+-	trepan/processor/command/quit.py, trepan/processor/command/step.py:
 +	trepan/processor/command/quit.py, trepan/processor/command/step.py:
  	Misc modernization & skip a test...  Something in reflowing adds spaces. Don't need/want to deal with
  	that now.
- 
+
 @@ -3003,7 +3002,7 @@
  2020-04-24  rocky <rocky@gnu.org>
- 
+
  	* .circleci/config.yml, .travis.yml, __pkginfo__.py: Bump xdis
 -	version now that a new verison is out
 +	version now that a new version is out
- 
+
  2020-04-22  R. Bernstein <rocky@users.noreply.github.com>
- 
+
 @@ -3040,7 +3039,7 @@
- 
+
  2020-03-16  rocky <rocky@gnu.org>
- 
--	* __pkginfo__.py, admin-tools/how-to-make-a-release.md, setup.py: 
+
+-	* __pkginfo__.py, admin-tools/how-to-make-a-release.md, setup.py:
 +	* __pkginfo__.py, admin-tools/how-to-make-a-release.md, setup.py:
  	Administrivia release-type fixes
- 
+
  2020-03-16  rocky <rocky@gnu.org>
 @@ -3071,7 +3070,7 @@
- 
+
  2019-11-16  rocky <rocky@gnu.org>
- 
--	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh: 
+
+-	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh:
 +	* admin-tools/pyenv-newer-versions, admin-tools/setup-master.sh:
  	Administriva - bump testing versions
- 
+
  2019-11-11  rocky <rocky@gnu.org>
 @@ -3118,11 +3117,11 @@
- 
+
  2019-09-30  rocky <rocky@gnu.org>
- 
+
 -	* docs/entry-exit.rst: extry/exit Doc python doc fix
 +	* docs/entry-exit.rst: entry/exit Doc python doc fix
- 
+
  2019-09-30  rocky <rocky@gnu.org>
- 
--	* docs/entry-exit.rst, trepan/api.py, trepan/processor/cmdproc.py: 
+
+-	* docs/entry-exit.rst, trepan/api.py, trepan/processor/cmdproc.py:
 +	* docs/entry-exit.rst, trepan/api.py, trepan/processor/cmdproc.py:
  	Misc IPython-related and doc fixes
- 
+
  2019-09-30  rocky <rocky@gnu.org>
 @@ -3309,7 +3308,7 @@
  2018-06-02  JimmyG <jimmy.m.gong@gmail.com>
- 
+
  	* trepan/options.py: keep it from sourcing twice, if the
 -	startup-profile has alreay setup.  trepan.api.debug(start_opts={'startup-profile':
 +	startup-profile has already setup.  trepan.api.debug(start_opts={'startup-profile':
  	['$HOME/.config/trepanpy/profile']})
- 
+
  2018-06-01  rocky <rocky@gnu.org>
 @@ -3476,7 +3475,7 @@
- 
+
  2018-03-21  rocky <rocky@gnu.org>
- 
--	* trepan/lib/disassemble.py, trepan/processor/command/deparse.py: 
+
+-	* trepan/lib/disassemble.py, trepan/processor/command/deparse.py:
 +	* trepan/lib/disassemble.py, trepan/processor/command/deparse.py:
  	Python sourcecode lines go into 1,000s...  So save 4 places for these.
- 
+
  2018-03-13  rocky <rocky@gnu.org>
 @@ -3523,7 +3522,7 @@
- 
+
  2018-02-16  rocky <rocky@gnu.org>
- 
--	* __pkginfo__.py, setup.py, trepan/processor/command/disassemble.py: 
+
+-	* __pkginfo__.py, setup.py, trepan/processor/command/disassemble.py:
 +	* __pkginfo__.py, setup.py, trepan/processor/command/disassemble.py:
  	disassemble improvements
- 
+
  2018-02-11  rocky <rocky@gnu.org>
 @@ -3614,7 +3613,7 @@
- 
+
  	* trepan/lib/deparse.py, trepan/lib/disassemble.py,
  	trepan/processor/cmdfns.py, trepan/processor/cmdproc.py: Start
 -	deparse line remaping
 +	deparse line remapping
- 
+
  2018-01-22  rocky <rocky@gnu.org>
- 
+
 @@ -3631,7 +3630,7 @@
- 
+
  2018-01-21  rocky <rocky@gnu.org>
- 
--	* admin-tools/how-to-make-a-release.md, admin-tools/make-dist.sh: 
+
+-	* admin-tools/how-to-make-a-release.md, admin-tools/make-dist.sh:
 +	* admin-tools/how-to-make-a-release.md, admin-tools/make-dist.sh:
  	Admin tweak
- 
+
  2018-01-21  rocky <rocky@gnu.org>
 @@ -3662,7 +3661,7 @@
- 
+
  2018-01-19  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdbreak.py, trepan/processor/command/break.py: 
+
+-	* trepan/processor/cmdbreak.py, trepan/processor/command/break.py:
 +	* trepan/processor/cmdbreak.py, trepan/processor/command/break.py:
  	Add force option on break
- 
+
  2018-01-18  rocky <rocky@gnu.org>
 @@ -3890,7 +3889,7 @@
  2017-08-10  rocky <rocky@gnu.org>
- 
+
  	* celery/README.md, celery/{trepan.py => ctrepan.py},
--	trepan/interfaces/client.py, trepan/processor/command/python.py: 
+-	trepan/interfaces/client.py, trepan/processor/command/python.py:
 +	trepan/interfaces/client.py, trepan/processor/command/python.py:
  	Bang on celery remote debugging and...  Improve exception handling when going into python: don't go into
  	post-mortem debugging.
- 
+
 @@ -3921,7 +3920,7 @@
  2017-08-04  rocky <rocky@gnu.org>
- 
+
  	* celery/trepan.py, trepan/inout/tcpserver.py,
--	trepan/interfaces/server.py, trepan/processor/command/python.py: 
+-	trepan/interfaces/server.py, trepan/processor/command/python.py:
 +	trepan/interfaces/server.py, trepan/processor/command/python.py:
  	Bang on remote execution more
- 
+
  2017-08-03  rocky <rocky@gnu.org>
 @@ -4045,7 +4044,7 @@
  	trepan/processor/command/info_subcmd/pc.py,
@@ -588,93 +575,93 @@
  	trepan/processor/command/kill.py, trepan/version.py: Sync with
 -	trepan2 and bump version Get ready for releae 0.7.4 * Go over documentation * disassemble: show function header when given a frame pointer * make sure we use later uncompyle6 and xdis
 +	trepan2 and bump version Get ready for release 0.7.4 * Go over documentation * disassemble: show function header when given a frame pointer * make sure we use later uncompyle6 and xdis
- 
+
  2017-06-01  rocky <rocky@gnu.org>
- 
+
 @@ -4086,7 +4085,7 @@
- 
+
  	* .gitignore, MANIFEST.in, setup.py,
  	test/data/highlight-pyp35.right, test/data/macro-pypy35.right,
--	test/integration/.gitignore, trepan/__init__.py, trepan/api.py: 
+-	test/integration/.gitignore, trepan/__init__.py, trepan/api.py:
 +	test/integration/.gitignore, trepan/__init__.py, trepan/api.py:
  	Revise packaging and Administrivia
- 
+
  2017-05-10  rocky <rocky@gnu.org>
 @@ -4207,7 +4206,7 @@
- 
+
  2016-11-12  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdproc.py, trepan/processor/command/list.py: 
+
+-	* trepan/processor/cmdproc.py, trepan/processor/command/list.py:
 +	* trepan/processor/cmdproc.py, trepan/processor/command/list.py:
  	Workaround check_path_with_frame problems
- 
+
  2016-11-12  rocky <rocky@gnu.org>
 @@ -4216,7 +4215,7 @@
- 
+
  2016-11-12  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdproc.py, trepan/processor/command/list.py: 
+
+-	* trepan/processor/cmdproc.py, trepan/processor/command/list.py:
 +	* trepan/processor/cmdproc.py, trepan/processor/command/list.py:
  	Ease into source file checking against code
- 
+
  2016-11-12  rocky <rocky@gnu.org>
 @@ -4258,7 +4257,7 @@
- 
+
  2016-10-06  rocky <rocky@gnu.org>
- 
--	* .travis.yml, setup.py, trepan/{VERSION.py => version.py}: 
+
+-	* .travis.yml, setup.py, trepan/{VERSION.py => version.py}:
 +	* .travis.yml, setup.py, trepan/{VERSION.py => version.py}:
  	Administrivia and Travis * setup.py, version.py: Don't use exec.  * .travis.yml: Add "python ./setup.py develop"
- 
+
  2016-10-06  rocky <rocky@gnu.org>
 @@ -4282,7 +4281,7 @@
- 
+
  	* trepan/processor/command/display.py,
  	trepan/processor/command/set_subcmd/highlight.py: display
 -	expresssion and highlight changes...  * show display expression after setting it * clear source-code cache after setting highlight
 +	expression and highlight changes...  * show display expression after setting it * clear source-code cache after setting highlight
- 
+
  2016-07-26  rocky <rocky@gnu.org>
- 
+
 @@ -4334,7 +4333,7 @@
  2016-05-01  rocky <rocky@gnu.org>
- 
+
  	* Makefile, trepan/inout/tcpclient.py, trepan/inout/tcpfns.py,
--	trepan/inout/tcpserver.py, trepan/processor/command/disassemble.py: 
+-	trepan/inout/tcpserver.py, trepan/processor/command/disassemble.py:
 +	trepan/inout/tcpserver.py, trepan/processor/command/disassemble.py:
  	flake8 crap
- 
+
  2016-05-01  rocky <rocky@gnu.org>
 @@ -4373,7 +4372,7 @@
- 
+
  2016-01-13  rocky <rocky@gnu.org>
- 
--	* tox.ini, trepan/bwprocessor/main.py, trepan/lib/sighandler.py: 
+
+-	* tox.ini, trepan/bwprocessor/main.py, trepan/lib/sighandler.py:
 +	* tox.ini, trepan/bwprocessor/main.py, trepan/lib/sighandler.py:
  	Squelch flake8 complaints
- 
+
  2016-01-13  rocky <rocky@gnu.org>
 @@ -4495,7 +4494,7 @@
- 
+
  2015-12-20  rocky <rocky@gnu.org>
- 
--	* test/example/gcd-dbgcall.py, trepan/processor/command/deparse.py: 
+
+-	* test/example/gcd-dbgcall.py, trepan/processor/command/deparse.py:
 +	* test/example/gcd-dbgcall.py, trepan/processor/command/deparse.py:
  	Add deparse command
- 
+
  2015-12-18  rocky <rocky@gnu.org>
 @@ -4536,7 +4535,7 @@
- 
+
  2015-12-06  rocky <rocky@gnu.org>
- 
--	* README.rst, trepan/lib/stack.py, trepan/processor/cmdproc.py: 
+
+-	* README.rst, trepan/lib/stack.py, trepan/processor/cmdproc.py:
 +	* README.rst, trepan/lib/stack.py, trepan/processor/cmdproc.py:
  	Small thiungs. Sync code with python2
- 
+
  2015-12-02  rocky <rocky@gnu.org>
 @@ -4612,7 +4611,7 @@
  2015-11-28  rocky <rocky@gnu.org>
- 
+
  	* bin/trepan3k, trepan/lib/format.py, trepan/lib/printing.py,
 -	trepan/options.py: options.py: Move configiration loation to
 +	trepan/options.py: options.py: Move configuration loation to
@@ -682,40 +669,40 @@
  	reversed. Customize colorstyle more printing.py: address Python2/3
  	incompatibility bin/trepan3k: invocation convenience script
 @@ -4680,7 +4679,7 @@
- 
+
  	* NEWS, README.rst, trepan/VERSION.py,
  	trepan/processor/command/exit.py, trepan/processor/command/kill.py,
--	trepan/processor/command/mock.py, trepan/processor/command/quit.py: 
+-	trepan/processor/command/mock.py, trepan/processor/command/quit.py:
 +	trepan/processor/command/mock.py, trepan/processor/command/quit.py:
  	Get ready for release 0.5.3
- 
+
  2015-09-23  rocky <rocky@gnu.org>
 @@ -4804,7 +4803,7 @@
  	trepan/processor/command/show_subcmd/aliases.py,
  	trepan/processor/command/show_subcmd/autoeval.py,
  	trepan/processor/command/skip.py, trepan/processor/command/step.py,
--	trepan/processor/command/up.py, trepan/processor/command/whatis.py: 
+-	trepan/processor/command/up.py, trepan/processor/command/whatis.py:
 +	trepan/processor/command/up.py, trepan/processor/command/whatis.py:
  	Go over command docstrings. Sync with trepan2
- 
+
  2015-05-29  rocky <rocky@gnu.org>
 @@ -4818,7 +4817,7 @@
  2015-05-29  rocky <rocky@gnu.org>
- 
+
  	* README.rst, trepan/lib/eval.py, trepan/post_mortem.py,
--	trepan/processor/command/bpy.py, trepan/processor/command/python.py: 
+-	trepan/processor/command/bpy.py, trepan/processor/command/python.py:
 +	trepan/processor/command/bpy.py, trepan/processor/command/python.py:
  	Add bpython shell. eval? of for VAR in EXPR: is EXPR
- 
+
  2015-05-27  rocky <rocky@gnu.org>
 @@ -4857,7 +4856,7 @@
- 
+
  	* NEWS, trepan/lib/file.py, trepan/processor/command/break.py,
  	trepan/processor/command/info_subcmd/files.py,
--	trepan/processor/command/tbreak.py, trepan/processor/complete.py: 
+-	trepan/processor/command/tbreak.py, trepan/processor/complete.py:
 +	trepan/processor/command/tbreak.py, trepan/processor/complete.py:
  	Add line completion on tbreak and break
- 
+
  2015-05-19  rocky <rocky@gnu.org>
 @@ -4873,7 +4872,7 @@
  	trepan/processor/command/info_subcmd/program.py,
@@ -724,87 +711,87 @@
 -	"info arg1, arg2". Update docs Add "info frame *number* set/sheck
 +	"info arg1, arg2". Update docs Add "info frame *number* set/check
  	max args in subcommands
- 
+
  2015-05-17  rocky <rocky@gnu.org>
 @@ -4927,7 +4926,7 @@
  	trepan/processor/command/display.py,
  	trepan/processor/command/pp.py, trepan/processor/command/pr.py,
  	trepan/processor/command/pydocx.py,
--	trepan/processor/command/whatis.py, trepan/processor/complete.py: 
+-	trepan/processor/command/whatis.py, trepan/processor/complete.py:
 +	trepan/processor/command/whatis.py, trepan/processor/complete.py:
  	Add identifier completions on pp, pr, pydocx, and debug Some
  	commands include builtins and some do not
- 
+
 @@ -4939,7 +4938,7 @@
  	trepan/processor/command/disable.py,
  	trepan/processor/command/enable.py,
  	trepan/processor/command/info_subcmd/break.py,
 -	trepan/processor/complete.py: Add compeltion for breakpoint numbers
 +	trepan/processor/complete.py: Add completion for breakpoint numbers
- 
+
  2015-05-16  rocky <rocky@gnu.org>
- 
+
 @@ -4954,7 +4953,7 @@
- 
+
  	* trepan/processor/cmdproc.py,
  	trepan/processor/command/info_subcmd/frame.py: cmdproc.py:
 -	list_lineno for post_mortem frame.py: python3 never has execption
 +	list_lineno for post_mortem frame.py: python3 never has exception
  	info
- 
+
  2015-05-15  rocky <rocky@gnu.org>
 @@ -4997,7 +4996,7 @@
- 
+
  2015-05-15  rocky <rocky@gnu.org>
- 
--	* __pkginfo__.py, trepan/debugger.py, trepan/processor/cmdproc.py: 
+
+-	* __pkginfo__.py, trepan/debugger.py, trepan/processor/cmdproc.py:
 +	* __pkginfo__.py, trepan/debugger.py, trepan/processor/cmdproc.py:
  	Correct <string> remapping. Need new version of pifycache though
- 
+
  2015-05-14  rocky <rocky@gnu.org>
 @@ -5043,7 +5042,7 @@
- 
+
  2015-05-01  rocky <rocky@gnu.org>
- 
--	* trepan/processor/cmdproc.py, trepan/processor/command/ipython.py: 
+
+-	* trepan/processor/cmdproc.py, trepan/processor/command/ipython.py:
 +	* trepan/processor/cmdproc.py, trepan/processor/command/ipython.py:
  	Lint errors
- 
+
  2015-05-01  rocky <rocky@gnu.org>
 @@ -5108,11 +5107,11 @@
- 
+
  2015-04-06  rocky <rocky@gnu.org>
- 
+
 -	* README.rst: README.rst link correcton
 +	* README.rst: README.rst link correction
- 
+
  2015-04-06  rocky <rocky@gnu.org>
- 
+
 -	* README.rst, trepan/VERSION.py: README.rst link correcton
 +	* README.rst, trepan/VERSION.py: README.rst link correction
- 
+
  2015-04-06  rocky <rocky@gnu.org>
- 
+
 @@ -5146,7 +5145,7 @@
- 
+
  2015-04-06  rocky <rocky@gnu.org>
- 
--	* test/integration/test-general.py, test/integration/test-macro.py: 
+
+-	* test/integration/test-general.py, test/integration/test-macro.py:
 +	* test/integration/test-general.py, test/integration/test-macro.py:
  	Travis 8th try
- 
+
  2015-04-06  rocky <rocky@gnu.org>
 @@ -5167,7 +5166,7 @@
- 
+
  2015-04-06  rocky <rocky@gnu.org>
- 
--	* .travis.yml, requirements-dev.txt, test/functional/test-skip.py: 
+
+-	* .travis.yml, requirements-dev.txt, test/functional/test-skip.py:
 +	* .travis.yml, requirements-dev.txt, test/functional/test-skip.py:
  	Travis 3rd try
- 
+
  2015-04-06  rocky <rocky@gnu.org>
 @@ -5385,8 +5384,8 @@
- 
+
  	* test/data/macro.right, test/data/step.right, test/example/gcd.py,
  	test/functional/fn_helper.py, trepan/options.py:  Remove trepan2-client from console_scripts (Georg Brandl)
 -	Integeration test output changes due to running into defaultoutput
@@ -812,7 +799,7 @@
 +	Integration test output changes due to running into defaultoutput
 +	encoding. FIXME down the line. Setup file name creation wrong because
  	debugger name is "trepan" not trepan3k.
- 
+
  2015-04-04  rocky <rocky@gnu.org>
 @@ -5558,7 +5557,7 @@
  	trepan/processor/command/undisplay.py,
@@ -821,97 +808,97 @@
 -	trepan/vprocessor.py: First attempt to syncronize with trepan2 from
 +	trepan/vprocessor.py: First attempt to synchronize with trepan2 from
  	6 months ago.
- 
+
  2014-07-04  Rocky Bernstein <rocky@gnu.org>
 @@ -5597,7 +5596,7 @@
  2014-02-03  Rocky Bernstein <rocky@gnu.org>
- 
+
  	* test/functional/fn_helper.py, trepan/cli.py, trepan/client.py,
--	trepan/options.py, trepan/processor/command/info_subcmd/files.py: 
+-	trepan/options.py, trepan/processor/command/info_subcmd/files.py:
 +	trepan/options.py, trepan/processor/command/info_subcmd/files.py:
  	Start work on --host and --port options for remote execution.
- 
+
  2013-11-30  Rocky Bernstein <rocky@gnu.org>
 @@ -5804,7 +5803,7 @@
- 
+
  	* trepan/io/fifoclient.py, trepan/io/fifoserver.py,
  	trepan/io/input.py, trepan/io/output.py, trepan/io/scriptin.py,
--	trepan/io/tcpclient.py, trepan/io/tcpserver.py, trepan/lib/eval.py: 
+-	trepan/io/tcpclient.py, trepan/io/tcpserver.py, trepan/lib/eval.py:
 +	trepan/io/tcpclient.py, trepan/io/tcpserver.py, trepan/lib/eval.py:
  	Fix macro processing error messages better. pyflakes io directory.
- 
+
  2013-03-23  Rocky Bernstein <rocky@gnu.org>
 @@ -5912,7 +5911,7 @@
  2013-03-22  Rocky Bernstein <rocky@gnu.org>
- 
+
  	* test/unit/test-disassemble.py, trepan/io/stringarray.py,
--	trepan/lib/disassemble.py, trepan/processor/command/disassemble.py: 
+-	trepan/lib/disassemble.py, trepan/processor/command/disassemble.py:
 +	trepan/lib/disassemble.py, trepan/processor/command/disassemble.py:
  	Fix bugs in disassemble command and add test for it.
- 
+
  2013-03-22  Rocky Bernstein <rocky@gnu.org>
 @@ -6120,7 +6119,7 @@
  2013-03-13  Rocky Bernstein <rocky@gnu.org>
- 
+
  	* trepan/processor/command/display.py,
 -	trepan/processor/command/eval.py: Knock off another two debuger
 +	trepan/processor/command/eval.py: Knock off another two debugger
  	commands
- 
+
  2013-03-13  Rocky Bernstein <rocky@gnu.org>
 @@ -6140,7 +6139,7 @@
  2013-03-12  Rocky Bernstein <rocky@gnu.org>
- 
+
  	* trepan/processor/cmdproc.py, trepan/processor/command/down.py,
--	trepan/processor/command/frame.py, trepan/processor/command/up.py: 
+-	trepan/processor/command/frame.py, trepan/processor/command/up.py:
 +	trepan/processor/command/frame.py, trepan/processor/command/up.py:
  	Add "up", "down" and "frame" commands
- 
+
  2013-03-12  Rocky Bernstein <rocky@gnu.org>
 @@ -6161,12 +6160,12 @@
  	trepan/processor/cmdproc.py, trepan/processor/command/backtrace.py,
  	trepan/processor/command/continue.py,
  	trepan/processor/command/help.py, trepan/processor/command/list.py,
--	trepan/processor/command/next.py, trepan/processor/command/step.py: 
+-	trepan/processor/command/next.py, trepan/processor/command/step.py:
 +	trepan/processor/command/next.py, trepan/processor/command/step.py:
  	Debugger starts working! Start to fill in the vast number commands.
- 
+
  2013-03-11  rocky <rocky@gnu.org>
- 
--	* trepan/api.py, trepan/post_mortem.py, trepan/processor/cmdproc.py: 
+
+-	* trepan/api.py, trepan/post_mortem.py, trepan/processor/cmdproc.py:
 +	* trepan/api.py, trepan/post_mortem.py, trepan/processor/cmdproc.py:
  	Add api and post-mortem
- 
+
  2013-03-11  Rocky Bernstein <rocky@gnu.org>
 @@ -6220,7 +6219,7 @@
- 
+
  	* test/unit/cmdhelper.py, trepan/interface.py,
  	trepan/interfaces/__init__.py, trepan/interfaces/user.py: Start
 -	converting interface code, and user inteface in particular.
 +	converting interface code, and user interface in particular.
- 
+
  2013-03-07  rocky <rocky@gnu.org>
- 
+
 @@ -6253,14 +6252,14 @@
  	* .gitignore, Makefile, test/unit/test-io-input.py,
  	trepan/__init__.py, trepan/io/__init__.py, trepan/io/{dbg_input.py
  	=> input.py}, trepan/io/{dbg_output.py => output.py},
--	trepan/io/scriptin.py, trepan/lib/__init__.py, trepan/misc.py: 
+-	trepan/io/scriptin.py, trepan/lib/__init__.py, trepan/misc.py:
 +	trepan/io/scriptin.py, trepan/lib/__init__.py, trepan/misc.py:
  	dbg_{input,output} -> {input,output}. misc.py, __init__.py: start to
 -	simplfy and DRY code
 +	simplify and DRY code
- 
+
  2013-02-24  rocky <rocky@gnu.org>
- 
+
  	* .gitignore, Makefile, NEWS, README.txt, __init__.py,
--	__pkginfo__.py, make-check-filter.py, setup.py, trepan/VERSION.py: 
+-	__pkginfo__.py, make-check-filter.py, setup.py, trepan/VERSION.py:
 +	__pkginfo__.py, make-check-filter.py, setup.py, trepan/VERSION.py:
  	Package Administrivia
- 
+
  2013-02-24  rocky <rocky@gnu.org>
 @@ -6273,4 +6272,3 @@
  2013-02-24  rocky <rocky@gnu.org>
- 
+
  	* Convert more stuff
 -
