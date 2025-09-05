@@ -63,7 +63,7 @@ def next_linestart(co, offset: int, count=1) -> int:
     linestarts = dict(opcode_module.findlinestarts(co))
     n = len(code)
     # contains_cond_jump = False
-    while offset < len(code):
+    while offset < n:
         if offset in linestarts:
             count -= 1
             if 0 == count:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#   Copyright (C) 2013, 2015, 2017, 2019, 2020, 2023-2024
+#   Copyright (C) 2013, 2015, 2017, 2019, 2020, 2023-2025
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -21,12 +21,15 @@
 import pyficache
 from pygments import format, highlight, lex, __version__ as pygments_version
 import re
+import sys
 
 from pygments.console import ansiformat
 from pygments.filter import Filter
 from pygments.formatter import Formatter
 from pygments.formatters import Terminal256Formatter, TerminalFormatter
-from pygments.formatters.terminal import TERMINAL_COLORS
+
+
+from pygments.formatters.terminal import TERMINAL_COLORS  # type: ignore
 from pygments.lexers import PythonLexer, RstLexer
 from pygments.token import (
     Comment,
@@ -409,6 +412,7 @@ def format_python(python_str: str, style) -> str:
         return python_str
     terminal_formatter = Terminal256Formatter(style=style)
     return highlight(python_str, python_lexer, terminal_formatter)
+
 
 def rst_text(text, mono, width=80):
     if mono:

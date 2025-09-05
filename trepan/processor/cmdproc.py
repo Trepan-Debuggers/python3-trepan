@@ -42,10 +42,9 @@ from trepan.processor.complete_rl import completer
 from trepan.processor.print import print_location
 from trepan.vprocessor import Processor
 
-
-def get_srcdir() -> str:
-    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
-    return osp.realpath(filename)
+# PASSTHROUGH_EXCEPTIONS allows other debuggers which use this as a codebase, e.g.
+# the Mathics3 debugger, to register additional exceptions that can be raised.
+PASSTHROUGH_EXCEPTIONS = set()
 
 
 # arg_split culled from ipython's routine
@@ -700,8 +699,9 @@ class CommandProcessor(Processor):
                         ):
                             # Let these exceptions propagate through
                             raise
-                        except Exception:
-                            self.errmsg("INTERNAL ERROR: " + traceback.format_exc())
+                        except Exception as e:
+                            if e.__class__ in PASSTHROUGH_EXCEPTIONS:
+                                self.errmsg("INTERNAL ERROR: " + traceback.format_exc())
                             pass
                         pass
                     pass

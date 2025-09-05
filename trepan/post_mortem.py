@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2013-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ def get_last_or_frame_exception():
     is where we want to look."""
 
     try:
-        if inspect.istraceback(sys.last_traceback):
+        if sys.last_traceback is not None and inspect.istraceback(sys.last_traceback):
             # We do have a traceback so prefer that.
             return sys.last_type, sys.last_value, sys.last_traceback
     except AttributeError:
@@ -149,34 +149,35 @@ def post_mortem(exc=None, frameno=1, dbg=None):
     #     dbg._sys_argv = list(dbg.program_sys_argv)
     #     dbg._sys_argv[:0] = [__title__]
 
-    try:
-        # # FIXME: This can be called from except hook in which case we
-        # # need this. Dunno why though.
-        # try:
-        #     _pydb_trace.set_trace(t.tb_frame)
-        # except Exception:
-        #     pass
+    if exc_tb is not None:
+        try:
+            # # FIXME: This can be called from except hook in which case we
+            # # need this. Dunno why though.
+            # try:
+            #     _pydb_trace.set_trace(t.tb_frame)
+            # except Exception:
+            #     pass
 
-        # Possibly a bug in Python 2.5. Why f.f_lineno is
-        # not always equal to t.tb_lineno, I don't know.
-        f = exc_tb.tb_frame
-        if f and f.f_lineno != exc_tb.tb_lineno:
-            f = f.f_back
-        dbg.core.processor.event_processor(f, "exception", exc, "Trepan3k:pm")
-    except DebuggerRestart:
-        while True:
-            sys.argv = list(dbg._program_sys_argv)
-            dbg.msg(
-                "Restarting %s with arguments:\n\t%s"
-                % (dbg.filename(dbg.mainpyfile), " ".join(dbg._program_sys_argv[1:]))
-            )
-            try:
-                dbg.run_script(dbg.mainpyfile)
-            except DebuggerRestart:
+            # Possibly a bug in Python 2.5. Why f.f_lineno is
+            # not always equal to t.tb_lineno, I don't know.
+            f = exc_tb.tb_frame
+            if f and f.f_lineno != exc_tb.tb_lineno:
+                f = f.f_back
+            dbg.core.processor.event_processor(f, "exception", exc, "Trepan3k:pm")
+        except DebuggerRestart:
+            while True:
+                sys.argv = list(dbg._program_sys_argv)
+                dbg.msg(
+                    "Restarting %s with arguments:\n\t%s"
+                    % (dbg.filename(dbg.mainpyfile), " ".join(dbg._program_sys_argv[1:]))
+                )
+                try:
+                    dbg.run_script(dbg.mainpyfile)
+                except DebuggerRestart:
+                    pass
                 pass
+        except DebuggerQuit:
             pass
-    except DebuggerQuit:
-        pass
     return
 
 
@@ -198,7 +199,8 @@ def uncaught_exception(dbg, tb_fn=None):
         print("uncaught exception. entering post mortem debugging")
         pass
     dbg.core.execution_status = "Terminated with unhandled exception %s" % exc_type
-    dbg.core.processor.event_processor(exc_tb.tb_frame, "exception", exc, "Trepan3k:pm")
+    if exc_tb is not None:
+        dbg.core.processor.event_processor(exc_tb.tb_frame, "exception", exc, "Trepan3k:pm")
     print("Post mortem debugger finished.")
     return
 

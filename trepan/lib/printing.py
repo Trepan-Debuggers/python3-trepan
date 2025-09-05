@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2007-2010, 2015, 2020, 2023-2024
+#  Copyright (C) 2007-2010, 2015, 2020, 2023-2025
 #  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -17,21 +17,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
-import types
+import pprint
 
 
 def print_dict(s, obj, title) -> str:
-    if hasattr(obj, "__dict__"):
-        obj = obj.__dict__
-        pass
-    if isinstance(obj, dict):
-        s += "\n%s:\n" % title
-        keys = list(obj.keys())
-        keys.sort()
-        for key in keys:
-            s += "  %s:\t%s\n" % (repr(key), obj[key])
-            pass
-        pass
+    s += "\n%s:\n" % title
+    s += pprint.pformat(obj)
     return s
 
 

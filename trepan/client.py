@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2013-2017, 2021, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2009, 2013-2017, 2021, 2023-2025 Rocky Bernstein
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
