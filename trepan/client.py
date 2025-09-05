@@ -21,7 +21,6 @@
 import sys
 import time
 from optparse import OptionParser
-from typing import Final
 
 # Our local modules
 from trepan.api import DEFAULT_DEBUG_PORT
@@ -89,7 +88,7 @@ def process_options(pkg_version, sys_argv, option_list=None):
 #
 
 # DEFAULT_CLIENT_CONNECTION_OPTS = {'open': True, 'IO': 'FIFO'}
-DEFAULT_CLIENT_CONNECTION_OPTS: Final = {
+DEFAULT_CLIENT_CONNECTION_OPTS = {
     "open": True,
     "IO": "TCP",
     "HOST": "127.0.0.1",

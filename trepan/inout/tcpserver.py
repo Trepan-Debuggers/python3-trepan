@@ -17,7 +17,6 @@
 
 import socket, errno
 
-from typing import Final
 from trepan.lib import default as Mdefault
 from trepan import misc as Mmisc
 from trepan.inout import tcpfns as Mtcpfns
@@ -28,7 +27,7 @@ from trepan.inout.base import DebuggerInOutBase
 class TCPServer(DebuggerInOutBase):
     """Debugger Server Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS: Final = {"open": True, "socket": None}
+    DEFAULT_INIT_OPTS = {"open": True, "socket": None}
 
     def __init__(self, inout=None, opts=None):
         get_option = lambda key: Mmisc.option_set(opts, key, self.DEFAULT_INIT_OPTS)

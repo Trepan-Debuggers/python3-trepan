@@ -16,7 +16,6 @@
 """Debugger Socket Input/Output Interface."""
 
 import socket
-from typing import Final
 
 from trepan.lib.default import CLIENT_SOCKET_OPTS
 from trepan.inout import tcpfns as Mtcpfns
@@ -27,7 +26,7 @@ from trepan.misc import option_set
 class TCPClient(DebuggerInOutBase):
     """Debugger Client Input/Output Socket."""
 
-    DEFAULT_INIT_OPTS: Final = {"open": True}
+    DEFAULT_INIT_OPTS = {"open": True}
 
     def __init__(self, inout=None, opts=None):
         get_option = lambda key: option_set(opts, key, CLIENT_SOCKET_OPTS)

@@ -8,8 +8,6 @@ This is a debugger location along with:
  - a range or count for "list" commands
 """
 
-from typing import Final
-
 import sys
 from spark_parser.ast import AST
 
@@ -17,7 +15,7 @@ from trepan.processor.parse.scanner import LocationScanner, ScannerError
 
 from spark_parser import GenericASTBuilder
 
-DEFAULT_DEBUG: Final = {
+DEFAULT_DEBUG = {
     "rules": False,
     "transition": False,
     "reduce": False,

@@ -16,7 +16,6 @@
 """Debugger FIFO Input/Output interface."""
 
 import os
-from typing import Final
 
 if hasattr(os, "mkfifo"):
     import atexit
@@ -29,7 +28,7 @@ if hasattr(os, "mkfifo"):
     class FIFOServer(DebuggerInOutBase):
         """Debugger Server Input/Output Socket."""
 
-        DEFAULT_INIT_OPTS: Final = {"open": True}
+        DEFAULT_INIT_OPTS = {"open": True}
 
         def __init__(self, opts=None):
             get_option = lambda key: option_set(opts, key, self.DEFAULT_INIT_OPTS)

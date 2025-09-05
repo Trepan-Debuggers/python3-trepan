@@ -19,7 +19,6 @@ import linecache
 import sys
 import traceback
 from reprlib import Repr
-from typing import Final
 
 import pyficache
 
@@ -77,7 +76,7 @@ def resolve_name(obj, command_name):
 
 
 # Default settings for command processor method call
-DEFAULT_PROC_OPTS: Final = {
+DEFAULT_PROC_OPTS = {
     # A list of debugger initialization files to read on first command
     # loop entry.  Often this something like [~/.trepanrc] which the
     # front-end sets.
