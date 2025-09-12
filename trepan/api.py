@@ -36,9 +36,8 @@ if necessary, first.
 
 import os
 import sys
-from typing import Callable, Optional
-import traceback
 from typing import Callable
+import traceback
 
 from trepan.debugger import Trepan, debugger_obj
 from trepan.interfaces.server import ServerInterface

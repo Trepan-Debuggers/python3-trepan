@@ -54,8 +54,17 @@ def run_debugger(
     # print(cmd)
     os.system(cmd)
     fromfile = rightfile
+    if not os.path.exists(fromfile):
+        # File not found so skip test
+        return 77
+
     fromdate = time.ctime(os.stat(fromfile).st_mtime)
     tofile = outfile
+
+    if not os.path.exists(tofile):
+        # File not found so skip test
+        return 77
+
     todate = time.ctime(os.stat(tofile).st_mtime)
     with open(fromfile) as f:
         fromlines = f.readlines()

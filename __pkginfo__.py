@@ -23,17 +23,13 @@
 # still is some room for improvement.
 
 import os.path as osp
-import sys
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 decompiler = "uncompyle6 >= 3.9.2"
 
-SYS_VERSION = sys.version_info[0:2]
-if SYS_VERSION <= (3, 2):
-    pygments_version = "== 1.6"
-else:
-    pygments_version = ">= 2.2.0"
-    if (3, 7) <= SYS_VERSION < (3, 9):
-        decompiler = "decompyle3 >= 3.8.0"
+pygments_version = "==2.11.2" if IS_PYPY else ">=2.2.0"
+if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
+    decompiler = "decompyle3 >= 3.8.0"
 
 
 # Python-version | package  | last-version |
