@@ -214,7 +214,7 @@ def debugger_on_post_mortem():
     return
 
 
-def run_call(func, *args, debug_opts=None, start_opts=None, **kwds):
+def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
     the place that this appears in your program.
@@ -232,14 +232,7 @@ def run_call(func, *args, debug_opts=None, start_opts=None, **kwds):
     return
 
 
-def run_eval(
-    expression,
-    debug_opts = None,
-    start_opts = None,
-    globals_ = None,
-    locals_ = None,
-    _ = None,
-):
+def run_eval(expression, debug_opts = DEBUGGER_SETTINGS, start_opts = None, globals_ = None, locals_ = None, _ = None):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
     this appears in your program.
@@ -260,27 +253,6 @@ def run_eval(
         traceback.print_exc()
     finally:
         dbg.core.trace_hook_suspend = False
-    return
-
-
-def run_call(
-    func, *args, debug_opts = DEBUGGER_SETTINGS, _ = None,
-    **kwds
-):
-    """Call the function (a function or method object, not a string)
-    with the given arguments starting with the statement after
-    the place that this appears in your program.
-
-    When run_call() returns, it returns whatever the function call
-    returned.  The debugger prompt appears as soon as the function is
-    entered."""
-
-    dbg = Trepan(opts=debug_opts)
-    try:
-        return dbg.run_call(func, *args, **kwds)
-    except Exception:
-        uncaught_exception(dbg)
-        pass
     return
 
 

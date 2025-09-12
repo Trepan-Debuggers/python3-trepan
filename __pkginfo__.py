@@ -23,7 +23,7 @@
 # still is some room for improvement.
 
 import os.path as osp
-import sys
+from xdis import PYTHON_VERSION_TRIPLE
 
 decompiler = "uncompyle6 >= 3.9.2"
 
@@ -40,7 +40,7 @@ pygments_version = "Pygments==1.6"
 
 # Things that change more often go here.
 copyright = (
-    """Copyright (C) 2013, 2015-2021, 2023-2024 Rocky Bernstein <rocky@gnu.org>."""
+    """Copyright (C) 2013, 2015-2021, 2023-2025 Rocky Bernstein <rocky@gnu.org>."""
 )
 classifiers = [
     "Development Status :: 5 - Production/Stable",
