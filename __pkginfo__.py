@@ -23,12 +23,11 @@
 # still is some room for improvement.
 
 import os.path as osp
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
+from xdis import PYTHON_VERSION_TRIPLE
 
 decompiler = "uncompyle6 >= 3.9.2"
 
-SYS_VERSION = sys.version_info[0:2]
-if (3, 0) <= SYS_VERSION < (3, 3):
+if (3, 0) <= PYTHON_VERSION_TRIPLE < (3, 3):
     pygments_version = ">1.6,< 2.1"  # version hacked by rocky
 else:
     pygments_version = ">= 2.2.0"
@@ -43,7 +42,7 @@ else:
 
 # Things that change more often go here.
 copyright = (
-    """Copyright (C) 2013, 2015-2021, 2023-2024 Rocky Bernstein <rocky@gnu.org>."""
+    """Copyright (C) 2013, 2015-2021, 2023-2025 Rocky Bernstein <rocky@gnu.org>."""
 )
 classifiers = [
     "Development Status :: 5 - Production/Stable",
