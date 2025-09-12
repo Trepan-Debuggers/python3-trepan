@@ -38,6 +38,7 @@ import os
 import sys
 from typing import Callable, Optional
 import traceback
+from typing import Callable
 
 from trepan.debugger import Trepan, debugger_obj
 from trepan.interfaces.server import ServerInterface
@@ -222,11 +223,11 @@ def debugger_on_post_mortem():
 
 def run_eval(
     expression,
-    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
-    start_opts: Optional[dict] = None,
-    globals_: Optional[dict] = None,
-    locals_: Optional[dict] = None,
-    tb_fn: Optional[Callable] = None,
+    debug_opts = DEBUGGER_SETTINGS,
+    start_opts = None,
+    globals_ = None,
+    locals_ = None,
+    tb_fn = None,
 ):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
@@ -254,8 +255,8 @@ def run_eval(
 def run_call(
     func: Callable,
     *args,
-    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
-    _: Optional[dict] = None,
+    debug_opts= DEBUGGER_SETTINGS,
+    start_opts = None,
     **kwds,
 ):
     """Call the function (a function or method object, not a string)
@@ -277,7 +278,7 @@ def run_call(
 
 def run_exec(
     statement,
-    debug_opts: Optional[dict] = DEBUGGER_SETTINGS,
+    debug_opts = DEBUGGER_SETTINGS,
     start_opts=None,
     globals_=None,
     locals_=None,
