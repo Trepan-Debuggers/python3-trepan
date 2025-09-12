@@ -1,7 +1,5 @@
 """Unit test for "trepan.frame" """
 import inspect
-import pytest
-import platform
 
 from trepan.lib.stack import count_frames, is_eval_or_exec_stmt
 
@@ -15,8 +13,6 @@ def test_count_frames():
     return
 
 
-@pytest.mark.skipif(platform.python_implementation() == "GraalVM",
-                    reason="exec/eval detection doesn't work for Graal (JVM) bytecode")
 def test_stack_misc():
     f = inspect.currentframe()
     # assert "test_stack_misc" == get_call_function_name(f))

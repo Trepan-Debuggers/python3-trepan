@@ -23,12 +23,10 @@
 # still is some room for improvement.
 
 import os.path as osp
-from xdis import PYTHON_VERSION_TRIPLE
 
 decompiler = "uncompyle6 >= 3.9.2"
 
-SYS_VERSION = sys.version_info[0:2]
-pygments_version = "Pygments==1.6"
+pygments_version = "pygments==1.6"
 
 
 # Python-version | package  | last-version |
