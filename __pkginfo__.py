@@ -23,7 +23,7 @@
 # still is some room for improvement.
 
 import os.path as osp
-import sys
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 decompiler = "uncompyle6 >= 3.9.2"
 

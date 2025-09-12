@@ -234,7 +234,7 @@ def run_call(func, *args, debug_opts=None, start_opts=None, **kwds):
 
 def run_eval(
     expression,
-    debug_opts = None,
+    debug_opts = DEBUGGER_SETTINGS,
     start_opts = None,
     globals_ = None,
     locals_ = None,
@@ -263,10 +263,7 @@ def run_eval(
     return
 
 
-def run_call(
-    func, *args, debug_opts = DEBUGGER_SETTINGS, _ = None,
-    **kwds
-):
+def run_call(func, *args, debug_opts= DEBUGGER_SETTINGS, start_opts = None, **kwds):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
     the place that this appears in your program.
