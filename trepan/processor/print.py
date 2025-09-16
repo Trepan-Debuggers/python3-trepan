@@ -272,7 +272,7 @@ def print_location(proc_obj):
                     # try with good ol linecache and consider fixing pyficache
                     lines = linecache.getlines(filename)
                     temp_name = filename
-                if lines:
+                if lines and not filename.endswith(".pyasm"):
                     # FIXME: DRY code with version in cmdproc.py print_location
                     prefix = osp.basename(temp_name).split(".")[0]
                     fd = NamedTemporaryFile(

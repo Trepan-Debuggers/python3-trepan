@@ -232,7 +232,14 @@ def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds)
     return
 
 
-def run_eval(expression, debug_opts = DEBUGGER_SETTINGS, start_opts = None, globals_ = None, locals_ = None, _ = None):
+def run_eval(
+    expression,
+    debug_opts = DEBUGGER_SETTINGS,
+    start_opts = None,
+    globals_ = None,
+    locals_ = None,
+    _ = None,
+):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
     this appears in your program.
