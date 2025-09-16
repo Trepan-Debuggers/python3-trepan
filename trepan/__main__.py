@@ -25,8 +25,8 @@ import tempfile
 import pyficache
 
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
+from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
-
 from trepan.client import run
 from trepan.clifns import whence_file
 from trepan.debugger import Trepan
@@ -183,31 +183,39 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
-                        f"{__title__}: error decompiling '{mainpyfile}'",
+                        f"{__title__}: error decompiling '{mainpyfile}'; disassembling instead.",
                         file=sys.stderr,
                     )
-                    sys.exit(1)
-                    return
+                    info = disassemble_file(mainpyfile, outstream=fd, asm_format="extended-bytes", show_source=False)
+                    code_module = info[1]
+                    embeded_filename = code_module.co_filename
 
-                # # Get the line associations between the original and
-                # # decompiled program
-                # mapline = linemap_io.getvalue()
-                # fd.write(mapline + "\n\n")
-                # linemap = eval(mapline[3:])
-                mainpyfile = fd.name
-                fd.close()
+                    old_tempfile = fd.name
+                    fd.close()
 
-                # Since we are actually running the recreated source,
-                # there is little no need to remap line numbers.
-                # The mapping is given at the end of the file.
-                # However we should consider adding this information
-                # and original file name.
+                    if old_tempfile.endswith(".py"):
+                        pyasm_name = old_tempfile[:-3] + ".pyasm"
+                        try:
+                            os.rename(old_tempfile, pyasm_name)
+                        except Exception as e:
+                            print(
+                                f"{__title__}: error renaming '{old_tempfile}' to '{pyasm_name}': {e}",
+                                file=sys.stderr,
+                            )
+                        else:
+                            print(
+                                "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
+                                 % (__title__, embeded_filename, pyasm_name),
+                                 file=sys.stderr,
+                            )
+                            pyficache.remap_file(pyasm_name, embeded_filename)
 
-                print(
-                    "%s: couldn't find Python source so we recreated it at '%s'"
-                    % (__title__, mainpyfile),
-                    file=sys.stderr,
-                )
+                else:
+                    print(
+                        "%s: couldn't find Python source so we recreated it at '%s'"
+                        % (__title__, mainpyfile),
+                        file=sys.stderr,
+                    )
 
                 pass
 
