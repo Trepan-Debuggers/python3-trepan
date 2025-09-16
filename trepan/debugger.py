@@ -35,6 +35,7 @@ import types
 import pyficache
 import tracer
 from tracer.tracefilter import TraceFilter
+from xdis.load import check_object_path, load_module
 
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
@@ -42,6 +43,7 @@ from trepan.lib.core import TrepanCore
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
+from trepan.lib.file import is_compiled_py
 from trepan.lib.sighandler import SignalManager
 from trepan.misc import option_set
 
@@ -55,6 +57,13 @@ except ImportError:
     pass
 
 debugger_obj = None
+
+
+
+def get_code_from_pyc(filename) -> types.CodeType:
+    obj_path = check_object_path(filename)
+    info = load_module(obj_path)
+    return info[3]
 
 
 class Trepan:
@@ -308,7 +317,11 @@ class Trepan:
         retval = False
         self.core.execution_status = "Running"
         try:
-            compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
+            if not is_compiled_py(self.mainpyfile):
+                compiled = compile(open(self.mainpyfile).read(), self.mainpyfile, "exec")
+            else:
+                compiled = self.mainpyfile
+
         except SyntaxError:
             self.intf[0].errmsg("Python can't compile %s" % self.mainpyfile)
             self.intf[0].errmsg(sys.exc_info()[1])
@@ -331,6 +344,8 @@ class Trepan:
             self.core.execution_status = "Restart requested"
             raise DebuggerRestart
         else:
+            if is_compiled_py(self.mainpyfile):
+                compiled = get_code_from_pyc(compiled)
             self.core.start(start_opts)
             exec(compiled, globals_, locals_)
             retval = True
