@@ -183,7 +183,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
-                        "%s{__title__}: error decompiling '{mainpyfile}'; disassesembling instead" % __title__,
+                        "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead" % __title__,
                         file=sys.stderr,
                     )
                     info = disassemble_file(mainpyfile, outstream=fd, asm_format="extended-bytes", show_source=False)
