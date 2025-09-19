@@ -109,13 +109,16 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
-                    print(f"Bytecode is pypy {is_pypy}, but we are {IS_PYPY}.")
+                    bytecode_pypy = "" if is_pypy else "not "
+                    running_pypy = "" if IS_PYPY else "not "
+                    print(f"Bytecode is for Version {version_tuple_to_str(end=2)} {bytecode_pypy}running PyPY, but we are {running_pypy}running PyPy.")
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
+                    bytecode_pypy = " PyPy" if is_pypy else ""
                     print(
-                        f"Bytecode is for version {version_tuple_to_str(python_version)} but we are "
-                        f"version {version_tuple_to_str()}."
+                        f"Bytecode is for version {version_tuple_to_str(python_version, end=2)}{bytecode_pypy}, but we are "
+                        f"version {version_tuple_to_str(end=2)}{bytecode_pypy}."
                     )
                     print("For a cross-version debugger, trepan-xpy with x-python might work.")
                     sys.exit(2)
