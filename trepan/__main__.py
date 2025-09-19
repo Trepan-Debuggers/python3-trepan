@@ -15,8 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""The command-line interface to the debugger.
-"""
+"""The command-line interface to the debugger."""
 import os
 import os.path as osp
 import sys
@@ -90,7 +89,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
-                print("%s: Python script file '{mainpyfile}' does not exist" % __title__)
+                print(
+                    "%s: Python script file '{mainpyfile}' does not exist" % __title__
+                )
                 sys.exit(1)
             elif not is_readable:
                 print("%s: Can't read Python script file '{mainpyfile}'" % __title__)
@@ -109,15 +110,28 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
-                    print("Bytecode is pypy %s, but we are %s." % (is_pypy, IS_PYPY))
+                    bytecode_pypy = "" if is_pypy else "not "
+                    running_pypy = "" if IS_PYPY else "not "
+                    print(
+                        "Bytecode is for Version %s %srunning PyPY, but we are %srunning PyPy."
+                        % (version_tuple_to_str(end=2), bytecode_pypy, running_pypy)
+                    )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
+                    bytecode_pypy = " PyPy" if is_pypy else ""
                     print(
-                        "Bytecode is for version %s but we are version %s."
-                        % (python_version, version_tuple_to_str())
+                        "Bytecode is for version %s%s, but we are version %s%s."
+                        % (
+                            version_tuple_to_str(python_version, end=2),
+                            bytecode_pypy,
+                            version_tuple_to_str(end=2),
+                            bytecode_pypy,
+                        )
                     )
-                    print("For a cross-version debugger, trepan-xpy with x-python might work.")
+                    print(
+                        "For a cross-version debugger, trepan-xpy with x-python might work."
+                    )
                     sys.exit(2)
 
                 py_file = co.co_filename
@@ -183,10 +197,16 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
-                        "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead" % __title__,
+                        "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead"
+                        % __title__,
                         file=sys.stderr,
                     )
-                    info = disassemble_file(mainpyfile, outstream=fd, asm_format="extended-bytes", show_source=False)
+                    info = disassemble_file(
+                        mainpyfile,
+                        outstream=fd,
+                        asm_format="extended-bytes",
+                        show_source=False,
+                    )
                     code_module = info[1]
                     embeded_filename = code_module.co_filename
 
@@ -199,14 +219,15 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                             os.rename(old_tempfile, pyasm_name)
                         except Exception as e:
                             print(
-                                "%s: error renaming '%s' to '%s: %s" % (__title__, old_tempfile, pyasm_name, e),
+                                "%s: error renaming '%s' to '%s: %s"
+                                % (__title__, old_tempfile, pyasm_name, e),
                                 file=sys.stderr,
                             )
                         else:
                             print(
                                 "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
-                                 % (__title__, embeded_filename, pyasm_name),
-                                 file=sys.stderr,
+                                % (__title__, embeded_filename, pyasm_name),
+                                file=sys.stderr,
                             )
                             pyficache.remap_file(pyasm_name, embeded_filename)
 
