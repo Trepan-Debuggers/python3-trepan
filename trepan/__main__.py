@@ -235,7 +235,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                             pyficache.remap_file(pyasm_name, embedded_filename)
 
                 else:
-                    embedded_filename = co.co_filename
                     print(
                         "%s: couldn't find Python source, so we recreated it at '%s'."
                         % (__title__, mainpyfile),
@@ -243,6 +242,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     )
                     decompile_file = fd.name
                     fd.close()
+                    embedded_filename = co.co_filename
                     pyficache.remap_file(decompile_file, embedded_filename)
                     pyficache.remap_file_lines(
                         embedded_filename,
