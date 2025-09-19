@@ -26,7 +26,7 @@ import os.path as osp
 
 decompiler = "uncompyle6 >= 3.9.2"
 
-pygments_version = "pygments==1.6"
+pygments_version = "pygments>=1.6"
 
 
 # Python-version | package  | last-version |
