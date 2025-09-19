@@ -90,11 +90,14 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             is_readable = readable(mainpyfile)
             if is_readable is None:
                 print(
-                    "%s: Python script file '%s' does not exist." % (__title__, mainpyfile)
+                    "%s: Python script file '%s' does not exist."
+                    % (__title__, mainpyfile)
                 )
                 sys.exit(1)
             elif not is_readable:
-                print("%s: Can't read Python script file '%s'." % (__title__, mainpyfile))
+                print(
+                    "%s: Can't read Python script file '%s'." % (__title__, mainpyfile)
+                )
                 sys.exit(1)
                 return
 
@@ -194,7 +197,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 # from io import StringIO
                 # linemap_io = StringIO()
                 try:
-                    decompile_file(mainpyfile, fd.file, mapstream=fd)
+                    linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
                         "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead"
@@ -208,7 +211,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         show_source=False,
                     )
                     code_module = info[1]
-                    embeded_filename = code_module.co_filename
+                    embedded_filename = code_module.co_filename
 
                     old_tempfile = fd.name
                     fd.close()
@@ -225,19 +228,32 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                             )
                         else:
                             print(
-                                "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
-                                % (__title__, embeded_filename, pyasm_name),
+                                "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'."
+                                % (__title__, embedded_filename, pyasm_name),
                                 file=sys.stderr,
                             )
-                            pyficache.remap_file(pyasm_name, embeded_filename)
+                            pyficache.remap_file(pyasm_name, embedded_filename)
 
                 else:
+                    embedded_filename = co.co_filename
                     print(
-                        "%s: couldn't find Python source so we recreated it at '%s'"
+                        "%s: couldn't find Python source, so we recreated it at '%s'."
                         % (__title__, mainpyfile),
                         file=sys.stderr,
                     )
-
+                    decompile_file = fd.name
+                    fd.close()
+                    pyficache.remap_file(decompile_file, embedded_filename)
+                    pyficache.remap_file_lines(
+                        embedded_filename,
+                        decompile_file,
+                        (
+                            (orig_lineno, mapped_lineno)
+                            for orig_lineno, mapped_lineno in linemaps[
+                                0
+                            ].source_linemap.items()
+                        ),
+                    )
                 pass
 
         # If mainpyfile is an optimized Python script try to find and
