@@ -144,6 +144,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     raise IOError(
                         f"Python file name embedded in code {try_file} not found"
                     )
+            except ImportError as e:
+                print(str(e))
+                sys.exit(3)
             except IOError:
                 decompiler = "uncompyle6"
                 try:
@@ -154,12 +157,17 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
                         decompiler = "decompyle3"
                 except ImportError:
-                    print(
-                        "%s: Compiled python file '%s', but %s not found"
-                        % (__title__, mainpyfile, decompiler),
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
+                    if PYTHON_VERSION_TRIPLE >= (3, 9):
+                        print(
+                            "%s: Decompiler not available for %s." % (__title__, version_tuple_to_str()),
+                            file=sys.stderr,
+                            )
+                    else:
+                        print(
+                            "%s: Compiled python file '%s', but %s not found"
+                            % (__title__, mainpyfile, decompiler),
+                            file=sys.stderr,
+                        )
 
                 short_name = osp.basename(mainpyfile).strip(".pyc")
                 fd = tempfile.NamedTemporaryFile(
