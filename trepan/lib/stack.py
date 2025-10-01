@@ -25,6 +25,7 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
+from types import FrameType
 
 import xdis
 from xdis import IS_PYPY, get_opcode
@@ -62,7 +63,7 @@ except ImportError:
 _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 
-def count_frames(frame, count_start=0):
+def count_frames(frame: FrameType, count_start=0) -> int:
     """Return a count of the number of frames"""
     count = -count_start
     for _ in range(1000):
