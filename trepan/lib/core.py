@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2016, 2020 2023-2024
+#   Copyright (C) 2008-2010, 2013-2016, 2020 2023-2025
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,7 @@ import os
 import os.path as osp
 import sys
 import threading
+from types import FrameType
 from typing import Any, Dict, NewType, Optional
 
 # External packages
@@ -187,9 +188,11 @@ class TrepanCore:
 
         return canonic
 
-    def canonic_filename(self, frame):
+    def canonic_filename(self, frame: Optional[FrameType]) -> str:
         """Picks out the file name from `frame' and returns its
         canonic() value, a string."""
+        if frame is None:
+            return "?? - No frame"
         return self.canonic(frame.f_code.co_filename)
 
     def filename(self, filename=None):

@@ -90,10 +90,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
-                print(f"{__title__}: Python script file '{mainpyfile}' does not exist")
+                print(f"{__title__}: Python script file '{mainpyfile}' does not exist.")
                 sys.exit(1)
             elif not is_readable:
-                print(f"{__title__}: Can't read Python script file '{mainpyfile}'")
+                print(f"{__title__}: Can't read Python script file '{mainpyfile}.'")
                 sys.exit(1)
                 return
 
@@ -144,6 +144,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     raise IOError(
                         f"Python file name embedded in code {try_file} not found"
                     )
+            except ImportError as e:
+                print(str(e))
+                sys.exit(3)
             except IOError:
                 decompiler = "uncompyle6"
                 try:
@@ -154,12 +157,17 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
                         decompiler = "decompyle3"
                 except ImportError:
-                    print(
-                        "%s: Compiled python file '%s', but %s not found"
-                        % (__title__, mainpyfile, decompiler),
-                        file=sys.stderr,
-                    )
-                    sys.exit(1)
+                    if PYTHON_VERSION_TRIPLE >= (3, 9):
+                        print(
+                            "%s: Decompiler not available for %s." % (__title__, version_tuple_to_str()),
+                            file=sys.stderr,
+                            )
+                    else:
+                        print(
+                            "%s: Compiled python file '%s', but %s not found"
+                            % (__title__, mainpyfile, decompiler),
+                            file=sys.stderr,
+                        )
 
                 short_name = osp.basename(mainpyfile).strip(".pyc")
                 fd = tempfile.NamedTemporaryFile(
@@ -184,6 +192,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 # linemap_io = StringIO()
                 try:
                     decompile_file(mainpyfile, fd.file, mapstream=fd)
+                    linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
                 except Exception:
                     print(
                         f"{__title__}: error decompiling '{mainpyfile}'; disassembling instead.",
@@ -191,7 +200,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     )
                     info = disassemble_file(mainpyfile, outstream=fd, asm_format="extended-bytes", show_source=False)
                     code_module = info[1]
-                    embeded_filename = code_module.co_filename
+                    embedded_filename = code_module.co_filename
 
                     old_tempfile = fd.name
                     fd.close()
@@ -208,18 +217,31 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         else:
                             print(
                                 "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
-                                 % (__title__, embeded_filename, pyasm_name),
+                                 % (__title__, embedded_filename, pyasm_name),
                                  file=sys.stderr,
                             )
-                            pyficache.remap_file(pyasm_name, embeded_filename)
+                            pyficache.remap_file(pyasm_name, embedded_filename)
 
                 else:
                     print(
-                        "%s: couldn't find Python source so we recreated it at '%s'"
+                        "%s: couldn't find Python source, so we recreated it at '%s'."
                         % (__title__, mainpyfile),
                         file=sys.stderr,
                     )
-
+                    decompile_file = fd.name
+                    fd.close()
+                    embedded_filename = co.co_filename
+                    pyficache.remap_file(decompile_file, embedded_filename)
+                    pyficache.remap_file_lines(
+                        embedded_filename,
+                        decompile_file,
+                        (
+                            (orig_lineno, mapped_lineno)
+                            for orig_lineno, mapped_lineno in linemaps[
+                                0
+                            ].source_linemap.items()
+                        ),
+                    )
                 pass
 
         # If mainpyfile is an optimized Python script try to find and
