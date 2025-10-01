@@ -25,6 +25,7 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
+from types import FrameType
 
 import xdis
 from xdis import IS_PYPY, get_opcode

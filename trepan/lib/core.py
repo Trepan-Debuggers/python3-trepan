@@ -29,7 +29,6 @@ import os
 import os.path as osp
 import sys
 import threading
-from types import FrameType
 
 # External packages
 import pyficache
@@ -185,7 +184,7 @@ class TrepanCore:
 
         return canonic
 
-    def canonic_filename(self, frame: Optional[FrameType]) -> str:
+    def canonic_filename(self, frame) -> str:
         """Picks out the file name from `frame' and returns its
         canonic() value, a string."""
         if frame is None:
