@@ -150,7 +150,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             except IOError:
                 decompiler = "uncompyle6"
                 try:
-                    if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
+                    if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
                         from decompyle3 import decompile_file
                     else:
                         from uncompyle6 import decompile_file
