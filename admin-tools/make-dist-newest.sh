@@ -1,5 +1,5 @@
 #!/bin/bash
-PACKAGE=trepan
+PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
@@ -20,7 +20,7 @@ if ! source ./setup-master.sh ; then
 fi
 
 cd ..
-source $PACKAGE/version.py
+source trepan/version.py
 echo $__version__
 pyenv local 3.13
 

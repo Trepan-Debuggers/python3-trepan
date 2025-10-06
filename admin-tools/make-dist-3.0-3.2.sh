@@ -20,7 +20,7 @@ if ! source ./setup-python-3.0.sh ; then
 fi
 
 cd ..
-source $PACKAGE/version.py
+source trepan/version.py
 if [[ ! -n $__version__ ]]; then
     echo "You need to set __version__ first"
 fi
