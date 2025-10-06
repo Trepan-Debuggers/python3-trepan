@@ -23,10 +23,10 @@ import sys
 import tempfile
 
 import pyficache
-
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
+
 from trepan.client import run
 from trepan.clifns import whence_file
 from trepan.debugger import Trepan
@@ -111,7 +111,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 if is_pypy != IS_PYPY:
                     bytecode_pypy = "" if is_pypy else "not "
                     running_pypy = "" if IS_PYPY else "not "
-                    print(f"Bytecode is for Version {version_tuple_to_str(end=2)} {bytecode_pypy}running PyPY, but we are {running_pypy}running PyPy.")
+                    print(
+                        f"Bytecode is for Version {version_tuple_to_str(end=2)} {bytecode_pypy}running PyPY, but we are {running_pypy}running PyPy."
+                    )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
@@ -120,7 +122,9 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         f"Bytecode is for version {version_tuple_to_str(python_version, end=2)}{bytecode_pypy}, but we are "
                         f"version {version_tuple_to_str(end=2)}{bytecode_pypy}."
                     )
-                    print("For a cross-version debugger, trepan-xpy with x-python might work.")
+                    print(
+                        "For a cross-version debugger, trepan-xpy with x-python might work."
+                    )
                     sys.exit(2)
 
                 py_file = co.co_filename
@@ -159,9 +163,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 except ImportError:
                     if PYTHON_VERSION_TRIPLE >= (3, 9):
                         print(
-                            "%s: Decompiler not available for %s." % (__title__, version_tuple_to_str()),
+                            "%s: Decompiler not available for %s."
+                            % (__title__, version_tuple_to_str()),
                             file=sys.stderr,
-                            )
+                        )
                     else:
                         print(
                             "%s: Compiled python file '%s', but %s not found"
@@ -198,7 +203,12 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         f"{__title__}: error decompiling '{mainpyfile}'; disassembling instead.",
                         file=sys.stderr,
                     )
-                    info = disassemble_file(mainpyfile, outstream=fd, asm_format="extended-bytes", show_source=False)
+                    info = disassemble_file(
+                        mainpyfile,
+                        outstream=fd,
+                        asm_format="extended-bytes",
+                        show_source=False,
+                    )
                     code_module = info[1]
                     embedded_filename = code_module.co_filename
 
@@ -217,18 +227,18 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                         else:
                             print(
                                 "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
-                                 % (__title__, embedded_filename, pyasm_name),
-                                 file=sys.stderr,
+                                % (__title__, embedded_filename, pyasm_name),
+                                file=sys.stderr,
                             )
                             pyficache.remap_file(pyasm_name, embedded_filename)
 
                 else:
+                    decompile_file = fd.name
                     print(
                         "%s: couldn't find Python source, so we recreated it at '%s'."
-                        % (__title__, mainpyfile),
+                        % (__title__, decompile_file),
                         file=sys.stderr,
                     )
-                    decompile_file = fd.name
                     fd.close()
                     embedded_filename = co.co_filename
                     pyficache.remap_file(decompile_file, embedded_filename)
