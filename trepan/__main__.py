@@ -153,9 +153,14 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 sys.exit(3)
             except IOError:
                 decompiler = "uncompyle6"
+                no_decompiler = False
                 try:
                     if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
                         from decompyle3 import decompile_file
+                    elif PYTHON_VERSION_TRIPLE >= (3, 9):
+                        decompiler = "No decompiler found"
+                        no_decompiler = True
+                        raise ImportError
                     else:
                         from uncompyle6 import decompile_file
 
@@ -195,14 +200,18 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
                 # from io import StringIO
                 # linemap_io = StringIO()
-                try:
-                    decompile_file(mainpyfile, fd.file, mapstream=fd)
-                    linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
-                except Exception:
-                    print(
-                        f"{__title__}: error decompiling '{mainpyfile}'; disassembling instead.",
-                        file=sys.stderr,
-                    )
+                if not no_decompiler:
+                    try:
+                        decompile_file(mainpyfile, fd.file, mapstream=fd)
+                        linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
+                    except Exception:
+                        no_decompiler = True
+                        print(
+                            f"{__title__}: error decompiling '{mainpyfile}'; disassembling instead.",
+                            file=sys.stderr,
+                        )
+
+                if no_decompiler:
                     info = disassemble_file(
                         mainpyfile,
                         outstream=fd,

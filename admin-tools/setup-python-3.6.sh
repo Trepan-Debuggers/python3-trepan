@@ -11,12 +11,11 @@ fi
 export PATH=$HOME/.pyenv/bin/pyenv:$PATH
 trepan3k_owd=$(pwd)
 mydir=$(dirname $bs)
-cd $mydir
-. ./checkout_common.sh
+. $mydir/checkout_common.sh
 (cd $mydir/../../../rocky && \
      setup_version python-uncompyle6 python-3.6 && \
      setup_version python-filecache python-3.6 && \
-     setup_version shell-term-background python-3.3 && \
+     setup_version shell-term-background python-3.6 && \
      setup_version pytracer python-3.6 \
      setup_version pycolumnize python-3.6 && \
      setup_version python-xdis python-3.6 \
