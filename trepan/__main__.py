@@ -22,10 +22,10 @@ import sys
 import tempfile
 
 import pyficache
-
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
+
 from trepan.client import run
 from trepan.clifns import whence_file
 from trepan.debugger import Trepan
@@ -163,9 +163,14 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 sys.exit(3)
             except IOError:
                 decompiler = "uncompyle6"
+                no_decompiler = False
                 try:
-                    if (3, 7) <= PYTHON_VERSION_TRIPLE <= (3, 8):
+                    if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
                         from decompyle3 import decompile_file
+                    elif PYTHON_VERSION_TRIPLE >= (3, 9):
+                        decompiler = "No decompiler found"
+                        no_decompiler = True
+                        raise ImportError
                     else:
                         from uncompyle6 import decompile_file
 
@@ -173,9 +178,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                 except ImportError:
                     if PYTHON_VERSION_TRIPLE >= (3, 9):
                         print(
-                            "%s: Decompiler not available for %s." % (__title__, version_tuple_to_str()),
+                            "%s: Decompiler not available for %s."
+                            % (__title__, version_tuple_to_str()),
                             file=sys.stderr,
-                            )
+                        )
                     else:
                         print(
                             "%s: Compiled python file '%s', but %s not found"
@@ -204,20 +210,21 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
                 # from io import StringIO
                 # linemap_io = StringIO()
-                try:
-                    linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
-                except Exception:
-                    print(
-                        "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead"
-                        % __title__,
-                        file=sys.stderr,
-                    )
-                    info = disassemble_file(
-                        mainpyfile,
-                        outstream=fd,
-                        asm_format="extended-bytes",
-                        show_source=False,
-                    )
+                if not no_decompiler:
+                    try:
+                        linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
+                    except Exception:
+                        print(
+                            "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead"
+                            % __title__,
+                            file=sys.stderr,
+                        )
+                        info = disassemble_file(
+                            mainpyfile,
+                            outstream=fd,
+                            asm_format="extended-bytes",
+                            show_source=False,
+                        )
                     code_module = info[1]
                     embedded_filename = code_module.co_filename
 
@@ -243,12 +250,12 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                             pyficache.remap_file(pyasm_name, embedded_filename)
 
                 else:
+                    decompile_file = fd.name
                     print(
                         "%s: couldn't find Python source, so we recreated it at '%s'."
-                        % (__title__, mainpyfile),
+                        % (__title__, decompile_file),
                         file=sys.stderr,
                     )
-                    decompile_file = fd.name
                     fd.close()
                     embedded_filename = co.co_filename
                     pyficache.remap_file(decompile_file, embedded_filename)
