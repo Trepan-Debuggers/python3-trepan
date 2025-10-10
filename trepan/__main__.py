@@ -208,23 +208,24 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
                 fd.file.write = write_wrapper
 
-                # from io import StringIO
-                # linemap_io = StringIO()
                 if not no_decompiler:
                     try:
                         linemaps = decompile_file(mainpyfile, fd.file, mapstream=fd)
                     except Exception:
+                        no_decompiler = True
                         print(
-                            "%s{__title__}: error decompiling '{mainpyfile}'; disassembling instead"
-                            % __title__,
+                            "%s: error decompiling '%s'; disassembling instead."
+                            % (__title__, mainpyfile),
                             file=sys.stderr,
                         )
-                        info = disassemble_file(
-                            mainpyfile,
-                            outstream=fd,
-                            asm_format="extended-bytes",
-                            show_source=False,
-                        )
+
+                if no_decompiler:
+                    info = disassemble_file(
+                        mainpyfile,
+                        outstream=fd,
+                        asm_format="extended-bytes",
+                        show_source=False,
+                    )
                     code_module = info[1]
                     embedded_filename = code_module.co_filename
 
@@ -237,13 +238,13 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                             os.rename(old_tempfile, pyasm_name)
                         except Exception as e:
                             print(
-                                "%s: error renaming '%s' to '%s: %s"
+                                "%s: error renaming '%s' to '%s': %s"
                                 % (__title__, old_tempfile, pyasm_name, e),
                                 file=sys.stderr,
                             )
                         else:
                             print(
-                                "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'."
+                                "%s: couldn't find Python source '%s' or decompile it, so we disassembled it at '%s'"
                                 % (__title__, embedded_filename, pyasm_name),
                                 file=sys.stderr,
                             )
