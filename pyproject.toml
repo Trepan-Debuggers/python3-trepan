@@ -66,7 +66,7 @@ trepan3kc  = "trepan.client:main"
 
 [project.urls]
 Homepage = "https://pypi.org/project/trepan3k/"
-Downloads = "https://github.com/rocky/python-trepan3k/releases"
+Downloads = "https://github.com/Trepan-Debuggers/python-trepan3k/releases"
 
 [tool.setuptools.dynamic]
 version = {attr = "trepan.version.__version__"}
