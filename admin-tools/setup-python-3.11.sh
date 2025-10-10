@@ -16,10 +16,8 @@ cd $mydir
 (cd $mydir/../../rocky && \
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
-     setup_version shell-term-background master && \
-     setup_version pytracer master \
-     setup_version pycolumnize master && \
-     setup_version python-xdis master \
+     setup_version pytracer master && \
+     setup_version pycolumnize master
     )
 
 checkout_finish python-3.11
