@@ -3,10 +3,12 @@ PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
-  cd $make_dist_36_owd
+  if [[ -n "$make_trepan_dist_36_owd" ]] && [[ -n "$make_trepan_dist_36_owd" ]]; then
+     cd $make_trepan_dist_36_owd
+  fi
 }
 
-make_trepan_dist_36_owd=$(pwd)
+$make_trepan_dist_36_owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})

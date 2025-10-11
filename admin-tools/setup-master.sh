@@ -2,6 +2,7 @@
 # Check out master branch and dependent development master branches
 PYTHON_VERSION=3.12
 
+trepan3k_owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 if [[ $0 == $bs ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
@@ -9,10 +10,9 @@ if [[ $0 == $bs ]] ; then
 fi
 
 mydir=$(dirname $bs)
-trepan3k_owd=$(pwd)
-cd $mydir
-. ./checkout_common.sh
-(cd $mydir/../../../rocky && \
+trepan3k_fulldir=$(readlink -f $mydir)
+. ${trepan3k_fulldir}/checkout_common.sh
+(cd ${trepan3k_fulldir}/../../../rocky && \
      setup_version python-uncompyle6 master && \
      setup_version python-filecache master && \
      setup_version pytracer master && \
