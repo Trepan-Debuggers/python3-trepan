@@ -16,8 +16,7 @@ mydir=$(dirname $bs)
      setup_version python-uncompyle6 python-3.6 && \
      setup_version python-filecache python-3.6 && \
      setup_version shell-term-background python-3.6 && \
-     setup_version pytracer python-3.6  && \
-     setup_version pycolumnize python-3.6
+     setup_version pytracer python-3.6
     )
 
 checkout_finish python-3.6-to-3.10

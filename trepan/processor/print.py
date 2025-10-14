@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2024-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,23 +19,16 @@ import linecache
 import os.path as osp
 import re
 import sys
-from inspect import ismodule, currentframe
+from inspect import currentframe, ismodule
 from tempfile import NamedTemporaryFile
 from types import CodeType
 
 import pyficache
 
+from trepan.lib.format import Filename, Hex, LineNumber, Symbol, format_token  # Opcode,
 from trepan.lib.stack import check_path_with_frame, frame2file, is_eval_or_exec_stmt
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
-
-from trepan.lib.format import (  # Opcode,
-    Filename,
-    Hex,
-    LineNumber,
-    Symbol,
-    format_token,
-)
 
 try:
     from trepan.lib.deparse import deparse_and_cache
@@ -53,7 +46,9 @@ def format_code(code_object: CodeType, style) -> str:
     Format according to "style" a Python code object. The
     formatted string is returned.
     """
-    formatted_line = format_token(LineNumber, str(code_object.co_firstlineno), style=style)
+    formatted_line = format_token(
+        LineNumber, str(code_object.co_firstlineno), style=style
+    )
     formatted_id = format_token(Hex, hex(id(code_object)), style=style)
     formatted_name = format_token(Symbol, code_object.co_name, style=style)
     formatted_filename = format_token(Filename, code_object.co_filename, style=style)
@@ -70,14 +65,16 @@ def format_frame(frame_object, style) -> str:
     """
     formatted_line = format_token(LineNumber, str(frame_object.f_lineno), style=style)
     formatted_id = format_token(Hex, hex(id(frame_object)), style=style)
-    formatted_filename = format_token(Filename, frame_object.f_code.co_filename, style=style)
+    formatted_filename = format_token(
+        Filename, frame_object.f_code.co_filename, style=style
+    )
     return (
         f"<frame at {formatted_id} "
         f"file {formatted_filename}, line {formatted_line}>"
     )
 
 
-def print_source_line(msg, lineno, line, event_str=None):
+def print_source_line(msg, lineno, line, event_str=None, is_pyasm: bool = False):
     """Print out a source line of text , e.g. the second
     line in:
         (/tmp.py:2):  <module>
@@ -90,7 +87,10 @@ def print_source_line(msg, lineno, line, event_str=None):
 
     # We don't use the filename normally. ipython and other applications
     # however might.
-    return msg(f"{event_str} {lineno} {line}")
+    if is_pyasm:
+        return msg(f"{event_str}\n{line}")
+    else:
+        return msg(f"{event_str} {lineno} {line}")
 
 
 def print_source_location_info(
@@ -115,6 +115,7 @@ def print_source_location_info(
         pass
     print_fn(mess)
     return
+
 
 def print_location(proc_obj):
     """Show where we are. GUI's and front-end interfaces often
@@ -242,7 +243,15 @@ def print_location(proc_obj):
             opts["style"] = proc_obj.settings("style")
 
         pyficache.update_cache(filename)
+
+        is_pyasm = filename.endswith(".pyasm")
+        if is_pyasm:
+            opts = opts.copy()
+            opts["style"] = "plain"
+            opts["output"] = "plain"
+
         line = pyficache.getline(filename, lineno, opts)
+
         if not line:
             if (
                 not source_text
@@ -290,8 +299,6 @@ def print_location(proc_obj):
 
                     pass
 
-            if isinstance(proc_obj.curframe, int):
-                breakpoint()
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
             if not line:
                 m = re.search("^<frozen (.*)>", filename)
@@ -343,7 +350,11 @@ def print_location(proc_obj):
         if line and len(line.strip()) != 0:
             if proc_obj.event:
                 print_source_line(
-                    intf_obj.msg, lineno, line, proc_obj.event2short[proc_obj.event]
+                    intf_obj.msg,
+                    lineno,
+                    line,
+                    proc_obj.event2short[proc_obj.event],
+                    is_pyasm,
                 )
             pass
         if "<string>" != filename:
@@ -364,11 +375,14 @@ def print_location(proc_obj):
             pass
     return True
 
+
 # Demo it
 if __name__ == "__main__":
+
     def five():
         from trepan.processor.cmdproc import CommandProcessor
         from trepan.processor.command.mock import MockDebugger
+
         d = MockDebugger()
         cmdproc = CommandProcessor(d.core)
         cmdproc.frame = currentframe()
