@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 PACKAGE_NAME=trepan3k
+PACKAGE_MODULE=trepan
 trepan3k_owd=$(pwd)
 bs=${BASH_SOURCE[0]}
 mydir=$(dirname $bs)
