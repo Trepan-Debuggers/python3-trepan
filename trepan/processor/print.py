@@ -52,9 +52,8 @@ def format_code(code_object: CodeType, style) -> str:
     formatted_id = format_token(Hex, hex(id(code_object)), style=style)
     formatted_name = format_token(Symbol, code_object.co_name, style=style)
     formatted_filename = format_token(Filename, code_object.co_filename, style=style)
-    return (
-        ("<code object %s at %s " % (formatted_name, formatted_id)) +
-        ("file %s, line %s>" % (formatted_filename, formatted_line))
+    return ("<code object %s at %s " % (formatted_name, formatted_id)) + (
+        "file %s, line %s>" % (formatted_filename, formatted_line)
     )
 
 
@@ -68,9 +67,8 @@ def format_frame(frame_object, style) -> str:
     formatted_filename = format_token(
         Filename, frame_object.f_code.co_filename, style=style
     )
-    return (
-        ("<frame at %s " % formatted_id) +
-        ("file %s, line %s>" % (formatted_filename, formatted_line))
+    return ("<frame at %s " % formatted_id) + (
+        "file %s, line %s>" % (formatted_filename, formatted_line)
     )
 
 
@@ -295,7 +293,7 @@ def print_location(proc_obj):
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
-                    intf_obj.msg("remapped file %s to %s" %(filename, remapped_file))
+                    intf_obj.msg("remapped file %s to %s" % (filename, remapped_file))
                     pass
 
             line = linecache.getline(filename, lineno, proc_obj.curframe.f_globals)
