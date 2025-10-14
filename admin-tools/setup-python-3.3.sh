@@ -12,7 +12,7 @@ mydir=$(dirname $bs)
 trepan3k_fulldir=$(readlink -f $mydir)
 . $trepan3k_fulldir/checkout_common.sh
 
-(cd $trepan3k_fuilldir/../../../rocky && \
+(cd $trepan3k_fulldir/../../../rocky && \
      setup_version python-uncompyle6 python-3.3 && \
      setup_version python-filecache python-3.3 && \
      setup_version pytracer python-3.3 && \
