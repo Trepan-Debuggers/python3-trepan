@@ -9,6 +9,7 @@
 /.config
 /.coverage
 /.eggs
+/.jython_cache
 /.tox
 /.venv38
 /ChangeLog
