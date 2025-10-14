@@ -16,7 +16,7 @@ trepan3k_fulldir=$(readlink -f $mydir)
      setup_version python-uncompyle6 python-3.3 && \
      setup_version python-filecache python-3.3 && \
      setup_version pytracer python-3.3 && \
-     setup_version pycolumnize python-3.3 \
+     setup_version pycolumnize python-3.0 \
     )
 
 checkout_finish python-3.3-to-3.5
