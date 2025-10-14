@@ -8,7 +8,7 @@ function finish {
   fi
 }
 
-$make_trepan_dist_36_owd=$(pwd)
+make_trepan_dist_36_owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
