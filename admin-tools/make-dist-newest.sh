@@ -3,7 +3,7 @@ PACKAGE=trepan3k
 
 # FIXME put some of the below in a common routine
 function finish {
-  if [[ -n "$make_dist_xdis_newest_owd" ]] then
+  if [[ -n "$make_trepan_dist_newest_owd" ]] && [[ -n "$make_trepan_newest_owd" ]]; then
      cd $make_dist_trepan3k_newest_owd
   fi
 }

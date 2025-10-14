@@ -94,6 +94,7 @@ class ListCommand(DebuggerCommand):
         if filename is None:
             return
         filename = pyficache.unmap_file(pyficache.resolve_name_to_path(filename))
+        is_pyasm = filename.endswith(".pyasm")
 
         # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
@@ -147,6 +148,11 @@ class ListCommand(DebuggerCommand):
                     self.msg("[EOF]")
                     break
                 else:
+                    if is_pyasm:
+                        self.msg_nocr(line)
+                        proc.list_lineno = lineno
+                        continue
+
                     line = line.rstrip("\n")
                     s = proc._saferepr(lineno).rjust(3)
                     if len(s) < 5:
@@ -174,6 +180,7 @@ class ListCommand(DebuggerCommand):
                     else:
                         s += a_pad
                         pass
+
                     self.msg(s + "\t" + line)
                     proc.list_lineno = lineno
                     pass
@@ -203,8 +210,8 @@ if __name__ == "__main__":
     print("--" * 10)
     # doit(lcmd, ['list'])
 
-    doit(lcmd, ['list', __file__ + ':5'])
-    print('--' * 10)
+    doit(lcmd, ["list", __file__ + ":5"])
+    print("--" * 10)
 
     # doit(lcmd, ['list', 'os:10'])
     # print('--' * 10)
