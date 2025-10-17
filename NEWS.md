@@ -1,3 +1,14 @@
+1.5.1 2025-10-17
+================
+
+* Better handling of pyasm files and pyasm lines. These have location
+  information and newlines. So don't add this in our routines. And
+  don't color them for now.
+* Adjust development optional packages in packaging.
+* Better detection when decompilers are not available
+* Check for None in in call frame more often.
+* Add more type annotations to code.
+
 1.5.0 2025-09-18
 ================
 
