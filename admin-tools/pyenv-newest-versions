@@ -1,10 +1,9 @@
 # -*- shell-script -*-
 # Sets PYVERSIONS to be pyenv versions that
-# we can use in the master
-
+# we can use in the master branch.
 if [[ $0 == ${BASH_SOURCE[0]} ]] ; then
     echo "This script should be *sourced* rather than run directly through bash"
     exit 1
 fi
 
-export PYVERSIONS='3.12 3.13'
+export PYVERSIONS='3.11 pypy3.11 graalpy-24.2.2 pypy3.11 3.12 graalpy-community-25.0.0 3.13'
