@@ -1,5 +1,12 @@
 #!/bin/bash
-PACKAGE=trepan3k
+PACKAGE_MODULE="trepan"
+
+# The name that PyPi sees this as.
+# It is set in setup.py's name.
+PACKAGE_NAME="trepan3k"
+
+# Both the name an module name agree
+PACKAGE=$PACKAGE_NAME
 
 # FIXME put some of the below in a common routine
 function finish {
@@ -20,11 +27,54 @@ if ! source ./setup-master.sh ; then
 fi
 
 cd ..
-source trepan/version.py
-echo $__version__
-pyenv local 3.13
+source $PACKAGE_MODULE/version.py
+if [[ ! $__version__ ]] ; then
+    echo "Something is wrong: __version__ should have been set."
+    exit 1
+fi
 
-rm -fr build
-pip wheel --wheel-dir=dist .
+for pyversion in $PYVERSIONS; do
+    case ${pyversion:0:4} in
+	"graa" )
+	    echo "$pyversion - Graal does not get special packaging"
+	    continue
+	    ;;
+	"jyth" )
+	    echo "$pyversion - Jython does not get special packaging"
+	    continue
+	    ;;
+	"pypy" )
+	    echo "$pyversion - PyPy does not get special packaging"
+	    continue
+	    ;;
+	"pyst" )
+	    echo "$pyversion - Pyston does not get special packaging"
+	    continue
+	    ;;
+    esac
+    echo "*** Packaging ${PACKAGE_NAME} for version ${__version__} on Python ${pyversion} ***"
+    if ! pyenv local $pyversion ; then
+	exit $?
+    fi
+    # pip bdist_egg create too-general wheels. So
+    # we narrow that by moving the generated wheel.
+
+    # Pick out first two number of version, e.g. 3.5.1 -> 35
+    first_two=$(echo $pyversion | cut -d'.' -f 1-2 | sed -e 's/\.//')
+    rm -fr build
+    pip wheel --wheel-dir=dist .
+    mv -v dist/${PACKAGE_NAME}-$__version__-{py2.py3,py$first_two}-none-any.whl
+done
+
 python -m build --sdist
+tarball=dist/${PACKAGE_NAME}-${__version__}.tar.gz
+if [[ -f $tarball ]]; then
+    twine check $tarball
+fi
+
+if [[ ! -d dist/uploaded/${__version__} ]] ; then
+    mkdir -v dist/uploaded/${__version__}
+fi
+
+twine check dist/${PACKAGE}-${__version__}-py3*.whl
 finish

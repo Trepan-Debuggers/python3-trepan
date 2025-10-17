@@ -31,11 +31,24 @@ fi
 echo $__version__
 
 for pyversion in $PYVERSIONS; do
-    echo --- $pyversion ---
-    if [[ ${pyversion:0:4} == "pypy" ]] ; then
-	echo "$pyversion - PyPy does not get special packaging"
-	continue
-    fi
+    case ${pyversion:0:4} in
+	"graa" )
+	    echo "$pyversion - Graal does not get special packaging"
+	    continue
+	    ;;
+	"jyth" )
+	    echo "$pyversion - Jython does not get special packaging"
+	    continue
+	    ;;
+	"pypy" )
+	    echo "$pyversion - PyPy does not get special packaging"
+	    continue
+	    ;;
+	"pyst" )
+	    echo "$pyversion - Pyston does not get special packaging"
+	    continue
+	    ;;
+    esac
     if ! pyenv local $pyversion ; then
 	exit $?
     fi
