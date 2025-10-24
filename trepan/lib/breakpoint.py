@@ -198,7 +198,7 @@ class BreakpointManager:
             if hasattr(func_or_code, "__cached__"):
                 # FIXME: we can probably do better hooking into importlib
                 # or something lower-level
-                _, _, _, code, _, _, _ = load_module(
+                _, _, _, code, _, _, _, _ = load_module(
                     func_or_code.__cached__, fast_load=True, get_code=True
                 )
             else:
