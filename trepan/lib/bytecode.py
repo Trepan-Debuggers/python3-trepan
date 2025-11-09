@@ -19,10 +19,10 @@
 
 import re
 
-from opcode import  opname
-from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
+from opcode import opname
+from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, get_opcode_module
 
-opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
+opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
@@ -33,12 +33,15 @@ def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
     return opname[opcode]
 
 
-
 def op_at_frame(frame, offset=None, skip_cache=True):
     bytecode = frame.f_code.co_code
     if offset is None:
         offset = frame.f_lasti
-    while skip_cache and offset != 0 and opname_at_code_offset(bytecode, offset) == "CACHE":
+    while (
+        skip_cache
+        and offset != 0
+        and opname_at_code_offset(bytecode, offset) == "CACHE"
+    ):
         offset -= 2
     return opname_at_code_offset(bytecode, offset)
 
@@ -156,8 +159,6 @@ if __name__ == "__main__":
         pass
 
     lineno = frame.f_lineno
-    print(
-        "contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno - 2, "BUILD_CLASS")
-    )
-    print("contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno, "BUILD_CLASS"))
+    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}")
+    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno, 'BUILD_CLASS')}")
     pass

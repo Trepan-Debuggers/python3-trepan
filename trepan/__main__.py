@@ -111,6 +111,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     is_pypy,
                     _,
                     _,
+                    _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
                 if is_pypy != IS_PYPY:
                     bytecode_pypy = "" if is_pypy else "not "
