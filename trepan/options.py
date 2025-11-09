@@ -358,7 +358,7 @@ def process_options(pkg_version: str, sys_argv: list, option_list=None):
 
     if opts.edit_mode not in ("vi", "emacs"):
         sys.stderr.write(
-            'Option --editmode should be either "emacs" or "vi"; assuming "emacs".\n'
+            'Option --editmode should be either "emacs" or "vi"; assuming "emacs".\n' +
             ('Got: "%s".\n' % opts.edit_mode)
         )
         opts.edit_mode = "emacs"
