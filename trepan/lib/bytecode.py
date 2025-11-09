@@ -22,9 +22,9 @@ import re
 from opcode import opname
 from types import FrameType
 from typing import Optional
-from xdis import PYTHON_VERSION_TRIPLE, get_opcode_module
+from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, get_opcode_module
 
-opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE)
+opcode_module = get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
@@ -35,12 +35,15 @@ def opname_at_code_offset(bytecode_bytes: bytes, offset: int) -> str:
     return opname[opcode]
 
 
-
-def op_at_frame(frame: FrameType, offset: Optional[int]=None, skip_cache=True):
+def op_at_frame(frame: FrameType, offset: Optional[int] = None, skip_cache=True):
     bytecode = frame.f_code.co_code
     if offset is None:
         offset = frame.f_lasti
-    while skip_cache and offset != 0 and opname_at_code_offset(bytecode, offset) == "CACHE":
+    while (
+        skip_cache
+        and offset != 0
+        and opname_at_code_offset(bytecode, offset) == "CACHE"
+    ):
         offset -= 2
     return opname_at_code_offset(bytecode, offset)
 
@@ -144,9 +147,7 @@ if __name__ == "__main__":
         "contains MAKE_FUNCTION %s"
         % stmt_contains_opcode(co, lineno - 4, "MAKE_FUNCTION")
     )
-    print(
-        f"contains MAKE_FUNCTION {stmt_contains_opcode(co, lineno, 'MAKE_FUNCTION')}"
-    )
+    print(f"contains MAKE_FUNCTION {stmt_contains_opcode(co, lineno, 'MAKE_FUNCTION')}")
 
     print(f"op at frame: {op_at_frame(frame)}")
     print(f"op at frame, position 2: {op_at_frame(frame, 2)}")
@@ -158,8 +159,6 @@ if __name__ == "__main__":
         pass
 
     lineno = frame.f_lineno
-    print(
-        f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}"
-    )
+    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}")
     print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno, 'BUILD_CLASS')}")
     pass
