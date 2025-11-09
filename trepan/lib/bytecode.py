@@ -159,6 +159,8 @@ if __name__ == "__main__":
         pass
 
     lineno = frame.f_lineno
-    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno - 2, 'BUILD_CLASS')}")
-    print(f"contains BUILD_CLASS {stmt_contains_opcode(co, lineno, 'BUILD_CLASS')}")
+    print(
+        "contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno - 2, "BUILD_CLASS")
+    )
+    print("contains BUILD_CLASS %s" % stmt_contains_opcode(co, lineno, "BUILD_CLASS"))
     pass
