@@ -297,6 +297,7 @@ def frame2filesize(frame):
             _is_pypy,
             bc_source_size,
             _sip_hash,
+            _save_offsets,
         ) = xdis.load_module(bc_path, fast_load=True, get_code=False)
         return fs_size, bc_source_size
     elif osp.exists(path):

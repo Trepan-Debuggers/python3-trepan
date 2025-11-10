@@ -15,8 +15,7 @@ jobs:
     steps:
       - checkout  # checkout source code to working directory
       # Until the next xdis release
-      # - run: pip install xdis
-      # - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
+      - run: pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
       # - run: pip install --local -e git+https://github.com/rocky/pytracer.git#egg=tracer
       # Until the next pyficache release
       # - run: pip install pyficache

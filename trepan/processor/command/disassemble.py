@@ -207,6 +207,7 @@ class DisassembleCommand(DebuggerCommand):
                     is_pypy,
                     source_size,
                     sip_hash,
+                    _save_offsets,
                 ) = load_module(bytecode_file)
             elif not curframe:
                 self.errmsg("No frame selected.")
