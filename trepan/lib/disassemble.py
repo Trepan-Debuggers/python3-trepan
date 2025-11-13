@@ -116,7 +116,7 @@ def dis(
             if lasti == -1:
                 lasti = 0
             pass
-        opc = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
+        opc = PYTHON_OPCODES
         x = x.f_code
         if include_header:
             header_lines = Bytecode(x, opc).info().split("\n")
@@ -179,7 +179,7 @@ def dis(
     return None, None
 
 # Default opc whene none is given.
-DEFAULT_OPC = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
+PYTHON_OPCODES = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 def disassemble(
     msg: Callable,
@@ -193,7 +193,7 @@ def disassemble(
     start_offset=0,
     end_offset=None,
     asm_format="extended",
-    opc=DEFAULT_OPC,
+    opc=PYTHON_OPCODES,
 ):
     """Disassemble a code object."""
     return disassemble_bytes(
@@ -232,7 +232,7 @@ def print_instruction(
     lasti: int=-1,
     line_starts = {},
     style="none",
-    opc=DEFAULT_OPC,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ):
     """Disassemble bytecode at offset `offsets`."""
@@ -377,7 +377,7 @@ def disassemble_bytes(
     style="none",
     start_offset=0,
     end_offset=None,
-    opc=DEFAULT_OPC,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
@@ -472,7 +472,7 @@ def disassemble_instruction(
     freevars=(),
     line_starts={},
     style="none",
-    opc=DEFAULT_OPC,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
