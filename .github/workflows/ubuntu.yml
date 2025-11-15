@@ -23,6 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         # Until the next xdis release
         pip install --local -e git+https://github.com/rocky/python-xdis.git#egg=xdis
+        pip install --local -e git+https://github.com/rocky/python-filecache.git#egg=pyficache
+        pip install --local -e git+https://github.com/rocky/python-uncompyle6.git#egg=uncompyle6
+        pip install --local -e git+https://github.com/rocky/python-decompile3.git#egg=decompyle3
         # Until the next pytracer release
         # pip install git+https://github.com/rocky/pytracer#egg=tracer
         # Until the next pyficache release
