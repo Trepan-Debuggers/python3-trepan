@@ -84,9 +84,9 @@ extras_require = {
 ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
-    "pyficache >= 2.5.0",
-    "xdis > 6.2",
-    pygments_version,
+    "pyficache > 2.5.0",
+    "xdis > 6.2.0",
+    "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
     "term-background >= 1.0.1",

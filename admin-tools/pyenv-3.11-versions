@@ -7,4 +7,4 @@ if [[ $0 == ${BASH_SOURCE[0]} ]] ; then
     exit 1
 fi
 
-export PYVERSIONS='pypy3.11 graal-24.2.2 3.11'
+export PYVERSIONS='pypy3.11 graalpy-24.2.2 3.11'

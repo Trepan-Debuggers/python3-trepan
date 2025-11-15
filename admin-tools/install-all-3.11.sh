@@ -23,7 +23,7 @@ fi
 cd ../dist/
 
 install_check_command="trepan3k --help"
-install_file="trepan3k-${__version__}.tar.gz"
+install_file="trepan3k_311-${__version__}.tar.gz"
 for pyversion in $PYVERSIONS; do
     echo "*** Installing ${install_file} for Python ${pyversion} ***"
     pyenv local $pyversion
