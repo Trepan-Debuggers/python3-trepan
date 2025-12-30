@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020, 2023-2024 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013-2015, 2017-2018, 2020, 2023-2025 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     command.proc.frame = sys._getframe()
     command.proc.setup()
 
-    # do_parse(command, [""])
+    do_parse(command, [""])
     # import inspect
     # line = inspect.currentframe().f_lineno
     # do_parse(command, [str(line)])
@@ -135,6 +135,7 @@ if __name__ == "__main__":
     do_run(command, [""])
     # do_run(command, ["command.run()"])
     do_run(command, ["89"])
+    do_run(command, ["17"])
     # command.run(["break", __file__ + ":10"])
     # command.run(["break", "foo"])
     pass

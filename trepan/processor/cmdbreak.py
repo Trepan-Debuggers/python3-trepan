@@ -28,14 +28,14 @@ def set_break(
     cmd_obj,
     func_or_code,
     filename,
-    lineno,
+    line_number,
     condition,
     temporary,
     args,
     force=False,
     offset=None,
 ):
-    if lineno is None and offset is None:
+    if line_number is None and offset is None:
         part1 = f"""I don't understand '{" ".join(args[1:])}' as a line number, offset, or function name"""
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
@@ -47,17 +47,17 @@ def set_break(
         filename = cmd_obj.core.canonic(filename)
         pass
 
-    if lineno:
-        code_map, line_info = code_line_info(filename, lineno)
+    if line_number:
+        code_map, line_info = code_line_info(filename, line_number)
         if isinstance(func_or_code, str):
             func_or_code = code_map.get(func_or_code, func_or_code)
         if not line_info:
             linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
-            if lineno not in linestarts.values():
+            if line_number not in linestarts.values():
                 part1 = f"File {cmd_obj.core.filename(filename)}"
                 msg = wrapped_lines(
                     part1,
-                    f"is not stoppable at line {lineno}.",
+                    f"is not stoppable at line {line_number}.",
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
@@ -71,8 +71,8 @@ def set_break(
 
     else:
         assert offset is not None
-        lineno = code_offset_info(filename, offset)
-        if lineno is None:
+        line_number = code_offset_info(filename, offset)
+        if line_number is None:
             part1 = f"File {cmd_obj.core.filename(filename)}"
             msg = wrapped_lines(
                 part1,
@@ -85,15 +85,16 @@ def set_break(
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(
         filename,
-        lineno=lineno,
-        offset=offset,
+        line_number=line_number,
+        position=offset,
         temporary=temporary,
         condition=condition,
         func_or_code=func_or_code,
+        is_code_offset = True,
     )
     if func_or_code and inspect.isfunction(func_or_code):
         cmd_obj.msg(f"Breakpoint {bp.number} set on calling function {func_or_code.__name__}()")
-        part1 = f"Currently this is line {lineno} of file"
+        part1 = f"Currently this is line {line_number} of file"
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -106,7 +107,14 @@ def set_break(
             func_str = f" in {code_name}"
         else:
             func_str = ""
-        part1 = f"Breakpoint {bp.number} set at line {lineno}{func_str} of file"
+        if bp.column is not None:
+            # Adjust 0-origin to 1-origin column numbers
+            column_str = f", column {bp.column + 1}"
+        else:
+            column_str = ""
+
+        part1 = (f"Breakpoint {bp.number} set at line "
+                 f"{line_number}{column_str}{func_str} of file")
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -194,7 +202,7 @@ if __name__ == "__main__":
         "break 10",
         "break if True",
         f"break {__file__}:5",
-        f"break {__file__}:{cmdproc.frame.f_lineno}",
+        f"break {__file__}:{cmdproc.frame.f_line_number}",
         "break set_break()",
         "break 4 if i==5",
         "break cmdproc.setup()",

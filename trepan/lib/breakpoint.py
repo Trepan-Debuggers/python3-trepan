@@ -11,6 +11,11 @@ from collections import defaultdict
 from types import CodeType, ModuleType
 from typing import Optional
 from types import FrameType
+from pyficache import (
+    code_position_cache,
+    code_loop_for_positions,
+    get_linecache_info,
+)
 from xdis import load_module
 
 
@@ -19,32 +24,93 @@ class Breakpoint:
     counts, disabling and (re)-enabling breakpoints and breakpoint
     conditionals.
 
-    When matching an offset, if offset is None, the offset value is not
-    considered in a match. If offset is -1, we are at a "call" event;
-    the first offset in bytecode is 0.
+    If is_code_offset is True, position is a code offset. Otherwise, it
+    is a 0-origin column offset.
+
+    The code offset for start of a method, module, or function is always 0.
+
+    When line_number is -1 and a code object is  given, the line number is
+    adjusted to be the start of the function co_firstlineno.
+
+    Internally, we always try to find a code offset from the other values:
+    line_number, or line_number and column, or 0 if just code object.
+
+    Internally, we always try to find a column number from the other values:
+    line_number, or line_number and code_offset.
+
+    To do this, we need deep undertanding of Python code objects, which we get
+    from pyficache.
     """
 
     def __init__(
         self,
         number: int,
-        filename: str,
-        line: int,
+        filename: Optional[str],
+        line_number: int,
         temporary=False,
         condition=None,
-        code=None,
-        offset: Optional[int] =None,
+        code: Optional[CodeType] = None,
+        position: Optional[int] = None,
+        is_code_offset: bool = True,
     ):
-        self.offset = offset
+        # FIXME: split out this top part into a part that fills out information
+        if code is not None:
+            if code not in code_position_cache:
+                code_loop_for_positions(code)
+            if filename is None:
+                filename = code.co_filename
+            # Should we check consistancy between filename and
+            # code.co_filename? Probably not: trepan3k and pyficache do allow for
+            # remapping filenames.
+
+        linecache_info = get_linecache_info(filename)
+
+        if is_code_offset:
+            self.column = None
+            self.offset = position
+            # Figure out column offset, and possibly the code offset.
+            if (code_info := code_position_cache.get(code)) is not None:
+                if position == -1:
+                    # Figure out the code offset from the line number.
+                    if linecache_info is not None and (tup := linecache_info.lineno_info.get(line_number)):
+                        self.offset = tup[0]
+                        # When an offset value is Python code, then column information is stored in the parent.
+                        # FIXME: -1 and 1 might not be right when we have a line with some code and a
+                        # semicolon and a "def".
+                        if isinstance(tup[-1], CodeType):
+                            code_info = code_position_cache.get(code_info.parent)
+                    pass
+
+                # Now get the column start value from the line number and code offset.
+                column_range = code_info.lineno_and_offset.get((line_number, self.offset))
+                if column_range:
+                    assert isinstance(column_range, tuple)
+                    start_line, self.column = column_range[0]
+                    assert start_line == line_number
+                    pass
+                pass
+        else:
+            self.column = position
+            self.offset = None
+            # Figure out code offset.
+            if (code_info := code_position_cache.get(code)) is not None:
+                self.column = code_info.lineno_and_start_column.get(
+                    (line_number, self.offset)
+                )
+                pass
+
         self.condition = condition
         self.enabled = True
-
-        self.filename = filename
-        if filename:
-            self.filename = osp.realpath(filename)
 
         # Needed if funcname is not None.
         self.func_first_executable_line = None
         self.code = code
+
+        if filename is not None:
+            self.filename = osp.realpath(filename)
+        elif self.code is not None:
+            self.code.co_filename
+            self.filename = filename
 
         # Number of time breakpoint has been hit
         self.hits = 0
@@ -52,7 +118,7 @@ class Breakpoint:
         # Number of times to ignore breakpoint before stopping
         self.ignore = 0
 
-        self.line = line
+        self.line_number = line_number
         self.number = number
 
         # Delete breakpoint after hitting it.
@@ -68,25 +134,28 @@ class Breakpoint:
             disp = disp + "yes  "
         else:
             disp = disp + "no   "
+
         if self.offset is None:
             offset_str = " any"
         else:
             offset_str = "%4d" % self.offset
-        if self.offset is None:
-            offset_str = " any"
-        else:
-            offset_str = "%4d" % self.offset
-        if self.line is None:
+
+        if self.line_number == -1:
             line_str = ""
         else:
-            line_str = ":%d" % self.line
+            line_str = ":%d" % self.line_number
+        if self.column is not None:
+            column_str = ":%d" % self.column
+        else:
+            column_str = ""
 
-        msg = "%-4dbreakpoint   %s %s at %s%s" % (
+        msg = "%-4dbreakpoint   %s %s at %s%s%s" % (
             self.number,
             disp,
             offset_str,
             self.filename,
             line_str,
+            column_str,
         )
         if self.condition:
             msg += f"\n\tstop only if {self.condition}"
@@ -148,6 +217,7 @@ class BreakpointManager:
         return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
     def get_breakpoint(self, i) -> tuple:
+        print("XXX3", i)
         if isinstance(i, str):
             try:
                 i = int(i)
@@ -171,14 +241,15 @@ class BreakpointManager:
     def add_breakpoint(
         self,
         filename: Optional[str],
-        lineno: Optional[int] = None,
-        offset: int = -1,
+        line_number: int = -1,
+        position: int = -1,
+        is_code_offset: bool = True,
         temporary: bool = False,
         condition: Optional[str] = None,
         func_or_code=None,
     ):
         """
-        Add a breakpoint in ``filename`` at line number ``lineno``.
+        Add a breakpoint in ``filename`` at line number ``line_number``.
         If ``offset`` is given and not -1, then it we must also be at that offset in order to stop.
         ``temporary`` specifies whether the breakpoint will be removed once it is hit.
         `condition`` specifies that a string Python expression to be evaluated to determine
@@ -201,22 +272,45 @@ class BreakpointManager:
                 _, _, _, code, _, _, _, _ = load_module(
                     func_or_code.__cached__, fast_load=True, get_code=True
                 )
+                if position == -1 and is_code_offset:
+                    position = 0
+                if line_number == -1:
+                    line_number = code.co_firstlineno
+
             else:
                 print(f"Don't know what to do with frozen module {func_or_code}")
                 return
         elif hasattr(func_or_code, "__code__"):
             code = func_or_code.__code__
+            if line_number == -1:
+                line_number = code.co_firstlineno
+                if position == -1 and is_code_offset:
+                    position = 0
+
         elif hasattr(func_or_code, "f_code"):
             code = func_or_code.f_code
+            if position == -1 and is_code_offset:
+                position = 0
+            if line_number == -1:
+                line_number = code.co_firstlineno
         else:
             print(f"Don't know what to do with {func_or_code}, {type(func_or_code)}")
             return
-        brkpt = Breakpoint(bpnum, filename, lineno, temporary, condition, code, offset)
+        brkpt = Breakpoint(
+            bpnum,
+            filename,
+            line_number,
+            temporary,
+            condition,
+            code,
+            position,
+            is_code_offset,
+        )
 
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
-        self.bplist[filename, lineno].append(brkpt)
-        if func_or_code and offset in [None, -1]:
+        self.bplist[filename, line_number].append(brkpt)
+        if func_or_code and position != -1:
             self.code_list[code].append(brkpt)
         return brkpt
 
@@ -239,7 +333,7 @@ class BreakpointManager:
         "remove breakpoint `bp'"
         bpnum = bp.number
         self.bpbynumber[bpnum] = None  # No longer in list
-        index = (bp.filename, bp.line)
+        index = (bp.filename, bp.line_number)
         if index not in self.bplist:
             return False
         self.bplist[index].remove(bp)
@@ -291,19 +385,19 @@ class BreakpointManager:
         bp.enabled = do_enable
         return (True, "")
 
-    def delete_breakpoints_by_lineno(self, filename: str, lineno: int):
+    def delete_breakpoints_by_lineno(self, filename: str, line_number: int):
         """Removes all breakpoints at a give filename and line number.
         Returns a list of breakpoints numbers deleted.
         """
-        if (filename, lineno) not in self.bplist:
+        if (filename, line_number) not in self.bplist:
             return []
-        breakpoints = self.bplist[(filename, lineno)]
+        breakpoints = self.bplist[(filename, line_number)]
         bpnums = [bp.number for bp in breakpoints]
         for bp in list(breakpoints):
             self.delete_breakpoint(bp)
         return bpnums
 
-    def find_bp(self, filename: str, lineno: int, frame):
+    def find_bp(self, filename: str, line_number: int, frame):
         """Determine which breakpoint for this file:line is to be acted upon.
 
         Called only if we know there is a bpt at this
@@ -311,7 +405,7 @@ class BreakpointManager:
         that indicates if it is ok to delete a temporary breakpoint.
 
         """
-        possibles = self.bplist[filename, lineno]
+        possibles = self.bplist[filename, line_number]
         for i in range(0, len(possibles)):
             b = possibles[i]
             if not b.enabled:
@@ -362,7 +456,7 @@ class BreakpointManager:
         for marking an effective break .... see effective()."""
         self.bpbynumber = [None]
 
-        # A list of breakpoints indexed by (file, lineno) tuple
+        # A list of breakpoints indexed by (file, line_number) tuple
         self.bplist = {}
         self.code_list = {}
 
@@ -378,7 +472,7 @@ def checkfuncname(brkpt: Breakpoint, frame: FrameType):
     """
     if not brkpt.code:
         # Breakpoint was set via line number.
-        if brkpt.line != frame.f_lineno:
+        if brkpt.line_number != frame.f_lineno:
             # Breakpoint was set at a line with a def statement and the function
             # defined is called: don't break.
             return False
@@ -423,7 +517,7 @@ if __name__ == "__main__":
     bpmgr = BreakpointManager()
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
-    bp = bpmgr.add_breakpoint(__file__, line_number, func_or_code=foo)
+    bp = bpmgr.add_breakpoint(__file__, line_number=line_number, func_or_code=foo)
     assert bp
     print(bp.icon_char())
     print(bpmgr.last())
@@ -433,7 +527,7 @@ if __name__ == "__main__":
     print(str(bp))
     import xdis
 
-    bp = bpmgr.add_breakpoint(xdis.__file__, offset=0, func_or_code=xdis)
+    bp = bpmgr.add_breakpoint(xdis.__file__, position=0, func_or_code=xdis)
     print(bp)
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)
@@ -444,10 +538,10 @@ if __name__ == "__main__":
     assert bp
     print(f"Stop at bp: {checkfuncname(bp, frame)}")
 
-    bp2 = bpmgr.add_breakpoint(None, None, -1, False, None, foo)
+    bp2 = bpmgr.add_breakpoint(None, -1, -1, True, False, None, foo)
     foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint(
-        __file__, line_number, 0, temporary=True, func_or_code=foo
+        __file__, line_number, 0, is_code_offset=True, temporary=True, func_or_code=foo
     )
     assert bp3
     print(bp3.icon_char())
@@ -460,7 +554,9 @@ if __name__ == "__main__":
     assert filename
     line_number = bar()
     for i in range(3):
-        bp = bpmgr.add_breakpoint(None, None, line_number, func_or_code=bar)
+        bp = bpmgr.add_breakpoint(
+            filename=None, line_number=line_number, func_or_code=bar
+        )
     print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.delete_breakpoints_by_lineno(filename, line_number))
     print(bpmgr.bpnumbers())

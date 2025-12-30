@@ -200,13 +200,13 @@ class DisassembleCommand(DebuggerCommand):
             if bytecode_file and Mfile.readable(bytecode_file):
                 self.msg("Reading %s ..." % bytecode_file)
                 (
-                    version,
-                    timestamp,
-                    magic_int,
+                    _version,
+                    _timestamp,
+                    _magic_int,
                     obj,
-                    is_pypy,
-                    source_size,
-                    sip_hash,
+                    _is_pypy,
+                    _source_size,
+                    _sip_hash,
                     _save_offsets,
                 ) = load_module(bytecode_file)
             elif not curframe:
