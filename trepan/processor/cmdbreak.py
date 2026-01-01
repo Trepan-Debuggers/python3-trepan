@@ -16,7 +16,7 @@
 
 import inspect
 from dis import findlinestarts
-from pyficache import code_line_info, code_offset_info
+from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
@@ -71,7 +71,7 @@ def set_break(
 
     else:
         assert offset is not None
-        line_number = code_offset_info(filename, offset)
+        line_number = code_line_info(filename, offset)
         if line_number is None:
             part1 = f"File {cmd_obj.core.filename(filename)}"
             msg = wrapped_lines(

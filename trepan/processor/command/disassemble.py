@@ -204,7 +204,7 @@ class DisassembleCommand(DebuggerCommand):
                     _timestamp,
                     _magic_int,
                     obj,
-                    _is_pypy,
+                    _python_implementation,
                     _source_size,
                     _sip_hash,
                     _save_offsets,
