@@ -217,7 +217,6 @@ class BreakpointManager:
         return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
     def get_breakpoint(self, i) -> tuple:
-        print("XXX3", i)
         if isinstance(i, str):
             try:
                 i = int(i)

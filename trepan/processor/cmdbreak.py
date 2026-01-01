@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024-2026 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -71,7 +71,7 @@ def set_break(
 
     else:
         assert offset is not None
-        line_number = code_line_info(filename, offset)
+        line_info = code_line_info(filename, offset)
         if line_number is None:
             part1 = f"File {cmd_obj.core.filename(filename)}"
             msg = wrapped_lines(
@@ -81,6 +81,8 @@ def set_break(
             )
             cmd_obj.errmsg(msg)
             return False
+        elif line_number != 0:
+            assert False, "Need to fix up offset determination"
 
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(
