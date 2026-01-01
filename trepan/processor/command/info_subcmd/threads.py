@@ -17,7 +17,7 @@
 import sys
 import threading
 
-from trepan.lib.stack import format_stack_entry, get_column_start
+from trepan.lib.stack import format_stack_entry, get_column_start_from_frame
 from trepan.lib import thred as Mthread
 
 # Our local modules
@@ -63,7 +63,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 self.core.ignore_filter.is_excluded(frame)
                 or self.settings["dbg_trepan"]
             ):
-                column_start = get_column_start(frame)
+                column_start = get_column_start_from_frame(frame)
                 s = format_stack_entry(self, (frame, frame.f_lineno, column_start))
                 self.msg(" " * 4 + s)
                 pass
@@ -177,7 +177,7 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 s += "    thread id: %d" % thread_id
                 pass
             s += "\n    "
-            column_start = get_column_start(frame)
+            column_start = get_column_start_from_frame(frame)
             s += format_stack_entry(
                 self,
                 (frame, frame.f_lineno, column_start),

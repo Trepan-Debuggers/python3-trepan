@@ -25,7 +25,7 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
-from types import FrameType
+from types import CodeType, FrameType
 from typing import Optional, Tuple
 
 import xdis
@@ -77,18 +77,25 @@ def count_frames(frame: FrameType, count_start=0) -> int:
         return 1000
     return count
 
-def get_column_start(frame: FrameType) -> int:
+def get_column_start_from_frame(frame: FrameType) -> int:
     """
     Given a code frame, return the start column for that
     frame. (The line number is found in frame.f_lineno).
     If we can't find a column number, return -1.
     """
-    co_positions = frame.f_code.co_positions()
-    instruction_number = frame.f_lasti // 2
+    return get_column_start_from_code(frame.f_code, frame.f_lasti)
+
+def get_column_start_from_code(code: CodeType, f_lasti: int) -> int:
+    """
+    Given a code object, return the start column for that
+    frame. (The line number is found in frame.f_lineno).
+    If we can't find a column number, return -1.
+    """
+    co_positions = code.co_positions()
+    instruction_number = f_lasti // 2
     position_list = list(co_positions)
     position_tuple = position_list[instruction_number]
     if position_tuple is not None:
-        assert position_tuple[0] == frame.f_lineno
         if position_tuple[2] is not None:
             return position_tuple[2]
     return -1

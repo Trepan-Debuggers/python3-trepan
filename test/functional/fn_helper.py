@@ -75,6 +75,8 @@ def compare_output(right: list, d):
                 pass
             pass
         pass
+    if right != got:
+        breakpoint()
     assert right ==  got
     return
 
