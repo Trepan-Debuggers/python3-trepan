@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2024-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2024-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from types import CodeType
 import pyficache
 
 from trepan.lib.format import Filename, Hex, LineNumber, Symbol, format_token  # Opcode,
-from trepan.lib.stack import check_path_with_frame, frame2file, is_eval_or_exec_stmt
+from trepan.lib.stack import check_path_with_frame, frame2file, get_exec_string, is_eval_or_exec_stmt
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 
@@ -140,8 +140,10 @@ def print_location(proc_obj):
         lines = deparsed_text.split("\n")
         # FIXME Rather than blindly take the first line,
         # check if it is blank and if so use other lines.
-        first_text_line = lines[0]
-        return proc_obj._saferepr(first_text_line)[1:-1][:10]
+        for line in lines:
+            if line:
+                return proc_obj._saferepr(line.strip())[1:-1][:10]
+        return "..."
 
     i_stack = proc_obj.curindex
     if i_stack is None or proc_obj.stack is None:
@@ -217,8 +219,12 @@ def print_location(proc_obj):
                 # else:
                 #   print("Can't deparse", frame.f_code)
                 if source_text is None and eval_kind:
-                    source_text = f"{eval_kind}(...)"
-                    pass
+                     if (source_text := get_exec_string(frame)):
+                         filename = "string-" + prefix_for_filename(source_text) + "-"
+                     else:
+                         source_text = f"{eval_kind}(...)"
+                         pass
+                     pass
                 pass
             pass
         else:
@@ -283,7 +289,7 @@ def print_location(proc_obj):
                 # FIXME:
                 if source_text:
                     lines = source_text.split("\n")
-                    temp_name = "string-" + prefix_for_filename(source_text)
+                    temp_name = "string-" + prefix_for_filename(source_text) + "-"
                 else:
                     # try with good ol linecache and consider fixing pyficache
                     lines = linecache.getlines(filename)
@@ -298,7 +304,7 @@ def print_location(proc_obj):
                         dir=proc_obj.settings("tempdir"),
                     )
                     with fd:
-                        fd.write("".join(lines).encode("utf-8"))
+                        fd.write("\n".join(lines).encode("utf-8"))
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
@@ -397,8 +403,15 @@ if __name__ == "__main__":
         cmdproc.event = "line"
         cmdproc.setup()
         print_location(cmdproc)
+
         cmdproc.curindex = 1
         cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
         print_location(cmdproc)
+
+        exec("""
+cmdproc.frame = currentframe()
+cmdproc.setup()
+print_location(cmdproc)
+""")
 
     exec("five()")
