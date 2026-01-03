@@ -18,7 +18,6 @@ jobs:
       - run: pip install --local -e git+https://github.com/rocky/python-xdis.git@python-3.6-to-3.10#egg=xdis
       - run: pip install --local -e git+https://github.com/rocky/python-filecache.git@python-3.6-to-3.10#egg=pyficache
       - run: pip install --local -e git+https://github.com/rocky/python-uncompyle6.git@python-3.6-to-3.10#egg=uncompyle6
-      - run: pip install --local -e git+https://github.com/rocky/python-decompile3.git@python-3.6-to-3.0#egg=decompyle3
       - run: pip install --local -e .
       - run: pip install -r requirements-dev.txt
       - run: make test
