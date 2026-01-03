@@ -9,7 +9,7 @@ import sys
 import types
 from typing import Callable
 
-from pyficache import get_linecache_info, highlight_string
+from pyficache import highlight_string
 from pygments.token import Comment
 from xdis import (
     Bytecode,
@@ -191,26 +191,18 @@ def dis_from_file(
     asm_format="extended",
 ):
 
-    linecache_info = get_linecache_info(filename)
-    if start_line not in linecache_info.line_numbers:
-        # FIXME: newer api will include code object.
-        line_numbers = sorted(linecache_info.line_numbers)
-        i = bisect.bisect_right(line_numbers, start_line)
-        new_start =line_numbers[i]
-        msg(f"Starting line {start_line} not found; adjusting up to {new_start}")
-        start_line = new_start
+    errmsg("not implemented yet")
+    # # FIXME: we really need to get the code from linecache_info.line_numbers
+    # code_object = linecache_info.code_map[filename]
 
-    # FIXME: we really need to get the code from linecache_info.line_numbers
-    code_object = linecache_info.code_map[filename]
-
-    dis(msg, msg_nocr, section, errmsg,
-        x=code_object,
-        start_line=start_line,
-        end_line=end_line,
-        style=style,
-        include_header=include_header,
-        asm_format=asm_format,
-    )
+    # dis(msg, msg_nocr, section, errmsg,
+    #     x=code_object,
+    #     start_line=start_line,
+    #     end_line=end_line,
+    #     style=style,
+    #     include_header=include_header,
+    #     asm_format=asm_format,
+    # )
 
 
 # Default opc whene none is given.
