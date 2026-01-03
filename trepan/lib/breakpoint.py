@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024-2026 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -11,11 +11,6 @@ from collections import defaultdict
 from types import CodeType, ModuleType
 from typing import Optional
 from types import FrameType
-from pyficache import (
-    code_position_cache,
-    code_loop_for_positions,
-    get_linecache_info,
-)
 from xdis import load_module
 
 
@@ -55,49 +50,18 @@ class Breakpoint:
     ):
         # FIXME: split out this top part into a part that fills out information
         if code is not None:
-            if code not in code_position_cache:
-                code_loop_for_positions(code)
             if filename is None:
                 filename = code.co_filename
             # Should we check consistancy between filename and
             # code.co_filename? Probably not: trepan3k and pyficache do allow for
             # remapping filenames.
 
-        linecache_info = get_linecache_info(filename)
-
         if is_code_offset:
             self.column = None
             self.offset = position
-            # Figure out column offset, and possibly the code offset.
-            if (code_info := code_position_cache.get(code)) is not None:
-                if position == -1:
-                    # Figure out the code offset from the line number.
-                    if linecache_info is not None and (tup := linecache_info.lineno_info.get(line_number)):
-                        self.offset = tup[0]
-                        # When an offset value is Python code, then column information is stored in the parent.
-                        # FIXME: -1 and 1 might not be right when we have a line with some code and a
-                        # semicolon and a "def".
-                        if isinstance(tup[-1], CodeType):
-                            code_info = code_position_cache.get(code_info.parent)
-                    pass
-
-                # Now get the column start value from the line number and code offset.
-                column_range = code_info.lineno_and_offset.get((line_number, self.offset))
-                if column_range:
-                    assert isinstance(column_range, tuple)
-                    start_line, self.column = column_range[0]
-                    assert start_line == line_number
-                    pass
-                pass
         else:
             self.column = position
             self.offset = None
-            # Figure out code offset.
-            if (code_info := code_position_cache.get(code)) is not None:
-                self.column = code_info.lineno_and_start_column.get(
-                    (line_number, self.offset)
-                )
-                pass
 
         self.condition = condition
         self.enabled = True

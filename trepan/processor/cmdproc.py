@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2021, 2023-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2021, 2023-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,6 @@ from tracer import EVENT2SHORT, remove_hook
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
 import trepan.lib.file as Mfile
-from trepan.lib.stack import get_column_start_from_frame
 import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
 from trepan.interfaces.script import ScriptInterface
@@ -106,8 +105,7 @@ def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
     while curframe is not None:
         if exclude_frame(curframe):
             break  # See commented alternative below
-        column_number = get_column_start_from_frame(curframe)
-        stack.append((frame, frame.f_lineno, column_number))
+        stack.append((frame, frame.f_lineno))
         # bdb has:
         # if f is botframe: break
         curframe = curframe.f_back
@@ -115,8 +113,7 @@ def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
     stack.reverse()
     i = max(0, len(stack) - 1)
     while t is not None:
-        column_number = get_column_start_from_frame(t.tb_frame)
-        stack.append((t.tb_frame, t.tb_lineno, column_number))
+        stack.append((t.tb_frame, t.tb_lineno))
         t = t.tb_next
         pass
     return stack, i
@@ -749,14 +746,12 @@ class CommandProcessor(Processor):
                 None,
             )  # NOQA
             pass
-        self.column_number = -1
         if self.frame or exc_traceback:
             self.stack, self.curindex = get_stack(self.frame, exc_traceback, None, self)
             self.curframe = self.stack[self.curindex][0]
             self.thread_name = Mthread.current_thread_name()
             self.list_offset = self.curframe.f_lasti
             self.list_object = self.curframe
-            self.column_number = get_column_start_from_frame(self.curframe)
             if exc_traceback:
                 self.list_lineno = traceback.extract_tb(exc_traceback, 1)[0][1]
                 # FIXME: Do any other fields need to be changed?

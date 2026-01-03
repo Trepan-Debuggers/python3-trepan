@@ -97,7 +97,6 @@ def print_source_location_info(
     print_fn,
     filename,
     line_number: int,
-    column_number: int,
     fn_name=None,
     f_lasti=None,
     remapped_file=None,
@@ -108,11 +107,10 @@ def print_source_location_info(
         L -- 2 import sys,os
         (trepan3k)
     """
-    col_str = f":{column_number}"  if column_number >= 0 else ""
     if remapped_file and filename != remapped_file:
-        mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
+        mess = f"({remapped_file}:{line_number} remapped {filename}"
     else:
-        mess = f"({filename}:{line_number}{col_str}"
+        mess = f"({filename}:{line_number}"
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
@@ -159,7 +157,7 @@ def print_location(proc_obj):
     eval_kind = None
     i_stack = min(i_stack, len(proc_obj.stack) - 1)
     while i_stack >= 0:
-        frame, line_number, column_number = proc_obj.stack[i_stack]
+        frame, line_number = proc_obj.stack[i_stack]
 
         # Before starting a program a location for a module with
         # line number 0 may be reported. Treat that as though
@@ -350,7 +348,6 @@ def print_location(proc_obj):
             intf_obj.msg,
             filename,
             line_number,
-            column_number,
             fn_name,
             remapped_file=remapped_file,
             f_lasti=last_i,

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009, 2013, 2015, 2020, 2023-2025 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2023-2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ from dis import findlinestarts
 from trepan.processor.cmdproc import print_location
 
 # Our local modules
-from trepan.lib.stack import get_column_start_from_frame
 from trepan.processor.command.base_cmd import DebuggerCommand
 
 
@@ -92,11 +91,9 @@ class JumpCommand(DebuggerCommand):
             # Set to change position, update our copy of the stack,
             # and display the new position
             self.proc.curframe.f_lineno = lineno
-            column = get_column_start_from_frame(self.proc.curframe)
             self.proc.stack[self.proc.curindex] = (
                 self.proc.stack[self.proc.curindex][0],
                 lineno,
-                column,
             )
             print_location(self.proc)
         except ValueError as e:

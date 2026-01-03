@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2023-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ from pyficache import getline, highlight_string
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
 from trepan.lib.format import Function, Keyword, format_token
-from trepan.lib.stack import format_function_name, get_column_start_from_frame
+from trepan.lib.stack import format_function_name
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
@@ -146,13 +146,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         line_text = getline(file_path, line_number, {"style": style})
         if line_text is None:
             self.msg(f"  current line number: {frame.f_lineno}")
-        else:
-            formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
-
-        start_column = get_column_start_from_frame(frame)
-        if start_column >= 0:
-            self.msg(f"  starting column: {start_column}")
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
             self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")

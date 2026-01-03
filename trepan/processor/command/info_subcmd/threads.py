@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2014, 2023-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014, 2023-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 import sys
 import threading
 
-from trepan.lib.stack import format_stack_entry, get_column_start_from_frame
+from trepan.lib.stack import format_stack_entry
 from trepan.lib import thred as Mthread
 
 # Our local modules
@@ -130,7 +130,8 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             thread_name = args[0]
             if thread_name == ".":
                 thread_name = self.thread_name
-            if thread_id := name2id.get(thread_name):
+            thread_id = name2id.get(thread_name)
+            if thread_id:
                 if thread_id not in list(threading._active.keys()):
                     self.errmsg(f"Don't know about thread number {thread_id}")
                     self.info_thread_terse(name2id)
@@ -177,10 +178,9 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 s += "    thread id: %d" % thread_id
                 pass
             s += "\n    "
-            column_start = get_column_start_from_frame(frame)
             s += format_stack_entry(
                 self,
-                (frame, frame.f_lineno, column_start),
+                (frame, frame.f_lineno),
                 style=self.settings["style"],
             )
             self.section("-" * 40)
