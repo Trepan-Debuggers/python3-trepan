@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2009, 2014, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2009, 2014, 2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 import sys
 import threading
 
-from trepan.lib import stack as Mstack, thred as Mthread
+from trepan.lib.stack import format_stack_entry, get_column_start_from_frame
+from trepan.lib import thred as Mthread
 
 # Our local modules
 from trepan.processor.command import base_subcmd as Mbase_subcmd
@@ -55,17 +56,18 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
         self.name2id = {}
         return
 
-    def stack_trace(self, f):
+    def stack_trace(self, frame):
         """A mini stack trace routine for threads."""
-        while f:
+        while frame:
             if (
-                not self.core.ignore_filter.is_included(f)
+                self.core.ignore_filter.is_excluded(frame)
                 or self.settings["dbg_trepan"]
             ):
-                s = Mstack.format_stack_entry(self, (f, f.f_lineno))
+                column_start = get_column_start_from_frame(frame)
+                s = format_stack_entry(self, (frame, frame.f_lineno, column_start))
                 self.msg(" " * 4 + s)
                 pass
-            f = f.f_back
+            frame = frame.f_back
             pass
         return
 
@@ -128,13 +130,12 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             thread_name = args[0]
             if thread_name == ".":
                 thread_name = self.thread_name
-            try:
-                thread_id = int(thread_name)
+            if thread_id := name2id.get(thread_name):
                 if thread_id not in list(threading._active.keys()):
-                    self.errmsg(f"Don't know about thread number {thread_name}")
+                    self.errmsg(f"Don't know about thread number {thread_id}")
                     self.info_thread_terse(name2id)
                     return
-            except ValueError:
+            else:
                 if thread_name not in list(self.name2id.keys()):
                     self.errmsg(f"Don't know about thread {thread_name}")
                     self.info_thread_terse(name2id)
@@ -176,8 +177,11 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
                 s += "    thread id: %d" % thread_id
                 pass
             s += "\n    "
-            s += Mstack.format_stack_entry(
-                self, (frame, frame.f_lineno), style=self.settings["style"]
+            column_start = get_column_start_from_frame(frame)
+            s += format_stack_entry(
+                self,
+                (frame, frame.f_lineno, column_start),
+                style=self.settings["style"],
             )
             self.section("-" * 40)
             self.msg(s)

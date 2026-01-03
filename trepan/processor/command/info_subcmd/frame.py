@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023-2025 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
-from trepan.lib.disassemble import opc
+from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
 from trepan.lib.format import Function, Keyword, format_token
-from trepan.lib.stack import format_function_name
+from trepan.lib.stack import format_function_name, get_column_start_from_frame
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
@@ -150,9 +150,16 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             formatted_text = highlight_string(line_text.strip(), style=style)
             self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
 
+        start_column = get_column_start_from_frame(frame)
+        if start_column >= 0:
+            self.msg(f"  starting column: {start_column}")
+        else:
+            formatted_text = highlight_string(line_text.strip(), style=style)
+            self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
+
         f_lasti = frame.f_lasti
         if f_lasti >= 0:
-            opname = opc.opname[code.co_code[f_lasti]]
+            opname = python_opcodes.opname[code.co_code[f_lasti]]
             opname_formatted = format_token(Keyword, opname, style=style)
             self.msg(f"  instruction offset and opname: {frame.f_lasti} {opname_formatted}")
         else:
@@ -164,7 +171,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         else:
             self.msg("  no previous frame")
         self.msg(f"  tracing function: {frame.f_trace}")
-        if hasattr(frame, "f_trace_opcodes"):
+        if hasattr(frame, "f_trace_python_opcodesodes"):
             self.msg_nocr(
                 f"  tracing opcodes: {highlight_string(str(frame.f_trace_opcodes), style=style)}"
             )

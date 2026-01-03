@@ -27,6 +27,7 @@ import traceback
 
 # Note: the module name pre 3.2 is repr
 from reprlib import Repr
+from types import FrameType
 from typing import Optional, Set, Tuple
 
 import pyficache
@@ -36,6 +37,7 @@ from tracer import EVENT2SHORT, remove_hook
 import trepan.exception as Mexcept
 import trepan.lib.display as Mdisplay
 import trepan.lib.file as Mfile
+from trepan.lib.stack import get_column_start_from_frame
 import trepan.lib.thred as Mthread
 import trepan.misc as Mmisc
 from trepan.interfaces.script import ScriptInterface
@@ -77,15 +79,15 @@ def arg_split(s, posix=False):
     return args_list
 
 
-def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
+def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
     """Return a stack of frames which the debugger will use for in
     showing backtraces and in frame switching. As such various frame
     that are really around may be excluded unless we are debugging the
     sebugger. Also we will add traceback frame on top if that
     exists."""
 
-    def false_fn(f):
-        return false_fn
+    def false_fn(_):
+        return False
 
     def fn_is_ignored(f):
         return proc_obj.core.ignore_filter.is_excluded(f)
@@ -98,20 +100,23 @@ def get_stack(f, t, botframe, proc_obj=None) -> Tuple[list, int]:
             pass
         pass
     stack = []
-    if t and t.tb_frame is f:
+    if t and t.tb_frame is frame:
         t = t.tb_next
-    while f is not None:
-        if exclude_frame(f):
+    curframe = frame
+    while curframe is not None:
+        if exclude_frame(curframe):
             break  # See commented alternative below
-        stack.append((f, f.f_lineno))
+        column_number = get_column_start_from_frame(curframe)
+        stack.append((frame, frame.f_lineno, column_number))
         # bdb has:
         # if f is botframe: break
-        f = f.f_back
+        curframe = curframe.f_back
         pass
     stack.reverse()
     i = max(0, len(stack) - 1)
     while t is not None:
-        stack.append((t.tb_frame, t.tb_lineno))
+        column_number = get_column_start_from_frame(t.tb_frame)
+        stack.append((t.tb_frame, t.tb_lineno, column_number))
         t = t.tb_next
         pass
     return stack, i
@@ -744,14 +749,20 @@ class CommandProcessor(Processor):
                 None,
             )  # NOQA
             pass
+        self.column_number = -1
         if self.frame or exc_traceback:
             self.stack, self.curindex = get_stack(self.frame, exc_traceback, None, self)
             self.curframe = self.stack[self.curindex][0]
             self.thread_name = Mthread.current_thread_name()
+            self.list_offset = self.curframe.f_lasti
+            self.list_object = self.curframe
+            self.column_number = get_column_start_from_frame(self.curframe)
             if exc_traceback:
                 self.list_lineno = traceback.extract_tb(exc_traceback, 1)[0][1]
-                self.list_offset = self.curframe.f_lasti
-                self.list_object = self.curframe
+                # FIXME: Do any other fields need to be changed?
+            else:
+                self.list_lineno = self.curframe.f_lineno
+            pass
         else:
             self.stack = self.curframe = self.botframe = None
             pass
