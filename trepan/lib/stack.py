@@ -25,12 +25,12 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
-from types import FrameType
+from types import CodeType, FrameType
 from typing import Optional, Tuple
 
 import xdis
-from xdis import IS_PYPY, get_opcode
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis import get_opcode
+from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
@@ -77,6 +77,28 @@ def count_frames(frame: FrameType, count_start=0) -> int:
         return 1000
     return count
 
+def get_column_start_from_frame(frame: FrameType) -> int:
+    """
+    Given a code frame, return the start column for that
+    frame. (The line number is found in frame.f_lineno).
+    If we can't find a column number, return -1.
+    """
+    return get_column_start_from_code(frame.f_code, frame.f_lasti)
+
+def get_column_start_from_code(code: CodeType, f_lasti: int) -> int:
+    """
+    Given a code object, return the start column for that
+    frame. (The line number is found in frame.f_lineno).
+    If we can't find a column number, return -1.
+    """
+    co_positions = code.co_positions()
+    instruction_number = f_lasti // 2
+    position_list = list(co_positions)
+    position_tuple = position_list[instruction_number]
+    if position_tuple is not None:
+        if position_tuple[2] is not None:
+            return position_tuple[2]
+    return -1
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
@@ -194,6 +216,7 @@ def format_function_and_parameters(frame: FrameType, debugger, style: str) -> Tu
 def format_return_and_location(
     frame,
     line_number: int,
+    column_number: int,
     debugger,
     is_module: bool,
     include_location: bool,
@@ -242,21 +265,28 @@ def format_return_and_location(
 
         if add_quotes_around_file:
             filename = f"'{filename}'"
-        s += " %s at line %s" % (
-            format_token(Filename, filename, style=style),
-            format_token(LineNumber, str(line_number), style=style),
-        )
+        if column_number >= 0:
+            s += " %s at line %s, column %s" % (
+                format_token(Filename, filename, style=style),
+                format_token(LineNumber, str(line_number), style=style),
+                format_token(LineNumber, str(column_number), style=style),
+            )
+        else:
+            s += " %s at line %s" % (
+                format_token(Filename, filename, style=style),
+                format_token(LineNumber, str(line_number), style=style),
+            )
 
     return s
 
 
 def format_stack_entry(
-    dbg_obj, frame_lineno, lprefix=": ", include_location=True, style="none"
+    dbg_obj, frame_line_col, lprefix=": ", include_location=True, style="none"
 ) -> str:
     """Format and return a stack entry gdb-style.
     Note: lprefix is not used. It is kept for compatibility.
     """
-    frame, line_number = frame_lineno
+    frame, line_number, column_number = frame_line_col
 
     is_module, s = format_function_and_parameters(frame, dbg_obj, style)
     args, varargs, varkw, local_vars = inspect.getargvalues(frame)
@@ -267,7 +297,7 @@ def format_stack_entry(
         s += "\n    "
 
     s += format_return_and_location(
-        frame, line_number, dbg_obj, is_module, include_location, style
+        frame, line_number, column_number, dbg_obj, is_module, include_location, style
     )
     return s
 
@@ -336,7 +366,7 @@ def is_eval_or_exec_stmt(frame) -> Optional[str]:
     return None
 
 
-opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
+opc = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def get_call_function_name(frame) -> Optional[str]:
@@ -390,8 +420,8 @@ def get_call_function_name(frame) -> Optional[str]:
 
 
 def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
-    frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
-    frame, lineno = frame_lineno
+    frame_line_column = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
+    frame, line_number, _ = frame_line_column
     intf = proc_obj.intf[-1]
     name = "??"
     if frame is proc_obj.curframe:
@@ -399,11 +429,11 @@ def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     else:
         intf.msg_nocr("##")
     intf.msg(
-        f"{i_stack} {format_stack_entry(proc_obj.debugger, frame_lineno, style=style)}"
+        f"{i_stack} {format_stack_entry(proc_obj.debugger, frame_line_column, style=style)}"
     )
     if opts.get("source", False):
         filename = frame2file(proc_obj.core, frame)
-        line = linecache.getline(filename, lineno, frame.f_globals)
+        line = linecache.getline(filename, line_number, frame.f_globals)
         intf.msg(line)
         pass
 
@@ -549,21 +579,23 @@ if __name__ == "__main__":
 
     dd = Trepan()
     my_frame = inspect.currentframe()
-    dd.core.processor.stack = [(my_frame, 100)]
+    dd.core.processor.stack = [(my_frame, 100, 1)]
     dd.core.processor.curframe = my_frame
-    # print_stack_entry(dd.core.processor, 0, "fruity")
+    print_stack_entry(dd.core.processor, 0, "fruity")
 
-    # print(format_stack_entry(m, (frame, 10,)))
     print(
         format_stack_entry(
             m,
             (
                 frame,
                 10,
+                3,
             ),
             style="tango",
         )
     )
+    import sys
+    sys.exit(0)
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))

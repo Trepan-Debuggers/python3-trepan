@@ -1,23 +1,23 @@
-(gcd.py:1): <module>
+(gcd.py:1:0): <module>
 -> 1 #!/usr/bin/env python3
 Set basename is on.
 Set event is on.
 Set stopping is off.
 Set confirmation is off.
 line - gcd.py:2
-(gcd.py:2): <module>
+(gcd.py:2:0): <module>
 -- 2 """Greatest Common Divisor
   2  ->	"""Greatest Common Divisor
 Set stopping is on.
 line - gcd.py:11
-(gcd.py:11): <module>
+(gcd.py:11:0): <module>
 -- 11 import sys
  11  ->	import sys
 Set stopping is off.
 line - gcd.py:14
-line - gcd.py:27
-line - gcd.py:42
-(gcd.py:42): <module>
--- 42 if __name__ == "__main__":
- 42  ->	if __name__ == "__main__":
+line - gcd.py:29
+line - gcd.py:44
+(gcd.py:44:3): <module>
+-- 44 if __name__ == "__main__":
+ 44  ->	if __name__ == "__main__":
 trepan3k: That's all, folks...

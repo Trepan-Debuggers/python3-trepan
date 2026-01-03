@@ -23,7 +23,7 @@ import sys
 import tempfile
 
 import pyficache
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
+from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
 
@@ -95,7 +95,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             elif not is_readable:
                 print(f"{__title__}: Can't read Python script file '{mainpyfile}.'")
                 sys.exit(1)
-                return
 
         if is_compiled_py(mainpyfile):
             try:
@@ -104,24 +103,21 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     _,
                     _,
                     co,
-                    is_pypy,
+                    python_implementation,
                     _,
                     _,
                     _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
-                if is_pypy != IS_PYPY:
-                    bytecode_pypy = "" if is_pypy else "not "
-                    running_pypy = "" if IS_PYPY else "not "
+                if python_implementation != PYTHON_IMPLEMENTATION:
                     print(
-                        f"Bytecode is for Version {version_tuple_to_str(end=2)} {bytecode_pypy}running PyPY, but we are {running_pypy}running PyPy."
+                        f"Bytecode is for Version {version_tuple_to_str(end=2)} {python_implementation}, but we are {PYTHON_IMPLEMENTATION}."
                     )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
-                    bytecode_pypy = " PyPy" if is_pypy else ""
                     print(
-                        f"Bytecode is for version {version_tuple_to_str(python_version, end=2)}{bytecode_pypy}, but we are "
-                        f"version {version_tuple_to_str(end=2)}{bytecode_pypy}."
+                        f"Bytecode is for version {version_tuple_to_str(python_version, end=2)}, but we are "
+                        f"version {version_tuple_to_str(end=2)}."
                     )
                     print(
                         "For a cross-version debugger, trepan-xpy with x-python might work."

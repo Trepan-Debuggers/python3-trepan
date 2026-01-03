@@ -149,7 +149,7 @@ class ListCommand(DebuggerCommand):
                     break
                 else:
                     if is_pyasm:
-                        self.msg_nocr(line)
+                        self.msg(line)
                         proc.list_lineno = lineno
                         continue
 
