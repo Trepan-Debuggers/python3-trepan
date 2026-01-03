@@ -11,7 +11,6 @@ from typing import Callable
 from pyficache import highlight_string
 from pygments.token import Comment
 from xdis import (
-    IS_PYPY,
     Bytecode,
     findlabels,
     findlinestarts,
@@ -19,7 +18,7 @@ from xdis import (
     get_opcode,
 )
 from xdis.std import distb
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.format import (  # Opcode,
     Arrow,
@@ -117,7 +116,7 @@ def dis(
             if lasti == -1:
                 lasti = 0
             pass
-        opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
+        opc = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
         x = x.f_code
         if include_header:
             header_lines = Bytecode(x, opc).info().split("\n")
@@ -179,6 +178,8 @@ def dis(
         errmsg(f"Don't know how to disassemble {type(x).__name__} objects.")
     return None, None
 
+# Default opc whene none is given.
+DEFAULT_OPC = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 def disassemble(
     msg: Callable,
@@ -192,6 +193,7 @@ def disassemble(
     start_offset=0,
     end_offset=None,
     asm_format="extended",
+    opc=DEFAULT_OPC,
 ):
     """Disassemble a code object."""
     return disassemble_bytes(
@@ -216,13 +218,9 @@ def disassemble(
         asm_format=asm_format,
     )
 
-
 def disassemble_string(msg, msg_nocr, source):
     """Compile the source string, then disassemble the code object."""
     return disassemble_bytes(msg, msg_nocr, _try_compile(source, "<dis>"))
-
-
-opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def print_instruction(
@@ -234,7 +232,7 @@ def print_instruction(
     lasti: int=-1,
     line_starts = {},
     style="none",
-    opc=opc,
+    opc=DEFAULT_OPC,
     asm_format="extended",
 ):
     """Disassemble bytecode at offset `offsets`."""
@@ -379,7 +377,7 @@ def disassemble_bytes(
     style="none",
     start_offset=0,
     end_offset=None,
-    opc=opc,
+    opc=DEFAULT_OPC,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
@@ -474,7 +472,7 @@ def disassemble_instruction(
     freevars=(),
     line_starts={},
     style="none",
-    opc=opc,
+    opc=DEFAULT_OPC,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
