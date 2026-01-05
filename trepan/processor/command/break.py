@@ -74,13 +74,13 @@ class BreakCommand(DebuggerCommand):
     def run(self, args):
         force = True if args[0][-1] == "!" else False
 
-        (func, filename, lineno, condition, offset) = parse_break_cmd(self.proc, args)
+        (func, filename, line_number, condition, offset) = parse_break_cmd(self.proc, args)
         if not (func is None and filename is None):
             set_break(
                 self,
                 func,
                 filename,
-                lineno,
+                line_number,
                 condition,
                 False,
                 args,
