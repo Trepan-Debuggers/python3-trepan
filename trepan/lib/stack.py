@@ -90,14 +90,14 @@ def get_column_start_from_frame(frame: FrameType) -> int:
     return get_column_start_from_code(frame.f_code, frame.f_lasti)
 
 
-def get_column_start_from_code(code: CodeType, f_lasti: int) -> int:
+def get_column_start_from_code(code: CodeType, code_offset: int) -> int:
     """
     Given a code object, return the start column for that
     frame. (The line number is found in frame.f_lineno).
     If we can't find a column number, return -1.
     """
     co_positions = code.co_positions()
-    instruction_number = f_lasti // 2
+    instruction_number = code_offset // 2
     position_list = list(co_positions)
     position_tuple = position_list[instruction_number]
     if position_tuple is not None:
