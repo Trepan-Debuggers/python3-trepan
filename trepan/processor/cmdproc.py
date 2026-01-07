@@ -107,7 +107,7 @@ def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
         if exclude_frame(curframe):
             break  # See commented alternative below
         column_number = get_column_start_from_frame(curframe)
-        stack.append((frame, frame.f_lineno, column_number))
+        stack.append((curframe, curframe.f_lineno, column_number))
         # bdb has:
         # if f is botframe: break
         curframe = curframe.f_back
