@@ -102,7 +102,10 @@ def get_column_start_from_code(code: CodeType, code_offset: int) -> int:
     position_tuple = position_list[instruction_number]
     if position_tuple is not None:
         if position_tuple[2] is not None:
-            return position_tuple[2]
+            # Python stores columns starting 0 in a line.
+            # For realgud and lldb compatibility (among others),
+            # we use columns starting at 1.
+            return position_tuple[2] + 1
     return -1
 
 

@@ -86,18 +86,17 @@ class Breakpoint:
                 if column_range:
                     assert isinstance(column_range, tuple)
                     start_line, self.column = column_range[0]
+                    # Python stores columns starting 0 in a line.
+                    # For realgud and lldb compatibility (among others),
+                    # we use columns starting at 1.
+                    self.column += 1
                     assert start_line == line_number
                     pass
                 pass
         else:
             self.column = position
+            # TODO: Figure out code offset.
             self.offset = None
-            # Figure out code offset.
-            if (code_info := code_position_cache.get(code)) is not None:
-                self.column = code_info.lineno_and_start_column.get(
-                    (line_number, self.offset)
-                )
-                pass
 
         self.condition = condition
         self.enabled = True

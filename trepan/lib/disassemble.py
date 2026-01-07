@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
-#   Modification of Python's Lib/dis.py
-# FIXME: see if we can use more of Lib/dis in Python3
+#  Copyright (C) 2026 Rocky Bernstein
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Disassembly Routines"""
 
 import bisect
@@ -200,17 +212,16 @@ def dis_from_file(
         msg(f"Starting line {start_line} not found; adjusting up to {new_start}")
         start_line = new_start
 
-    # FIXME: we really need to get the code from linecache_info.line_numbers
-    code_object = linecache_info.code_map[filename]
-
-    dis(msg, msg_nocr, section, errmsg,
-        x=code_object,
-        start_line=start_line,
-        end_line=end_line,
-        style=style,
-        include_header=include_header,
-        asm_format=asm_format,
-    )
+    code_object = next((k for k, val in linecache_info.code_map.items() if val == filename), None)
+    if code_object is not None:
+        dis(msg, msg_nocr, section, errmsg,
+            x=code_object,
+            start_line=start_line,
+            end_line=end_line,
+            style=style,
+            include_header=include_header,
+            asm_format=asm_format,
+        )
 
 
 # Default opc whene none is given.
