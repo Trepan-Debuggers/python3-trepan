@@ -94,11 +94,11 @@ def dis(
     mess = ""
     if start_line > 1:
         mess += "from line %d " % start_line
-    elif start_offset > 1:
+    if start_offset >= 0:
         mess = "from offset %d " % start_offset
-    if end_line:
+    if end_line > 0:
         mess += "to line %d" % end_line
-    elif end_offset:
+    if end_offset:
         mess += "to offset %d" % end_offset
 
     sectioned = False
@@ -406,10 +406,10 @@ def disassemble_bytes(
     orig_msg: Callable,
     orig_msg_nocr: Callable,
     code: types.CodeType,
-    lasti=-1,
-    cur_line=0,
-    start_line=-1,
-    end_line=None,
+    lasti: int =-1,
+    cur_line: int =0,
+    start_line: int =-1,
+    end_line: int = -1,
     relative_pos=False,
     line_starts={},
     style="none",
@@ -425,7 +425,7 @@ def disassemble_bytes(
         return None
 
     instructions = []
-    if end_line is None:
+    if end_line < 0:
         end_line = 10000
     elif relative_pos:
         end_line += start_line - 1

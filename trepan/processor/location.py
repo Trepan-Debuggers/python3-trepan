@@ -279,7 +279,10 @@ def resolve_address_location(proc, location) -> Optional[Location]:
     elif location.line_number is not None:
         filename = frame2file(proc.core, curframe, canonic=False)
         offset = location.line_number
-        is_address = location.is_address
+        mod_or_func_or_code = proc.list_object
+    elif location.offset is not None:
+        filename = frame2file(proc.core, curframe, canonic=False)
+        offset = location.offset
         mod_or_func_or_code = proc.list_object
     else:
         proc.errmsg(
@@ -287,7 +290,7 @@ def resolve_address_location(proc, location) -> Optional[Location]:
         )
         return INVALID_LOCATION
 
-    return Location(filename, offset, is_address, mod_or_func_or_code, offset)
+    return Location(filename, offset, location.is_address, mod_or_func_or_code, offset)
 
 
 # Demo it
