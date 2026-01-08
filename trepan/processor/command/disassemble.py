@@ -173,6 +173,9 @@ class DisassembleCommand(DebuggerCommand):
                     opts["end_line"] = last = None
                     do_parse = False
                     bytecode_file = None
+                elif inspect.ismodule(obj):
+                    proc.current_command = proc.current_command.replace(args[1], __file__, 1)
+                    args[1] = __file__
 
         if do_parse:
             (
@@ -271,6 +274,11 @@ if __name__ == "__main__":
     command = DisassembleCommand(cp)
     prefix = "-" * 20 + " disassemble "
 
+    # FIXME
+    # Note osp has already been imported
+    print(prefix + "osp")
+    doit(command, ["disassemble", "osp"])
+
     print(prefix + 'doit')
     doit(command, ['disassemble', 'doit()'])
 
@@ -278,10 +286,6 @@ if __name__ == "__main__":
     doit(command, ["disassemble", "*0, *10"])
 
     doit(command, ["disassemble", f"{doit_return_line}, {doit_return_line+2}"])
-
-    # FIXME
-    # print(prefix + "os.path")
-    # doit(command, ["disassemble", "os.path"])
 
     print(prefix + "cp.errmsg()")
     doit(command, ["disassemble", "cp.errmsg()"])
