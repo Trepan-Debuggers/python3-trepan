@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
-#   Modification of Python's Lib/dis.py
-# FIXME: see if we can use more of Lib/dis in Python3
+#  Copyright (C) 2026 Rocky Bernstein
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Disassembly Routines"""
 
 import bisect
@@ -82,11 +94,11 @@ def dis(
     mess = ""
     if start_line > 1:
         mess += "from line %d " % start_line
-    elif start_offset > 1:
+    if start_offset >= 0:
         mess = "from offset %d " % start_offset
-    if end_line:
+    if end_line > 0:
         mess += "to line %d" % end_line
-    elif end_offset:
+    if end_offset:
         mess += "to offset %d" % end_offset
 
     sectioned = False
@@ -387,10 +399,10 @@ def disassemble_bytes(
     orig_msg: Callable,
     orig_msg_nocr: Callable,
     code: types.CodeType,
-    lasti=-1,
-    cur_line=0,
-    start_line=-1,
-    end_line=None,
+    lasti: int =-1,
+    cur_line: int =0,
+    start_line: int =-1,
+    end_line: int = -1,
     relative_pos=False,
     line_starts={},
     style="none",
@@ -406,7 +418,7 @@ def disassemble_bytes(
         return None
 
     instructions = []
-    if end_line is None:
+    if end_line < 0:
         end_line = 10000
     elif relative_pos:
         end_line += start_line - 1

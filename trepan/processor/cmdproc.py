@@ -207,9 +207,8 @@ class CommandProcessor(Processor):
         self.list_lineno = 0  # last list number used in "list"
         self.list_offset = -1  # last list number used in "disassemble"
         self.list_obj = None
-        self.list_filename = None  # last filename used in list
         self.list_orig_lineno = 0  # line number of frame or exception on setup
-        self.list_filename = None  # filename of frame or exception on setup
+        self.list_filename = None  # filename of frame or exception on setup, or "list" command
 
         self.macros = {}  # Debugger Macros
 

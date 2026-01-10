@@ -59,8 +59,35 @@ class Breakpoint:
         if is_code_offset:
             self.column = None
             self.offset = position
+            # Figure out column offset, and possibly the code offset.
+            if (code_info := code_position_cache.get(code)) is not None:
+                if position == -1:
+                    # Figure out the code offset from the line number.
+                    if linecache_info is not None and (tup := linecache_info.lineno_info.get(line_number)):
+                        self.offset = tup[0]
+                        # When an offset value is Python code, then column information is stored in the parent.
+                        # FIXME: -1 and 1 might not be right when we have a line with some code and a
+                        # semicolon and a "def".
+                        if isinstance(tup[-1], CodeType):
+                            code_info = code_position_cache.get(code_info.parent)
+                    pass
+
+                # Now get the column start value from the line number and code offset.
+                column_range = code_info.lineno_and_offset.get((line_number, self.offset))
+                if column_range:
+                    assert isinstance(column_range, tuple)
+                    start_line, self.column = column_range[0]
+                    # Python stores columns starting 0 in a line.
+                    # For realgud and lldb compatibility (among others),
+                    # we use columns starting at 1.
+                    self.column += 1
+                    assert start_line == line_number
+                    pass
+                pass
+>>>>>>> python-3.11
         else:
             self.column = position
+            # TODO: Figure out code offset.
             self.offset = None
 
         self.condition = condition

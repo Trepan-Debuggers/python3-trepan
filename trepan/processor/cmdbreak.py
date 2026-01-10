@@ -18,6 +18,7 @@ import inspect
 from dis import findlinestarts
 from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
+from trepan.lib.stack import get_column_start_from_code
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
@@ -52,7 +53,7 @@ def set_break(
         if isinstance(func_or_code, str):
             func_or_code = code_map.get(func_or_code, func_or_code)
         if not line_info:
-            linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
+            linestarts = dict(findlinestarts(cmd_obj.curframe.f_code))
             if line_number not in linestarts.values():
                 part1 = f"File {cmd_obj.core.filename(filename)}"
                 msg = wrapped_lines(
@@ -102,7 +103,9 @@ def set_break(
         )
         cmd_obj.msg(msg)
     else:
+        code = None
         if hasattr(func_or_code, "co_name"):
+            code = func_or_code
             code_name = func_or_code.co_name
             if not code_name.startswith("<"):
                 code_name += "()"
@@ -110,10 +113,13 @@ def set_break(
         else:
             func_str = ""
         if bp.column is not None:
-            # Adjust 0-origin to 1-origin column numbers
-            column_str = f", column {bp.column + 1}"
+            column_str = f", column {bp.column}"
         else:
             column_str = ""
+            if offset is not None and offset >= 0:
+               if code is not None:
+                    column_start = get_column_start_from_code(code, offset)
+                    column_str = f", column {column_start}"
 
         part1 = (f"Breakpoint {bp.number} set at line "
                  f"{line_number}{column_str}{func_str} of file")
@@ -196,7 +202,7 @@ if __name__ == "__main__":
     cmdproc.setup()
     # FIXME: we should not need ot set setting
     cmdproc.settings = d.settings
-    set_break(cmdproc, "set_break", __file__, 50, True, False, [])
+    set_break(cmdproc, "set_break", __file__, 51, True, False, [])
     for cmd in (
         "break '''c:\\tmp\\foo.bat''':1",
         'break """/Users/My Documents/foo.py""":2',
@@ -204,7 +210,7 @@ if __name__ == "__main__":
         "break 10",
         "break if True",
         f"break {__file__}:5",
-        f"break {__file__}:{cmdproc.frame.f_line_number}",
+        f"break {__file__}:{cmdproc.frame.f_lineno}",
         "break set_break()",
         "break 4 if i==5",
         "break cmdproc.setup()",

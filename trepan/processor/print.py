@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2024-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2024-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,12 @@ from types import CodeType
 import pyficache
 
 from trepan.lib.format import Filename, Hex, LineNumber, Symbol, format_token  # Opcode,
-from trepan.lib.stack import check_path_with_frame, frame2file, is_eval_or_exec_stmt
+from trepan.lib.stack import (
+    check_path_with_frame,
+    frame2file,
+    get_exec_or_eval_string,
+    is_eval_or_exec_stmt,
+)
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 
@@ -138,8 +143,22 @@ def print_location(proc_obj):
         lines = deparsed_text.split("\n")
         # FIXME Rather than blindly take the first line,
         # check if it is blank and if so use other lines.
-        first_text_line = lines[0]
-        return proc_obj._saferepr(first_text_line)[1:-1][:10]
+        for line in lines:
+            if line:
+                return proc_obj._saferepr(line.strip())[1:-1][:10]
+        return "..."
+
+    def prefix_for_source_text(source_text: str, maxwidth: int) -> str:
+        """
+        Return source_text possibly truncated to `maxwidth`
+        We do this so that the user gets some idea of
+        what the string (source code text) is contained in the file.
+
+        """
+        source_text = source_text.strip()
+        if len(source_text) < maxwidth:
+            return source_text
+        return proc_obj._saferepr(source_text)[:maxwidth] + "'..."
 
     i_stack = proc_obj.curindex
     if i_stack is None or proc_obj.stack is None:
@@ -175,21 +194,23 @@ def print_location(proc_obj):
         #                 break
 
         filename = frame2file(core_obj, frame, canonic=False)
-        if "<string>" == filename and dbgr_obj.eval_string:
-            eval_kind = "string"
-            remapped_file = filename
-            filename = pyficache.unmap_file(filename)
-            if "<string>" == filename:
-                remapped_file = cmdfns.source_tempfile_remap(
-                    "eval_string",
-                    dbgr_obj.eval_string,
-                    tempdir=proc_obj.settings("tempdir"),
-                )
-                pyficache.remap_file(filename, remapped_file)
-                filename, line_number = pyficache.unmap_file_line(filename, line_number)
+        if "<string>" == filename:
+            if dbgr_obj.eval_string:
+                remapped_file = filename
+                filename = pyficache.unmap_file(filename)
+                if "<string>" == filename:
+                    remapped_file = cmdfns.source_tempfile_remap(
+                        "eval_string",
+                        dbgr_obj.eval_string,
+                        tempdir=proc_obj.settings("tempdir"),
+                    )
+                    pyficache.remap_file(filename, remapped_file)
+                    filename, line_number = pyficache.unmap_file_line(
+                        filename, line_number
+                    )
+                    pass
                 pass
-            pass
-        elif "<string>" == filename:
+
             # FIXME: should change filename to disambiguated <string> everywhere.
             eval_kind = is_eval_or_exec_stmt(frame) or "code-"
             deparsed = deparse_fn(frame.f_code)
@@ -208,14 +229,17 @@ def print_location(proc_obj):
                 pyficache.remap_file(remapped_file, filename)
                 filename = remapped_file
             else:
-                eval_kind = is_eval_or_exec_stmt(frame)
                 deparsed = deparse_fn(frame.f_code)
                 if deparsed is not None:
                     source_text = deparsed.text
                 # else:
                 #   print("Can't deparse", frame.f_code)
                 if source_text is None and eval_kind:
-                    source_text = f"{eval_kind}(...)"
+                    if source_text := get_exec_or_eval_string(frame):
+                        filename = "string-" + prefix_for_filename(source_text) + "-"
+                    else:
+                        source_text = f"{eval_kind}(...)"
+                        pass
                     pass
                 pass
             pass
@@ -288,7 +312,7 @@ def print_location(proc_obj):
                     temp_name = filename
                 if lines and not filename.endswith(".pyasm"):
                     # FIXME: DRY code with version in cmdproc.py print_location
-                    prefix = osp.basename(temp_name).split(".")[0]
+                    prefix = osp.basename(temp_name).split(".")[0] + "-"
                     fd = NamedTemporaryFile(
                         suffix=".py",
                         prefix=prefix,
@@ -296,11 +320,17 @@ def print_location(proc_obj):
                         dir=proc_obj.settings("tempdir"),
                     )
                     with fd:
-                        fd.write("".join(lines).encode("utf-8"))
+                        fd.write("\n".join(lines).encode("utf-8"))
                         remapped_file = fd.name
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
-                    intf_obj.msg(f"remapped file {filename} to {remapped_file}")
+                    if source_text:
+                        intf_obj.msg(
+                            f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
+                        )
+                    else:
+                        intf_obj.msg(f"remapped file {filename} to {remapped_file}")
+                    proc_obj.list_filename = remapped_file
 
                     pass
 
@@ -326,7 +356,7 @@ def print_location(proc_obj):
                         filename, line = cmdfns.deparse_getline(
                             code, remapped_file, line_number, opts
                         )
-                    pass
+                    proc_obj.list_filename = remapped_file
             pass
 
         if eval_kind is None:
@@ -393,9 +423,19 @@ if __name__ == "__main__":
         cmdproc.frame = currentframe()
         cmdproc.event = "line"
         cmdproc.setup()
+
         print_location(cmdproc)
+
         cmdproc.curindex = 1
         cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
         print_location(cmdproc)
+
+        exec(
+            """
+cmdproc.frame = currentframe()
+cmdproc.setup()
+print_location(cmdproc)
+"""
+        )
 
     exec("five()")

@@ -15,7 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Functions for working with Python frames"""
+"""Functions for working with Python frames"""
 
 import dis
 import inspect
@@ -27,9 +27,7 @@ from opcode import opname
 from reprlib import repr
 from types import FrameType
 from typing import Optional, Tuple
-
 import xdis
-from xdis import get_opcode
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.bytecode import op_at_frame
@@ -48,8 +46,11 @@ from trepan.lib.printing import printf
 try:
     from trepan.processor.cmdfns import deparse_fn
 except ImportError:
+
     def deparse_fn(code):
         raise NotImplementedError
+
+
 try:
     from trepan.lib.deparse import deparse_offset
 
@@ -62,6 +63,8 @@ except ImportError:
     have_deparser = False
 
 _with_local_varname = re.compile(r"_\[[0-9+]]")
+
+opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def count_frames(frame: FrameType, count_start=0) -> int:
@@ -76,7 +79,6 @@ def count_frames(frame: FrameType, count_start=0) -> int:
     else:
         return 1000
     return count
-
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
@@ -125,7 +127,9 @@ def deparse_source_from_code(code):
     return source_text
 
 
-def format_function_name(frame: FrameType, style: str) -> Tuple[Optional[str], Optional[str]]:
+def format_function_name(
+    frame: FrameType, style: str
+) -> Tuple[Optional[str], Optional[str]]:
     """
     Pick out the function name from ``frame`` and return both the name
     and the name styled according to ``style``
@@ -146,7 +150,9 @@ def format_function_name(frame: FrameType, style: str) -> Tuple[Optional[str], O
     return funcname, format_token(Function, funcname, style=style)
 
 
-def format_function_and_parameters(frame: FrameType, debugger, style: str) -> Tuple[bool, str]:
+def format_function_and_parameters(
+    frame: FrameType, debugger, style: str
+) -> Tuple[bool, str]:
     """ """
 
     funcname, s = format_function_name(frame, style)
@@ -220,18 +226,19 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         if is_module:
             if filename == "<string>":
-                s += " in exec"
+                if (func_name := is_eval_or_exec_stmt(frame)):
+                    s += f" in {func_name}"
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_eval_or_exec_stmt(frame):
-                s = "in exec"
-                # exec_str = get_exec_string(frame.f_back)
-                # if exec_str != None:
-                #     filename = exec_str
-                #     add_quotes_around_file = False
-                #     pass
-                # pass
+            if (func_name := is_eval_or_exec_stmt(frame)):
+                s = f"in {func_name}"
+                exec_str = get_exec_or_eval_string(frame.f_back)
+                if exec_str is not None:
+                    filename = exec_str
+                    add_quotes_around_file = False
+                    pass
+                pass
             elif not is_pseudo_file:
                 s = "in file"
                 pass
@@ -307,6 +314,28 @@ def frame2filesize(frame):
         return None, None
 
 
+def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
+    if (call_frame := frame.f_back) is not None:
+        offset = call_frame.f_lasti - 2
+        code = call_frame.f_code
+        while offset > 0:
+            inst = list(xdis.bytecode.get_logical_instruction_at_offset(
+                    code.co_code, offset, opc, constants=code.co_consts
+                ))[0]
+            if inst.opname in ("PRECALL", "CACHE"):
+                pass
+            elif inst.opname == "LOAD_CONST":
+                return inst.argval
+            elif inst.opname == "LOAD_NAME":
+                arg_name = call_frame.f_code.co_names[inst.argval]
+                return call_frame.f_locals[arg_name]
+            else:
+                break
+            offset -= 2
+
+    return None
+
+
 def check_path_with_frame(frame, path):
     my_size = os.stat(path).st_size
     fs_size, bc_size = frame2filesize(frame)
@@ -334,9 +363,6 @@ def is_eval_or_exec_stmt(frame) -> Optional[str]:
     if func_name and frame.f_code.co_filename == "<string>":
         return func_name
     return None
-
-
-opc = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def get_call_function_name(frame) -> Optional[str]:
@@ -543,6 +569,7 @@ if __name__ == "__main__":
     # print(pyc_file, getsourcefile(pyc_file))
 
     from trepan.debugger import Trepan
+
     m = MockDebugger()
 
     # For testing print_stack_entry()
@@ -563,8 +590,7 @@ if __name__ == "__main__":
             style="tango",
         )
     )
-    import sys
-    sys.exit(0)
+
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))
@@ -580,7 +606,13 @@ if __name__ == "__main__":
         eval_str = is_eval_or_exec_stmt(frame.f_back)
         if eval_str:
             print(f"Caller is {eval_str} stmt")
-            print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
+            eval_exec_arg = get_exec_or_eval_string(frame.f_back)
+            print(f"{eval_str} argument is: {eval_exec_arg}")
+            print(
+                format_stack_entry(
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
+                )
+            )
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
@@ -589,12 +621,19 @@ if __name__ == "__main__":
 
     print("=" * 30)
     fn(5)
+    print("=" * 30)
     eval("fn(5)")
+    arg_str = "fn(5)"
+    eval(arg_str)
+    print("+" * 30)
     exec("fn(5)")
-    # print("=" * 30)
-    # print(print_obj("fn", fn))
-    # print("=" * 30)
-    # print(print_obj("len", len))
-    # print("=" * 30)
-    # print(print_obj("MockDebugger", MockDebugger))
+    exec(arg_str)
+
+    print("=" * 30)
+    print(print_obj("fn", fn))
+    print("=" * 30)
+    print(print_obj("len", len))
+    print("=" * 30)
+    print(print_obj("MockDebugger", MockDebugger))
+
     pass
