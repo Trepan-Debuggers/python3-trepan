@@ -255,12 +255,13 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         if is_module:
             if filename == "<string>":
-                s += " in exec"
+                if (func_name := is_eval_or_exec_stmt(frame)):
+                    s += f" in {func_name}"
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_eval_or_exec_stmt(frame):
-                s = "in exec"
+            if (func_name := is_eval_or_exec_stmt(frame)):
+                s = f"in {func_name}"
                 exec_str = get_exec_string(frame.f_back)
                 if exec_str is not None:
                     filename = exec_str
