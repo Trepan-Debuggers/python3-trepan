@@ -26,7 +26,12 @@ from types import CodeType
 import pyficache
 
 from trepan.lib.format import Filename, Hex, LineNumber, Symbol, format_token  # Opcode,
-from trepan.lib.stack import check_path_with_frame, frame2file, get_exec_string, is_eval_or_exec_stmt
+from trepan.lib.stack import (
+    check_path_with_frame,
+    frame2file,
+    get_exec_or_eval_string,
+    is_eval_or_exec_stmt,
+)
 from trepan.processor import cmdfns
 from trepan.processor.cmdfns import deparse_fn
 
@@ -108,7 +113,7 @@ def print_source_location_info(
         L -- 2 import sys,os
         (trepan3k)
     """
-    col_str = f":{column_number}"  if column_number >= 0 else ""
+    col_str = f":{column_number}" if column_number >= 0 else ""
     if remapped_file and filename != remapped_file:
         mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
     else:
@@ -202,7 +207,9 @@ def print_location(proc_obj):
                         tempdir=proc_obj.settings("tempdir"),
                     )
                     pyficache.remap_file(filename, remapped_file)
-                    filename, line_number = pyficache.unmap_file_line(filename, line_number)
+                    filename, line_number = pyficache.unmap_file_line(
+                        filename, line_number
+                    )
                     pass
                 pass
 
@@ -230,12 +237,12 @@ def print_location(proc_obj):
                 # else:
                 #   print("Can't deparse", frame.f_code)
                 if source_text is None and eval_kind:
-                     if (source_text := get_exec_string(frame)):
-                         filename = "string-" + prefix_for_filename(source_text) + "-"
-                     else:
-                         source_text = f"{eval_kind}(...)"
-                         pass
-                     pass
+                    if source_text := get_exec_or_eval_string(frame):
+                        filename = "string-" + prefix_for_filename(source_text) + "-"
+                    else:
+                        source_text = f"{eval_kind}(...)"
+                        pass
+                    pass
                 pass
             pass
         else:
@@ -320,7 +327,9 @@ def print_location(proc_obj):
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
                     if source_text:
-                        intf_obj.msg(f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}")
+                        intf_obj.msg(
+                            f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
+                        )
                     else:
                         intf_obj.msg(f"remapped file {filename} to {remapped_file}")
                     proc_obj.list_filename = remapped_file
@@ -424,10 +433,12 @@ if __name__ == "__main__":
         cmdproc.curframe = cmdproc.stack[cmdproc.curindex][0]
         print_location(cmdproc)
 
-        exec("""
+        exec(
+            """
 cmdproc.frame = currentframe()
 cmdproc.setup()
 print_location(cmdproc)
-""")
+"""
+        )
 
     exec("five()")
