@@ -154,6 +154,7 @@ class DisassembleCommand(DebuggerCommand):
                 eval_args = args[1]
             try:
                 obj = self.proc.eval(eval_args, show_error=False)
+
             except Exception:
                 obj = None
             else:
@@ -172,6 +173,9 @@ class DisassembleCommand(DebuggerCommand):
                     opts["end_line"] = last = None
                     do_parse = False
                     bytecode_file = None
+                elif inspect.ismodule(obj):
+                    proc.current_command = proc.current_command.replace(args[1], __file__, 1)
+                    args[1] = __file__
 
         if do_parse:
             (
@@ -187,6 +191,7 @@ class DisassembleCommand(DebuggerCommand):
 
         if is_offset:
             opts["start_offset"] = start
+            opts["start_line"] = -1
         else:
             opts["start_line"] = start
             if last is None:
@@ -203,6 +208,7 @@ class DisassembleCommand(DebuggerCommand):
 
         if last_is_offset:
             opts["end_offset"] = last
+            opts["end_line"] = -1
         else:
             opts["end_line"] = last
             opts["end_offset"] = None
@@ -240,7 +246,6 @@ class DisassembleCommand(DebuggerCommand):
                     return
 
         # We now have all information. Do the listing.
-        breakpoint()
         (obj, proc.list_offset) = dis(
             self.msg, self.msg_nocr, self.section, self.errmsg, obj, **opts
         )
@@ -269,25 +274,23 @@ if __name__ == "__main__":
     command = DisassembleCommand(cp)
     prefix = "-" * 20 + " disassemble "
 
+    # FIXME
+    # Note osp has already been imported
+    print(prefix + "osp")
+    doit(command, ["disassemble", "osp"])
+
+    print(prefix + 'doit')
+    doit(command, ['disassemble', 'doit()'])
+
+    print(prefix + "*0, *10")
+    doit(command, ["disassemble", "*0, *10"])
+
     doit(command, ["disassemble", f"{doit_return_line}, {doit_return_line+2}"])
 
-    print(prefix + "os.path")
-    doit(command, ["disassemble", "cp.errmsg()"])
-
     print(prefix + "cp.errmsg()")
     doit(command, ["disassemble", "cp.errmsg()"])
 
-    print(prefix + "cp.errmsg()")
-    doit(command, ["disassemble", "cp.errmsg()"])
-
-    # print(prefix)
-    # doit(command, ['disassemble']) # no good
-
-    # print(prefix + 'me')
-    # doit(command, ['disassemble', 'me()']) # reports invalid function correctly
-
-    # print(prefix + "*0 +248")
-    # doit(command, ["disassemble", "*0,", "+248"])
+    # -----------------------
 
     # print(prefix + '+ 2-1')
     # doit(command, ['disassemble', '+', '2-1']) # not valid?

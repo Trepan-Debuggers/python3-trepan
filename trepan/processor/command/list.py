@@ -63,6 +63,7 @@ class ListCommand(DebuggerCommand):
         list foo.py:5        # List starting from line 5 of file foo.py
         list foo()           # List starting from function foo
         list os.path:5       # List starting from line 5 of module os.path
+                             # Note: os.path should have been imported
         list os.path:5, 6    # list lines 5 and 6 of os.path
         list os.path:5, +1   #  Same as above. +1 is an offset
         list os.path:5, 1    # Same as above, since 1 < 5.
@@ -93,7 +94,23 @@ class ListCommand(DebuggerCommand):
         curframe = proc.curframe
         if filename is None:
             return
-        filename = pyficache.unmap_file(pyficache.resolve_name_to_path(filename))
+        resolved_name = pyficache.resolve_name_to_path(filename)
+        if not osp.exists(resolved_name):
+            # See of resuled_filename is a module name:
+            # START HERE with try: eval, except
+            try:
+                obj = self.proc.eval(filename, show_error=False)
+            except Exception:
+                self.errmsg(f"File {filename} not found")
+                return
+            else:
+                if inspect.ismodule(obj):
+                    resolved_name = pyficache.resolve_name_to_path(obj.__file__)
+                else:
+                    self.errmsg(f"Can't use {obj} as a file-like object")
+                    return
+
+        filename = pyficache.unmap_file(resolved_name)
         is_pyasm = filename.endswith(".pyasm")
 
         # We now have range information. Do the listing.
@@ -206,6 +223,10 @@ if __name__ == "__main__":
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
     lcmd = ListCommand(cmdproc)
+
+    # Note: osp is defined abouve
+    doit(lcmd, ['list', "osp:1"])
+    # print('--' * 10)
 
     print("--" * 10)
     # doit(lcmd, ['list'])

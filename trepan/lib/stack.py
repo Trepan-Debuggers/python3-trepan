@@ -255,13 +255,14 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         if is_module:
             if filename == "<string>":
-                s += " in exec"
+                if (func_name := is_eval_or_exec_stmt(frame)):
+                    s += f" in {func_name}"
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_eval_or_exec_stmt(frame):
-                s = "in exec"
-                exec_str = get_exec_string(frame.f_back)
+            if (func_name := is_eval_or_exec_stmt(frame)):
+                s = f"in {func_name}"
+                exec_str = get_exec_or_eval_string(frame.f_back)
                 if exec_str is not None:
                     filename = exec_str
                     add_quotes_around_file = False
@@ -349,7 +350,7 @@ def frame2filesize(frame):
         return None, None
 
 
-def get_exec_string(frame: FrameType) -> Optional[str]:
+def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
     if (call_frame := frame.f_back) is not None:
         offset = call_frame.f_lasti - 2
         code = call_frame.f_code
@@ -361,6 +362,9 @@ def get_exec_string(frame: FrameType) -> Optional[str]:
                 pass
             elif inst.opname == "LOAD_CONST":
                 return inst.argval
+            elif inst.opname == "LOAD_NAME":
+                arg_name = call_frame.f_code.co_names[inst.argval]
+                return call_frame.f_locals[arg_name]
             else:
                 break
             offset -= 2
@@ -626,9 +630,7 @@ if __name__ == "__main__":
             style="tango",
         )
     )
-    import sys
 
-    sys.exit(0)
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))
@@ -644,9 +646,11 @@ if __name__ == "__main__":
         eval_str = is_eval_or_exec_stmt(frame.f_back)
         if eval_str:
             print(f"Caller is {eval_str} stmt")
+            eval_exec_arg = get_exec_or_eval_string(frame.f_back)
+            print(f"{eval_str} argument is: {eval_exec_arg}")
             print(
                 format_stack_entry(
-                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
                 )
             )
 
@@ -657,12 +661,19 @@ if __name__ == "__main__":
 
     print("=" * 30)
     fn(5)
+    print("=" * 30)
     eval("fn(5)")
+    arg_str = "fn(5)"
+    eval(arg_str)
+    print("+" * 30)
     exec("fn(5)")
-    # print("=" * 30)
-    # print(print_obj("fn", fn))
-    # print("=" * 30)
-    # print(print_obj("len", len))
-    # print("=" * 30)
-    # print(print_obj("MockDebugger", MockDebugger))
+    exec(arg_str)
+
+    print("=" * 30)
+    print(print_obj("fn", fn))
+    print("=" * 30)
+    print(print_obj("len", len))
+    print("=" * 30)
+    print(print_obj("MockDebugger", MockDebugger))
+
     pass

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2021, 2023-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2021, 2023-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -210,9 +210,8 @@ class CommandProcessor(Processor):
         self.list_lineno = 0  # last list number used in "list"
         self.list_offset = -1  # last list number used in "disassemble"
         self.list_obj = None
-        self.list_filename = None  # last filename used in list
         self.list_orig_lineno = 0  # line number of frame or exception on setup
-        self.list_filename = None  # filename of frame or exception on setup
+        self.list_filename = None  # filename of frame or exception on setup, or "list" command
 
         self.macros = {}  # Debugger Macros
 
