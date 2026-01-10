@@ -58,8 +58,8 @@ def format_code(code_object: CodeType, style) -> str:
     formatted_name = format_token(Symbol, code_object.co_name, style=style)
     formatted_filename = format_token(Filename, code_object.co_filename, style=style)
     return (
-        f"<code object {formatted_name} at {formatted_id} "
-        f"file {formatted_filename}, line {formatted_line}>"
+        ("<code object %s at %d " % (formatted_name, formatted_id)) +
+        ("file %s, line %d>" % (formatted_filename, formatted_line))
     )
 
 
@@ -74,8 +74,8 @@ def format_frame(frame_object, style) -> str:
         Filename, frame_object.f_code.co_filename, style=style
     )
     return (
-        f"<frame at {formatted_id} "
-        f"file {formatted_filename}, line {formatted_line}>"
+        ("<frame at {formatted_id} " % formatted_id) +
+        ("file %s, line %s>" % (formatted_filename, formatted_line))
     )
 
 
@@ -235,10 +235,11 @@ def print_location(proc_obj):
                 # else:
                 #   print("Can't deparse", frame.f_code)
                 if source_text is None and eval_kind:
-                    if source_text := get_exec_or_eval_string(frame):
+                    source_text = get_exec_or_eval_string(frame)
+                    if source_text:
                         filename = "string-" + prefix_for_filename(source_text) + "-"
                     else:
-                        source_text = f"{eval_kind}(...)"
+                        source_text = "%s(...)" % eval_kind
                         pass
                     pass
                 pass

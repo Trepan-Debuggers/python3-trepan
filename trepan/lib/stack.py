@@ -226,12 +226,14 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         if is_module:
             if filename == "<string>":
-                if (func_name := is_eval_or_exec_stmt(frame)):
+                func_name = is_eval_or_exec_stmt(frame)
+                if func_name:
                     s += f" in {func_name}"
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if (func_name := is_eval_or_exec_stmt(frame)):
+            func_name = is_eval_or_exec_stmt(frame)
+            if func_name:
                 s = f"in {func_name}"
                 exec_str = get_exec_or_eval_string(frame.f_back)
                 if exec_str is not None:
@@ -315,7 +317,8 @@ def frame2filesize(frame):
 
 
 def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
-    if (call_frame := frame.f_back) is not None:
+    call_frame = frame.f_back
+    if call_frame is not None:
         offset = call_frame.f_lasti - 2
         code = call_frame.f_code
         while offset > 0:

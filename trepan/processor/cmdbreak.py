@@ -18,7 +18,6 @@ import inspect
 from dis import findlinestarts
 from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
-from trepan.lib.stack import get_column_start_from_code
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
 from trepan.processor.parse.scanner import ScannerError
@@ -112,17 +111,9 @@ def set_break(
             func_str = f" in {code_name}"
         else:
             func_str = ""
-        if bp.column is not None:
-            column_str = f", column {bp.column}"
-        else:
-            column_str = ""
-            if offset is not None and offset >= 0:
-               if code is not None:
-                    column_start = get_column_start_from_code(code, offset)
-                    column_str = f", column {column_start}"
 
         part1 = (f"Breakpoint {bp.number} set at line "
-                 f"{line_number}{column_str}{func_str} of file")
+                 f"{line_number}{func_str} of file")
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
