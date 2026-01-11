@@ -24,25 +24,6 @@ from trepan.interfaces.server import ServerInterface
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 
-use_pyrepl = False
-try:
-    from _pyrepl.console import InteractiveColoredConsole
-    from _pyrepl.unix_console import InvalidTerminal
-    from _pyrepl.simple_interact import run_multiline_interactive_console
-
-    import os
-
-    if os.name == "nt":
-        from _pyrepl.windows_console import WindowsConsole as Console
-    else:
-        from _pyrepl.unix_console import UnixConsole as Console
-    use_pyrepl = True
-
-except ImportError:
-    use_pyrepl = False
-
-
-
 class PythonCommand(DebuggerCommand):
     """**python** [**-d**]
 
@@ -194,28 +175,6 @@ def interact(
         runcode(pyrepl_console, code_obj)
 
     global pyrepl_console
-    global use_pyrepl
-
-    if use_pyrepl:
-        if not pyrepl_console:
-            pyrepl_console = InteractiveColoredConsole(my_locals, filename="<trepan>")
-
-            pyrepl_console.runcode = console_runcode
-            setattr(pyrepl_console, "globals", my_globals)
-            if readfunc is not None:
-                pyrepl_console.raw_input = readfunc
-
-
-        try:
-            Console(sys.stdin, sys.stdout)
-        except InvalidTerminal:
-            use_pyrepl = None
-            errmsg_func(
-                "Colored PyREPL can't be used here; using standard Python shell"
-            )
-
-        msg_func(banner)
-        run_multiline_interactive_console(pyrepl_console)
 
     # Fancy color pyrepl console can't be used, so use InteractiveConsole.
     if not pyrepl_console:
