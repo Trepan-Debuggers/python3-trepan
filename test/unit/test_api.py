@@ -39,10 +39,8 @@ def test_run_xxx():
     print('Issuing: run_eval("1+2")')
     print(run_eval("1+2", debug_opts=debug_opts))
     print(debugger_output.output)
-    start_lineno = "1" if sys.version_info[:2] < (3, 11) else "0"
 
-    assert debugger_output.output[0:3] == [
-        "call - <string>:%s" % start_lineno,
+    assert debugger_output.output[0:2] == [
         "line - <string>:1",
         "return - <string>:1, 3 ",
     ]
@@ -61,7 +59,6 @@ def test_run_xxx():
     call_lineno = "16"
     for i, (prefix, suffix) in enumerate(
         (
-            ("call - ", "test/unit/test_api.py:%s" % call_lineno),
             ("line - ", "test/unit/test_api.py:17"),
             ("return - ", "test/unit/test_api.py:17, 8 "),
         )

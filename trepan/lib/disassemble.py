@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
-#   Modification of Python's Lib/dis.py
-# FIXME: see if we can use more of Lib/dis in Python3
+#  Copyright (C) 2026 Rocky Bernstein
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Disassembly Routines"""
 
+import bisect
 import inspect
 import sys
 import types
@@ -10,7 +23,6 @@ import types
 from pyficache import highlight_string
 from pygments.token import Comment
 from xdis import (
-    IS_PYPY,
     Bytecode,
     findlabels,
     findlinestarts,
@@ -18,7 +30,7 @@ from xdis import (
     get_opcode,
 )
 from xdis.std import distb
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.format import (  # Opcode,
     Arrow,
@@ -52,7 +64,6 @@ def _try_compile(source, name):
 # Modified from dis. Changed output to use msg, msg_nocr, section, and
 # pygments.  Added first_line and last_line parameters
 
-
 def dis(
     msg,
     msg_nocr,
@@ -82,11 +93,11 @@ def dis(
     mess = ""
     if start_line > 1:
         mess += "from line %d " % start_line
-    elif start_offset > 1:
+    if start_offset >= 0:
         mess = "from offset %d " % start_offset
-    if end_line:
+    if end_line > 0:
         mess += "to line %d" % end_line
-    elif end_offset:
+    if end_offset:
         mess += "to offset %d" % end_offset
 
     sectioned = False
@@ -116,7 +127,7 @@ def dis(
             if lasti == -1:
                 lasti = 0
             pass
-        opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
+        opc = PYTHON_OPCODES
         x = x.f_code
         if include_header:
             header_lines = Bytecode(x, opc).info().split("\n")
@@ -178,11 +189,40 @@ def dis(
         errmsg("Don't know how to disassemble %s objects." % type(x).__name__)
     return None, None
 
+def dis_from_file(
+    msg: Callable,
+    msg_nocr: Callable,
+    section,
+    errmsg,
+    filename,
+    start_line=-1,
+    end_line=None,
+    style="none",
+    include_header=False,
+    asm_format="extended",
+):
+
+    errmsg("not implemented yet")
+    # # FIXME: we really need to get the code from linecache_info.line_numbers
+    # code_object = linecache_info.code_map[filename]
+
+    # dis(msg, msg_nocr, section, errmsg,
+    #     x=code_object,
+    #     start_line=start_line,
+    #     end_line=end_line,
+    #     style=style,
+    #     include_header=include_header,
+    #     asm_format=asm_format,
+    # )
+
+
+# Default opc whene none is given.
+PYTHON_OPCODES = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 def disassemble(
     msg,
     msg_nocr,
-    co,
+    code,
     lasti: int = -1,
     start_line: int = -1,
     end_line=None,
@@ -191,23 +231,19 @@ def disassemble(
     start_offset=0,
     end_offset=None,
     asm_format="extended",
+    opc=PYTHON_OPCODES,
 ):
     """Disassemble a code object."""
     return disassemble_bytes(
         msg,
         msg_nocr,
-        co.co_code,
+        code,
         lasti,
-        co.co_firstlineno,
+        code.co_firstlineno,
         start_line,
         end_line,
         relative_pos,
-        co.co_varnames,
-        co.co_names,
-        co.co_consts,
-        co.co_cellvars,
-        co.co_freevars,
-        dict(findlinestarts(co)),
+        dict(findlinestarts(code)),
         style,
         start_offset=start_offset,
         end_offset=end_offset,
@@ -215,13 +251,9 @@ def disassemble(
         asm_format=asm_format,
     )
 
-
 def disassemble_string(msg, msg_nocr, source):
     """Compile the source string, then disassemble the code object."""
     return disassemble_bytes(msg, msg_nocr, _try_compile(source, "<dis>"))
-
-
-opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
 
 
 def print_instruction(
@@ -233,7 +265,7 @@ def print_instruction(
     lasti: int=-1,
     line_starts = {},
     style="none",
-    opc=opc,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ):
     """Disassemble bytecode at offset `offsets`."""
@@ -346,7 +378,9 @@ def print_instruction(
                 opc, list(reversed(instructions))
             )
             if start_offset is not None:
-                msg(highlight_string(tos_str, style=style))
+                if style is not None and style != "none":
+                    tos_str = highlight_string(tos_str, style=style)
+                msg(tos_str)
                 return
     if argrepr is None or argrepr == "":
         if instr.arg is not None:
@@ -369,16 +403,11 @@ def disassemble_bytes(
     start_line=-1,
     end_line=None,
     relative_pos=False,
-    varnames=(),
-    names=(),
-    constants=(),
-    cells=(),
-    freevars=(),
     line_starts={},
     style="none",
     start_offset=0,
     end_offset=None,
-    opc=opc,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
@@ -388,7 +417,7 @@ def disassemble_bytes(
         return None
 
     instructions = []
-    if end_line is None:
+    if end_line < 0:
         end_line = 10000
     elif relative_pos:
         end_line += start_line - 1
@@ -403,10 +432,9 @@ def disassemble_bytes(
         msg_nocr = orig_msg_nocr
         msg = orig_msg
 
+
     offset = -1
-    for instr in get_instructions_bytes(
-        code, opc, varnames, names, constants, cells, line_starts, labels
-    ):
+    for instr in get_instructions_bytes(code, opc):
         instructions.append(instr)
 
         offset = instr.offset
@@ -470,10 +498,9 @@ def disassemble_instruction(
     names=(),
     constants=(),
     cells=(),
-    freevars=(),
     line_starts={},
     style="none",
-    opc=opc,
+    opc=PYTHON_OPCODES,
     asm_format="extended",
 ) -> tuple:
     """Disassemble byte string of code. If end_line is negative
@@ -569,7 +596,8 @@ if __name__ == "__main__":
             return 1
         return fib(x - 1) + fib(x - 2)
 
-    curframe = inspect.currentframe()
+    dis_from_file(msg, msg_nocr, section, errmsg, __file__, start_line=45)
+    # curframe = inspect.currentframe()
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_line=10, end_line=40, highlight='dark')
     # print('-' * 40)
@@ -591,6 +619,7 @@ if __name__ == "__main__":
         )
         dis(msg, msg_nocr, section, errmsg, fib, asm_format=asm_format, style="tango")
         print("=" * 30)
+
 
     # print('-' * 40)
     # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)

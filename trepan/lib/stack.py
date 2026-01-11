@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #   Copyright (C) 2008-2010, 2013, 2015, 2017-2018, 2020-2021,
-#   2023-2025 Rocky Bernstein <rocky@gnu.org>
+#   2023-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-""" Functions for working with Python frames"""
+"""Functions for working with Python frames"""
 
 import dis
 import inspect
@@ -26,10 +26,8 @@ import re
 from opcode import opname
 from reprlib import repr
 from types import FrameType
-
 import xdis
-from xdis import IS_PYPY, get_opcode
-from xdis.version_info import PYTHON_VERSION_TRIPLE
+from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
@@ -47,8 +45,11 @@ from trepan.lib.printing import printf
 try:
     from trepan.processor.cmdfns import deparse_fn
 except ImportError:
+
     def deparse_fn(code):
         raise NotImplementedError
+
+
 try:
     from trepan.lib.deparse import deparse_offset
 
@@ -61,6 +62,8 @@ except ImportError:
     have_deparser = False
 
 _with_local_varname = re.compile(r"_\[[0-9+]]")
+
+opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def count_frames(frame: FrameType, count_start=0) -> int:
@@ -75,7 +78,6 @@ def count_frames(frame: FrameType, count_start=0) -> int:
     else:
         return 1000
     return count
-
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
@@ -225,18 +227,21 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         if is_module:
             if filename == "<string>":
-                s += " in exec"
+                func_name = is_eval_or_exec_stmt(frame)
+                if func_name:
+                    s += f" in {func_name}"
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
-            if is_eval_or_exec_stmt(frame):
-                s = "in exec"
-                # exec_str = get_exec_string(frame.f_back)
-                # if exec_str != None:
-                #     filename = exec_str
-                #     add_quotes_around_file = False
-                #     pass
-                # pass
+            func_name = is_eval_or_exec_stmt(frame)
+            if func_name:
+                s = f"in {func_name}"
+                exec_str = get_exec_or_eval_string(frame.f_back)
+                if exec_str is not None:
+                    filename = exec_str
+                    add_quotes_around_file = False
+                    pass
+                pass
             elif not is_pseudo_file:
                 s = "in file"
                 pass
@@ -310,6 +315,29 @@ def frame2filesize(frame):
         return fs_size, None
     else:
         return None, None
+
+
+def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
+    call_frame = frame.f_back
+    if call_frame is not None:
+        offset = call_frame.f_lasti - 2
+        code = call_frame.f_code
+        while offset > 0:
+            inst = list(xdis.bytecode.get_logical_instruction_at_offset(
+                    code.co_code, offset, opc, constants=code.co_consts
+                ))[0]
+            if inst.opname in ("PRECALL", "CACHE"):
+                pass
+            elif inst.opname == "LOAD_CONST":
+                return inst.argval
+            elif inst.opname == "LOAD_NAME":
+                arg_name = call_frame.f_code.co_names[inst.argval]
+                return call_frame.f_locals[arg_name]
+            else:
+                break
+            offset -= 2
+
+    return None
 
 
 def check_path_with_frame(frame, path):
@@ -395,7 +423,7 @@ def get_call_function_name(frame):
 
 def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     frame_lineno = proc_obj.stack[len(proc_obj.stack) - i_stack - 1]
-    frame, lineno = frame_lineno
+    frame, line_number = frame_lineno
     intf = proc_obj.intf[-1]
     name = "??"
     if frame is proc_obj.curframe:
@@ -408,7 +436,7 @@ def print_stack_entry(proc_obj, i_stack: int, style="none", opts={}):
     )
     if opts.get("source", False):
         filename = frame2file(proc_obj.core, frame)
-        line = linecache.getline(filename, lineno, frame.f_globals)
+        line = linecache.getline(filename, line_number, frame.f_globals)
         intf.msg(line)
         pass
 
@@ -548,6 +576,7 @@ if __name__ == "__main__":
     # print(pyc_file, getsourcefile(pyc_file))
 
     from trepan.debugger import Trepan
+
     m = MockDebugger()
 
     # For testing print_stack_entry()
@@ -556,9 +585,8 @@ if __name__ == "__main__":
     my_frame = inspect.currentframe()
     dd.core.processor.stack = [(my_frame, 100)]
     dd.core.processor.curframe = my_frame
-    # print_stack_entry(dd.core.processor, 0, "fruity")
+    print_stack_entry(dd.core.processor, 0, "fruity")
 
-    # print(format_stack_entry(m, (frame, 10,)))
     print(
         format_stack_entry(
             m,
@@ -569,6 +597,7 @@ if __name__ == "__main__":
             style="tango",
         )
     )
+
     # print("frame count: %d" % count_frames(frame))
     # print("frame count: %d" % count_frames(frame.f_back))
     # print("frame count: %d" % count_frames(frame, 1))
@@ -584,7 +613,14 @@ if __name__ == "__main__":
         eval_str = is_eval_or_exec_stmt(frame.f_back)
         if eval_str:
             print("Caller is %s stmt" % eval_str)
+            print("%s argument is: %s" % (eval_str, eval_exec_arg))
             print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
+            eval_exec_arg = get_exec_or_eval_string(frame.f_back)
+            print(
+                format_stack_entry(
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
+                )
+            )
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
@@ -593,12 +629,19 @@ if __name__ == "__main__":
 
     print("=" * 30)
     fn(5)
+    print("=" * 30)
     eval("fn(5)")
+    arg_str = "fn(5)"
+    eval(arg_str)
+    print("+" * 30)
     exec("fn(5)")
-    # print("=" * 30)
-    # print(print_obj("fn", fn))
-    # print("=" * 30)
-    # print(print_obj("len", len))
-    # print("=" * 30)
-    # print(print_obj("MockDebugger", MockDebugger))
+    exec(arg_str)
+
+    print("=" * 30)
+    print(print_obj("fn", fn))
+    print("=" * 30)
+    print(print_obj("len", len))
+    print("=" * 30)
+    print(print_obj("MockDebugger", MockDebugger))
+
     pass

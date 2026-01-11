@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2023-2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2023-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import inspect
 from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
-from trepan.lib.disassemble import opc
+from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
 from trepan.lib.format import Function, Keyword, format_token
 from trepan.lib.stack import format_function_name
 from trepan.lib.thred import current_thread_name
@@ -151,7 +151,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         f_lasti = frame.f_lasti
         if f_lasti >= 0:
-            opname = opc.opname[code.co_code[f_lasti]]
+            opname = python_opcodes.opname[code.co_code[f_lasti]]
             opname_formatted = format_token(Keyword, opname, style=style)
             self.msg("  instruction offset and opname: %d %s" % (frame.f_lasti, opname_formatted))
             self.msg("  code: %s" % format_code(code, style))

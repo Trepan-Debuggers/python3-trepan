@@ -20,7 +20,6 @@ import inspect
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 
-
 class LoadCommand(DebuggerCommand):
     """**load** *trepan3k-module*
 
@@ -74,7 +73,13 @@ class LoadCommand(DebuggerCommand):
             command_module = importlib.import_module(module_name)
         except Exception as e:
             self.errmsg(str(e))
+=======
+        except ModuleNotFoundError as e:
+            self.errmsg(f"Module not found: {str(e)}")
+>>>>>>> python-3.6-to-3.10
             return
+        except Exception as e:
+            self.errmsg(str(e))
 
         if len(cmd_name_array) > 1:
             cmd_name = cmd_name_array[-1]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009, 2012-2018, 2020, 2023-2024 Rocky Bernstein
+#  Copyright (C) 2009, 2012-2018, 2020, 2023-2024, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,8 @@ import inspect
 import os.path as osp
 import sys
 
-from xdis.load import load_module
+from pyficache import code_line_info
+from xdis.load import is_bytecode_extension, load_module
 
 import trepan.lib.file as Mfile
 from trepan.lib.disassemble import dis
@@ -138,6 +139,10 @@ class DisassembleCommand(DebuggerCommand):
         curframe = proc.curframe
         if curframe:
             line_no = inspect.getlineno(curframe)
+            # Note that all of this may be wrong, depending
+            # on whether a line number has been given.
+            # But if that happens, we'll update the
+            # below.
             opts["start_line"] = line_no - 1
             opts["end_line"] = line_no + 1
 
@@ -149,6 +154,7 @@ class DisassembleCommand(DebuggerCommand):
                 eval_args = args[1]
             try:
                 obj = self.proc.eval(eval_args, show_error=False)
+
             except Exception:
                 obj = None
             else:
@@ -167,6 +173,9 @@ class DisassembleCommand(DebuggerCommand):
                     opts["end_line"] = last = None
                     do_parse = False
                     bytecode_file = None
+                elif inspect.ismodule(obj):
+                    proc.current_command = proc.current_command.replace(args[1], __file__, 1)
+                    args[1] = __file__
 
         if do_parse:
             (
@@ -182,31 +191,44 @@ class DisassembleCommand(DebuggerCommand):
 
         if is_offset:
             opts["start_offset"] = start
+            opts["start_line"] = -1
         else:
             opts["start_line"] = start
-            opts["start_offset"] = 0
+            if last is None:
+                last = start + 1
+            opts["end_line"] = last
+            # Make sure start is in bytecode_file, and if so which
+            # code object do we need to use in disassembly?
+            code_map, line_info = code_line_info(bytecode_file, start)
+            if not line_info:
+                self.errmsg(f"Can't find code associated with starting line {start}.")
+                return
+            obj = code_map[line_info[0].name]
+
+
         if last_is_offset:
             opts["end_offset"] = last
+            opts["end_line"] = -1
         else:
             opts["end_line"] = last
             opts["end_offset"] = None
 
         if not obj and (
             bytecode_file
-            and (not bytecode_file.endswith(".pyo") or bytecode_file.endswith("pyc"))
+            and not is_bytecode_extension(bytecode_file)
         ):
             # bytecode_file may be a source file. Try to tun it into a bytecode file for diassembly.
             bytecode_file = cache_from_source(bytecode_file)
             if bytecode_file and Mfile.readable(bytecode_file):
                 self.msg("Reading %s ..." % bytecode_file)
                 (
-                    version,
-                    timestamp,
-                    magic_int,
+                    _version,
+                    _timestamp,
+                    _magic_int,
                     obj,
-                    is_pypy,
-                    source_size,
-                    sip_hash,
+                    _python_implementation,
+                    _source_size,
+                    _sip_hash,
                     _save_offsets,
                 ) = load_module(bytecode_file)
             elif not curframe:
@@ -223,7 +245,7 @@ class DisassembleCommand(DebuggerCommand):
                     )
                     return
 
-        # We now have all  information. Do the listing.
+        # We now have all information. Do the listing.
         (obj, proc.list_offset) = dis(
             self.msg, self.msg_nocr, self.section, self.errmsg, obj, **opts
         )
@@ -233,12 +255,18 @@ class DisassembleCommand(DebuggerCommand):
 # Demo it
 if __name__ == "__main__":
     # FIXME: make sure the below is in a unit test
+    def get_line():
+        return inspect.currentframe().f_back.f_lineno
+
     def doit(cmd, args):
         proc = cmd.proc
         proc.current_command = " ".join(args)
         cmd.run(args)
 
+    doit_return_line = get_line() - 4
+
     from trepan.processor.command import mock
+
 
     d, cp = mock.dbg_setup()
 
@@ -246,23 +274,23 @@ if __name__ == "__main__":
     command = DisassembleCommand(cp)
     prefix = "-" * 20 + " disassemble "
 
-    print(prefix + "os.path")
-    doit(command, ["disassemble", "cp.errmsg()"])
+    # FIXME
+    # Note osp has already been imported
+    print(prefix + "osp")
+    doit(command, ["disassemble", "osp"])
+
+    print(prefix + 'doit')
+    doit(command, ['disassemble', 'doit()'])
+
+    print(prefix + "*0, *10")
+    doit(command, ["disassemble", "*0, *10"])
+
+    doit(command, ["disassemble", f"{doit_return_line}, {doit_return_line+2}"])
 
     print(prefix + "cp.errmsg()")
     doit(command, ["disassemble", "cp.errmsg()"])
 
-    print(prefix + "cp.errmsg()")
-    doit(command, ["disassemble", "cp.errmsg()"])
-
-    # print(prefix)
-    # doit(command, ['disassemble']) # no good
-
-    # print(prefix + 'me')
-    # doit(command, ['disassemble', 'me()']) # reports invalid function correctly
-
-    print(prefix + "*0 +248")
-    doit(command, ["disassemble", "*0,", "+248"])
+    # -----------------------
 
     # print(prefix + '+ 2-1')
     # doit(command, ['disassemble', '+', '2-1']) # not valid?
@@ -273,14 +301,13 @@ if __name__ == "__main__":
     print(prefix + ".")
     doit(command, ["disassemble", "."])
 
-    __file__ = "./disassemble.py:21"
-    doit(command, ["disassemble", "%s:21" % __file__])
+    doit(command, ["disassemble", "%s:%s" % (__file__, get_line())])
 
     # bytecode_file = cache_from_source(__file__)
     # print(bytecode_file)
     # if bytecode_file:
     #     doit(command, ["disassemble", bytecode_file + ":22,28"])
 
-    doit(command, ["disassemble", "*15,", "*25"])
-    doit(command, ["disassemble", "30"])
+    # doit(command, ["disassemble", "*15,", "*25"])
+    # doit(command, ["disassemble", "30"])
     pass
