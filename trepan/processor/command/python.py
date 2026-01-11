@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023-2025
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023-2026
 #  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -17,18 +17,40 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import code
 import sys
+from typing import Callable
 
 from trepan.interfaces.server import ServerInterface
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 
+use_pyrepl = False
+try:
+    from _pyrepl.console import InteractiveColoredConsole
+    from _pyrepl.unix_console import InvalidTerminal
+    from _pyrepl.simple_interact import run_multiline_interactive_console
+
+    import os
+
+    if os.name == "nt":
+        from _pyrepl.windows_console import WindowsConsole as Console
+    else:
+        from _pyrepl.unix_console import UnixConsole as Console
+    use_pyrepl = True
+
+except ImportError:
+    use_pyrepl = False
+
+
 
 class PythonCommand(DebuggerCommand):
     """**python** [**-d**]
 
     Run Python as a command subshell. The *sys.ps1* prompt will be set to
-    `trepan3 >>> `.
+    `trepan3k >>> `.
+
+    If running Python 3.13 or it is possible to use pyrepl, this will be used,
+    providing its colorization and language completion facilities.
 
     If *-d* is passed, you can access debugger state via local variable *debugger*.
 
@@ -72,7 +94,7 @@ class PythonCommand(DebuggerCommand):
                 pass
             pass
 
-        banner_tmpl = """trepan3 python shell%s
+        banner_tmpl = """trepan3k python shell%s
 Use dbgr(*string*) to issue debugger command: *string*"""
 
         debug = len(args) > 1 and args[1] == "-d"
@@ -109,12 +131,14 @@ Use dbgr(*string*) to issue debugger command: *string*"""
             sys.excepthook = None
             if len(my_locals):
                 interact(
+                    msg_func=self.msg,
+                    errmsg_func=self.errmsg,
                     banner=(banner_tmpl % " with locals"),
                     my_locals=my_locals,
                     my_globals=my_globals,
                 )
             else:
-                interact(banner=(banner_tmpl % ""))
+                interact(errmsg_func=self.errmsg, banner=banner_tmpl % "")
                 pass
         finally:
             sys.excepthook = old_sys_excepthook
@@ -124,6 +148,7 @@ Use dbgr(*string*) to issue debugger command: *string*"""
         if hasattr(interface, "complete") and interface.complete is not None:
             try:
                 from readline import parse_and_bind, set_completer
+
                 parse_and_bind("tab: complete")
                 set_completer(proc.intf[-1].complete)
             except ImportError:
@@ -138,11 +163,20 @@ Use dbgr(*string*) to issue debugger command: *string*"""
     pass
 
 
-# Monkey-patched from code.py
-# FIXME: get changes into Python.
-def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
-    """Almost a copy of ``code.interact``.
-    Closely emulate the interactive Python interpreter.
+pyrepl_console = None
+
+
+# Modified from code.py
+def interact(
+    msg_func: Callable,
+    errmsg_func: Callable,
+    banner=None,
+    readfunc=None,
+    my_locals=None,
+    my_globals=None,
+):
+    """
+    Emulate the interactive Python interpreter. This is Similar to ``code.interact``.
 
     This is a backwards compatible interface to the InteractiveConsole
     class.  When readfunc is not specified, it attempts to import the
@@ -157,19 +191,44 @@ def interact(banner=None, readfunc=None, my_locals=None, my_globals=None):
     """
 
     def console_runcode(code_obj):
-        runcode(console, code_obj)
+        runcode(pyrepl_console, code_obj)
 
-    console = code.InteractiveConsole(my_locals, filename="<trepan>")
-    console.runcode = console_runcode
-    setattr(console, "globals", my_globals)
-    if readfunc is not None:
-        console.raw_input = readfunc
-    console.interact(banner)
-    pass
+    global pyrepl_console
+    global use_pyrepl
+
+    if use_pyrepl:
+        if not pyrepl_console:
+            pyrepl_console = InteractiveColoredConsole(my_locals, filename="<trepan>")
+
+            pyrepl_console.runcode = console_runcode
+            setattr(pyrepl_console, "globals", my_globals)
+            if readfunc is not None:
+                pyrepl_console.raw_input = readfunc
 
 
-# Also monkey-patched from code.py
-# FIXME: get changes into Python.
+        try:
+            Console(sys.stdin, sys.stdout)
+        except InvalidTerminal:
+            use_pyrepl = None
+            errmsg_func(
+                "Colored PyREPL can't be used here; using standard Python shell"
+            )
+
+        msg_func(banner)
+        run_multiline_interactive_console(pyrepl_console)
+
+    # Fancy color pyrepl console can't be used, so use InteractiveConsole.
+    if not pyrepl_console:
+        pyrepl_console = code.InteractiveConsole(my_locals, filename="<trepan>")
+        pyrepl_console.runcode = console_runcode
+        setattr(pyrepl_console, "globals", my_globals)
+        if readfunc is not None:
+            pyrepl_console.raw_input = readfunc
+
+    pyrepl_console.interact(banner)
+    return
+
+# Monkey-patched from code.py
 def runcode(obj, code_obj):
     """Execute a code object.
 
@@ -190,8 +249,7 @@ def runcode(obj, code_obj):
     except SystemExit:
         raise
     except Exception:
-        info = sys.exc_info()
-        print(f"{info[0]}; {info[1]}")
+        obj.showtraceback()
     else:
         pass
     return
