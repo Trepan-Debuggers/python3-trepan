@@ -136,7 +136,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
 
         if hasattr(frame, "f_restricted"):
             self.msg("  restricted execution: %s" % frame.f_restricted)
-        self.msg("  current line number: %d" % frame.f_lineno)
 
         line_number = frame.f_lineno
         code = frame.f_code
@@ -157,8 +156,6 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg("  code: %s" % format_code(code, style))
         else:
             self.msg("  instruction offset: %s" % frame.f_lasti)
-
-        self.msg("  code: %s" % format_code(code, style))
 
         if frame.f_back:
             self.msg("  previous frame: %s" % format_frame(frame.f_back, style=style))
