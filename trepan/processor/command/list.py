@@ -101,13 +101,13 @@ class ListCommand(DebuggerCommand):
             try:
                 obj = self.proc.eval(filename, show_error=False)
             except Exception:
-                self.errmsg(f"File {filename} not found")
+                self.errmsg("File %s not found" % filename)
                 return
             else:
                 if inspect.ismodule(obj):
                     resolved_name = pyficache.resolve_name_to_path(obj.__file__)
                 else:
-                    self.errmsg(f"Can't use {obj} as a file-like object")
+                    self.errmsg("Can't use %s as a file-like object" % obj)
                     return
 
         filename = pyficache.unmap_file(resolved_name)
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     lcmd = ListCommand(cmdproc)
 
     # Note: osp is defined abouve
-    doit(lcmd, ['list', "osp:1"])
+    doit(lcmd, ["list", "osp:1"])
     # print('--' * 10)
 
     print("--" * 10)

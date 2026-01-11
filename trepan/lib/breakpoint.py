@@ -38,7 +38,7 @@ class Breakpoint:
     def __init__(
         self,
         number: int,
-        filename: Optional[str],
+        filename,
         line_number: int,
         temporary=False,
         condition=None,
@@ -204,13 +204,13 @@ class BreakpointManager:
     def add_breakpoint(
         self,
         filename,
-        lineno = None,
+        line_number=None,
         offset: int = -1,
         position: int = -1,
         is_code_offset: bool = True,
         temporary: bool = False,
-        condition = None,
-        func_or_code = None,
+        condition=None,
+        func_or_code=None,
     ):
         """
         Add a breakpoint in ``filename`` at line number ``line_number``.
@@ -258,7 +258,9 @@ class BreakpointManager:
             if line_number == -1:
                 line_number = code.co_firstlineno
         else:
-            print("Don't know what to do with %s, %s" % (func_or_code, type(func_or_code)))
+            print(
+                "Don't know what to do with %s, %s" % (func_or_code, type(func_or_code))
+            )
             return
         brkpt = Breakpoint(
             bpnum,

@@ -111,9 +111,9 @@ def print_source_location_info(
         (trepan3k)
     """
     if remapped_file and filename != remapped_file:
-        mess = "(%s:%s remapped %s" % (remapped_file, lineno, filename)
+        mess = "(%s:%s remapped %s" % (remapped_file, line_number, filename)
     else:
-        mess = "(%s:%s" % (filename, lineno)
+        mess = "(%s:%s" % (filename, line_number)
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
@@ -325,10 +325,11 @@ def print_location(proc_obj):
                     fd.close()
                     if source_text:
                         intf_obj.msg(
-                            f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
+                            "remapped string %s to file {remapped_file}"
+                            % prefix_for_source_text(source_text, 10)
                         )
                     else:
-                        intf_obj.msg(f"remapped file {filename} to {remapped_file}")
+                        intf_obj.msg("%s to %s" % (filename, remapped_file))
                     proc_obj.list_filename = remapped_file
 
                     pass

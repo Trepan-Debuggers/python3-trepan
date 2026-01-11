@@ -15,7 +15,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Disassembly Routines"""
 
-import bisect
 import inspect
 import sys
 import types
@@ -64,6 +63,7 @@ def _try_compile(source, name):
 # Modified from dis. Changed output to use msg, msg_nocr, section, and
 # pygments.  Added first_line and last_line parameters
 
+
 def dis(
     msg,
     msg_nocr,
@@ -95,7 +95,7 @@ def dis(
         mess += "from line %d " % start_line
     if start_offset >= 0:
         mess = "from offset %d " % start_offset
-    if end_line > 0:
+    if end_line is not None and end_line > 0:
         mess += "to line %d" % end_line
     if end_offset:
         mess += "to offset %d" % end_offset
@@ -189,9 +189,10 @@ def dis(
         errmsg("Don't know how to disassemble %s objects." % type(x).__name__)
     return None, None
 
+
 def dis_from_file(
-    msg: Callable,
-    msg_nocr: Callable,
+    msg,
+    msg_nocr,
     section,
     errmsg,
     filename,
@@ -218,6 +219,7 @@ def dis_from_file(
 
 # Default opc whene none is given.
 PYTHON_OPCODES = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
+
 
 def disassemble(
     msg,
@@ -251,6 +253,7 @@ def disassemble(
         asm_format=asm_format,
     )
 
+
 def disassemble_string(msg, msg_nocr, source):
     """Compile the source string, then disassemble the code object."""
     return disassemble_bytes(msg, msg_nocr, _try_compile(source, "<dis>"))
@@ -262,8 +265,8 @@ def print_instruction(
     msg,
     msg_nocr,
     labels: list,
-    lasti: int=-1,
-    line_starts = {},
+    lasti: int = -1,
+    line_starts={},
     style="none",
     opc=PYTHON_OPCODES,
     asm_format="extended",
@@ -417,7 +420,7 @@ def disassemble_bytes(
         return None
 
     instructions = []
-    if end_line < 0:
+    if end_line is not None and end_line < 0:
         end_line = 10000
     elif relative_pos:
         end_line += start_line - 1
@@ -431,7 +434,6 @@ def disassemble_bytes(
     else:
         msg_nocr = orig_msg_nocr
         msg = orig_msg
-
 
     offset = -1
     for instr in get_instructions_bytes(code, opc):
@@ -461,7 +463,9 @@ def disassemble_bytes(
                 msg_nocr = orig_msg_nocr
                 msg = orig_msg
 
-            if (cur_line > end_line) or (end_offset and offset > end_offset):
+            if (end_line is not None and cur_line > end_line) or (
+                end_offset and offset > end_offset
+            ):
                 break
         elif start_offset and offset:
             if offset >= start_offset:
@@ -484,6 +488,7 @@ def disassemble_bytes(
         )
 
     return code, offset
+
 
 def disassemble_instruction(
     orig_msg,
@@ -572,6 +577,7 @@ def disassemble_instruction(
 
     return code, offset
 
+
 # Demo it
 if __name__ == "__main__":
 
@@ -619,7 +625,6 @@ if __name__ == "__main__":
         )
         dis(msg, msg_nocr, section, errmsg, fib, asm_format=asm_format, style="tango")
         print("=" * 30)
-
 
     # print('-' * 40)
     # magic, moddate, modtime, co = pyc2code(sys.modules['types'].__file__)

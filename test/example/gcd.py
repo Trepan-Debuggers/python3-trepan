@@ -15,6 +15,7 @@ def check_args():
     if len(sys.argv) != 3:
         # Rather than use sys.exit let's just raise an error
         raise Exception("Need to give two numbers; got: %s" % sys.argv)
+    args = [-1, -1]
     for i in range(2):
         try:
             args[i] = int(sys.argv[i + 1])
@@ -43,6 +44,5 @@ def gcd(a, b):
 if __name__ == "__main__":
     a, b = check_args()
 
-    (a, b) = sys.argv[1:3]
     print("The GCD of %d and %d is %d" % (a, b, gcd(a, b)))
     pass

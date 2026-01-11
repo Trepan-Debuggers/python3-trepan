@@ -134,9 +134,6 @@ class InfoThread(Mbase_subcmd.DebuggerSubcommand):
             if thread_id:
                 if thread_id not in list(threading._active.keys()):
                     self.errmsg("Don't know about thread number %s" % thread_id)
-=======
-                    self.errmsg(f"Don't know about thread number {thread_id}")
->>>>>>> python-3.6-to-3.10
                     self.info_thread_terse(name2id)
                     return
             else:

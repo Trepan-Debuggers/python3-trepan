@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -121,12 +121,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
                     print(
-                        "Bytecode is for version %s%s, but we are version %s%s."
+                        "Bytecode is for version %s, but we are version %s."
                         % (
-                            version_tuple_to_str(python_version, end=2),
-                            bytecode_pypy,
-                            version_tuple_to_str(end=2),
-                            bytecode_pypy,
+                            version_tuple_to_str(python_version[:2], end=2),
+                            version_tuple_to_str(PYTHON_VERSION_TRIPLE[:2], end=2),
                         )
                     )
                     print(

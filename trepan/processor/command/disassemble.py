@@ -174,7 +174,9 @@ class DisassembleCommand(DebuggerCommand):
                     do_parse = False
                     bytecode_file = None
                 elif inspect.ismodule(obj):
-                    proc.current_command = proc.current_command.replace(args[1], __file__, 1)
+                    proc.current_command = proc.current_command.replace(
+                        args[1], __file__, 1
+                    )
                     args[1] = __file__
 
         if do_parse:
@@ -201,10 +203,9 @@ class DisassembleCommand(DebuggerCommand):
             # code object do we need to use in disassembly?
             code_map, line_info = code_line_info(bytecode_file, start)
             if not line_info:
-                self.errmsg(f"Can't find code associated with starting line {start}.")
+                self.errmsg("Can't find code associated with starting line %s." % start)
                 return
             obj = code_map[line_info[0].name]
-
 
         if last_is_offset:
             opts["end_offset"] = last
@@ -213,10 +214,7 @@ class DisassembleCommand(DebuggerCommand):
             opts["end_line"] = last
             opts["end_offset"] = None
 
-        if not obj and (
-            bytecode_file
-            and not is_bytecode_extension(bytecode_file)
-        ):
+        if not obj and (bytecode_file and not is_bytecode_extension(bytecode_file)):
             # bytecode_file may be a source file. Try to tun it into a bytecode file for diassembly.
             bytecode_file = cache_from_source(bytecode_file)
             if bytecode_file and Mfile.readable(bytecode_file):
@@ -267,7 +265,6 @@ if __name__ == "__main__":
 
     from trepan.processor.command import mock
 
-
     d, cp = mock.dbg_setup()
 
     cp.list_object = cp.curframe = inspect.currentframe()
@@ -279,13 +276,13 @@ if __name__ == "__main__":
     print(prefix + "osp")
     doit(command, ["disassemble", "osp"])
 
-    print(prefix + 'doit')
-    doit(command, ['disassemble', 'doit()'])
+    print(prefix + "doit")
+    doit(command, ["disassemble", "doit()"])
 
     print(prefix + "*0, *10")
     doit(command, ["disassemble", "*0, *10"])
 
-    doit(command, ["disassemble", f"{doit_return_line}, {doit_return_line+2}"])
+    doit(command, ["disassemble", "%s, %d" % (doit_return_line, doit_return_line + 2)])
 
     print(prefix + "cp.errmsg()")
     doit(command, ["disassemble", "cp.errmsg()"])

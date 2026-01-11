@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2024 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import inspect
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
+
 
 class LoadCommand(DebuggerCommand):
     """**load** *trepan3k-module*
@@ -73,13 +74,7 @@ class LoadCommand(DebuggerCommand):
             command_module = importlib.import_module(module_name)
         except Exception as e:
             self.errmsg(str(e))
-=======
-        except ModuleNotFoundError as e:
-            self.errmsg(f"Module not found: {str(e)}")
->>>>>>> python-3.6-to-3.10
             return
-        except Exception as e:
-            self.errmsg(str(e))
 
         if len(cmd_name_array) > 1:
             cmd_name = cmd_name_array[-1]

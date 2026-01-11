@@ -25,8 +25,8 @@ import os.path as osp
 import re
 from opcode import opname
 from reprlib import repr
-from types import FrameType
 import xdis
+from xdis import get_opcode
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.bytecode import op_at_frame
@@ -66,7 +66,7 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
-def count_frames(frame: FrameType, count_start=0) -> int:
+def count_frames(frame, count_start=0) -> int:
     """Return a count of the number of frames"""
     count = -count_start
     for _ in range(1000):
@@ -78,6 +78,7 @@ def count_frames(frame: FrameType, count_start=0) -> int:
     else:
         return 1000
     return count
+
 
 _re_pseudo_file = re.compile(r"^<.+>")
 
@@ -229,13 +230,13 @@ def format_return_and_location(
             if filename == "<string>":
                 func_name = is_eval_or_exec_stmt(frame)
                 if func_name:
-                    s += f" in {func_name}"
+                    s += " in %s" % func_name
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
         elif s == "?()":
             func_name = is_eval_or_exec_stmt(frame)
             if func_name:
-                s = f"in {func_name}"
+                s = " in %s" % func_name
                 exec_str = get_exec_or_eval_string(frame.f_back)
                 if exec_str is not None:
                     filename = exec_str
@@ -317,18 +318,18 @@ def frame2filesize(frame):
         return None, None
 
 
-def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
+def get_exec_or_eval_string(frame):
     call_frame = frame.f_back
     if call_frame is not None:
         offset = call_frame.f_lasti - 2
         code = call_frame.f_code
         while offset > 0:
-            inst = list(xdis.bytecode.get_logical_instruction_at_offset(
+            inst = list(
+                xdis.bytecode.get_logical_instruction_at_offset(
                     code.co_code, offset, opc, constants=code.co_consts
-                ))[0]
-            if inst.opname in ("PRECALL", "CACHE"):
-                pass
-            elif inst.opname == "LOAD_CONST":
+                )
+            )[0]
+            if inst.opname == "LOAD_CONST":
                 return inst.argval
             elif inst.opname == "LOAD_NAME":
                 arg_name = call_frame.f_code.co_names[inst.argval]
@@ -369,7 +370,7 @@ def is_eval_or_exec_stmt(frame):
     return None
 
 
-opc = get_opcode(PYTHON_VERSION_TRIPLE, IS_PYPY)
+opc = get_opcode(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 
 def get_call_function_name(frame):
@@ -613,12 +614,17 @@ if __name__ == "__main__":
         eval_str = is_eval_or_exec_stmt(frame.f_back)
         if eval_str:
             print("Caller is %s stmt" % eval_str)
+            eval_exec_arg = get_exec_or_eval_string(frame.f_back)
             print("%s argument is: %s" % (eval_str, eval_exec_arg))
-            print(format_stack_entry(dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)))
+            print(
+                format_stack_entry(
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)
+                )
+            )
             eval_exec_arg = get_exec_or_eval_string(frame.f_back)
             print(
                 format_stack_entry(
-                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)
                 )
             )
 

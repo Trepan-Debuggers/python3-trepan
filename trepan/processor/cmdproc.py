@@ -76,10 +76,7 @@ def arg_split(s, posix=False):
     return args_list
 
 
-def get_stack(f, t, botframe, proc_obj=None) -> tuple:
-=======
-def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
->>>>>>> python-3.6-to-3.10
+def get_stack(frame, t, botframe, proc_obj=None) -> tuple:
     """Return a stack of frames which the debugger will use for in
     showing backtraces and in frame switching. As such various frame
     that are really around may be excluded unless we are debugging the
@@ -209,7 +206,9 @@ class CommandProcessor(Processor):
         self.list_offset = -1  # last list number used in "disassemble"
         self.list_obj = None
         self.list_orig_lineno = 0  # line number of frame or exception on setup
-        self.list_filename = None  # filename of frame or exception on setup, or "list" command
+        self.list_filename = (
+            None  # filename of frame or exception on setup, or "list" command
+        )
 
         self.macros = {}  # Debugger Macros
 

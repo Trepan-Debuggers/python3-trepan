@@ -36,7 +36,10 @@ def set_break(
     offset=None,
 ):
     if line_number is None and offset is None:
-        part1 = """I don't understand '%s' as a line number, offset, or function name""" % {" ".join(args[1:])}
+        part1 = (
+            """I don't understand '%s' as a line number, offset, or function name"""
+            % {" ".join(args[1:])}
+        )
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
         )
@@ -71,7 +74,7 @@ def set_break(
 
     else:
         assert offset is not None
-        line_info = code_offset_info(filename, offset)
+        line_number = code_offset_info(filename, offset)
         if line_number is None:
             part1 = "File %s" % cmd_obj.core.filename(filename)
             msg = wrapped_lines(
@@ -88,35 +91,35 @@ def set_break(
     bp = cmd_obj.core.bpmgr.add_breakpoint(
         filename,
         line_number=line_number,
-        position=offset,
+        offset=offset,
         temporary=temporary,
         condition=condition,
         func_or_code=func_or_code,
-        is_code_offset = True,
+        is_code_offset=True,
     )
     if func_or_code and inspect.isfunction(func_or_code):
-        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func_or_code.__name__))
+        cmd_obj.msg(
+            "Breakpoint %d set on calling function %s()"
+            % (bp.number, func_or_code.__name__)
+        )
         part1 = "Currently this is line %d of the file" % line_number
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
         cmd_obj.msg(msg)
     else:
-        code = None
         if hasattr(func_or_code, "co_name"):
-            code = func_or_code
             code_name = func_or_code.co_name
             if not code_name.startswith("<"):
                 code_name += "()"
             func_str = " in %s" % code_name
         else:
             func_str = ""
-        part1 = "Breakpoint %s set at line %d%s of file" % (bp.number, line_number, func_str)
-=======
-
-        part1 = (f"Breakpoint {bp.number} set at line "
-                 f"{line_number}{func_str} of file")
->>>>>>> python-3.6-to-3.10
+        part1 = "Breakpoint %s set at line %d%s of file" % (
+            bp.number,
+            line_number,
+            func_str,
+        )
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
