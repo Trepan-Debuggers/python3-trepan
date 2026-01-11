@@ -77,21 +77,31 @@ class LocationGrok(GenericASTTraversal, object):
             # If there is a line number, it is the last token of a location
             if len(node) > 1 and node[-1] == "NUMBER":
                 line_number = node[-1].value
+                is_address = False
+            else:
+                offset = 0
+                is_address = True
         elif node[0] == "FUNCNAME":
             method = node[0].value[:-2]
             offset = 0
+            is_address = True
         elif node[0] == "NUMBER":
+            is_address = False
             line_number = node[0].value
+        elif node[0] == "ADDRESS":
+            is_address = True
+            offset = int(node[0].value[1:])
         else:
             assert True, "n_location: Something's is wrong; node[0] is %s" % node[0]
-        self.result = Location(path, line_number, False, method, offset=offset)
-        node.location = Location(path, line_number, False, method, offset=offset)
+        self.result = Location(path, line_number, is_address, method, offset=offset)
+        node.location = Location(path, line_number, is_address, method, offset=offset)
         self.prune()
 
     def n_NUMBER(self, node):
         self.result = Location(None, node.value, False, None, offset=None)
 
     def n_ADDRESS(self, node):
+        breakpoint()
         self.result = Location(None, None, True, None, offset=int(node.value[1:]))
 
     def n_FUNCNAME(self, node):
@@ -384,7 +394,7 @@ if __name__ == "__main__":
     #     )
     # lines = (
     #     "*10",
-    #     "@10",
+    #     "*10",
     #     "/tmp/foo.py:1, *5",
     #     "../foo.py:0,  +5",
     #     "../foo.py:5,  *30",

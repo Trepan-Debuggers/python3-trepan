@@ -11,14 +11,14 @@ line - gcd.py:11
  11  ->	import sys
 Set stopping is on.
 line - gcd.py:14
-line - gcd.py:27
-line - gcd.py:42
-(gcd.py:42): <module>
--- 42 if __name__ == "__main__":
- 42  ->	if __name__ == "__main__":
+line - gcd.py:29
+line - gcd.py:44
+(gcd.py:44): <module>
+-- 44 if __name__ == "__main__":
+ 44  ->	if __name__ == "__main__":
 Set stopping is off.
-line - gcd.py:43
-(gcd.py:43): <module>
--- 43     check_args()
- 43  ->	    check_args()
+line - gcd.py:45
+(gcd.py:45): <module>
+-- 45     a, b = check_args()
+ 45  ->	    a, b = check_args()
 trepan3k: That's all, folks...

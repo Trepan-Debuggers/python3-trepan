@@ -78,3 +78,59 @@ if not (
         print("Need to go over on MS Windows")
 else:
     print("PyPy strings work differently")
+=======
+    reason="PyPy strings work differently",
+)
+@pytest.mark.skipif(sys.platform in ("win32",), reason="$Need to go over on MS Windows")
+def test_run_xxx():
+    """
+    test run_eval() and run_call()
+    """
+    settings = dict(DEBUGGER_SETTINGS)
+    settings.update({"trace": True, "printset": tracer.ALL_EVENTS})
+    debugger_input = StringArrayInput()
+    debugger_output = StringArrayOutput()
+    debug_opts = {
+        "step_ignore": -1,
+        "settings": settings,
+        "input": debugger_input,
+        "output": debugger_output,
+    }
+    print('Issuing: run_eval("1+2")')
+    print(run_eval("1+2", debug_opts=debug_opts))
+    print(debugger_output.output)
+
+    assert debugger_output.output[0:2] == [
+        "line - <string>:1",
+        "return - <string>:1, 3 ",
+    ]
+
+    debugger_input = StringArrayInput([""])
+    debugger_output = StringArrayOutput()
+    debug_opts = {
+        "step_ignore": -1,
+        "settings": settings,
+        "input": debugger_input,
+        "output": debugger_output,
+    }
+    print('Issuing: run_call(foo, 3")')
+    x = run_call(plus5, 3, debug_opts=debug_opts)
+    assert x == 8
+    call_lineno = "16"
+    for i, (prefix, suffix) in enumerate(
+        (
+            ("line - ", "test/unit/test_api.py:17"),
+            ("return - ", "test/unit/test_api.py:17, 8 "),
+        )
+    ):
+        assert debugger_output.output[i].startswith(prefix), (
+            prefix,
+            suffix,
+            debugger_output.output[i],
+        )
+        assert debugger_output.output[i].endswith(suffix), (
+            prefix,
+            suffix,
+            debugger_output.output[i],
+        )
+>>>>>>> python-3.3-to-3.5

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024-2026 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
 
 import inspect
 from dis import findlinestarts
-from pyficache import code_line_info, code_offset_info
+from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
@@ -28,15 +28,18 @@ def set_break(
     cmd_obj,
     func_or_code,
     filename,
-    lineno,
+    line_number,
     condition,
     temporary,
     args,
     force=False,
     offset=None,
 ):
-    if lineno is None and offset is None:
-        part1 = """I don't understand '%s' as a line number, offset, or function name""" % {" ".join(args[1:])}
+    if line_number is None and offset is None:
+        part1 = (
+            """I don't understand '%s' as a line number, offset, or function name"""
+            % {" ".join(args[1:])}
+        )
         msg = wrapped_lines(
             part1, "or file/module plus line number.", cmd_obj.settings["width"]
         )
@@ -47,17 +50,17 @@ def set_break(
         filename = cmd_obj.core.canonic(filename)
         pass
 
-    if lineno:
-        code_map, line_info = code_line_info(filename, lineno)
+    if line_number:
+        code_map, line_info = code_line_info(filename, line_number)
         if isinstance(func_or_code, str):
             func_or_code = code_map.get(func_or_code, func_or_code)
         if not line_info:
             linestarts = dict(findlinestarts(cmd_obj.proc.curframe.f_code))
-            if lineno not in linestarts.values():
+            if line_number not in linestarts.values():
                 part1 = "File %s" % cmd_obj.core.filename(filename)
                 msg = wrapped_lines(
                     part1,
-                    "is not stoppable at line %s." % lineno,
+                    "is not stoppable at line %s." % line_number,
                     cmd_obj.settings["width"],
                 )
                 cmd_obj.errmsg(msg)
@@ -71,8 +74,8 @@ def set_break(
 
     else:
         assert offset is not None
-        lineno = code_offset_info(filename, offset)
-        if lineno is None:
+        line_number = code_offset_info(filename, offset)
+        if line_number is None:
             part1 = "File %s" % cmd_obj.core.filename(filename)
             msg = wrapped_lines(
                 part1,
@@ -81,19 +84,25 @@ def set_break(
             )
             cmd_obj.errmsg(msg)
             return False
+        elif line_number != 0:
+            assert False, "Need to fix up offset determination"
 
         pass
     bp = cmd_obj.core.bpmgr.add_breakpoint(
         filename,
-        lineno=lineno,
+        line_number=line_number,
         offset=offset,
         temporary=temporary,
         condition=condition,
         func_or_code=func_or_code,
+        is_code_offset=True,
     )
     if func_or_code and inspect.isfunction(func_or_code):
-        cmd_obj.msg("Breakpoint %d set on calling function %s()" % (bp.number, func_or_code.__name__))
-        part1 = "Currently this is line %d of the file" % lineno
+        cmd_obj.msg(
+            "Breakpoint %d set on calling function %s()"
+            % (bp.number, func_or_code.__name__)
+        )
+        part1 = "Currently this is line %d of the file" % line_number
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -106,7 +115,11 @@ def set_break(
             func_str = " in %s" % code_name
         else:
             func_str = ""
-        part1 = "Breakpoint %s set at line %d%s of file" % (bp.number, lineno, func_str)
+        part1 = "Breakpoint %s set at line %d%s of file" % (
+            bp.number,
+            line_number,
+            func_str,
+        )
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -186,7 +199,7 @@ if __name__ == "__main__":
     cmdproc.setup()
     # FIXME: we should not need ot set setting
     cmdproc.settings = d.settings
-    set_break(cmdproc, "set_break", __file__, 50, True, False, [])
+    set_break(cmdproc, "set_break", __file__, 51, True, False, [])
     for cmd in (
         "break '''c:\\tmp\\foo.bat''':1",
         'break """/Users/My Documents/foo.py""":2',

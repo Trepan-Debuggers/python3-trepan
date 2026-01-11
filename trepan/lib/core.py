@@ -426,18 +426,23 @@ class TrepanCore:
         # that we don't have any breakpoint set, since we have to check
         # for breakpoints in a kind of slow way of checking all events.
 
-        if (
-            event == "call"
-            and self.last_frame != frame
-            and len(self.bpmgr.bplist) == 0
-            and self.stop_level is not None
-            and self.stop_level < count_frames(frame)
-            and self.current_thread == threading.current_thread()
-        ):
-            # We are "finish"ing or "next"ing and should not be tracing into this call
-            # or any other calls from this. Return Nont to not trace further.
-            # print("""trace_dispatch: "finish"ing or "next"ing from call event""")
-            return None
+        if event == "call":
+            if (self.last_frame != frame
+                and len(self.bpmgr.bplist) == 0
+                and self.stop_level is not None
+                and self.stop_level < count_frames(frame)
+                and self.current_thread == threading.current_thread()
+                ):
+                # We are "finish"ing or "next"ing and should not be tracing into this call
+                # or any other calls from this. Return None to not trace further.
+                # print("""trace_dispatch: "finish"ing or "next"ing from call event""")
+                return None
+            elif not self.is_stop_here(frame, event):
+                # We might have a stop here as a result of a breakpoint set inside
+                # this function. In this case we need to ignore this stop, but
+                # make sure we don't turn off breapoints inside this function which
+                # we do by returning "self".
+                return self
 
         self.event = event
 

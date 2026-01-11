@@ -72,15 +72,20 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
         else:
             disp = disp + "n  "
             pass
+        if bp.column is not None:
+            # Use 1 origin column numbers
+            column_str = ":%d" % (bp.column + 1)
+        else:
+            column_str = ""
         if bp.offset is None:
             self.msg(
-                "%-4dbreakpoint    %s ??? at %s:%d"
-                % (bp.number, disp, self.core.filename(bp.filename), bp.line)
+                "%-4dbreakpoint    %s ??? at %s:%d%s"
+                % (bp.number, disp, self.core.filename(bp.filename), bp.line_number, column_str)
             )
         else:
             self.msg(
-                "%-4dbreakpoint    %s %3d at %s:%d"
-                % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line)
+                "%-4dbreakpoint    %s %3d at %s:%d%s"
+                % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line_number, column_str)
             )
         if bp.condition:
             self.msg("\tstop only if %s" % (bp.condition))
@@ -107,6 +112,7 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
                     self.msg("No breakpoints in list given.")
                 else:
                     for num_str in list_bpnums:
+                        print("XXX2", num_str)
                         self.bpprint(bpmgr.get_breakpoint(num_str)[2])
                         pass
                     pass

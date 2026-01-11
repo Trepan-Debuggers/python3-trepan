@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2021, 2023-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2021, 2023-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -75,15 +75,15 @@ def arg_split(s, posix=False):
     return args_list
 
 
-def get_stack(f, t, botframe, proc_obj=None) -> tuple:
+def get_stack(frame, t, botframe, proc_obj=None) -> tuple:
     """Return a stack of frames which the debugger will use for in
     showing backtraces and in frame switching. As such various frame
     that are really around may be excluded unless we are debugging the
     sebugger. Also we will add traceback frame on top if that
     exists."""
 
-    def false_fn(f):
-        return false_fn
+    def false_fn(_):
+        return False
 
     def fn_is_ignored(f):
         return proc_obj.core.ignore_filter.is_excluded(f)
@@ -96,15 +96,16 @@ def get_stack(f, t, botframe, proc_obj=None) -> tuple:
             pass
         pass
     stack = []
-    if t and t.tb_frame is f:
+    if t and t.tb_frame is frame:
         t = t.tb_next
-    while f is not None:
-        if exclude_frame(f):
+    curframe = frame
+    while curframe is not None:
+        if exclude_frame(curframe):
             break  # See commented alternative below
-        stack.append((f, f.f_lineno))
+        stack.append((frame, frame.f_lineno))
         # bdb has:
         # if f is botframe: break
-        f = f.f_back
+        curframe = curframe.f_back
         pass
     stack.reverse()
     i = max(0, len(stack) - 1)
@@ -203,9 +204,10 @@ class CommandProcessor(Processor):
         self.list_lineno = 0  # last list number used in "list"
         self.list_offset = -1  # last list number used in "disassemble"
         self.list_obj = None
-        self.list_filename = None  # last filename used in list
         self.list_orig_lineno = 0  # line number of frame or exception on setup
-        self.list_filename = None  # filename of frame or exception on setup
+        self.list_filename = (
+            None  # filename of frame or exception on setup, or "list" command
+        )
 
         self.macros = {}  # Debugger Macros
 
@@ -749,10 +751,14 @@ class CommandProcessor(Processor):
             self.stack, self.curindex = get_stack(self.frame, exc_traceback, None, self)
             self.curframe = self.stack[self.curindex][0]
             self.thread_name = Mthread.current_thread_name()
+            self.list_offset = self.curframe.f_lasti
+            self.list_object = self.curframe
             if exc_traceback:
                 self.list_lineno = traceback.extract_tb(exc_traceback, 1)[0][1]
-                self.list_offset = self.curframe.f_lasti
-                self.list_object = self.curframe
+                # FIXME: Do any other fields need to be changed?
+            else:
+                self.list_lineno = self.curframe.f_lineno
+            pass
         else:
             self.stack = self.curframe = self.botframe = None
             pass

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ import sys
 import tempfile
 
 import pyficache
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE, load_module
+from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
 
@@ -99,7 +99,6 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     "%s: Can't read Python script file '%s'." % (__title__, mainpyfile)
                 )
                 sys.exit(1)
-                return
 
         if is_compiled_py(mainpyfile):
             try:
@@ -108,29 +107,24 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     _,
                     _,
                     co,
-                    is_pypy,
+                    python_implementation,
                     _,
                     _,
                     _,
                 ) = load_module(mainpyfile, code_objects=None, fast_load=False)
-                if is_pypy != IS_PYPY:
-                    bytecode_pypy = "" if is_pypy else "not "
-                    running_pypy = "" if IS_PYPY else "not "
+                if python_implementation != PYTHON_IMPLEMENTATION:
                     print(
-                        "Bytecode is for Version %s %srunning PyPY, but we are %srunning PyPy."
-                        % (version_tuple_to_str(end=2), bytecode_pypy, running_pypy)
+                        "Bytecode is for Version %s %s, but we are %s."
+                        % (version_tuple_to_str(end=2), python_implementation, PYTHON_IMPLEMENTATION)
                     )
                     print("For a cross-version debugger, use trepan-xpy with x-python.")
                     sys.exit(2)
                 if python_version[:2] != PYTHON_VERSION_TRIPLE[:2]:
-                    bytecode_pypy = " PyPy" if is_pypy else ""
                     print(
-                        "Bytecode is for version %s%s, but we are version %s%s."
+                        "Bytecode is for version %s, but we are version %s."
                         % (
-                            version_tuple_to_str(python_version, end=2),
-                            bytecode_pypy,
-                            version_tuple_to_str(end=2),
-                            bytecode_pypy,
+                            version_tuple_to_str(python_version[:2], end=2),
+                            version_tuple_to_str(PYTHON_VERSION_TRIPLE[:2], end=2),
                         )
                     )
                     print(
