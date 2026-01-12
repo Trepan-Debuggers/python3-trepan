@@ -67,15 +67,9 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
-@dataclass
-class ExtraFrameInfo:
-    depth: int = -1
-    filename: str = "" # Note frame filenames can be remapped.
-
-
 # A mapping frame to its ExtraFrameInfo. This is a weak dictionary so that
 # frames are automatically removed.
-FrameInfo: Dict[FrameType, ExtraFrameInfo] = {}
+FrameInfo: Dict[FrameType, int] = {}
 
 def count_frames(frame: FrameType) -> int:
     """Return a count of the number of frames"""
@@ -86,8 +80,8 @@ def count_frames(frame: FrameType) -> int:
     for _ in range(1000):
         if frame is None:
             break
-        elif frame_info := FrameInfo.get(frame):
-            depth = frame_info.depth
+        elif depth_or_None := FrameInfo.get(frame):
+            depth = depth_or_None
             count += depth
             break
         else:
@@ -100,7 +94,7 @@ def count_frames(frame: FrameType) -> int:
     # Populate or update FrameInfo
     while len(frames) > 0 and frame not in FrameInfo:
         frame = frames.pop()
-        FrameInfo[frame] = ExtraFrameInfo(depth, frame.f_code.co_filename)
+        FrameInfo[frame] = depth
         depth += 1
     return count
 
@@ -345,6 +339,7 @@ def frame2file(core_obj, frame, canonic=True):
     else:
         filename = core_obj.filename(frame.f_code.co_filename)
 
+    print("WOOT")
     # if frame_info := FrameInfo.get(frame):
     #     if canonic:
     #         return core_obj.filename(frame_info.filename)
@@ -632,7 +627,8 @@ if __name__ == "__main__":
         pass
 
     frame = inspect.currentframe()
-    # print(frame2filesize(frame))
+    print(frame2filesize(frame))
+
     pyc_file = osp.join(
         osp.dirname(__file__), "__pycache__", osp.basename(__file__)[:-3] + ".pyc"
     )
@@ -649,6 +645,7 @@ if __name__ == "__main__":
     dd.core.processor.stack = [(my_frame, 100, 1)]
     dd.core.processor.curframe = my_frame
     print_stack_entry(dd.core.processor, 0, "fruity")
+    print(frame2file(dd.core, frame))
 
     print(
         format_stack_entry(
