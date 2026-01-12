@@ -206,9 +206,11 @@ def print_location(proc_obj):
                         dbgr_obj.eval_string,
                         tempdir=proc_obj.settings("tempdir"),
                     )
-                    pyficache.remap_file(filename, remapped_file)
+                    # pyficache.remap_file(filename, remapped_file)
+                    pyficache.main.code2_tempfile[frame.f_code] = filename
+                    print(f"XXX1 WOOT {pyficache.main.code2_tempfile}")
                     filename, line_number = pyficache.unmap_file_line(
-                        filename, line_number
+                        remapped_file, line_number
                     )
                     pass
                 pass
@@ -327,6 +329,7 @@ def print_location(proc_obj):
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
                     if source_text:
+                        pyficache.main.code2_tempfile[frame.f_code] = remapped_file
                         intf_obj.msg(
                             f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
                         )

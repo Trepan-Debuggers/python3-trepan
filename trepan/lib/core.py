@@ -193,9 +193,14 @@ class TrepanCore:
         canonic() value, a string."""
         if frame is None:
             return "?? - No frame"
+
+        filename = frame.f_code.co_filename
+        if "<string>" == filename:
+            if (new_filename := pyficache.main.code2_tempfile.get(frame.f_code)):
+                filename = new_filename
         return self.canonic(frame.f_code.co_filename)
 
-    def filename(self, filename=None):
+    def filename(self, filename=None) -> Optional[str]:
         """Return filename or the basename of that depending on the
         basename setting"""
         if filename is None:
@@ -203,6 +208,8 @@ class TrepanCore:
                 filename = self.debugger.mainpyfile
             else:
                 return None
+
+        filename = pyficache.unmap_file(filename)
         if self.debugger.settings["basename"]:
             return osp.basename(filename)
         return filename

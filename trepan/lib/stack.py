@@ -335,17 +335,9 @@ def format_stack_entry(
 
 def frame2file(core_obj, frame, canonic=True):
     if canonic:
-        filename = core_obj.filename(core_obj.canonic_filename(frame))
+        return core_obj.filename(core_obj.canonic_filename(frame))
     else:
-        filename = core_obj.filename(frame.f_code.co_filename)
-
-    print("WOOT")
-    # if frame_info := FrameInfo.get(frame):
-    #     if canonic:
-    #         return core_obj.filename(frame_info.filename)
-    #     return frame_info.filename
-
-    return filename
+        return core_obj.filename(frame.f_code.co_filename)
 
 
 def frame2filesize(frame):
