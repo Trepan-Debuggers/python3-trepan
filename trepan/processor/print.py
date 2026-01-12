@@ -207,8 +207,7 @@ def print_location(proc_obj):
                         tempdir=proc_obj.settings("tempdir"),
                     )
                     # pyficache.remap_file(filename, remapped_file)
-                    pyficache.main.code2_tempfile[frame.f_code] = filename
-                    print(f"XXX1 WOOT {pyficache.main.code2_tempfile}")
+                    pyficache.main.code2tempfile[frame.f_code] = filename
                     filename, line_number = pyficache.unmap_file_line(
                         remapped_file, line_number
                     )
