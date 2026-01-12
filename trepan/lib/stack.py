@@ -23,10 +23,11 @@ import linecache
 import os
 import os.path as osp
 import re
+from dataclasses import dataclass
 from opcode import opname
 from reprlib import repr
 from types import CodeType, FrameType
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 import xdis
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
@@ -66,18 +67,41 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
+@dataclass
+class ExtraFrameInfo:
+    depth: int = -1
+    filename: str = "" # Note frame filenames can be remapped.
 
-def count_frames(frame: FrameType, count_start=0) -> int:
+
+# A mapping frame to its ExtraFrameInfo. This is a weak dictionary so that
+# frames are automatically removed.
+FrameInfo: Dict[FrameType, ExtraFrameInfo] = {}
+
+def count_frames(frame: FrameType) -> int:
     """Return a count of the number of frames"""
-    count = -count_start
+    count = 0
+    # Bottommost frame depth is 1
+    depth = 1
+    frames: List[FrameType] = []
     for _ in range(1000):
         if frame is None:
             break
+        elif frame_info := FrameInfo.get(frame):
+            depth = frame_info.depth
+            count += depth
+            break
         else:
+            frames.append(frame)
             count += 1
             frame = frame.f_back
     else:
         return 1000
+
+    # Populate or update FrameInfo
+    while len(frames) > 0 and frame not in FrameInfo:
+        frame = frames.pop()
+        FrameInfo[frame] = ExtraFrameInfo(depth, frame.f_code.co_filename)
+        depth += 1
     return count
 
 
@@ -317,9 +341,16 @@ def format_stack_entry(
 
 def frame2file(core_obj, frame, canonic=True):
     if canonic:
-        return core_obj.filename(core_obj.canonic_filename(frame))
+        filename = core_obj.filename(core_obj.canonic_filename(frame))
     else:
-        return core_obj.filename(frame.f_code.co_filename)
+        filename = core_obj.filename(frame.f_code.co_filename)
+
+    # if frame_info := FrameInfo.get(frame):
+    #     if canonic:
+    #         return core_obj.filename(frame_info.filename)
+    #     return frame_info.filename
+
+    return filename
 
 
 def frame2filesize(frame):
@@ -631,9 +662,10 @@ if __name__ == "__main__":
         )
     )
 
-    # print("frame count: %d" % count_frames(frame))
-    # print("frame count: %d" % count_frames(frame.f_back))
-    # print("frame count: %d" % count_frames(frame, 1))
+    count1 = count_frames(frame)
+    print("frame count: %d" % count1)
+    assert count1 == count_frames(frame)
+    print("frame count: %d" % count_frames(frame.f_back))
     # print("def statement: x=5?: %s" % repr(is_def_stmt("x=5", frame)))
     # # Not a "def" statement because frame is wrong spot
     # print(is_def_stmt("def foo():", frame))
@@ -657,6 +689,7 @@ if __name__ == "__main__":
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
         print(get_call_function_name(frame))
+        print("frame count: %d" % count_frames(frame))
         return
 
     print("=" * 30)

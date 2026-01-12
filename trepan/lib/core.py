@@ -40,7 +40,7 @@ import tracer
 from trepan.clifns import search_file
 from trepan.lib.breakpoint import BreakpointManager
 from trepan.lib.default import START_OPTS, STOP_OPTS
-from trepan.lib.stack import count_frames
+from trepan.lib.stack import ExtraFrameInfo, FrameInfo, count_frames
 from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
 from trepan.processor.trace import PrintProcessor
@@ -447,6 +447,12 @@ class TrepanCore:
                 # make sure we don't turn off breapoints inside this function which
                 # we do by returning "self".
                 return self
+            if frame not in FrameInfo:
+                FrameInfo[frame] = ExtraFrameInfo(-1, frame.f_code.co_filename)
+        elif event == "return":
+            if frame in FrameInfo:
+                print("XXX deleting {frame}")
+                del FrameInfo[frame]
 
         self.event = event
 
