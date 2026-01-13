@@ -95,6 +95,10 @@ class ListCommand(DebuggerCommand):
         if filename is None:
             return
         resolved_name = pyficache.resolve_name_to_path(filename)
+        if "<string>" == resolved_name:
+            if remapped_file := pyficache.main.code2tempfile.get(curframe.f_code):
+                filename = resolved_name = remapped_file
+
         if not osp.exists(resolved_name):
             # See of resuled_filename is a module name:
             # START HERE with try: eval, except
