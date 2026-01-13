@@ -143,11 +143,14 @@ def print_location(proc_obj):
 
         """
         lines = deparsed_text.split("\n")
+
+
         # FIXME Rather than blindly take the first line,
         # check if it is blank and if so use other lines.
         for line in lines:
             if line:
-                return proc_obj._saferepr(line.strip())[1:-1][:10]
+                cleaned_line = re.sub(r"[()'\"\s]", "_", line.strip())
+                return proc_obj._saferepr(cleaned_line)[1:-1][:10]
         return "..."
 
     def prefix_for_source_text(source_text: str, maxwidth: int) -> str:
@@ -197,7 +200,9 @@ def print_location(proc_obj):
 
         filename = frame2file(core_obj, frame, canonic=False)
         if "<string>" == filename:
-            if dbgr_obj.eval_string:
+            if remapped_file := pyficache.main.code2tempfile.get(frame.f_code):
+                filename = remapped_file
+            elif dbgr_obj.eval_string:
                 remapped_file = filename
                 filename = pyficache.unmap_file(filename)
                 if "<string>" == filename:
@@ -214,38 +219,39 @@ def print_location(proc_obj):
                     pass
                 pass
 
-            # FIXME: should change filename to disambiguated <string> everywhere.
-            eval_kind = is_eval_or_exec_stmt(frame) or "code-"
-            deparsed = deparse_fn(frame.f_code)
-            if deparsed:
-                # Create a nice prefix for the temporary file to write.
-                # Use the exec type and first line of the deparsed text.
-                leading_code_str = prefix_for_filename(deparsed.text)
-                prefix = f"{eval_kind}-{leading_code_str}-"
-
-                remapped_file = cmdfns.source_tempfile_remap(
-                    prefix,
-                    deparsed.text,
-                    tempdir=proc_obj.settings("tempdir"),
-                )
-                # FIXME: pyficache remaps seems backwards
-                pyficache.remap_file(remapped_file, filename)
-                filename = remapped_file
             else:
+                # FIXME: should change filename to disambiguated <string> everywhere.
+                eval_kind = is_eval_or_exec_stmt(frame) or "code-"
                 deparsed = deparse_fn(frame.f_code)
-                if deparsed is not None:
-                    source_text = deparsed.text
-                # else:
-                #   print("Can't deparse", frame.f_code)
-                if source_text is None and eval_kind:
-                    if source_text := get_exec_or_eval_string(frame):
-                        filename = "string-" + prefix_for_filename(source_text) + "-"
-                    else:
-                        source_text = f"{eval_kind}(...)"
+                if deparsed:
+                    # Create a nice prefix for the temporary file to write.
+                    # Use the exec type and first line of the deparsed text.
+                    leading_code_str = prefix_for_filename(deparsed.text)
+                    prefix = f"{eval_kind}-{leading_code_str}-"
+
+                    remapped_file = cmdfns.source_tempfile_remap(
+                        prefix,
+                        deparsed.text,
+                        tempdir=proc_obj.settings("tempdir"),
+                    )
+                    # FIXME: pyficache remaps seems backwards
+                    filename = remapped_file
+
+                else:
+                    deparsed = deparse_fn(frame.f_code)
+                    if deparsed is not None:
+                        source_text = deparsed.text
+                    # else:
+                    #   print("Can't deparse", frame.f_code)
+                    if source_text is None and eval_kind:
+                        if source_text := get_exec_or_eval_string(frame):
+                            filename = "string-" + prefix_for_filename(source_text) + "-"
+                        else:
+                            source_text = f"{eval_kind}(...)"
+                            pass
                         pass
                     pass
                 pass
-            pass
         else:
             m = re.search("^<frozen (.*)>", filename)
             if m and m.group(1) in pyficache.file2file_remap:
@@ -328,7 +334,7 @@ def print_location(proc_obj):
                         pyficache.remap_file(remapped_file, filename)
                     fd.close()
                     if source_text:
-                        pyficache.main.code2_tempfile[frame.f_code] = remapped_file
+                        pyficache.main.code2tempfile[frame.f_code] = remapped_file
                         intf_obj.msg(
                             f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
                         )

@@ -345,6 +345,9 @@ def frame2filesize(frame):
         bc_path = frame.f_globals["__cached__"]
     else:
         bc_path = None
+    if frame.f_code.co_filename == "<string>":
+        # There is no source-code file to compare against.
+        return None, None
     path = frame.f_globals["__file__"]
     source_path = getsourcefile(path)
     if source_path is None:
