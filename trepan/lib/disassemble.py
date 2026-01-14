@@ -72,7 +72,7 @@ def dis(
     errmsg,
     x=None,
     start_line=-1,
-    end_line=None,
+    end_line=-1,
     relative_pos=False,
     style="none",
     start_offset=0,
@@ -197,7 +197,7 @@ def dis_from_file(
     errmsg,
     filename,
     start_line=-1,
-    end_line=None,
+    end_line=-1,
     style="none",
     include_header=False,
     asm_format="extended",
@@ -212,8 +212,9 @@ def dis_from_file(
         msg(f"Starting line {start_line} not found; adjusting up to {new_start}")
         start_line = new_start
 
-    code_object = next((k for k, val in linecache_info.code_map.items() if val == filename), None)
+    code_object = next((value for value in linecache_info.code_map.values() if value.co_filename == filename), None)
     if code_object is not None:
+
         dis(msg, msg_nocr, section, errmsg,
             x=code_object,
             start_line=start_line,
@@ -433,13 +434,12 @@ def disassemble_bytes(
 
     labels = findlabels(code, opc)
 
-    if start_line > cur_line:
+    if start_line > cur_line or start_offset > 0:
         msg_nocr = null_print
         msg = null_print
     else:
         msg_nocr = orig_msg_nocr
         msg = orig_msg
-
 
     offset = -1
     for instr in get_instructions_bytes(code, opc):
@@ -493,93 +493,6 @@ def disassemble_bytes(
 
     return code, offset
 
-def disassemble_instruction(
-    orig_msg: Callable,
-    orig_msg_nocr: Callable,
-    code,
-    offset,
-    lasti=-1,
-    cur_line=0,
-    end_line=None,
-    relative_pos=False,
-    varnames=(),
-    names=(),
-    constants=(),
-    cells=(),
-    line_starts={},
-    style="none",
-    opc=PYTHON_OPCODES,
-    asm_format="extended",
-) -> tuple:
-    """Disassemble byte string of code. If end_line is negative
-    it counts the number of statement line starts to use."""
-
-    def null_print(_):
-        return None
-
-    instructions = []
-    if end_line is None:
-        end_line = 10000
-    elif relative_pos:
-        end_line += start_line - 1
-        pass
-
-    labels = findlabels(code, opc)
-
-    if start_line > cur_line:
-        msg_nocr = null_print
-        msg = null_print
-    else:
-        msg_nocr = orig_msg_nocr
-        msg = orig_msg
-
-    offset = -1
-    for instr in get_instructions_bytes(
-        code, opc, varnames, names, constants, cells, line_starts, labels
-    ):
-        instructions.append(instr)
-
-        offset = instr.offset
-
-        if end_offset and offset > end_offset:
-            break
-
-        # Python 3.11 introduces "CACHE" and the convention seems to be
-        # to not print these normally.
-        if instr.opname == "CACHE" and asm_format not in (
-            "extended_bytes",
-            "bytes",
-        ):
-            continue
-
-        # Column: Source code line number
-        if instr.starts_line:
-            cur_line = instr.starts_line
-            if start_line and (
-                (start_line > cur_line) or start_offset and start_offset > offset
-            ):
-                continue
-
-            if (cur_line > end_line) or (end_offset and offset > end_offset):
-                break
-        elif start_offset and offset and start_offset <= offset:
-            continue
-
-        print_instruction(
-            instr,
-            instructions,
-            msg,
-            msg_nocr,
-            labels=labels,
-            lasti=lasti,
-            line_starts=line_starts,
-            style=style,
-            opc=opc,
-            asm_format=asm_format,
-        )
-
-    return code, offset
-
 # Demo it
 if __name__ == "__main__":
 
@@ -604,11 +517,14 @@ if __name__ == "__main__":
             return 1
         return fib(x - 1) + fib(x - 2)
 
-    dis_from_file(msg, msg_nocr, section, errmsg, __file__, start_line=45)
-    # curframe = inspect.currentframe()
-    # dis(msg, msg_nocr, errmsg, section, curframe,
-    #     start_line=10, end_line=40, highlight='dark')
+    # dis_from_file(msg, msg_nocr, section, errmsg, __file__, start_line=45)
     # print('-' * 40)
+
+    curframe = inspect.currentframe()
+    dis(msg, msg_nocr, errmsg, section, curframe, start_offset=4, end_offset=10)
+    print('-' * 40)
+
+    import sys; sys.exit(0)
     # does nothing because start_offset is too high:
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_offset=10, end_offset=20, highlight='dark')

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2012-2017, 2020-2021, 2023-2024
+#  Copyright (C) 2009, 2012-2017, 2020-2021, 2023-2024, 2026
 #  Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ class ListCommand(DebuggerCommand):
                 filename = resolved_name = remapped_file
 
         if not osp.exists(resolved_name):
-            # See of resuled_filename is a module name:
+            # See if resolved_filename is a module name:
             # START HERE with try: eval, except
             try:
                 obj = self.proc.eval(filename, show_error=False)
@@ -143,7 +143,7 @@ class ListCommand(DebuggerCommand):
             return
 
         if last > max_line:
-            self.msg("End position changed to last line %d " % max_line)
+            self.msg("End position changed from %d to last line %d " % (last, max_line))
             last = max_line
 
         bplist = self.core.bpmgr.bplist
@@ -209,6 +209,9 @@ class ListCommand(DebuggerCommand):
             pass
         except KeyboardInterrupt:
             pass
+        if lineno >= max_line:
+            proc.list_lineno = max_line - 1
+
         return False
 
 
