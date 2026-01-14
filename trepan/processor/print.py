@@ -199,23 +199,26 @@ def print_location(proc_obj):
         #                 break
 
         filename = frame2file(core_obj, frame, canonic=False)
+        # FIXME: DRY
         if "<string>" == filename:
             if remapped_file := pyficache.main.code2tempfile.get(frame.f_code):
                 filename = remapped_file
             elif dbgr_obj.eval_string:
                 remapped_file = filename
                 filename = pyficache.unmap_file(filename)
+                # FIXME: DRY
                 if "<string>" == filename:
-                    remapped_file = cmdfns.source_tempfile_remap(
-                        "eval_string",
-                        dbgr_obj.eval_string,
-                        tempdir=proc_obj.settings("tempdir"),
-                    )
-                    # pyficache.remap_file(filename, remapped_file)
-                    pyficache.main.code2tempfile[frame.f_code] = filename
-                    filename, line_number = pyficache.unmap_file_line(
-                        remapped_file, line_number
-                    )
+                    if not (remapped_file := pyficache.main.code2tempfile.get(frame.f_code)):
+                        remapped_file = cmdfns.source_tempfile_remap(
+                            "eval_string",
+                            dbgr_obj.eval_string,
+                            tempdir=proc_obj.settings("tempdir"),
+                        )
+                        # pyficache.remap_file(filename, remapped_file)
+                        pyficache.main.code2tempfile[frame.f_code] = filename
+                        filename, line_number = pyficache.unmap_file_line(
+                            remapped_file, line_number
+                        )
                     pass
                 pass
 

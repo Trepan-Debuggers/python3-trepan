@@ -22,8 +22,9 @@ import inspect
 import linecache
 import os
 import os.path as osp
+import pyficache
 import re
-from dataclasses import dataclass
+
 from opcode import opname
 from reprlib import repr
 from types import CodeType, FrameType
@@ -67,8 +68,7 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
-# A mapping frame to its ExtraFrameInfo. This is a weak dictionary so that
-# frames are automatically removed.
+# A mapping frame to its ExtraFrameInfo.
 FrameInfo: Dict[FrameType, int] = {}
 
 def count_frames(frame: FrameType) -> int:
@@ -227,7 +227,12 @@ def format_function_and_parameters(
     else:
         is_module = False
         try:
-            params = inspect.formatargvalues(args, varargs, varkw, local_vars)
+            if is_eval_or_exec_stmt(frame):
+                # Nuke the function name
+                s = ""
+                params = get_exec_or_eval_string(frame)
+            else:
+                params = inspect.formatargvalues(args, varargs, varkw, local_vars)
             formatted_params = format_python(params, style=style)
         except Exception:
             pass
@@ -271,12 +276,14 @@ def format_return_and_location(
     if include_location:
         is_pseudo_file = _re_pseudo_file.match(filename)
         add_quotes_around_file = not is_pseudo_file
-        if is_module:
-            if filename == "<string>":
-                if (func_name := is_eval_or_exec_stmt(frame)):
-                    s += f" in {func_name}"
-            elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
-                s += " file"
+        # FIXME: DRY
+        if filename == "<string>":
+            if (func_name := is_eval_or_exec_stmt(frame)):
+                s += f" in {func_name}"
+            if remapped_filename := pyficache.main.code2tempfile.get(frame.f_code):
+                filename = remapped_filename
+        elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
+            s += " file"
         elif s == "?()":
             if (func_name := is_eval_or_exec_stmt(frame)):
                 s = f"in {func_name}"
@@ -677,6 +684,9 @@ if __name__ == "__main__":
                     dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
                 )
             )
+            dd.core.processor.curframe = frame.f_back
+            dd.core.processor.stack = [(dd.core.processor.curframe, 1, 0)]
+            print_stack_entry(dd.core.processor, 0)
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
