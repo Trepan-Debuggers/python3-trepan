@@ -115,7 +115,7 @@ class ListCommand(DebuggerCommand):
                     return
 
         filename = pyficache.unmap_file(resolved_name)
-        is_pyasm = filename.endswith(".pyasm")
+        is_pyasm = pyficache.is_python_assembly_file(filename)
 
         # We now have range information. Do the listing.
         max_line = pyficache.size(filename)
@@ -157,55 +157,65 @@ class ListCommand(DebuggerCommand):
             if field in self.settings:
                 opts[field] = self.settings[field]
 
-        if first <= 0:
-            first = 1
         try:
-            for lineno in range(first, last + 1):
-                line = pyficache.getline(filename, lineno, opts)
+            if is_pyasm:
+                lineno = first
+                # FIXME add approximate
+                line, pyasm_line_index = pyficache.get_pyasm_line(filename, lineno, is_source_line=True, opts=opts)
+                proc.list_lineno = lineno
                 if line is None:
-                    line = linecache.getline(filename, lineno, proc.frame.f_globals)
-                    pass
-                if line is None:
-                    self.msg("[EOF]")
-                    break
-                else:
-                    if is_pyasm:
-                        self.msg(line)
+                    self.errmsg(f"cannot find assembly for line number {lineno}")
+                    return
+                while lineno <= last:
+                    self.msg(line)
+                    pyasm_line_index += 1
+                    line, pyasm_line_index = pyficache.get_pyasm_line(filename, pyasm_line_index, is_source_line=False, opts=opts)
+                    if line is None:
+                        break
+            else:
+                if first <= 0:
+                    first = 1
+                for lineno in range(first, last + 1):
+                    line = pyficache.getline(filename, lineno, opts)
+                    if line is None:
+                        line = linecache.getline(filename, lineno, proc.frame.f_globals)
+                        pass
+                    if line is None:
+                        self.msg("[EOF]")
+                        break
+                    else:
+                        line = line.rstrip("\n")
+                        s = proc._saferepr(lineno).rjust(3)
+                        if len(s) < 5:
+                            s += " "
+                        if (
+                            canonic_filename,
+                            lineno,
+                        ) in list(bplist.keys()):
+                            bp = bplist[
+                                (
+                                    canonic_filename,
+                                    lineno,
+                                )
+                            ][0]
+                            a_pad = "%02d" % bp.number
+                            s += bp.icon_char()
+                        else:
+                            s += " "
+                            a_pad = "  "
+                            pass
+                        if curframe and lineno == inspect.getlineno(curframe):
+                            s += "->"
+                            if "plain" != self.settings["highlight"]:
+                                s = colorize("bold", s)
+                        else:
+                            s += a_pad
+                            pass
+
+                        self.msg(s + "\t" + line)
                         proc.list_lineno = lineno
-                        continue
-
-                    line = line.rstrip("\n")
-                    s = proc._saferepr(lineno).rjust(3)
-                    if len(s) < 5:
-                        s += " "
-                    if (
-                        canonic_filename,
-                        lineno,
-                    ) in list(bplist.keys()):
-                        bp = bplist[
-                            (
-                                canonic_filename,
-                                lineno,
-                            )
-                        ][0]
-                        a_pad = "%02d" % bp.number
-                        s += bp.icon_char()
-                    else:
-                        s += " "
-                        a_pad = "  "
                         pass
-                    if curframe and lineno == inspect.getlineno(curframe):
-                        s += "->"
-                        if "plain" != self.settings["highlight"]:
-                            s = colorize("bold", s)
-                    else:
-                        s += a_pad
-                        pass
-
-                    self.msg(s + "\t" + line)
-                    proc.list_lineno = lineno
                     pass
-                pass
             pass
         except KeyboardInterrupt:
             pass
@@ -230,6 +240,8 @@ if __name__ == "__main__":
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
     lcmd = ListCommand(cmdproc)
+
+    # doit(lcmd, ['list', "python3-trepan/test/example/00_chained-compare-cpython-314.pyasm:3"])
 
     # Note: osp is defined abouve
     doit(lcmd, ['list', "osp:1"])

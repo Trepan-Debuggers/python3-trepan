@@ -236,7 +236,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                                 % (__title__, embedded_filename, pyasm_name),
                                 file=sys.stderr,
                             )
-                            pyficache.remap_file(pyasm_name, embedded_filename)
+                            pyficache.remap_file(pyasm_name, embedded_filename, is_pyasm=True)
 
                 else:
                     decompile_file = fd.name

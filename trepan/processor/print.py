@@ -144,7 +144,6 @@ def print_location(proc_obj):
         """
         lines = deparsed_text.split("\n")
 
-
         # FIXME Rather than blindly take the first line,
         # check if it is blank and if so use other lines.
         for line in lines:
@@ -208,7 +207,9 @@ def print_location(proc_obj):
                 filename = pyficache.unmap_file(filename)
                 # FIXME: DRY
                 if "<string>" == filename:
-                    if not (remapped_file := pyficache.main.code2tempfile.get(frame.f_code)):
+                    if not (
+                        remapped_file := pyficache.main.code2tempfile.get(frame.f_code)
+                    ):
                         remapped_file = cmdfns.source_tempfile_remap(
                             "eval_string",
                             dbgr_obj.eval_string,
@@ -248,7 +249,9 @@ def print_location(proc_obj):
                     #   print("Can't deparse", frame.f_code)
                     if source_text is None and eval_kind:
                         if source_text := get_exec_or_eval_string(frame):
-                            filename = "string-" + prefix_for_filename(source_text) + "-"
+                            filename = (
+                                "string-" + prefix_for_filename(source_text) + "-"
+                            )
                         else:
                             source_text = f"{eval_kind}(...)"
                             pass
@@ -288,10 +291,11 @@ def print_location(proc_obj):
         is_pyasm = filename.endswith(".pyasm")
         if is_pyasm:
             opts = opts.copy()
-            opts["style"] = "plain"
-            opts["output"] = "plain"
-
-        line = pyficache.getline(filename, line_number, opts)
+            line, _ = pyficache.get_pyasm_line(
+                filename, line_number, is_source_line=True, opts=opts
+            )
+        else:
+            line = pyficache.getline(filename, line_number, opts)
 
         if not line:
             if (
