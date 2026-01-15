@@ -122,7 +122,10 @@ def print_source_location_info(
         else:
             mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
     else:
-        mess = f"({filename}:{line_number}{col_str}"
+        if remapped_line_number != -1:
+            mess = f"({filename}:{remapped_line_number}"
+        else:
+            mess = f"({filename}:{line_number}{col_str}"
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
@@ -301,6 +304,9 @@ def print_location(proc_obj):
             line, remapped_line_number = pyficache.get_pyasm_line(
                 filename, line_number, is_source_line=True
             )
+            if remapped_line_number >= 0:
+                # FIXME: +1 is because getlines is 0 origin.
+                remapped_line_number += 1
         else:
             remapped_line_number = -1  # -1 means no remapping
             line = pyficache.getline(filename, line_number, opts)
