@@ -307,6 +307,13 @@ def print_location(proc_obj):
             if remapped_line_number >= 0:
                 # FIXME: +1 is because getlines is 0 origin.
                 remapped_line_number += 1
+            if line is not None and opts["style"] not in ("plain", "none"):
+                line = pyficache.highlight_string(
+                        line, lexer=pyficache.pyasm_lexer, style=opts["style"]
+                    )
+                if line.endswith("\n"):
+                    line = line[:-1]
+
         else:
             remapped_line_number = -1  # -1 means no remapping
             line = pyficache.getline(filename, line_number, opts)

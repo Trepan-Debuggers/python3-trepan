@@ -199,7 +199,6 @@ def interact(
     if use_pyrepl:
         if not pyrepl_console:
             pyrepl_console = InteractiveColoredConsole(my_locals, filename="<trepan>")
-
             pyrepl_console.runcode = console_runcode
             setattr(pyrepl_console, "globals", my_globals)
             if readfunc is not None:
@@ -213,9 +212,9 @@ def interact(
             errmsg_func(
                 "Colored PyREPL can't be used here; using standard Python shell"
             )
-
-        msg_func(banner)
-        run_multiline_interactive_console(pyrepl_console)
+        else:
+            msg_func(banner)
+            run_multiline_interactive_console(pyrepl_console)
 
     # Fancy color pyrepl console can't be used, so use InteractiveConsole.
     if not pyrepl_console:

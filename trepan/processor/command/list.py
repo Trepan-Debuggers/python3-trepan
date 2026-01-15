@@ -152,6 +152,8 @@ class ListCommand(DebuggerCommand):
             "output": self.settings["highlight"],
             "strip_nl": False,
         }
+        style = self.settings.get("style", "plain")
+        is_plain = style in ("plain", "none")
 
         for field in ("highlight", "style"):
             if field in self.settings:
@@ -161,17 +163,28 @@ class ListCommand(DebuggerCommand):
             if is_pyasm:
                 lineno = first
                 opts["strip_nl"] = True
+                opts["style"] = "plain"
 
                 # FIXME add approximate
-                line, pyasm_line_index = pyficache.get_pyasm_line(filename, lineno, is_source_line=True, opts=opts)
+                line, pyasm_line_index = pyficache.get_pyasm_line(
+                    filename, lineno, is_source_line=True, opts=opts
+                )
                 proc.list_lineno = lineno
                 if line is None:
                     self.errmsg(f"cannot find assembly for line number {lineno}")
                     return
                 while lineno <= last:
+                    if not is_plain:
+                        line = pyficache.highlight_string(
+                                line, lexer=pyficache.pyasm_lexer, style=style
+                            )
+                        if line.endswith("\n"):
+                            line = line[:-1]
                     self.msg(line)
                     pyasm_line_index += 1
-                    line, pyasm_line_index = pyficache.get_pyasm_line(filename, pyasm_line_index, is_source_line=False, opts=opts)
+                    line, pyasm_line_index = pyficache.get_pyasm_line(
+                        filename, pyasm_line_index, is_source_line=False, opts=opts
+                    )
                     if line is None:
                         break
             else:
@@ -246,7 +259,7 @@ if __name__ == "__main__":
     # doit(lcmd, ['list', "python3-trepan/test/example/00_chained-compare-cpython-314.pyasm:3"])
 
     # Note: osp is defined above
-    doit(lcmd, ['list', "osp:1"])
+    doit(lcmd, ["list", "osp:1"])
     # print('--' * 10)
 
     print("--" * 10)
