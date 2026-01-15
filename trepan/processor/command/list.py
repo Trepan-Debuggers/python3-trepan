@@ -143,7 +143,7 @@ class ListCommand(DebuggerCommand):
             return
 
         if last > max_line:
-            self.msg("End position changed from %d to last line %d " % (last, max_line))
+            # self.msg("End position changed from %d to last line %d " % (last, max_line))
             last = max_line
 
         bplist = self.core.bpmgr.bplist
@@ -160,6 +160,8 @@ class ListCommand(DebuggerCommand):
         try:
             if is_pyasm:
                 lineno = first
+                opts["strip_nl"] = True
+
                 # FIXME add approximate
                 line, pyasm_line_index = pyficache.get_pyasm_line(filename, lineno, is_source_line=True, opts=opts)
                 proc.list_lineno = lineno
@@ -243,7 +245,7 @@ if __name__ == "__main__":
 
     # doit(lcmd, ['list', "python3-trepan/test/example/00_chained-compare-cpython-314.pyasm:3"])
 
-    # Note: osp is defined abouve
+    # Note: osp is defined above
     doit(lcmd, ['list', "osp:1"])
     # print('--' * 10)
 

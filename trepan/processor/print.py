@@ -83,7 +83,7 @@ def print_source_line(msg, lineno, line, event_str=None, is_pyasm: bool = False)
     """Print out a source line of text , e.g. the second
     line in:
         (/tmp.py:2):  <module>
-        L -- 2 import sys,os
+        -- 2 import sys,os
         (trepan3k)
 
     We define this method
@@ -106,16 +106,21 @@ def print_source_location_info(
     fn_name=None,
     f_lasti=None,
     remapped_file=None,
+    remapped_line_number: int=-1,
+    remapped_column_number: int=-1,
 ):
-    """Print out a source location , e.g. the first line in
+    """Print out a source location, e.g. the first line in
     line in:
         (/tmp.py:2:4 @21):  <module>
-        L -- 2 import sys,os
+        -- 2 import sys,os
         (trepan3k)
     """
     col_str = f":{column_number}" if column_number >= 0 else ""
     if remapped_file and filename != remapped_file:
-        mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
+        if remapped_line_number != -1:
+            mess = f"({remapped_file}:{remapped_line_number} remapped {filename}:{line_number}"
+        else:
+            mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
     else:
         mess = f"({filename}:{line_number}{col_str}"
     if f_lasti and f_lasti != -1:
@@ -202,6 +207,10 @@ def print_location(proc_obj):
         if "<string>" == filename:
             if remapped_file := pyficache.main.code2tempfile.get(frame.f_code):
                 filename = remapped_file
+                _, remapped_line_number = pyficache.unmap_file_line(
+                    remapped_file, line_number
+                )
+
             elif dbgr_obj.eval_string:
                 remapped_file = filename
                 filename = pyficache.unmap_file(filename)
@@ -238,7 +247,6 @@ def print_location(proc_obj):
                         deparsed.text,
                         tempdir=proc_obj.settings("tempdir"),
                     )
-                    # FIXME: pyficache remaps seems backwards
                     filename = remapped_file
 
                 else:
@@ -288,13 +296,13 @@ def print_location(proc_obj):
 
         pyficache.update_cache(filename)
 
-        is_pyasm = filename.endswith(".pyasm")
+        is_pyasm = pyficache.is_python_assembly_file(remapped_file or filename)
         if is_pyasm:
-            opts = opts.copy()
-            line, _ = pyficache.get_pyasm_line(
-                filename, line_number, is_source_line=True, opts=opts
+            line, remapped_line_number = pyficache.get_pyasm_line(
+                filename, line_number, is_source_line=True
             )
         else:
+            remapped_line_number = -1  # -1 means no remapping
             line = pyficache.getline(filename, line_number, opts)
 
         if not line:
@@ -326,7 +334,7 @@ def print_location(proc_obj):
                     # try with good ol linecache and consider fixing pyficache
                     lines = linecache.getlines(filename)
                     temp_name = filename
-                if lines and not filename.endswith(".pyasm"):
+                if lines and not pyficache.is_python_assembly_file(filename):
                     # FIXME: DRY code with version in cmdproc.py print_location
                     prefix = osp.basename(temp_name).split(".")[0] + "-"
                     fd = NamedTemporaryFile(
@@ -397,8 +405,9 @@ def print_location(proc_obj):
             line_number,
             column_number,
             fn_name,
-            remapped_file=remapped_file,
             f_lasti=last_i,
+            remapped_file=remapped_file,
+            remapped_line_number=remapped_line_number,
         )
         if line and len(line.strip()) != 0:
             if proc_obj.event:

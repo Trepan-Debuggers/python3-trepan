@@ -212,7 +212,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     info = disassemble_file(
                         mainpyfile,
                         outstream=fd,
-                        asm_format="extended-bytes",
+                        asm_format="extended",
                         show_source=False,
                     )
                     code_module = info[1]
