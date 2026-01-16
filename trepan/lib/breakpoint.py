@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024-2026 Rocky Bernstein <rocky@gnu.org>
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -16,7 +16,7 @@ from pyficache import (
     code_loop_for_positions,
     get_linecache_info,
 )
-from xdis import load_module
+from xdis import iscode, load_module
 
 
 class Breakpoint:
@@ -261,7 +261,11 @@ class BreakpointManager:
             isinstance(filename, str) or func_or_code is not None
         ), "You must either supply a filename or give a line number"
 
-        if isinstance(func_or_code, CodeType):
+        # Use iscode() instead of type.CodeType, because
+        # xdis.unmarshal may return its own code type for Graal or
+        # non-CPython implementations. xdis may do this in
+        # order to include additional code info.
+        if iscode(func_or_code):
             code = func_or_code
         elif isinstance(func_or_code, ModuleType):
             if hasattr(func_or_code, "__cached__"):
