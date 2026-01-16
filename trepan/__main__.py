@@ -212,7 +212,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     info = disassemble_file(
                         mainpyfile,
                         outstream=fd,
-                        asm_format="extended-bytes",
+                        asm_format="extended",
                         show_source=False,
                     )
                     code_module = info[1]
@@ -236,7 +236,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                                 % (__title__, embedded_filename, pyasm_name),
                                 file=sys.stderr,
                             )
-                            pyficache.remap_file(pyasm_name, embedded_filename)
+                            pyficache.remap_file(pyasm_name, embedded_filename, is_pyasm=True)
 
                 else:
                     decompile_file = fd.name

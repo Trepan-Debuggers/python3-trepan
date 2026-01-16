@@ -102,7 +102,7 @@ def format_token(token_type, token_value: str, style: Optional[str]) -> str:
     Decorate ``token_value`` with coloring matching `token_type` and return
     the resulting string.
     """
-    if style == "none" or style is None:
+    if style is None or style == "none":
         return token_value
     terminal_256_formatter = Terminal256Formatter(style=style)
     return format([[token_type, token_value]], terminal_256_formatter)
@@ -403,11 +403,11 @@ mono_tf = MonoRSTTerminalFormatter()
 python_lexer = PythonLexer()
 
 
-def format_python(python_str: str, style) -> str:
+def format_python(python_str: str, style: Optional[str]) -> str:
     """Add terminial formatting for a Python string
     ``python_str``, using pygments style ``style``.
     """
-    if style is None:
+    if style is None or style == "none":
         return python_str
     terminal_formatter = Terminal256Formatter(style=style)
     return highlight(python_str, python_lexer, terminal_formatter)

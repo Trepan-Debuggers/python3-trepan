@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2016, 2020 2023-2025
+#   Copyright (C) 2008-2010, 2013-2016, 2020 2023-2026
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ import tracer
 from trepan.clifns import search_file
 from trepan.lib.breakpoint import BreakpointManager
 from trepan.lib.default import START_OPTS, STOP_OPTS
-from trepan.lib.stack import count_frames
+from trepan.lib.stack import FrameInfo, count_frames
 from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
 from trepan.processor.trace import PrintProcessor
@@ -193,9 +193,14 @@ class TrepanCore:
         canonic() value, a string."""
         if frame is None:
             return "?? - No frame"
+
+        filename = frame.f_code.co_filename
+        if "<string>" == filename:
+            if (new_filename := pyficache.main.code2tempfile.get(frame.f_code)):
+                filename = new_filename
         return self.canonic(frame.f_code.co_filename)
 
-    def filename(self, filename=None):
+    def filename(self, filename=None) -> Optional[str]:
         """Return filename or the basename of that depending on the
         basename setting"""
         if filename is None:
@@ -203,6 +208,8 @@ class TrepanCore:
                 filename = self.debugger.mainpyfile
             else:
                 return None
+
+        filename = pyficache.unmap_file(filename)
         if self.debugger.settings["basename"]:
             return osp.basename(filename)
         return filename
@@ -422,7 +429,7 @@ class TrepanCore:
         processor-specific I think it best to distribute the checks."""
 
         # for debugging
-        # print("XXX+ trace dispatch:", frame.f_code.co_name, frame.f_lineno, event, arg)
+        # print("XXX+ trace dispatch:", frame.f_code.co_name, frame.f_lineno, event, arg, frame.f_trace)
 
         # Check to see if are in a call but we should be stepping over the call
         # using "next" of "finish". If so, then we can speed tracing by
@@ -430,6 +437,10 @@ class TrepanCore:
         # that we don't have any breakpoint set, since we have to check
         # for breakpoints in a kind of slow way of checking all events.
 
+        remove_frame_on_return = False
+        # FIXME:
+        # instead of self.bpmgr.bplist == 0, we should be counting on
+        # per breakpoints in code object.
         if event == "call":
             if (self.last_frame != frame
                 and len(self.bpmgr.bplist) == 0
@@ -439,14 +450,22 @@ class TrepanCore:
                 ):
                 # We are "finish"ing or "next"ing and should not be tracing into this call
                 # or any other calls from this. Return None to not trace further.
-                # print("""trace_dispatch: "finish"ing or "next"ing from call event""")
+                # print("""XXX+  trace_dispatch: "finish"ing or "next"ing from call event""")
+                frame.f_trace = None
                 return None
-            elif not self.is_stop_here(frame, event):
+
+            if frame not in FrameInfo:
+                count_frames(frame)
+
+            if not self.is_stop_here(frame, event):
                 # We might have a stop here as a result of a breakpoint set inside
                 # this function. In this case we need to ignore this stop, but
-                # make sure we don't turn off breapoints inside this function which
+                # make sure we don't turn off breakpoints inside this function which
                 # we do by returning "self".
                 return self
+
+        elif event == "return" and frame in FrameInfo:
+            remove_frame_on_return = True
 
         self.event = event
 
@@ -459,10 +478,14 @@ class TrepanCore:
         #   f_lineno can only be set by a trace function
         if self.ignore_filter and self.ignore_filter.is_excluded(frame):
             # print("trace_dispatch: ignore_filter", self.ignore_filter, frame, frame.f_lineno, event, arg) # for debugging
+            if remove_frame_on_return:
+                del FrameInfo[frame]
             return self
 
         if self.trace_hook_suspend:
             # print("XXX trace_dispatch: hook suspended")
+            if remove_frame_on_return:
+                del FrameInfo[frame]
             return None
 
         # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
@@ -477,6 +500,8 @@ class TrepanCore:
         if self.until_condition:
             if not self.matches_condition(frame):
                 # print(f"XXX trace until condition not met for {frame}") # for debugging
+                if remove_frame_on_return:
+                    del FrameInfo[frame]
                 return self
             pass
 
@@ -488,6 +513,8 @@ class TrepanCore:
             trace_event_set = self.debugger.settings["events"]
             if trace_event_set is None or self.event not in trace_event_set:
                 # print(f"trace_dispatch: self.event not in {trace_event_set}")
+                if remove_frame_on_return:
+                    del FrameInfo[frame]
                 return self
 
             # I think we *have* to run is_stop_here() before
@@ -508,7 +535,8 @@ class TrepanCore:
             except Exception:
                 pass
             pass
-
+            if remove_frame_on_return:
+                del FrameInfo[frame]
     pass
 
 

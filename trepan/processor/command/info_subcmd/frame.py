@@ -21,7 +21,12 @@ from pyficache import getline, highlight_string
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
 from trepan.lib.format import Function, Keyword, format_token
-from trepan.lib.stack import format_function_name
+from trepan.lib.stack import (
+    format_function_name,
+    get_exec_or_eval_string,
+    is_eval_or_exec_stmt
+)
+>>>>>>> python-3.11
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
@@ -123,9 +128,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         function_name, formatted_func_name = format_function_name(frame, style=style)
         if function_name is None:
             formatted_func_name = "??"
-        f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
         self.msg(f"  function name: {formatted_func_name}")
-        func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
+        if is_eval_or_exec_stmt(frame):
+            func_args = get_exec_or_eval_string(frame)
+        else:
+            f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
+            func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg(f"  function args: {formatted_func_signature}")
 
@@ -154,7 +162,9 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         if f_lasti >= 0:
             opname = python_opcodes.opname[code.co_code[f_lasti]]
             opname_formatted = format_token(Keyword, opname, style=style)
-            self.msg(f"  instruction offset and opname: {frame.f_lasti} {opname_formatted}")
+            self.msg(
+                f"  instruction offset and opname: {frame.f_lasti} {opname_formatted}"
+            )
         else:
             self.msg(f"  instruction offset: {frame.f_lasti}")
 

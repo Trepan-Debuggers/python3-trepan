@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023-2024, 2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ import inspect
 import os.path as osp
 import re
 
-from pyficache import code_line_info
+from pyficache import get_linecache_info
 
 from trepan.clifns import search_file
 from trepan.misc import wrapped_lines
@@ -113,14 +113,18 @@ class InfoLine(DebuggerSubcommand):
             filename = search_file(filename, self.core.search_path, self.main_dirname)
             pass
 
-        line_info = code_line_info(filename, line_number)
-        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
-        if line_info:
-            msg2 = "starts at offset %d of %s and contains %d instructions" % (
-                line_info[0].offsets[0],
-                line_info[0].name,
-                len(line_info[0].offsets),
+        # FIXME: this needs work.
+        linecache_info = get_linecache_info(filename)
+        if line_number not in linecache_info.line_numbers:
+            self.errmsg(
+                "No line information for line %d of %s"
+                % (line_number, filename)
             )
+            return
+        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
+        line_info = linecache_info.line_info
+        if line_info:
+            msg2 = "is at offset(s) %s" % ", ".join(linecache_info.line_numbers[line_number])
             self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
         else:
             self.errmsg(

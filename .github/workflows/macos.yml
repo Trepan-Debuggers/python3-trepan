@@ -30,7 +30,7 @@ jobs:
         # Until the next pytracer release
         # pip install git+https://github.com/rocky/pytracer#egg=tracer
         # Until the next pyficache release
-        # pip install git+https://github.com/rocky/python-filecache#egg=pyficache
+        pip install git+https://github.com/rocky/python-filecache#egg=pyficache
         pip install -e .[dev]
     - name: Test trepan3k
       run: |
