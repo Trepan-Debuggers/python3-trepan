@@ -26,7 +26,7 @@ from trepan.lib.stack import (
     get_exec_or_eval_string,
     is_eval_or_exec_stmt
 )
->>>>>>> python-3.11
+
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame

@@ -207,17 +207,14 @@ def dis_from_file(
     # # FIXME: we really need to get the code from linecache_info.line_numbers
     # code_object = linecache_info.code_map[filename]
 
-    code_object = next((value for value in linecache_info.code_map.values() if value.co_filename == filename), None)
-    if code_object is not None:
-
-        dis(msg, msg_nocr, section, errmsg,
-            x=code_object,
-            start_line=start_line,
-            end_line=end_line,
-            style=style,
-            include_header=include_header,
-            asm_format=asm_format,
-        )
+    # dis(msg, msg_nocr, section, errmsg,
+    #     x=code_object,
+    #     start_line=start_line,
+    #     end_line=end_line,
+    #     style=style,
+    #     include_header=include_header,
+    #     asm_format=asm_format,
+    # )
 
 
 # Default opc whene none is given.

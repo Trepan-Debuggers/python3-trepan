@@ -96,7 +96,8 @@ class ListCommand(DebuggerCommand):
             return
         resolved_name = pyficache.resolve_name_to_path(filename)
         if "<string>" == resolved_name:
-            if remapped_file := pyficache.main.code2tempfile.get(curframe.f_code):
+            remapped_file = pyficache.main.code2tempfile.get(curframe.f_code)
+            if remapped_file:
                 filename = resolved_name = remapped_file
 
         if not osp.exists(resolved_name):
@@ -105,13 +106,13 @@ class ListCommand(DebuggerCommand):
             try:
                 obj = self.proc.eval(filename, show_error=False)
             except Exception:
-                self.errmsg(f"File {filename} not found")
+                self.errmsg("File %s not found" % filename)
                 return
             else:
                 if inspect.ismodule(obj):
                     resolved_name = pyficache.resolve_name_to_path(obj.__file__)
                 else:
-                    self.errmsg(f"Can't use {obj} as a file-like object")
+                    self.errmsg("Can't use %s as a file-like object" % obj)
                     return
 
         filename = pyficache.unmap_file(resolved_name)
@@ -171,7 +172,7 @@ class ListCommand(DebuggerCommand):
                 )
                 proc.list_lineno = lineno
                 if line is None:
-                    self.errmsg(f"cannot find assembly for line number {lineno}")
+                    self.errmsg("cannot find assembly for line number %d" % lineno)
                     return
                 while lineno <= last:
                     if not is_plain:

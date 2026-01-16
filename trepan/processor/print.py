@@ -93,9 +93,9 @@ def print_source_line(msg, lineno, line, event_str=None, is_pyasm: bool = False)
     # We don't use the filename normally. ipython and other applications
     # however might.
     if is_pyasm:
-        return msg(f"{event_str}\n{line}")
+        return msg("%s\n%s" % (event_str, line))
     else:
-        return msg(f"{event_str} {lineno} {line}")
+        return msg("%s %d %s" % (event_str, lineno, line))
 
 
 def print_source_location_info(
@@ -116,21 +116,20 @@ def print_source_location_info(
     """
     if remapped_file and filename != remapped_file:
         if remapped_line_number != -1:
-            mess = f"({remapped_file}:{remapped_line_number} remapped {filename}:{line_number}"
+            mess = "(%s:%d remapped %s:%d" % (remapped_file, remapped_line_number,  filename, line_number)
         else:
-            mess = f"({remapped_file}:{line_number}{col_str} remapped {filename}"
+            mess = "(%s:%d remapped %s" % (remapped_file, line_number, filename)
     else:
         if remapped_line_number != -1:
-            mess = f"({filename}:{remapped_line_number}"
+            mess = "(%s:%d" % (filename, remapped_line_number)
         else:
-            mess = f"({filename}:{line_number}{col_str}"
->>>>>>> python-3.11
+            mess = "(%s:%d" % (filename, line_number)
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
     mess += "):"
     if fn_name and fn_name != "?":
-        mess += f" {fn_name}"
+        mess += " %s" % fn_name
         pass
     print_fn(mess)
     return
@@ -207,7 +206,8 @@ def print_location(proc_obj):
         filename = frame2file(core_obj, frame, canonic=False)
         # FIXME: DRY
         if "<string>" == filename:
-            if remapped_file := pyficache.main.code2tempfile.get(frame.f_code):
+            remapped_file = pyficache.main.code2tempfile.get(frame.f_code)
+            if remapped_file:
                 filename = remapped_file
                 _, remapped_line_number = pyficache.unmap_file_line(
                     remapped_file, line_number
@@ -218,9 +218,8 @@ def print_location(proc_obj):
                 filename = pyficache.unmap_file(filename)
                 # FIXME: DRY
                 if "<string>" == filename:
-                    if not (
-                        remapped_file := pyficache.main.code2tempfile.get(frame.f_code)
-                    ):
+                    remapped_file = pyficache.main.code2tempfile.get(frame.f_code)
+                    if not remapped_file:
                         remapped_file = cmdfns.source_tempfile_remap(
                             "eval_string",
                             dbgr_obj.eval_string,
@@ -242,7 +241,7 @@ def print_location(proc_obj):
                     # Create a nice prefix for the temporary file to write.
                     # Use the exec type and first line of the deparsed text.
                     leading_code_str = prefix_for_filename(deparsed.text)
-                    prefix = f"{eval_kind}-{leading_code_str}-"
+                    prefix = "%s-%s-" % (eval_kind, leading_code_str)
 
                     remapped_file = cmdfns.source_tempfile_remap(
                         prefix,
@@ -258,12 +257,13 @@ def print_location(proc_obj):
                     # else:
                     #   print("Can't deparse", frame.f_code)
                     if source_text is None and eval_kind:
-                        if source_text := get_exec_or_eval_string(frame):
+                        source_text = get_exec_or_eval_string(frame)
+                        if source_text:
                             filename = (
                                 "string-" + prefix_for_filename(source_text) + "-"
                             )
                         else:
-                            source_text = f"{eval_kind}(...)"
+                            source_text = "%s(...)" % eval_kind
                             pass
                         pass
                     pass
@@ -363,10 +363,10 @@ def print_location(proc_obj):
                     if source_text:
                         pyficache.main.code2tempfile[frame.f_code] = remapped_file
                         intf_obj.msg(
-                            f"remapped string {prefix_for_source_text(source_text, 10)} to file {remapped_file}"
+                            "remapped string %s to file %s" % (prefix_for_source_text(source_text, 10), remapped_file)
                         )
                     else:
-                        intf_obj.msg(f"remapped file {filename} to {remapped_file}")
+                        intf_obj.msg("remapped file %s to %s") % (filename, remapped_file)
                     proc_obj.list_filename = remapped_file
 
                     pass
@@ -436,7 +436,7 @@ def print_location(proc_obj):
 
     if proc_obj.event in ["return", "exception"]:
         val = proc_obj.event_arg
-        intf_obj.msg(f"R=> {proc_obj._saferepr(val)}")
+        intf_obj.msg("R=> %s" % proc_obj._saferepr(val))
         pass
     elif (
         proc_obj.event == "call"

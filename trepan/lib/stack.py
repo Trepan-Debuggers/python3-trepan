@@ -28,7 +28,7 @@ import re
 from opcode import opname
 from reprlib import repr
 from types import FrameType
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 import xdis
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
@@ -80,14 +80,18 @@ def count_frames(frame: FrameType) -> int:
     for _ in range(1000):
         if frame is None:
             break
-        elif depth_or_None := FrameInfo.get(frame):
-            depth = depth_or_None
-            count += depth
-            break
         else:
-            frames.append(frame)
-            count += 1
-            frame = frame.f_back
+            depth_or_None = FrameInfo.get(frame)
+            if depth_or_None:
+                depth = depth_or_None
+                count += depth
+                break
+            else:
+                frames.append(frame)
+                count += 1
+                frame = frame.f_back
+                pass
+            pass
     else:
         return 1000
 
@@ -249,13 +253,14 @@ def format_return_and_location(
         add_quotes_around_file = not is_pseudo_file
         # FIXME: DRY
         if filename == "<string>":
-            if (func_name := is_eval_or_exec_stmt(frame)):
+            func_name = is_eval_or_exec_stmt(frame)
+            if func_name:
                 s += f" in {func_name}"
-            if remapped_filename := pyficache.main.code2tempfile.get(frame.f_code):
+            remapped_filename = pyficache.main.code2tempfile.get(frame.f_code)
+            if remapped_filename:
                 filename = remapped_filename
         elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
             s += " file"
->>>>>>> python-3.11
         elif s == "?()":
             func_name = is_eval_or_exec_stmt(frame)
             if func_name:

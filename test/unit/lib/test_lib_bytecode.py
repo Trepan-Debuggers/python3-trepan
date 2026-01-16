@@ -4,8 +4,6 @@ import inspect
 import platform
 import pytest
 
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
-
 from trepan.lib.bytecode import is_def_stmt, op_at_frame, stmt_contains_opcode
 
 
