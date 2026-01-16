@@ -125,6 +125,8 @@ class StepCommand(DebuggerCommand):
         self.core.different_line = want_different_line(
             args[0], self.settings["different"]
         )
+        if self.proc.frame is not None:
+            self.proc.frame.f_trace_opcodes = False
         self.core.stop_level = None
         self.core.last_frame = None
         self.core.stop_on_finish = False

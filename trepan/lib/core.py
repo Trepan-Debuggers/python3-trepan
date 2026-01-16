@@ -116,8 +116,9 @@ class TrepanCore:
         self.stop_on_finish = False
 
         self.last_lineno = None
+        self.last_offset = None
         self.last_filename = None
-        self.different_line = None
+        self.different_line = True
 
         # The reason we have stopped, e.g. 'breakpoint hit', 'next',
         # 'finish', 'step', or 'exception'.
@@ -344,7 +345,7 @@ class TrepanCore:
         return val
 
     def is_stop_here(self, frame, event):
-        """Does the magic to determine if we stop here and run a
+        """Do the magic to determine if we stop here and run a
         command processor or not. If so, return True and set
         self.stop_reason; if not, return False.
 
@@ -362,13 +363,16 @@ class TrepanCore:
         # Do we want a different line and if so,
         # do we have one?
         lineno = frame.f_lineno
+        offset = frame.f_lasti
         filename = frame.f_code.co_filename
-        if self.different_line and event == "line":
+        if self.different_line and event in ("line", "opcode"):
             if self.last_lineno == lineno and self.last_filename == filename:
-                # print("is_stop_here(): not different")
-                return False
+                if event != "opcode" or self.last_offset == offset:
+                    # print("is_stop_here(): not different")
+                    return False
             pass
         self.last_lineno = lineno
+        self.last_offset = offset
         self.last_filename = filename
 
         if self.stop_level is not None:
