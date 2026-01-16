@@ -62,6 +62,7 @@ class PythonCommand(DebuggerCommand):
 
         # Python does its own history thing.
         # Make sure it doesn't damage ours.
+
         intf = self.debugger.intf[-1]
         if isinstance(intf, ServerInterface):
             self.errmsg("Can't run an interactive shell on a remote session")
@@ -71,7 +72,9 @@ class PythonCommand(DebuggerCommand):
         if have_line_edit:
             try:
                 self.proc.write_history_file()
-            except IOError:
+            except IOError as e:
+                pass
+            except Exception as e:
                 pass
             pass
 

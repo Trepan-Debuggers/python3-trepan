@@ -17,6 +17,7 @@ import ctypes
 import threading
 
 from trepan.exception import DebuggerQuit
+from xdis import IS_PYPY
 
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -33,6 +34,10 @@ def ctype_async_raise(thread_obj, exception):
 
     if not found:
         raise ValueError("Invalid thread object")
+
+
+    if IS_PYPY:
+        raise DebuggerQuit
 
     ret = ctypes.pythonapi.PyThreadState_SetAsyncExc(
         target_tid, ctypes.py_object(exception)
