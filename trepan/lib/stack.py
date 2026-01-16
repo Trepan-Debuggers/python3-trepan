@@ -22,11 +22,13 @@ import inspect
 import linecache
 import os
 import os.path as osp
+import pyficache
 import re
+
 from opcode import opname
 from reprlib import repr
 from types import CodeType, FrameType
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 import xdis
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
@@ -66,18 +68,34 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
+# A mapping frame to its ExtraFrameInfo.
+FrameInfo: Dict[FrameType, int] = {}
 
-def count_frames(frame: FrameType, count_start=0) -> int:
+def count_frames(frame: FrameType) -> int:
     """Return a count of the number of frames"""
-    count = -count_start
+    count = 0
+    # Bottommost frame depth is 1
+    depth = 1
+    frames: List[FrameType] = []
     for _ in range(1000):
         if frame is None:
             break
+        elif depth_or_None := FrameInfo.get(frame):
+            depth = depth_or_None
+            count += depth
+            break
         else:
+            frames.append(frame)
             count += 1
             frame = frame.f_back
     else:
         return 1000
+
+    # Populate or update FrameInfo
+    while len(frames) > 0 and frame not in FrameInfo:
+        frame = frames.pop()
+        FrameInfo[frame] = depth
+        depth += 1
     return count
 
 
@@ -209,7 +227,12 @@ def format_function_and_parameters(
     else:
         is_module = False
         try:
-            params = inspect.formatargvalues(args, varargs, varkw, local_vars)
+            if is_eval_or_exec_stmt(frame):
+                # Nuke the function name
+                s = ""
+                params = get_exec_or_eval_string(frame)
+            else:
+                params = inspect.formatargvalues(args, varargs, varkw, local_vars)
             formatted_params = format_python(params, style=style)
         except Exception:
             pass
@@ -253,12 +276,14 @@ def format_return_and_location(
     if include_location:
         is_pseudo_file = _re_pseudo_file.match(filename)
         add_quotes_around_file = not is_pseudo_file
-        if is_module:
-            if filename == "<string>":
-                if (func_name := is_eval_or_exec_stmt(frame)):
-                    s += f" in {func_name}"
-            elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
-                s += " file"
+        # FIXME: DRY
+        if filename == "<string>":
+            if (func_name := is_eval_or_exec_stmt(frame)):
+                s += f" in {func_name}"
+            if remapped_filename := pyficache.main.code2tempfile.get(frame.f_code):
+                filename = remapped_filename
+        elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
+            s += " file"
         elif s == "?()":
             if (func_name := is_eval_or_exec_stmt(frame)):
                 s = f"in {func_name}"
@@ -327,6 +352,9 @@ def frame2filesize(frame):
         bc_path = frame.f_globals["__cached__"]
     else:
         bc_path = None
+    if frame.f_code.co_filename == "<string>":
+        # There is no source-code file to compare against.
+        return None, None
     path = frame.f_globals["__file__"]
     source_path = getsourcefile(path)
     if source_path is None:
@@ -601,7 +629,8 @@ if __name__ == "__main__":
         pass
 
     frame = inspect.currentframe()
-    # print(frame2filesize(frame))
+    print(frame2filesize(frame))
+
     pyc_file = osp.join(
         osp.dirname(__file__), "__pycache__", osp.basename(__file__)[:-3] + ".pyc"
     )
@@ -618,6 +647,7 @@ if __name__ == "__main__":
     dd.core.processor.stack = [(my_frame, 100, 1)]
     dd.core.processor.curframe = my_frame
     print_stack_entry(dd.core.processor, 0, "fruity")
+    print(frame2file(dd.core, frame))
 
     print(
         format_stack_entry(
@@ -631,9 +661,10 @@ if __name__ == "__main__":
         )
     )
 
-    # print("frame count: %d" % count_frames(frame))
-    # print("frame count: %d" % count_frames(frame.f_back))
-    # print("frame count: %d" % count_frames(frame, 1))
+    count1 = count_frames(frame)
+    print("frame count: %d" % count1)
+    assert count1 == count_frames(frame)
+    print("frame count: %d" % count_frames(frame.f_back))
     # print("def statement: x=5?: %s" % repr(is_def_stmt("x=5", frame)))
     # # Not a "def" statement because frame is wrong spot
     # print(is_def_stmt("def foo():", frame))
@@ -653,10 +684,14 @@ if __name__ == "__main__":
                     dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
                 )
             )
+            dd.core.processor.curframe = frame.f_back
+            dd.core.processor.stack = [(dd.core.processor.curframe, 1, 0)]
+            print_stack_entry(dd.core.processor, 0)
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
         print(get_call_function_name(frame))
+        print("frame count: %d" % count_frames(frame))
         return
 
     print("=" * 30)

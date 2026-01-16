@@ -329,8 +329,8 @@ class CommandProcessor(Processor):
         self.event_arg = event_arg
 
         filename = frame.f_code.co_filename
-        lineno = frame.f_lineno
-        line = linecache.getline(filename, lineno, frame.f_globals)
+        self.list_lineno = frame.f_lineno
+        line = linecache.getline(filename, self.list_lineno, frame.f_globals)
         if not line:
             opts = {
                 "output": "plain",
@@ -340,7 +340,7 @@ class CommandProcessor(Processor):
             m = re.search("^<frozen (.*)>", filename)
             if m and m.group(1):
                 filename = pyficache.unmap_file(m.group(1))
-            line = pyficache.getline(filename, lineno, opts)
+            line = pyficache.getline(filename, self.list_lineno, opts)
         self.current_source_text = line
         if self.settings("skip") is not None:
             if is_def_stmt(line, frame):
