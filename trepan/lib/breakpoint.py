@@ -16,7 +16,7 @@ from pyficache import (
     code_loop_for_positions,
     get_linecache_info,
 )
-from xdis import iscode, load_module
+from xdis import IS_GRAAL, iscode, load_module
 
 
 class Breakpoint:
@@ -271,8 +271,10 @@ class BreakpointManager:
             if hasattr(func_or_code, "__cached__"):
                 # FIXME: we can probably do better hooking into importlib
                 # or something lower-level
+                # Graal unmarshal has bugs, so use slow xdis approach for now.
+                fast_load = not IS_GRAAL
                 _, _, _, code, _, _, _, _ = load_module(
-                    func_or_code.__cached__, fast_load=True, get_code=True
+                    func_or_code.__cached__, fast_load=fast_load, get_code=True
                 )
                 if position == -1 and is_code_offset:
                     position = 0
@@ -481,8 +483,8 @@ def checkfuncname(brkpt: Breakpoint, frame: FrameType):
         return True
 
     # Breakpoint set via function code object
-
-    if frame.f_code != brkpt.code:
+    # Graal code objects are not native
+    if frame.f_code != brkpt.code and not IS_GRAAL:
         # It's not a function call, but rather execution of def statement.
         return False
 
