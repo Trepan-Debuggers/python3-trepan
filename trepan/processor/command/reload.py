@@ -89,7 +89,7 @@ class ReloadCommand(DebuggerCommand):
             subcommand_module = importlib.import_module(subcmd.__module__)
             importlib.reload(subcommand_module)
             classnames = [
-                tup[0] for tup in inspect.getmembers(subcommand_module, inspect.isclass)
+                tup[0] for tup in inspect.getmembers(subcommand_module, inspect.isclass) if str(tup[0]) != "DebuggerSubcommand"
             ]
             if len(classnames) == 1:
                 try:

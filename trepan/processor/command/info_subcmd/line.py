@@ -15,6 +15,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import columnize
 import inspect
 import os.path as osp
 import re
@@ -90,15 +91,16 @@ class InfoLine(DebuggerSubcommand):
 
     def run(self, args):
         """Current line number in source file"""
-        if not self.proc.curframe:
-            self.errmsg("No line number information available.")
-            return
-
         # info line <loc>
         if len(args) == 0:
+            if not self.proc.curframe:
+                self.errmsg("Frame is needed when no line number is given.")
+                return
+
             # No line number. Use current frame line number
             line_number = inspect.getlineno(self.proc.curframe)
             filename = self.core.canonic_filename(self.proc.curframe)
+
         elif len(args) == 1:
             # lineinfo returns (item, file, lineno) or (None,)
             line_number, filename = self.lineinfo(args[2:])
@@ -123,24 +125,20 @@ class InfoLine(DebuggerSubcommand):
             return
         msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
         line_info = linecache_info.line_info
-        if line_info:
-            msg2 = "is at offset(s) %s" % ", ".join(linecache_info.line_numbers[line_number])
-            self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+        line_number_offsets = line_info.get(line_number)
+        if line_number_offsets:
+            offset_data = [f"{code.co_name}:*{offset}" for code, offset in line_number_offsets]
+            if len(offset_data) == 1:
+                msg2 = f"is at bytecode offset {offset_data[0]}"
+                self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+            else:
+                msg2 = "is at bytecode offsets:"
+                self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+                self.msg(columnize.columnize(offset_data, colsep=", ", ljust=False, lineprefix="  "))
         else:
             self.errmsg(
                 "No line information for line %d of %s"
                 % (line_number, self.core.filename(filename))
-            )
-        if line_info and len(line_info) > 1:
-            self.msg(
-                wrapped_lines(
-                    "There are multiple line offsets for line number.",
-                    "Other line offsets: %s"
-                    % ", ".join(
-                        ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]
-                    ),
-                    self.settings["width"],
-                )
             )
         return False
 

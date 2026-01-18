@@ -199,7 +199,7 @@ class TrepanCore:
         if "<string>" == filename:
             if (new_filename := pyficache.main.code2tempfile.get(frame.f_code)):
                 filename = new_filename
-        return self.canonic(frame.f_code.co_filename)
+        return self.canonic(filename)
 
     def filename(self, filename=None) -> Optional[str]:
         """Return filename or the basename of that depending on the

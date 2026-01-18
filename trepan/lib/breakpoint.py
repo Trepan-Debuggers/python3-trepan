@@ -72,7 +72,7 @@ class Breakpoint:
             if (code_info := code_position_cache.get(code)) is not None:
                 if position == -1:
                     # Figure out the code offset from the line number.
-                    if linecache_info is not None and (tup := linecache_info.lineno_info.get(line_number)):
+                    if linecache_info is not None and (tup := linecache_info.line_info.get(line_number)):
                         self.offset = tup[0]
                         # When an offset value is Python code, then column information is stored in the parent.
                         # FIXME: -1 and 1 might not be right when we have a line with some code and a
