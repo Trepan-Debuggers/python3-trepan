@@ -80,35 +80,36 @@ class Breakpoint:
 
         linecache_info = get_linecache_info(filename)
 
-        if is_code_offset:
+        if is_code_offset and position and position >= 0:
             self.column = None
-            self.offset = position
             # Figure out column offset, and possibly the code offset.
-            if (code_info := code_position_cache.get(code)) is not None:
-                if position == -1:
-                    # Figure out the code offset from the line number.
-                    if linecache_info is not None and (tup := linecache_info.line_info.get(line_number)):
-                        # tup[0] is tuple (code, offset)
-                        self.offset = tup[0][1]
-                        # When an offset value is Python code, then column information is stored in the parent.
-                        # FIXME: -1 and 1 might not be right when we have a line with some code and a
-                        # semicolon and a "def".
-                        if isinstance(tup[-1], CodeType):
-                            code_info = code_position_cache.get(code_info.parent)
-                    pass
+            if (code_offset_tuples := linecache_info.line_info.get(line_number)) is not None:
+                if found := next((item for item in code_offset_tuples if item[-1] == position), None):
+                    self.offset = position
+                    found_code = found[0]
 
-                # Now get the column start value from the line number and code offset.
-                column_range = code_info.lineno_and_offset.get((line_number, self.offset))
-                if column_range:
-                    assert isinstance(column_range, tuple)
-                    start_line, self.column = column_range[0]
-                    # Python stores columns starting 0 in a line.
-                    # For realgud and lldb compatibility (among others),
-                    # we use columns starting at 1.
-                    self.column += 1
-                    assert start_line == line_number
+                    # Figure out column offset
+                    if found_code not in code_position_cache:
+                        code_loop_for_positions(found_code)
+
+                    if (code_info := code_position_cache.get(found_code)) is not None:
+                        # Now get the column start value from the line number and code offset.
+                        column_range = code_info.lineno_and_offset.get((line_number, self.offset))
+                        if column_range:
+                            assert isinstance(column_range, tuple)
+                            start_line, self.column = column_range[0]
+                            # Python stores columns starting 0 in a line.
+                            # For realgud and lldb compatibility (among others),
+                            # we use columns starting at 1.
+                            self.column += 1
+                            assert start_line == line_number
+                            pass
+                        else:
+                            print("Can't find column")
+                        pass
                     pass
                 pass
+            pass
         else:
             self.column = position
             # TODO: Figure out code offset.
@@ -531,6 +532,7 @@ if __name__ == "__main__":
     bpmgr = BreakpointManager()
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number=229, position=106, is_code_offset=True, func_or_code=foo)
     bp = bpmgr.add_breakpoint(__file__, line_number=line_number, func_or_code=foo)
     assert bp
     print(bp.icon_char())
