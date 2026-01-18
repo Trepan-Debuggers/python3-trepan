@@ -1,5 +1,20 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2015, 2017, 2020, 2024-2026 Rocky Bernstein <rocky@gnu.org>
+#
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024-2026 Rocky Bernstein
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -44,7 +59,7 @@ class Breakpoint:
 
     def __init__(
         self,
-        number: int,
+        bp_number: int,
         filename: Optional[str],
         line_number: int,
         temporary=False,
@@ -73,7 +88,8 @@ class Breakpoint:
                 if position == -1:
                     # Figure out the code offset from the line number.
                     if linecache_info is not None and (tup := linecache_info.line_info.get(line_number)):
-                        self.offset = tup[0]
+                        # tup[0] is tuple (code, offset)
+                        self.offset = tup[0][1]
                         # When an offset value is Python code, then column information is stored in the parent.
                         # FIXME: -1 and 1 might not be right when we have a line with some code and a
                         # semicolon and a "def".
@@ -118,7 +134,7 @@ class Breakpoint:
         self.ignore = 0
 
         self.line_number = line_number
-        self.number = number
+        self.number = bp_number
 
         # Delete breakpoint after hitting it.
         self.temporary = temporary
