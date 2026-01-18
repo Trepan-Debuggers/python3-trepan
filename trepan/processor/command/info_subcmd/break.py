@@ -42,11 +42,11 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
 
 
         (trepan3k) info break
-        Num Type          Disp Enb Off Where
-        1   breakpoint    del  n     3 at /tmp/fib.py:9
-        2   breakpoint    keep y    10 at /tmp/fib.py:4
-                breakpoint already hit 1 time
-        3   breakpoint    keep y    20 at /tmp/fib.py:6
+        Num Type          Disp Enb  Off Where
+        1   breakpoint    del  n      3 at /tmp/fib.py:9
+        2   breakpoint    keep y     10 at /tmp/fib.py:4
+                breakpoint already  hit 1 time
+        3   breakpoint    keep y     20 at /tmp/fib.py:6
                 stop only if x > 0
 
     See also:
@@ -79,13 +79,13 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
             column_str = ""
         if bp.offset is None:
             self.msg(
-                "%-4dbreakpoint    %s ??? at %s:%d%s"
+                "%-4dbreakpoint    %s     at %s:%d%s"
                 % (bp.number, disp, self.core.filename(bp.filename), bp.line_number, column_str)
             )
         else:
             self.msg(
-                "%-4dbreakpoint    %s %3d at %s:%d%s"
-                % (bp.number, disp, bp.offset, self.core.filename(bp.filename), bp.line_number, column_str)
+                "%-4dbreakpoint    %s %4s at %s:%d%s"
+                % (bp.number, disp, "*"+str(bp.offset), self.core.filename(bp.filename), bp.line_number, column_str)
             )
         if bp.condition:
             self.msg(f"\tstop only if {bp.condition}")
@@ -112,13 +112,12 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
                     self.msg("No breakpoints in list given.")
                 else:
                     for num_str in list_bpnums:
-                        print("XXX2", num_str)
                         self.bpprint(bpmgr.get_breakpoint(num_str)[2])
                         pass
                     pass
                 pass
             else:
-                self.section("Num Type          Disp Enb Off Where")
+                self.section("Num Type          Disp Enb  Off Where")
                 for bp in bpmgr.bpbynumber:
                     if bp:
                         self.bpprint(bp)
