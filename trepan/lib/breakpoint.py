@@ -22,7 +22,7 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 import os.path as osp
 from collections import defaultdict
 from types import CodeType, ModuleType
-from typing import Optional
+from typing import DefaultDict, Optional
 from types import FrameType
 from pyficache import (
     code_position_cache,
@@ -215,7 +215,12 @@ class BreakpointManager:
 
         self.bpbynumber: list = [None]
         self.bplist = defaultdict(list)
-        self.code_list = defaultdict(list)
+
+        # Keep a mapping from code object to breakpoints that are currently
+        # active in that code. By keeping this mapping, we avoid
+        # tracing frames that do not have breakpoints in their
+        # corresponding code objects.
+        self.code_list: DefaultDict[CodeType, list] = defaultdict(list)
         return
 
     def bpnumbers(self):
@@ -341,10 +346,18 @@ class BreakpointManager:
         index = (bp.filename, bp.line_number)
         if index not in self.bplist:
             return False
+
+        brkpts = self.code_list[bp.code]
+        assert brkpts, f"Should have a list of breakpoints set in {bp.code}"
+        if bp in brkpts:
+            brkpts.remove(bp)
+
         self.bplist[index].remove(bp)
         if not self.bplist[index]:
             # No more breakpoints for this file:line combo
             del self.bplist[index]
+
+
         return True
 
     def delete_breakpoint_by_number(self, bpnum: int) -> tuple:
