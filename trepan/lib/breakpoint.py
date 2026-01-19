@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024-2026 Rocky Bernstein <rocky@gnu.org>
-#
 #  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024-2026 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +27,6 @@ from types import FrameType
 from pyficache import (
     code_position_cache,
     code_loop_for_positions,
-    get_linecache_info,
 )
 from xdis import load_module
 
@@ -78,36 +75,29 @@ class Breakpoint:
             # code.co_filename? Probably not: trepan3k and pyficache do allow for
             # remapping filenames.
 
-        linecache_info = get_linecache_info(filename)
-
         if is_code_offset and position and position >= 0:
             self.column = None
             # Figure out column offset, and possibly the code offset.
-            if (code_offset_tuples := linecache_info.line_info.get(line_number)) is not None:
-                if found := next((item for item in code_offset_tuples if item[-1] == position), None):
-                    self.offset = position
-                    found_code = found[0]
+            self.offset = position
 
-                    # Figure out column offset
-                    if found_code not in code_position_cache:
-                        code_loop_for_positions(found_code)
+            # Figure out column offset
+            if code not in code_position_cache:
+                code_loop_for_positions(code)
 
-                    if (code_info := code_position_cache.get(found_code)) is not None:
-                        # Now get the column start value from the line number and code offset.
-                        column_range = code_info.lineno_and_offset.get((line_number, self.offset))
-                        if column_range:
-                            assert isinstance(column_range, tuple)
-                            start_line, self.column = column_range[0]
-                            # Python stores columns starting 0 in a line.
-                            # For realgud and lldb compatibility (among others),
-                            # we use columns starting at 1.
-                            self.column += 1
-                            assert start_line == line_number
-                            pass
-                        else:
-                            print("Can't find column")
-                        pass
+            if (code_info := code_position_cache.get(code)) is not None:
+                # Now get the column start value from the line number and code offset.
+                column_range = code_info.lineno_and_offset.get((line_number, self.offset))
+                if column_range:
+                    assert isinstance(column_range, tuple)
+                    start_line, self.column = column_range[0]
+                    # Python stores columns starting 0 in a line.
+                    # For realgud and lldb compatibility (among others),
+                    # we use columns starting at 1.
+                    self.column += 1
+                    assert start_line == line_number
                     pass
+                else:
+                    print(f"Can't find column for line {line_number}, offset {self.offset}")
                 pass
             pass
         else:
@@ -152,7 +142,7 @@ class Breakpoint:
             disp = disp + "no   "
 
         if self.offset is None:
-            offset_str = " any"
+            offset_str = "  any"
         else:
             offset_str = "%4d" % self.offset
 
@@ -495,7 +485,7 @@ def checkfuncname(brkpt: Breakpoint, frame: FrameType):
 
     # Breakpoint set via function code object
 
-    if frame.f_code != brkpt.code:
+    if frame.f_code != brkpt.code and brkpt.offset is not None:
         # It's not a function call, but rather execution of def statement.
         return False
 

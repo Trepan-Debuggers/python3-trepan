@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2012-2013, 2015, 2018, 2024
+#   Copyright (C) 2009, 2012-2013, 2015, 2018, 2024, 2026
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ from trepan.processor.complete_rl import complete_bpnumber
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
-class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
+class InfoBreakpoints(Mbase_subcmd.DebuggerSubcommand):
     """**info breakpoints** [ *bp-number...* ]
 
     Show the status of specified breakpoints (or all user-settable
@@ -55,10 +55,9 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
 
     """
 
-    min_abbrev = len("b")
+    min_abbrev = len("br")
     need_stack = False
     short_help = "Status of user-settable breakpoints"
-
     complete = complete_bpnumber
 
     def bpprint(self, bp):
@@ -79,13 +78,26 @@ class InfoBreak(Mbase_subcmd.DebuggerSubcommand):
             column_str = ""
         if bp.offset is None:
             self.msg(
-                "%-4dbreakpoint    %s     at %s:%d%s"
-                % (bp.number, disp, self.core.filename(bp.filename), bp.line_number, column_str)
+                "%-4dbreakpoint    %s  any at %s:%d%s"
+                % (
+                    bp.number,
+                    disp,
+                    self.core.filename(bp.filename),
+                    bp.line_number,
+                    column_str,
+                )
             )
         else:
             self.msg(
                 "%-4dbreakpoint    %s %4s at %s:%d%s"
-                % (bp.number, disp, "*"+str(bp.offset), self.core.filename(bp.filename), bp.line_number, column_str)
+                % (
+                    bp.number,
+                    disp,
+                    "*" + str(bp.offset),
+                    self.core.filename(bp.filename),
+                    bp.line_number,
+                    column_str,
+                )
             )
         if bp.condition:
             self.msg(f"\tstop only if {bp.condition}")

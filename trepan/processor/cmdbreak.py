@@ -36,6 +36,7 @@ def set_break(
     force=False,
     offset=None,
 ):
+
     if line_number is None and offset is None:
         part1 = f"""I don't understand '{" ".join(args[1:])}' as a line number, offset, or function name"""
         msg = wrapped_lines(

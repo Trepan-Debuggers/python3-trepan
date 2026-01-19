@@ -63,7 +63,7 @@ def test_completion():
             "info ",
             [
                 "args",
-                "break",
+                "breakpoints",
                 "builtins",
                 "code",
                 "display",
