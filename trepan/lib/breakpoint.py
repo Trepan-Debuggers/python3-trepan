@@ -200,27 +200,15 @@ class BreakpointManager:
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
     through a (file,line) tuple which is a key in the `bplist'
-    dictionary. If the breakpoint is a function it is in `code_list' as
+    dictionary. If the breakpoint is a function it is in `code2position_brkpts' as
     well.  Note there may be more than one breakpoint per line which
     may have different conditions associated with them.
     """
 
     def __init__(self):
 
-        # self.reset()
+        self.reset()
 
-        # The below duplicates self.reset(). However we include it here,
-        # to assist linters which as of 2014 largely do not grok attributes of
-        # class unless it is put inside __init__
-
-        self.bpbynumber: list = [None]
-        self.bplist = defaultdict(list)
-
-        # Keep a mapping from code object to breakpoints that are currently
-        # active in that code. By keeping this mapping, we avoid
-        # tracing frames that do not have breakpoints in their
-        # corresponding code objects.
-        self.code_list: DefaultDict[CodeType, list] = defaultdict(list)
         return
 
     def bpnumbers(self):
@@ -264,6 +252,8 @@ class BreakpointManager:
         ``temporary`` specifies whether the breakpoint will be removed once it is hit.
         `condition`` specifies that a string Python expression to be evaluated to determine
         whether the breakpoint is hit or not.
+
+        The parameter ``position`` is -1 when we want a breakpoint on a call event.
         """
         bpnum = len(self.bpbynumber)
         if filename:
@@ -320,8 +310,14 @@ class BreakpointManager:
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
         self.bplist[filename, line_number].append(brkpt)
-        if func_or_code and position != -1:
-            self.code_list[code].append(brkpt)
+        if func_or_code:
+            if position == -1:
+                # Add breakpoint to list of call event breakpoints,
+                # indexed by code object.
+                self.codecall_brkpts[code].append(brkpt)
+            else:
+                # Add breakpoint to list of breakpoints indexed by code object.
+                self.code2position_brkpts[code].append(brkpt)
         return brkpt
 
     def delete_all_breakpoints(self) -> str:
@@ -347,7 +343,12 @@ class BreakpointManager:
         if index not in self.bplist:
             return False
 
-        brkpts = self.code_list[bp.code]
+        # FIXME: should mark breakpoint as being a call breakpoint or not instead of doing
+        # this logic.
+        brkpts = self.codecall_brkpts[bp.code] if bp.offset is None else self.code2position_brkpts[bp.code]
+        if not brkpts:
+            brkpts = self.code2position_brkpts[bp.code]
+
         assert brkpts, f"Should have a list of breakpoints set in {bp.code}"
         if bp in brkpts:
             brkpts.remove(bp)
@@ -472,11 +473,21 @@ class BreakpointManager:
         """A list of breakpoints by breakpoint number.  Each entry is
         None or an instance of Breakpoint.  Index 0 is unused, except
         for marking an effective break .... see effective()."""
-        self.bpbynumber = [None]
+        self.bpbynumber: list = [None]
 
-        # A list of breakpoints indexed by (file, line_number) tuple
-        self.bplist = {}
-        self.code_list = {}
+        # Keep a mapping from code object to breakpoints that are currently
+        # active in that code. By keeping this mapping, we avoid
+        # tracing frames that do not have breakpoints in their
+        # corresponding code objects.
+        self.code2position_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+
+        # Keep a mapping from code object for call events only to breakpoints that are currently
+        # active in that code. By keeping this mapping, we avoid
+        # tracing frames that do not have breakpoints in their
+        # corresponding code objects.
+        self.codecall_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+
+        self.bplist = defaultdict(list)
 
         return
 

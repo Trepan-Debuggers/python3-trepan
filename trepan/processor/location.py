@@ -198,16 +198,18 @@ def resolve_location(proc, location) -> Optional[Location]:
                         proc.msg("Offset %d not found for line %d; using offset %d instead." %
                                  (location.offset, location.line_number, offset))
 
-                    mod_or_func_or_code_name = lineinfo[0].name
-                    if mod_or_func_or_code.co_name != mod_or_func_or_code_name:
-                        # Breakpoint is in a nested function/method.
-                        # Get new code object
-                        mod_or_func_or_code = code_info.get(
-                            mod_or_func_or_code_name, mod_or_func_or_code
-                        )
+                    pass
                 pass
             else:
                 return INVALID_LOCATION
+            mod_or_func_or_code_name = lineinfo[0].name
+            if mod_or_func_or_code.co_name != mod_or_func_or_code_name:
+                # Breakpoint is in a nested function/method.
+                # Get new code object
+                mod_or_func_or_code = code_info.get(
+                    mod_or_func_or_code_name, mod_or_func_or_code
+                )
+            pass
     elif location.offset is not None:
         filename = frame2file(proc.core, curframe, canonic=False)
         is_address = True
