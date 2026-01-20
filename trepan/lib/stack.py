@@ -30,7 +30,7 @@ from reprlib import repr
 from types import FrameType
 from typing import Dict, Optional, Tuple
 import xdis
-from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
+from xdis.version_info import IS_GRAAL, PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
 
 from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
@@ -352,6 +352,9 @@ def frame2filesize(frame):
 def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
     call_frame = frame.f_back
     if call_frame is not None:
+        if IS_GRAAL:
+            # Graal's call_frame.f_code does not return graal bytecode?
+            return None
         offset = call_frame.f_lasti - 2
         code = call_frame.f_code
         while offset > 0:

@@ -188,6 +188,7 @@ def print_location(proc_obj):
     while i_stack >= 0:
         frame, line_number = proc_obj.stack[i_stack]
 
+        orig_line_number = line_number
         # Before starting a program a location for a module with
         # line number 0 may be reported. Treat that as though
         # we were on the first line.
@@ -300,8 +301,10 @@ def print_location(proc_obj):
 
         is_pyasm = pyficache.is_python_assembly_file(remapped_file or filename)
         if is_pyasm:
+            if orig_line_number == 0:
+                line_number = 0
             line, remapped_line_number = pyficache.get_pyasm_line(
-                filename, line_number, is_source_line=True
+                filename, line_number, is_source_line=True, offset=frame.f_lasti,
             )
             if remapped_line_number >= 0:
                 # FIXME: +1 is because getlines is 0 origin.

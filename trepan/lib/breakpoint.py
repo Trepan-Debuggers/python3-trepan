@@ -1,5 +1,18 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2015, 2017, 2020, 2024-2026 Rocky Bernstein <rocky@gnu.org>
+#  Copyright (C) 2009-2010, 2013, 2015-2018, 2020, 2022, 2024-2026 Rocky Bernstein
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """Breakpoints as used in a debugger.
 
 This code is a rewrite of the stock python bdb.Breakpoint"""
@@ -9,9 +22,13 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 import os.path as osp
 from collections import defaultdict
 from types import CodeType, ModuleType
-from typing import Optional
+from typing import DefaultDict, Optional
 from types import FrameType
-from xdis import load_module
+from pyficache import (
+    code_position_cache,
+    code_loop_for_positions,
+)
+from xdis import IS_GRAAL, iscode, load_module
 
 
 class Breakpoint:
@@ -39,7 +56,7 @@ class Breakpoint:
 
     def __init__(
         self,
-        number: int,
+        bp_number: int,
         filename: Optional[str],
         line_number: int,
         temporary=False,
@@ -84,7 +101,7 @@ class Breakpoint:
         self.ignore = 0
 
         self.line_number = line_number
-        self.number = number
+        self.number = bp_number
 
         # Delete breakpoint after hitting it.
         self.temporary = temporary
@@ -101,7 +118,7 @@ class Breakpoint:
             disp = disp + "no   "
 
         if self.offset is None:
-            offset_str = " any"
+            offset_str = "  any"
         else:
             offset_str = "%4d" % self.offset
 
@@ -159,22 +176,15 @@ class BreakpointManager:
 
     Breakpoints are indexed by number in the `bpbynumber' list, and
     through a (file,line) tuple which is a key in the `bplist'
-    dictionary. If the breakpoint is a function it is in `code_list' as
+    dictionary. If the breakpoint is a function it is in `code2position_brkpts' as
     well.  Note there may be more than one breakpoint per line which
     may have different conditions associated with them.
     """
 
     def __init__(self):
 
-        # self.reset()
+        self.reset()
 
-        # The below duplicates self.reset(). However we include it here,
-        # to assist linters which as of 2014 largely do not grok attributes of
-        # class unless it is put inside __init__
-
-        self.bpbynumber: list = [None]
-        self.bplist = defaultdict(list)
-        self.code_list = defaultdict(list)
         return
 
     def bpnumbers(self):
@@ -218,6 +228,8 @@ class BreakpointManager:
         ``temporary`` specifies whether the breakpoint will be removed once it is hit.
         `condition`` specifies that a string Python expression to be evaluated to determine
         whether the breakpoint is hit or not.
+
+        The parameter ``position`` is -1 when we want a breakpoint on a call event.
         """
         bpnum = len(self.bpbynumber)
         if filename:
@@ -227,14 +239,20 @@ class BreakpointManager:
             isinstance(filename, str) or func_or_code is not None
         ), "You must either supply a filename or give a line number"
 
-        if isinstance(func_or_code, CodeType):
+        # Use iscode() instead of type.CodeType, because
+        # xdis.unmarshal may return its own code type for Graal or
+        # non-CPython implementations. xdis may do this in
+        # order to include additional code info.
+        if iscode(func_or_code):
             code = func_or_code
         elif isinstance(func_or_code, ModuleType):
             if hasattr(func_or_code, "__cached__"):
                 # FIXME: we can probably do better hooking into importlib
                 # or something lower-level
+                # Graal unmarshal has bugs, so use slow xdis approach for now.
+                fast_load = not IS_GRAAL
                 _, _, _, code, _, _, _, _ = load_module(
-                    func_or_code.__cached__, fast_load=True, get_code=True
+                    func_or_code.__cached__, fast_load=fast_load, get_code=True
                 )
                 if position == -1 and is_code_offset:
                     position = 0
@@ -274,8 +292,14 @@ class BreakpointManager:
         # Build the internal lists of breakpoints
         self.bpbynumber.append(brkpt)
         self.bplist[filename, line_number].append(brkpt)
-        if func_or_code and position != -1:
-            self.code_list[code].append(brkpt)
+        if func_or_code:
+            if position == -1:
+                # Add breakpoint to list of call event breakpoints,
+                # indexed by code object.
+                self.codecall_brkpts[code].append(brkpt)
+            else:
+                # Add breakpoint to list of breakpoints indexed by code object.
+                self.code2position_brkpts[code].append(brkpt)
         return brkpt
 
     def delete_all_breakpoints(self) -> str:
@@ -300,10 +324,23 @@ class BreakpointManager:
         index = (bp.filename, bp.line_number)
         if index not in self.bplist:
             return False
+
+        # FIXME: should mark breakpoint as being a call breakpoint or not instead of doing
+        # this logic.
+        brkpts = self.codecall_brkpts[bp.code] if bp.offset is None else self.code2position_brkpts[bp.code]
+        if not brkpts:
+            brkpts = self.code2position_brkpts[bp.code]
+
+        assert brkpts, f"Should have a list of breakpoints set in {bp.code}"
+        if bp in brkpts:
+            brkpts.remove(bp)
+
         self.bplist[index].remove(bp)
         if not self.bplist[index]:
             # No more breakpoints for this file:line combo
             del self.bplist[index]
+
+
         return True
 
     def delete_breakpoint_by_number(self, bpnum: int) -> tuple:
@@ -418,11 +455,21 @@ class BreakpointManager:
         """A list of breakpoints by breakpoint number.  Each entry is
         None or an instance of Breakpoint.  Index 0 is unused, except
         for marking an effective break .... see effective()."""
-        self.bpbynumber = [None]
+        self.bpbynumber: list = [None]
 
-        # A list of breakpoints indexed by (file, line_number) tuple
-        self.bplist = {}
-        self.code_list = {}
+        # Keep a mapping from code object to breakpoints that are currently
+        # active in that code. By keeping this mapping, we avoid
+        # tracing frames that do not have breakpoints in their
+        # corresponding code objects.
+        self.code2position_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+
+        # Keep a mapping from code object for call events only to breakpoints that are currently
+        # active in that code. By keeping this mapping, we avoid
+        # tracing frames that do not have breakpoints in their
+        # corresponding code objects.
+        self.codecall_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+
+        self.bplist = defaultdict(list)
 
         return
 
@@ -443,8 +490,8 @@ def checkfuncname(brkpt: Breakpoint, frame: FrameType):
         return True
 
     # Breakpoint set via function code object
-
-    if frame.f_code != brkpt.code:
+    # Graal code objects are not native
+    if frame.f_code != brkpt.code and not IS_GRAAL and brkpt.offset is not None:
         # It's not a function call, but rather execution of def statement.
         return False
 
@@ -481,6 +528,7 @@ if __name__ == "__main__":
     bpmgr = BreakpointManager()
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
+    bp = bpmgr.add_breakpoint(__file__, line_number=229, position=106, is_code_offset=True, func_or_code=foo)
     bp = bpmgr.add_breakpoint(__file__, line_number=line_number, func_or_code=foo)
     assert bp
     print(bp.icon_char())

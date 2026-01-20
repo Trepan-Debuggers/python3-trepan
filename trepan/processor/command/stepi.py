@@ -72,7 +72,6 @@ class StepICommand(DebuggerCommand):
 
         self.core.step_events = None
 
-        self.core.different_line = False
         # print("XXX", self.proc.frame)
         if self.proc.frame is not None:
             self.proc.frame.f_trace_opcodes = True

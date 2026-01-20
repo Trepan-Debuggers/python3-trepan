@@ -59,6 +59,8 @@ class NextCommand(DebuggerCommand):
         self.core.different_line = want_different_line(
             args[0], self.debugger.settings["different"]
         )
+        if self.proc.frame is not None and hasattr(self.proc.frame, "f_trace_opcodes"):
+            self.proc.frame.f_trace_opcodes = False
         self.core.set_next(self.proc.frame, step_ignore)
         self.proc.continue_running = True  # Break out of command read loop
         return True
