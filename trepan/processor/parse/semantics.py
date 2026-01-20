@@ -1,4 +1,16 @@
-#  Copyright (c) 2017-2018, 2020 by Rocky Bernstein
+#  Copyright (c) 2017-2018, 2020, 2026 by Rocky Bernstein
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from trepan.processor.parse.parser import (
     parse_bp_location,
@@ -74,9 +86,17 @@ class LocationGrok(GenericASTTraversal, object):
         if node[0] == "FILENAME":
             path = node[0].value
             # If there is a line number, it is the last token of a location
-            if len(node) > 1 and node[-1] == "NUMBER":
-                line_number = node[-1].value
-                is_address = False
+            if len(node) > 1:
+                if node[-1] == "NUMBER":
+                    line_number = node[-1].value
+                    is_address = False
+                elif node[-1] == "ADDRESS":
+                    offset = node[-1].value
+                    is_address = True
+                else:
+                    assert (
+                        True
+                    ), f"n_location: Something's is wrong; {node[-1]} should be NUMBER OR ADDRESS"
             else:
                 offset = 0
                 is_address = True
@@ -87,6 +107,13 @@ class LocationGrok(GenericASTTraversal, object):
         elif node[0] == "NUMBER":
             is_address = False
             line_number = node[0].value
+            if len(node) != 1:
+                if node[-1] == "ADDRESS":
+                    offset = int(node[-1].value[1:])
+                else:
+                    assert (
+                        True
+                    ), f"n_location: Something's is wrong; {node} node be NUMBER or NUMBER COLON ADDRESS"
         elif node[0] == "ADDRESS":
             is_address = True
             offset = int(node[0].value[1:])
@@ -100,7 +127,6 @@ class LocationGrok(GenericASTTraversal, object):
         self.result = Location(None, node.value, False, None, offset=None)
 
     def n_ADDRESS(self, node):
-        breakpoint()
         self.result = Location(None, None, True, None, offset=int(node.value[1:]))
 
     def n_FUNCNAME(self, node):
@@ -264,7 +290,7 @@ def build_bp_expr(string, show_tokens=False, show_ast=False, show_grammar=False)
         "transition": False,
         "reduce": show_grammar,
         "errorstack": None,
-        "dups": False
+        "dups": False,
         # 'context': True, 'dups': True
     }
     parsed = parse_bp_location(
@@ -365,6 +391,7 @@ if __name__ == "__main__":
             print(e.text_cursor)
 
     lines = """
+    44:*26
     @4
     *4
     /tmp/foo.py:12

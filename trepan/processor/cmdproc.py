@@ -590,14 +590,17 @@ class CommandProcessor(Processor):
                 pass
             pass
         run_hooks(self, self.postcmd_hooks)
-        if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
-            # Remove tracing on frames and remove trace hook.
-            frame = self.curframe
-            while frame:
-                del frame.f_trace
-                frame = frame.f_back
-            self.debugger.intf[-1].msg("Fast continue...")
-            remove_hook(self.core.trace_dispatch, True)
+        if self.fast_continue:
+            if len(self.core.bpmgr.bplist) == 0:
+                # Remove tracing on frames and remove trace hook.
+                frame = self.curframe
+                while frame:
+                    del frame.f_trace
+                    frame = frame.f_back
+                self.debugger.intf[-1].msg("Fast continue...")
+                remove_hook(self.core.trace_dispatch, True)
+            else:
+                self.debugger.intf[-1].msg("Continue with breakpoint checking...")
 
         return
 

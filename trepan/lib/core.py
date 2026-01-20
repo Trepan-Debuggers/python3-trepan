@@ -56,8 +56,9 @@ DEFAULT_INIT_OPTS: InitOptions = {
     "ignore_filter": None,  # But see debugger.py
 }
 
+
 class TrepanCore:
-    def __init__(self, debugger, opts: InitOptions=DEFAULT_INIT_OPTS):
+    def __init__(self, debugger, opts: InitOptions = DEFAULT_INIT_OPTS):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash `opts', we may or may not initially
         start tracing events (i.e. enter the debugger).
@@ -197,9 +198,9 @@ class TrepanCore:
 
         filename = frame.f_code.co_filename
         if "<string>" == filename:
-            if (new_filename := pyficache.main.code2tempfile.get(frame.f_code)):
+            if new_filename := pyficache.main.code2tempfile.get(frame.f_code):
                 filename = new_filename
-        return self.canonic(frame.f_code.co_filename)
+        return self.canonic(filename)
 
     def filename(self, filename=None) -> Optional[str]:
         """Return filename or the basename of that depending on the
@@ -231,7 +232,7 @@ class TrepanCore:
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self, opts: InitOptions=DEFAULT_INIT_OPTS):
+    def start(self, opts: InitOptions = DEFAULT_INIT_OPTS):
         """We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
@@ -292,31 +293,19 @@ class TrepanCore:
 
     def is_break_here(self, frame):
         filename = self.canonic(frame.f_code.co_filename)
-        if "call" == self.event:
-            find_name = frame.f_code
-            # Could check code object or decide not to
-            # The below could be done as a list comprehension, but
-            # I'm feeling in Fortran mood right now.
-            for fn in self.bpmgr.code_list:
-                if fn == find_name:
-                    bp_fn = self.bpmgr.code_list.get(fn)
-                    if not bp_fn:
-                        return False
-                    self.current_bp = bp = bp_fn[0]
-                    if bp.temporary:
-                        msg = "temporary "
-                        self.bpmgr.delete_breakpoint(bp)
-                    else:
-                        msg = ""
-                        pass
-                    self.stop_reason = f"at {msg}call breakpoint {bp.number}"
-                    self.event = "brkpt"
-                    return True
-                pass
-            pass
+        code_object = frame.f_code
+        brkpts_in_code = self.bpmgr.code2position_brkpts.get(code_object)
+
+        if brkpts_in_code is None:
+            return False
+
         if (filename, frame.f_lineno) in list(self.bpmgr.bplist.keys()):
             (bp, clear_bp) = self.bpmgr.find_bp(filename, frame.f_lineno, frame)
             if bp:
+                if bp.offset is not None and bp.offset != frame.f_lasti:
+                    # print(f"XXXX core: have breakpoint, but offsets mismatch {bp.offset} vs {frame.f_lasti}")
+                    return False
+
                 self.current_bp = bp
                 if clear_bp and bp.temporary:
                     msg = "temporary "
@@ -329,6 +318,25 @@ class TrepanCore:
                 return True
             else:
                 return False
+        return False
+
+    def is_call_break_here(self, frame):
+        code_object = frame.f_code
+        brkpts_in_code = self.bpmgr.codecall_brkpts.get(code_object)
+
+        if brkpts_in_code is None:
+            return False
+        for bp in brkpts_in_code:
+            self.current_bp = bp
+            if bp.temporary:
+                msg = "temporary "
+                self.bpmgr.delete_breakpoint(bp)
+            else:
+                msg = ""
+                pass
+            self.stop_reason = f"at {msg}call breakpoint {bp.number}"
+            self.event = "brkpt"
+            return True
         return False
 
     def matches_condition(self, frame):
@@ -442,19 +450,25 @@ class TrepanCore:
         # for breakpoints in a kind of slow way of checking all events.
 
         remove_frame_on_return = False
+        is_call_breakpoint = False
         # FIXME:
         # instead of self.bpmgr.bplist == 0, we should be counting on
         # per breakpoints in code object.
         if event == "call":
-            if (self.last_frame != frame
+            if (
+                self.last_frame != frame
                 and len(self.bpmgr.bplist) == 0
                 and self.stop_level is not None
                 and self.stop_level < count_frames(frame)
                 and self.current_thread == threading.current_thread()
-                ):
+            ):
                 # We are "finish"ing or "next"ing and should not be tracing into this call
                 # or any other calls from this. Return None to not trace further.
-                # print("""XXX+  trace_dispatch: "finish"ing or "next"ing from call event""")
+
+                # print(
+                #     """XXX+  trace_dispatch: "finish"ing or "next"ing from call event"""
+                # )
+
                 frame.f_trace = None
                 return None
 
@@ -466,7 +480,11 @@ class TrepanCore:
                 # this function. In this case we need to ignore this stop, but
                 # make sure we don't turn off breakpoints inside this function which
                 # we do by returning "self".
-                return self
+                if self.is_call_break_here(frame):
+                    is_call_breakpoint = True
+                else:
+                    # print("XXX+ trace_dispatch: is_stop_here() return")
+                    return self
 
         elif event == "return" and frame in FrameInfo:
             remove_frame_on_return = True
@@ -527,7 +545,11 @@ class TrepanCore:
             # user's standpoint to test for breaks before steps. In
             # this case we will need to factor out the counting
             # updates.
-            if self.is_stop_here(frame, event) or self.is_break_here(frame):
+            if (
+                self.is_stop_here(frame, event)
+                or self.is_break_here(frame)
+                or is_call_breakpoint
+            ):
                 # Run the event processor
                 return self.processor.event_processor(frame, self.event, arg)
             # else:
@@ -541,6 +563,7 @@ class TrepanCore:
             pass
             if remove_frame_on_return:
                 del FrameInfo[frame]
+
     pass
 
 

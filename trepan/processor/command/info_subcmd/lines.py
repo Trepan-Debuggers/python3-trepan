@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020, 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2020, 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ from getopt import getopt, GetoptError
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.misc import pretty_modfunc_name
+# from pyficache import get_linecache_info
 from pyficache import cache_code_lines
 
 
@@ -96,13 +97,16 @@ class InfoOffsets(DebuggerSubcommand):
             return
 
         # No line number. Use current frame line number
-        filename = curframe.f_code.co_filename
+        filename = self.core.canonic_filename(self.proc.curframe)
         file_info = cache_code_lines(
             filename, toplevel_only=False, include_offsets=True
         )
         if file_info:
             self.section(f"Line:   fn, offset for table for {filename}")
             lines = []
+            # linecache_info = get_linecache_info(filename)
+            # line_info = linecache_info.line_info
+
             for line_number, line_info in file_info.line_numbers.items():
                 if not name or any(li.name == name for li in line_info):
                     lines.append(

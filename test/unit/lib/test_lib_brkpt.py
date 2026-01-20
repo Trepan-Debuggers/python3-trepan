@@ -22,11 +22,11 @@ def test_breakpoint():
     line_number = foo.__code__.co_firstlineno
     bp = bpmgr.add_breakpoint(__file__, line_number, 0, func_or_code=foo)
 
-    assert re.search(r"1\s+breakpoint\s+keep\s+yes .*0 at.*%d" % line_number, str(bp)), str(bp)
+    assert re.search(r"1\s+breakpoint\s+keep\s+yes .* at.*%d:0" % line_number, str(bp)), str(bp)
     assert "B" == bp.icon_char()
     assert bp.enabled
     bp.disable()
-    assert re.search(r"1\s+breakpoint\s+keep\s+no .*0 at.*%d" % line_number, str(bp)), str(bp)
+    assert re.search(r"1\s+breakpoint\s+keep\s+no .* at.*%d:0" % line_number, str(bp)), str(bp)
     assert not bp.enabled
     assert "b" == bp.icon_char()
     assert 1 == bpmgr.last()

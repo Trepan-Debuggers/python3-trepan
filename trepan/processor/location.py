@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017, 2020, 2023-2024 Rocky Bernstein
+#  Copyright (C) 2017, 2020, 2023-2024, 2026 Rocky Bernstein
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
@@ -98,7 +98,9 @@ def resolve_location(proc, location) -> Optional[Location]:
                 # trepan-xpy() which has it's own type of compatible
                 # Function, that would fail an `inspect.isfunction()`
                 # test.
-                if hasattr(mod_or_func_or_code, "__code__") or hasattr(mod_or_func_or_code, "im_func"):
+                if hasattr(mod_or_func_or_code, "__code__") or hasattr(
+                    mod_or_func_or_code, "im_func"
+                ):
                     offset = -1
                 else:
                     proc.errmsg(msg)
@@ -129,14 +131,18 @@ def resolve_location(proc, location) -> Optional[Location]:
             is_address = location.is_address
             if inspect.ismodule(mod_or_func_or_code):
                 if hasattr(mod_or_func_or_code, "__file__"):
-                    filename = pyficache.resolve_name_to_path(mod_or_func_or_code.__file__)
+                    filename = pyficache.resolve_name_to_path(
+                        mod_or_func_or_code.__file__
+                    )
                     filename = proc.core.canonic(filename)
                     if not lineno:
                         # use first line of module file
                         lineno = 1
                         offset = 0
                         is_address = False
-                    return Location(filename, lineno, is_address, mod_or_func_or_code, offset)
+                    return Location(
+                        filename, lineno, is_address, mod_or_func_or_code, offset
+                    )
                 else:
                     msg = f"module '{location.path}' doesn't have a file associated with it"
 
@@ -159,7 +165,6 @@ def resolve_location(proc, location) -> Optional[Location]:
             else:
                 return INVALID_LOCATION
 
-
     elif location.line_number:
         if curframe is None:
             proc.errmsg("Current frame is not set")
@@ -169,17 +174,42 @@ def resolve_location(proc, location) -> Optional[Location]:
         is_address = location.is_address
         mod_or_func_or_code = curframe.f_code
         if offset is None:
-            code_info, lineinfo = pyficache.code_line_info(filename, lineno, include_offsets=True)
+            code_info, lineinfo = pyficache.code_line_info(
+                filename, lineno, include_offsets=True
+            )
             if lineinfo:
-                offset = lineinfo[0].offsets[0]
-                mod_or_func_or_code_name = lineinfo[0].name
-                if mod_or_func_or_code.co_name != mod_or_func_or_code_name:
-                    # Breakpoint is in a nested function/method.
-                    # Get new code object
-                    mod_or_func_or_code = code_info.get(mod_or_func_or_code_name, mod_or_func_or_code)
+                if location.offset is not None:
+                    # Find the more specific offset.
+                    desired_offset = location.offset
+                    for linegroup in lineinfo:
+                        offset = next(
+                            (
+                                try_offset
+                                for try_offset in linegroup.offsets
+                                if try_offset == desired_offset
+                            ),
+                            None
+                        )
+                        if offset is not None:
+                            break
+                        pass
+                    else:
+                        offset = lineinfo[0].offsets[0]
+                        proc.msg("Offset %d not found for line %d; using offset %d instead." %
+                                 (location.offset, location.line_number, offset))
+
+                    pass
                 pass
             else:
                 return INVALID_LOCATION
+            mod_or_func_or_code_name = lineinfo[0].name
+            if mod_or_func_or_code.co_name != mod_or_func_or_code_name:
+                # Breakpoint is in a nested function/method.
+                # Get new code object
+                mod_or_func_or_code = code_info.get(
+                    mod_or_func_or_code_name, mod_or_func_or_code
+                )
+            pass
     elif location.offset is not None:
         filename = frame2file(proc.core, curframe, canonic=False)
         is_address = True
@@ -227,7 +257,9 @@ def resolve_address_location(proc, location) -> Optional[Location]:
 
         try:
             # Check if the converted string is a function or instance method
-            if inspect.isfunction(mod_or_func_or_code) or hasattr(mod_or_func_or_code, "im_func"):
+            if inspect.isfunction(mod_or_func_or_code) or hasattr(
+                mod_or_func_or_code, "im_func"
+            ):
                 pass
             else:
                 proc.errmsg(msg)
@@ -257,13 +289,17 @@ def resolve_address_location(proc, location) -> Optional[Location]:
             is_address = location.is_address
             if inspect.ismodule(mod_or_func_or_code):
                 if hasattr(mod_or_func_or_code, "__file__"):
-                    filename = pyficache.resolve_name_to_path(mod_or_func_or_code.__file__)
+                    filename = pyficache.resolve_name_to_path(
+                        mod_or_func_or_code.__file__
+                    )
                     filename = proc.core.canonic(filename)
                     if not offset:
                         # use first offset of module file
                         offset = 0
                         is_address = True
-                    return Location(filename, offset, is_address, mod_or_func_or_code, offset)
+                    return Location(
+                        filename, offset, is_address, mod_or_func_or_code, offset
+                    )
                 else:
                     msg = f"module '{location.path}' doesn't have a file associated with it"
 
@@ -304,6 +340,9 @@ if __name__ == "__main__":
     cmdproc = CommandProcessor(d.core)
     frame = cmdproc.frame = sys._getframe()
     cmdproc.setup()
+    location = Location(__file__, 2, False, None, None)
+    assert resolve_location(cmdproc, location) == INVALID_LOCATION
+
     location = Location(__file__, frame.f_lineno, False, None, frame.f_lasti)
     print(resolve_location(cmdproc, location))
     location = Location(__file__, None, False, "resolve_location", frame.f_lasti)
