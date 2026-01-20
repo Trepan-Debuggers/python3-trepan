@@ -21,8 +21,7 @@ from getopt import getopt, GetoptError
 # Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.misc import pretty_modfunc_name
-# from pyficache import get_linecache_info
-from pyficache import cache_code_lines
+from pyficache import get_linecache_info
 
 
 class InfoOffsets(DebuggerSubcommand):
@@ -98,29 +97,19 @@ class InfoOffsets(DebuggerSubcommand):
 
         # No line number. Use current frame line number
         filename = self.core.canonic_filename(self.proc.curframe)
-        file_info = cache_code_lines(
-            filename, toplevel_only=False, include_offsets=True
-        )
-        if file_info:
+        linecache_info = get_linecache_info(filename)
+        if linecache_info:
             self.section(f"Line:   fn, offset for table for {filename}")
             lines = []
-            # linecache_info = get_linecache_info(filename)
-            # line_info = linecache_info.line_info
-
-            for line_number, line_info in file_info.line_numbers.items():
-                if not name or any(li.name == name for li in line_info):
+            linecache_info = get_linecache_info(filename)
+            line_info = linecache_info.line_info
+            for line_number, code_offset_pair in line_info.items():
+                for code, offset in code_offset_pair:
                     lines.append(
                         "%4d: %s"
                         % (
                             line_number,
-                            ", ".join(
-                                [
-                                    "%s *%d"
-                                    % (pretty_modfunc_name(li.name), li.offsets[0])
-                                    for li in line_info
-                                    if not name or li.name == name
-                                ]
-                            ),
+                            "%s *%d"% (pretty_modfunc_name(code), offset)
                         )
                     )
             m = self.columnize_commands(list(sorted(lines)))
