@@ -68,7 +68,7 @@ class IPythonCommand(DebuggerCommand):
         cfg = Config()
         banner_tmpl = """\033[1mIPython trepan3k shell%s\033[0m
 
-Use Use dbgr(\x1b[3mstring\x1b[0m) to issue non-continuing debugger command.
+Use Use dbgr(\x1b[3mstring\x1b[0m) to issue a non-continuing debugger command.
 """
 
         debug = len(args) > 1 and args[1] == "-d"
