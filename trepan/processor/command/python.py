@@ -94,12 +94,16 @@ class PythonCommand(DebuggerCommand):
                 pass
             pass
 
-        banner_tmpl = """trepan3k python shell%s
-Use dbgr(*string*) to issue debugger command: *string*"""
+        banner_tmpl = """\033[1mIPython trepan3k shell%s\033[0m
+
+Use dbgr(\x1b[3mstring\x1b[0m) to issue non-continuing debugger command.
+"""
 
         debug = len(args) > 1 and args[1] == "-d"
         if debug:
-            banner_tmpl += "\nVariable 'debugger' contains a trepan" "debugger object."
+            banner_tmpl += (
+                "\nVariable \x1b[3mdebugger\x1b[0m) contains a trepan debugger object."
+            )
             pass
 
         my_locals = {}
