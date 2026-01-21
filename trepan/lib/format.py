@@ -42,7 +42,7 @@ from pygments.token import (
     Token,
 )
 
-from typing import Optional
+from typing import Dict, Optional
 
 from trepan.lib.default import DEBUGGER_SETTINGS
 
@@ -402,6 +402,15 @@ color_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 mono_tf = MonoRSTTerminalFormatter()
 python_lexer = PythonLexer()
 
+terminal_formatters: Dict[str, Terminal256Formatter] = {}
+
+
+def format_line_number(line_number: str, style: str, format_spec="%d") -> str:
+    """Add terminial formatting for line number.
+    """
+    terminal_formatter = terminal_formatters.get(style, Terminal256Formatter(style=style))
+    return highlight(format_spec % line_number, python_lexer, terminal_formatter).strip("\n")
+
 
 def format_python(python_str: str, style: Optional[str]) -> str:
     """Add terminial formatting for a Python string
@@ -409,7 +418,7 @@ def format_python(python_str: str, style: Optional[str]) -> str:
     """
     if style is None or style == "none":
         return python_str
-    terminal_formatter = Terminal256Formatter(style=style)
+    terminal_formatter = terminal_formatters.get(style, Terminal256Formatter(style=style))
     return highlight(python_str, python_lexer, terminal_formatter)
 
 

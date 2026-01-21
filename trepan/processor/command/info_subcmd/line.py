@@ -23,7 +23,7 @@ import columnize
 from pyficache import get_linecache_info
 
 from trepan.clifns import search_file
-from trepan.lib.format import Filename, LineNumber, format_token
+from trepan.lib.format import Filename, format_line_number, format_token
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
 
@@ -130,7 +130,7 @@ class InfoLine(DebuggerSubcommand):
             format_token(Filename, self.core.filename(filename), style=style),
             style=style,
         )
-        formatted_line_number = format_token(LineNumber, str(line_number), style=style)
+        formatted_line_number = format_line_number(line_number, style)
         msg1 = "Line %s of %s" % (formatted_line_number, formatted_filename)
         line_info = linecache_info.line_info
         line_number_offsets = line_info.get(line_number)
