@@ -15,14 +15,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import columnize
 import inspect
 import os.path as osp
 import re
 
+import columnize
 from pyficache import get_linecache_info
 
 from trepan.clifns import search_file
+from trepan.lib.format import Filename, LineNumber, format_token
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
 
@@ -119,22 +120,35 @@ class InfoLine(DebuggerSubcommand):
         linecache_info = get_linecache_info(filename)
         if line_number not in linecache_info.line_numbers:
             self.errmsg(
-                "No line information for line %d of %s"
-                % (line_number, filename)
+                "No line information for line %d of %s" % (line_number, filename)
             )
             return
-        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
+
+        style = self.settings["style"]
+        formatted_filename = format_token(
+            Filename,
+            format_token(Filename, self.core.filename(filename), style=style),
+            style=style,
+        )
+        formatted_line_number = format_token(LineNumber, str(line_number), style=style)
+        msg1 = "Line %s of %s" % (formatted_line_number, formatted_filename)
         line_info = linecache_info.line_info
         line_number_offsets = line_info.get(line_number)
         if line_number_offsets:
-            offset_data = [f"{code.co_name}:*{offset}" for code, offset in line_number_offsets]
+            offset_data = [
+                f"{code.co_name}:*{offset}" for code, offset in line_number_offsets
+            ]
             if len(offset_data) == 1:
                 msg2 = f"is at bytecode offset {offset_data[0]}"
                 self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
             else:
                 msg2 = "is at bytecode offsets:"
                 self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
-                self.msg(columnize.columnize(offset_data, colsep=", ", ljust=False, lineprefix="  "))
+                self.msg(
+                    columnize.columnize(
+                        offset_data, colsep=", ", ljust=False, lineprefix="  "
+                    )
+                )
         else:
             self.errmsg(
                 "No line information for line %d of %s"

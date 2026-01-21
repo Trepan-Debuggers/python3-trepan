@@ -20,7 +20,7 @@ from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
-from trepan.lib.format import Function, Keyword, format_token
+from trepan.lib.format import Function, Keyword, LineNumber, format_token
 from trepan.lib.stack import (
     format_function_name,
     get_column_start_from_frame,
@@ -152,11 +152,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         file_path = code.co_filename
 
         line_text = getline(file_path, line_number, {"style": style})
+        formatted_line_number = format_token(LineNumber, str(frame.f_lineno), style=style)
         if line_text is None:
-            self.msg(f"  current line number: {frame.f_lineno}")
+            self.msg(f"  current line number: {formatted_line_number}")
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
+            self.msg_nocr(f"  current line number: {formatted_line_number}: {formatted_text}")
 
         start_column = get_column_start_from_frame(frame)
         if start_column >= 0:
