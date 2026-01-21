@@ -76,7 +76,7 @@ def count_frames(frame: FrameType) -> int:
     count = 0
     # Bottommost frame depth is 1
     depth = 1
-    frames: List[FrameType] = []
+    frames = []
     for _ in range(1000):
         if frame is None:
             break
@@ -652,11 +652,11 @@ if __name__ == "__main__":
             print(f"{eval_str} argument is: {eval_exec_arg}")
             print(
                 format_stack_entry(
-                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno, -1)
+                    dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)
                 )
             )
             dd.core.processor.curframe = frame.f_back
-            dd.core.processor.stack = [(dd.core.processor.curframe, 1, 0)]
+            dd.core.processor.stack = [(dd.core.processor.curframe, 1)]
             print_stack_entry(dd.core.processor, 0)
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")

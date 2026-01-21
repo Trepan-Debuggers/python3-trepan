@@ -24,10 +24,6 @@ from collections import defaultdict
 from types import CodeType, ModuleType
 from typing import DefaultDict, Optional
 from types import FrameType
-from pyficache import (
-    code_position_cache,
-    code_loop_for_positions,
-)
 from xdis import IS_GRAAL, iscode, load_module
 
 
@@ -245,23 +241,25 @@ class BreakpointManager:
         # order to include additional code info.
         if iscode(func_or_code):
             code = func_or_code
-        elif isinstance(func_or_code, ModuleType):
-            if hasattr(func_or_code, "__cached__"):
-                # FIXME: we can probably do better hooking into importlib
-                # or something lower-level
-                # Graal unmarshal has bugs, so use slow xdis approach for now.
-                fast_load = not IS_GRAAL
-                _, _, _, code, _, _, _, _ = load_module(
-                    func_or_code.__cached__, fast_load=fast_load, get_code=True
-                )
-                if position == -1 and is_code_offset:
-                    position = 0
-                if line_number == -1:
-                    line_number = code.co_firstlineno
+        # FIXME: don't know how to handle modules in 3.6...
+        # elif isinstance(func_or_code, ModuleType):
+        #     if hasattr(func_or_code, "__cached__"):
+        #         filename = func_or_code.__cached__ or func_or_code.__file__
+        #         # FIXME: we can probably do better hooking into importlib
+        #         # or something lower-level
+        #         # Graal unmarshal has bugs, so use slow xdis approach for now.
+        #         fast_load = not IS_GRAAL
+        #         _, _, _, code, _, _, _, _ = load_module(
+        #             filename, fast_load=fast_load, get_code=True
+        #         )
+        #         if position == -1 and is_code_offset:
+        #             position = 0
+        #         if line_number == -1:
+        #             line_number = code.co_firstlineno
 
-            else:
-                print(f"Don't know what to do with frozen module {func_or_code}")
-                return
+        #     else:
+        #         print(f"Don't know what to do with frozen module {func_or_code}")
+        #         return
         elif hasattr(func_or_code, "__code__"):
             code = func_or_code.__code__
             if line_number == -1:
@@ -538,8 +536,10 @@ if __name__ == "__main__":
     bp.disable()
     print(str(bp))
     import xdis
+    from xdis import load_module_from_file_object
 
-    bp = bpmgr.add_breakpoint(xdis.__file__, position=0, func_or_code=xdis)
+    filename = load_module_from_file_object.__code__.co_filename
+    bp = bpmgr.add_breakpoint(filename, position=0, func_or_code=load_module_from_file_object)
     print(bp)
     for i in 10, 1:
         status, msg = bpmgr.delete_breakpoint_by_number(i)

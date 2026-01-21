@@ -304,8 +304,7 @@ class TrepanCore:
             (bp, clear_bp) = self.bpmgr.find_bp(filename, frame.f_lineno, frame)
             if bp:
                 if bp.offset is not None and bp.offset != frame.f_lasti:
-                    # print(f"XXXX core: have breakpoint, but offsets mismatch {bp.offset} vs {frame.f_lasti}")
-                    return False
+                    return True
 
                 self.current_bp = bp
                 if clear_bp and bp.temporary:
