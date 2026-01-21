@@ -40,7 +40,7 @@ from trepan.lib.format import (  # Opcode,
     Integer,
     Keyword,
     LineNumber,
-    Number,
+    Offset,
     Symbol,
     format_token,
 )
@@ -313,7 +313,7 @@ def print_instruction(
         msg_nocr("  ")
 
     # Column: Instruction offset from start of code sequence
-    msg_nocr(format_token(Number, repr(offset).rjust(4), style=style))
+    msg_nocr(format_token(Offset, repr(offset).rjust(4), style=style))
     msg_nocr(" ")
 
     # Column: Instruction bytes
