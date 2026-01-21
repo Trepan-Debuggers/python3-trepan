@@ -18,7 +18,7 @@ import inspect
 from dis import findlinestarts
 from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
-from trepan.lib.format import format_line_number
+from trepan.lib.format import format_line_number, format_offset
 from trepan.lib.stack import get_column_start_from_code
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
@@ -141,7 +141,7 @@ def set_break(
         else:
             func_str = ""
         if offset is not None and offset >= 0:
-            formatted_offset = format_line_number(offset, style)
+            formatted_offset = format_offset(offset, style)
             cmd_obj.msg(f"Breakpoint is at offset {formatted_offset}{func_str}")
         pass
     return True

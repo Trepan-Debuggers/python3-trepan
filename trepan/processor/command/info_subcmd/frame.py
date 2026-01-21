@@ -20,7 +20,7 @@ from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
-from trepan.lib.format import Function, Keyword, format_line_number, format_token
+from trepan.lib.format import Keyword, format_function, format_line_number
 from trepan.lib.stack import (
     format_function_name,
     get_column_start_from_frame,
@@ -137,9 +137,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg(f"  function args: {formatted_func_signature}")
 
-        formatted_thread_name = format_token(
-            Function, current_thread_name(), style=style
-        )
+        formatted_thread_name = format_function(current_thread_name(), style)
         self.msg(f"  thread: {formatted_thread_name}")
         # signature = highlight_string(inspect.signature(frame))
         # self.msg(f"  signature : {signature}")
@@ -157,15 +155,15 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg(f"  current line number: {formatted_line_number}")
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msgr(f"  current line number: {formatted_line_number}: {formatted_text}")
+            self.msg_nocr(f"  current line number: {formatted_line_number}: {formatted_text}")
 
         start_column = get_column_start_from_frame(frame)
         if start_column >= 0:
             formatted_column_number = format_line_number(frame.f_lineno, style)
-            self.msgr(f"  starting column: {formatted_column_number}")
+            self.msg(f"  starting column: {formatted_column_number}")
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg_nocr(f"  current line number: {frame.f_lineno}: {formatted_text}")
+            self.msg(f"  current line number: {frame.f_lineno}: {formatted_text}")
 
         f_lasti = frame.f_lasti
         if f_lasti >= 0:

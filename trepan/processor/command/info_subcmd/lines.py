@@ -18,8 +18,8 @@ import sys
 from dis import findlinestarts
 from getopt import getopt, GetoptError
 
-# Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.lib.format import format_line_number, format_offset
 from trepan.misc import pretty_modfunc_name
 from pyficache import get_linecache_info
 
@@ -98,18 +98,22 @@ class InfoOffsets(DebuggerSubcommand):
         # No line number. Use current frame line number
         filename = self.core.canonic_filename(self.proc.curframe)
         linecache_info = get_linecache_info(filename)
+        style = self.settings["style"]
         if linecache_info:
             self.section(f"Line:   fn, offset for table for {filename}")
             lines = []
             linecache_info = get_linecache_info(filename)
             line_info = linecache_info.line_info
             for line_number, code_offset_pair in line_info.items():
+                # FIXME:
+                if line_number is None:
+                    continue
                 for code, offset in code_offset_pair:
                     lines.append(
-                        "%4d: %s"
+                        "%s: %s"
                         % (
-                            line_number,
-                            "%s *%d"% (pretty_modfunc_name(code), offset)
+                            format_line_number(line_number, style, "%4d"),
+                            "%s *%s" % (pretty_modfunc_name(code), format_offset(offset, style))
                         )
                     )
             m = self.columnize_commands(list(sorted(lines)))
