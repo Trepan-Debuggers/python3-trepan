@@ -36,7 +36,6 @@ from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
     Arrow,
     Filename,
-    Function,
     LineNumber,
     Return,
     format_function,

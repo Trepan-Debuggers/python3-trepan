@@ -38,6 +38,7 @@ def format_location(proc_obj):
         location["lineno"] = lineno
 
         if "<string>" == filename and dbgr_obj.eval_string:
+            # DRY with create_tempfile_and_remap_filename in trepan.processor.print.
             filename = pyficache.unmap_file(filename)
             if "<string>" == filename:
                 fd = tempfile.NamedTemporaryFile(
