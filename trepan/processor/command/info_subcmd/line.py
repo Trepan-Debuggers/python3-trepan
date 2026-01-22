@@ -20,7 +20,7 @@ import os.path as osp
 import re
 
 import columnize
-from pyficache import get_linecache_info, file2file_remap
+from pyficache import file2file_remap, get_linecache_info
 
 from trepan.clifns import search_file
 from trepan.lib.format import Filename, format_line_number, format_token

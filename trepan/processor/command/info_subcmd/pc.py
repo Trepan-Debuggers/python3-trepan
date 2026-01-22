@@ -86,7 +86,7 @@ class InfoPC(DebuggerSubcommand):
                 msg = "is not currently running. "
                 self.msg(wrapped_lines(part1, msg, self.settings["width"]))
             else:
-                self.msg("No Python program is currently running.")
+                self.errmsg("No Python program is currently running.")
                 pass
             self.msg(self.core.execution_status)
             pass
