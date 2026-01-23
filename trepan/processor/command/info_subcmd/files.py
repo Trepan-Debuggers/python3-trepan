@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2012-2013, 2015, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2008-2009, 2012-2013, 2015, 2023-2024, 2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -21,11 +21,10 @@ import sys
 import columnize
 import pyficache
 
-from trepan import misc as Mmisc
 from trepan.lib.complete import complete_token
 from trepan.lib.file import file_list
-
-# Our local modules
+from trepan.lib.format import Filename, format_token
+from trepan.misc import wrapped_lines
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 
 
@@ -34,11 +33,9 @@ class InfoFiles(DebuggerSubcommand):
     need_stack = False
     short_help = "Show information about an imported or loaded Python file"
 
-
     def complete(self, prefix):
         completions = sorted(["."] + file_list())
         return complete_token(completions, prefix)
-
 
     def run(self, args):
         """**info files** [*filename* [**all** | **brkpts** | **sha1** | **size**]]
@@ -67,13 +64,14 @@ class InfoFiles(DebuggerSubcommand):
             filename = args[0]
             pass
 
-        m = filename + " is"
+        style = self.settings["style"]
+        m = f"{format_token(Filename, filename, style=style)} is"
         filename_cache = self.core.filename_cache
         if filename in filename_cache:
             m += " cached in debugger"
             if filename_cache[filename] != filename:
                 m += " as:"
-                m = Mmisc.wrapped_lines(
+                m = wrapped_lines(
                     m, filename_cache[filename] + ".", self.settings["width"]
                 )
             else:
@@ -95,9 +93,16 @@ class InfoFiles(DebuggerSubcommand):
                 self.msg(m + " not cached in debugger.")
             pass
         canonic_name = self.core.canonic(filename)
-        self.msg(
-            Mmisc.wrapped_lines("Canonic name:", canonic_name, self.settings["width"])
-        )
+        if canonic_name == filename:
+            self.msg("Canonic name is the same as the filename.")
+        else:
+            self.msg(
+                wrapped_lines(
+                    "Canonic name:",
+                    format_token(Filename, canonic_name, style=style),
+                    self.settings["width"],
+                )
+            )
         for name in (canonic_name, filename):
             if name in sys.modules:
                 for key in [k for k, v in list(sys.modules.items()) if name == v]:

@@ -18,10 +18,10 @@ import sys
 from dis import findlinestarts
 from getopt import getopt, GetoptError
 
-# Our local modules
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
+from trepan.lib.format import Filename, format_line_number, format_offset, format_token
 from trepan.misc import pretty_modfunc_name
-from pyficache import get_linecache_info
+from pyficache import file2file_remap, get_linecache_info
 
 
 class InfoOffsets(DebuggerSubcommand):
@@ -97,19 +97,37 @@ class InfoOffsets(DebuggerSubcommand):
 
         # No line number. Use current frame line number
         filename = self.core.canonic_filename(self.proc.curframe)
-        linecache_info = get_linecache_info(filename)
+
+        remapped_filename = file2file_remap.get(filename, filename)
+
+        style = self.settings["style"]
+        formatted_filename = format_token(
+            Filename,
+            format_token(Filename, remapped_filename, style=style),
+            style=style,
+        )
+
+        if remapped_filename != filename:
+            self.msg(f"{filename} remapped to {formatted_filename}")
+
+        linecache_info = get_linecache_info(remapped_filename)
+        style = self.settings["style"]
         if linecache_info:
-            self.section(f"Line:   fn, offset for table for {filename}")
+            self.section(f"Line:   fn, offset for table for {formatted_filename}")
             lines = []
-            linecache_info = get_linecache_info(filename)
+            linecache_info = get_linecache_info(remapped_filename)
             line_info = linecache_info.line_info
             for line_number, code_offset_pair in line_info.items():
+                # FIXME:
+                if line_number is None:
+                    continue
                 for code, offset in code_offset_pair:
                     lines.append(
-                        "%4d: %s"
+                        "%s: %s"
                         % (
-                            line_number,
-                            "%s *%d"% (pretty_modfunc_name(code), offset)
+                            format_line_number(line_number, style, "%4d"),
+                            "%s *%s"
+                            % (pretty_modfunc_name(code), format_offset(offset, style)),
                         )
                     )
             m = self.columnize_commands(list(sorted(lines)))
@@ -118,9 +136,7 @@ class InfoOffsets(DebuggerSubcommand):
             self.section(f"Line:   offset for table for {filename}")
             lines = []
             for offset, line_number in findlinestarts(curframe.f_code):
-                lines.append(
-                    "%4d: *%d" % (line_number, offset)
-                    )
+                lines.append("%4d: *%d" % (line_number, offset))
             m = self.columnize_commands(list(sorted(lines)))
             self.msg(m)
             pass

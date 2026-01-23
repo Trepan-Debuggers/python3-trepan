@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023 Rocky
+#  Copyright (C) 2009-2010, 2013, 2015, 2017, 2020, 2023, 2026 Rocky
 #  Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -66,13 +66,14 @@ class IPythonCommand(DebuggerCommand):
             pass
 
         cfg = Config()
-        banner_tmpl = """IPython trepan3k shell%s
+        banner_tmpl = """\033[1mIPython trepan3k shell%s\033[0m
 
-Use dbgr(*string*) to issue non-continuing debugger command: *string*"""
+Use Use dbgr(\x1b[3mstring\x1b[0m) to issue a non-continuing debugger command.
+"""
 
         debug = len(args) > 1 and args[1] == "-d"
         if debug:
-            banner_tmpl += "\nVariable 'debugger' contains a trepan " "debugger object."
+            banner_tmpl += "Variable 'debugger' contains a trepan debugger object.\n"
             pass
         try:
             from IPython.terminal.embed import InteractiveShellEmbed

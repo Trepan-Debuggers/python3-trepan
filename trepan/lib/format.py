@@ -42,7 +42,7 @@ from pygments.token import (
     Token,
 )
 
-from typing import Optional
+from typing import Dict, Optional
 
 from trepan.lib.default import DEBUGGER_SETTINGS
 
@@ -96,6 +96,7 @@ color_scheme[Token.Literal.String] = ("magenta", "yellow")
 pyficache.dark_terminal_formatter.colorscheme = color_scheme
 pyficache.light_terminal_formatter.colorscheme = color_scheme
 
+terminal_formatters: Dict[str, Terminal256Formatter] = {}
 
 def format_token(token_type, token_value: str, style: Optional[str]) -> str:
     """
@@ -104,8 +105,8 @@ def format_token(token_type, token_value: str, style: Optional[str]) -> str:
     """
     if style is None or style == "none":
         return token_value
-    terminal_256_formatter = Terminal256Formatter(style=style)
-    return format([[token_type, token_value]], terminal_256_formatter)
+    terminal_formatter = terminal_formatters.get(style, Terminal256Formatter(style=style))
+    return format([[token_type, token_value]], terminal_formatter)
 
 
 Arrow = Name.Variable
@@ -402,6 +403,28 @@ color_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 mono_tf = MonoRSTTerminalFormatter()
 python_lexer = PythonLexer()
 
+def format_function(function: str, style: str) -> str:
+    """Add terminal formatting for function.
+    """
+    return format_token(Function, function, style)
+
+
+def format_line_number(line_number: int, style: str, format_spec="%d") -> str:
+    """Add terminal formatting for line number.
+    """
+    line_str = format_spec % line_number
+    return format_token(LineNumber, line_str, style)
+
+
+def format_offset(offset: int, style: str, format_spec="%d", show_offset_mark=False) -> str:
+    """Add terminal formatting for line number.
+    """
+    if show_offset_mark:
+        offset_str = format_spec % f"*{offset}"
+    else:
+        offset_str = format_spec % offset
+    return format_token(Offset, offset_str, style)
+
 
 def format_python(python_str: str, style: Optional[str]) -> str:
     """Add terminial formatting for a Python string
@@ -409,7 +432,7 @@ def format_python(python_str: str, style: Optional[str]) -> str:
     """
     if style is None or style == "none":
         return python_str
-    terminal_formatter = Terminal256Formatter(style=style)
+    terminal_formatter = terminal_formatters.get(style, Terminal256Formatter(style=style))
     return highlight(python_str, python_lexer, terminal_formatter)
 
 

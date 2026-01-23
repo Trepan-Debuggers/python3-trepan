@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020, 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2020, 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Our local modules
+from trepan.lib.format import format_line_number, format_offset
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from pyficache import cache_code_lines
 
@@ -49,6 +49,7 @@ class InfoOffsets(DebuggerSubcommand):
         # info line <loc>
         if len(args) == 0:
             curframe = self.proc.curframe
+            style = self.settings["style"]
             if not curframe:
                 self.errmsg("No line number information available.")
                 return
@@ -61,8 +62,9 @@ class InfoOffsets(DebuggerSubcommand):
             if file_info:
                 self.section(f"Offset - line number table for {filename}")
                 offsets = [
-                    "@%4d:%4d" % (offset, line)
-                    for offset, line in file_info.linestarts.items()
+                    "%s:%s" % (format_offset(offset, style, "%4s", show_offset_mark=True),
+                                format_line_number(line_number, style, "%4d"))
+                    for offset, line_number in file_info.linestarts.items()
                 ]
                 m = self.columnize_commands(list(sorted(offsets)))
                 self.msg(m)

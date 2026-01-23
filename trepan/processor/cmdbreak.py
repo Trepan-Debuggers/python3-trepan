@@ -18,6 +18,7 @@ import inspect
 from dis import findlinestarts
 from pyficache import code_line_info
 from trepan.misc import wrapped_lines, pretty_modfunc_name
+from trepan.lib.format import format_line_number, format_offset
 from trepan.lib.stack import get_column_start_from_code
 from trepan.processor.parse.semantics import build_bp_expr
 from trepan.processor.parse.parser import LocationError
@@ -96,8 +97,11 @@ def set_break(
         func_or_code=func_or_code,
         is_code_offset = True,
     )
+    style = cmd_obj.settings["style"]
     if func_or_code and inspect.isfunction(func_or_code):
-        cmd_obj.msg(f"Breakpoint {bp.number} set on calling function {func_or_code.__name__}()")
+        formatted_bp_number = format_line_number(bp.number, style)
+        cmd_obj.msg(f"Breakpoint {formatted_bp_number} set on calling function {func_or_code.__name__}()")
+        formatted_line_number = format_line_number(line_number, style)
         part1 = f"Currently this is line {line_number} of file"
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
@@ -114,16 +118,20 @@ def set_break(
         else:
             func_str = ""
         if bp.column is not None:
-            column_str = f", column {bp.column}"
+            formatted_column = format_line_number(bp.column, style)
+            column_str = f", column {formatted_column}"
         else:
             column_str = ""
             if offset is not None and offset >= 0:
                if code is not None:
                     column_start = get_column_start_from_code(code, offset)
-                    column_str = f", column {column_start}"
+                    formatted_column_start = format_line_number(column_start, style)
+                    column_str = f", column {formatted_column_start}"
 
-        part1 = (f"Breakpoint {bp.number} set at line "
-                 f"{line_number}{column_str}{func_str} of file")
+        formatted_line_number = format_line_number(line_number, style)
+        formatted_bp_number = format_line_number(bp.number, style)
+        part1 = (f"Breakpoint {formatted_bp_number} set at line "
+                 f"{formatted_line_number}{column_str}{func_str} of file")
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
         )
@@ -133,7 +141,8 @@ def set_break(
         else:
             func_str = ""
         if offset is not None and offset >= 0:
-            cmd_obj.msg(f"Breakpoint is at offset {offset}{func_str}")
+            formatted_offset = format_offset(offset, style)
+            cmd_obj.msg(f"Breakpoint is at offset {formatted_offset}{func_str}")
         pass
     return True
 
