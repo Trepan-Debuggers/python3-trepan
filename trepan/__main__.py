@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2008-2010, 2013-2018, 2020-2025 Rocky Bernstein
+#   Copyright (C) 2008-2010, 2013-2018, 2020-2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -80,13 +80,20 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     # options that belong to this debugger. The original options to
     # invoke the debugger and script are in global sys_argv
 
+    if opts.module is not None:
+        mainpyfile = opts.module
+        if len(sys_argv) == 0:
+            sys_argv.append(mainpyfile)
+        else:
+            sys_argv[0] = mainpyfile
+
     if len(sys_argv) == 0:
         # No program given to debug. Set to go into a command loop
         # anyway
         mainpyfile = None
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
-        if not osp.isfile(mainpyfile):
+        if not osp.isfile(mainpyfile) and opts.module is None:
             mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
@@ -264,8 +271,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
         if mainpyfile != mainpyfile_noopt and readable(mainpyfile_noopt):
-            print(f"{__title__}: Compiled Python script given and we can't use that.")
-            print(f"{__title__}: Substituting non-compiled name: {mainpyfile_noopt}")
+            if opts.module is None:
+                # We are not debugging module.
+                print(f"{__title__}: Compiled Python script given and we can't use that.")
+                print(f"{__title__}: Substituting non-compiled name: {mainpyfile_noopt}")
             mainpyfile = mainpyfile_noopt
             pass
 
@@ -287,7 +296,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # right.
 
         try:
-            if dbg.program_sys_argv and mainpyfile:
+            if (dbg.program_sys_argv or opts.module) and mainpyfile:
                 normal_termination = dbg.run_script(mainpyfile)
                 if not normal_termination:
                     break
