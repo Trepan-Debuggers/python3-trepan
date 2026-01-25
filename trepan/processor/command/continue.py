@@ -58,6 +58,7 @@ class ContinueCommand(DebuggerCommand):
                     )
             else:
                 self.errmsg(f"Did not find stopping spot for: {' '.join(args[1:])}")
+                return
         self.core.step_events = None  # All events
         self.core.step_ignore = -1
         self.proc.continue_running = True  # Break out of command read loop
