@@ -20,7 +20,7 @@ from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
-from trepan.lib.format import Keyword, format_function, format_line_number
+from trepan.lib.format import Keyword, format_function, format_line_number, format_token
 from trepan.lib.stack import (
     format_function_name,
     get_column_start_from_frame,
