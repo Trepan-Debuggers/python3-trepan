@@ -55,7 +55,7 @@ def test_completion():
         ["set basename o", ["off", "on"]],
         ["set basename of", ["off"]],
         # Multiple completion on two words
-        ["set auto", ["autoeval", "autolist", "autopc", "autopython"]],
+        ["set auto", ["autodisasm", "autoeval", "autolist", "autopc", "autopython"]],
         # Completion when word is complete, without space.
         ["show", ["show "]],
         # Completion when word is complete with space.

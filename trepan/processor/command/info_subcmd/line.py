@@ -15,14 +15,15 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import columnize
 import inspect
 import os.path as osp
 import re
 
-from pyficache import get_linecache_info
+import columnize
+from pyficache import file2file_remap, get_linecache_info
 
 from trepan.clifns import search_file
+from trepan.lib.format import Filename, format_line_number, format_token
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
 
@@ -92,6 +93,7 @@ class InfoLine(DebuggerSubcommand):
     def run(self, args):
         """Current line number in source file"""
         # info line <loc>
+        remapped_filename = None
         if len(args) == 0:
             if not self.proc.curframe:
                 self.errmsg("Frame is needed when no line number is given.")
@@ -100,7 +102,6 @@ class InfoLine(DebuggerSubcommand):
             # No line number. Use current frame line number
             line_number = inspect.getlineno(self.proc.curframe)
             filename = self.core.canonic_filename(self.proc.curframe)
-
         elif len(args) == 1:
             # lineinfo returns (item, file, lineno) or (None,)
             line_number, filename = self.lineinfo(args[2:])
@@ -111,34 +112,53 @@ class InfoLine(DebuggerSubcommand):
         else:
             self.errmsg("Wrong number of arguments.")
             return
-        if not osp.isfile(filename):
-            filename = search_file(filename, self.core.search_path, self.main_dirname)
+
+        remapped_filename = file2file_remap.get(filename, filename)
+
+        style = self.settings["style"]
+        formatted_filename = format_token(
+            Filename,
+            format_token(Filename, remapped_filename, style=style),
+            style=style,
+        )
+
+        if remapped_filename != filename:
+            self.msg(f"{filename} remapped to {formatted_filename}")
+
+        if not osp.isfile(remapped_filename):
+            filename = search_file(remapped_filename, self.core.search_path, self.main_dirname)
             pass
 
-        # FIXME: this needs work.
-        linecache_info = get_linecache_info(filename)
+        linecache_info = get_linecache_info(remapped_filename)
         if line_number not in linecache_info.line_numbers:
             self.errmsg(
-                "No line information for line %d of %s"
-                % (line_number, filename)
+                "No line information for line %d of %s" % (line_number, formatted_filename)
             )
             return
-        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
+
+        formatted_line_number = format_line_number(line_number, style)
+        msg1 = "Line %s of %s" % (formatted_line_number, formatted_filename)
         line_info = linecache_info.line_info
         line_number_offsets = line_info.get(line_number)
         if line_number_offsets:
-            offset_data = [f"{code.co_name}:*{offset}" for code, offset in line_number_offsets]
+            offset_data = [
+                f"{code.co_name}:*{offset}" for code, offset in line_number_offsets
+            ]
             if len(offset_data) == 1:
                 msg2 = f"is at bytecode offset {offset_data[0]}"
                 self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
             else:
                 msg2 = "is at bytecode offsets:"
                 self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
-                self.msg(columnize.columnize(offset_data, colsep=", ", ljust=False, lineprefix="  "))
+                self.msg(
+                    columnize.columnize(
+                        offset_data, colsep=", ", ljust=False, lineprefix="  "
+                    )
+                )
         else:
             self.errmsg(
                 "No line information for line %d of %s"
-                % (line_number, self.core.filename(filename))
+                % (line_number, formatted_filename)
             )
         return False
 

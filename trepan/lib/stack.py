@@ -36,9 +36,9 @@ from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
     Arrow,
     Filename,
-    Function,
     LineNumber,
     Return,
+    format_function,
     format_python,
     format_token,
 )
@@ -169,7 +169,7 @@ def format_function_name(
         pass
     if funcname is None:
         return None, None
-    return funcname, format_token(Function, funcname, style=style)
+    return funcname, format_function(funcname, style=style)
 
 
 def format_function_and_parameters(
@@ -190,15 +190,15 @@ def format_function_and_parameters(
     ):
         is_module = True
         if is_eval_or_exec_stmt(frame):
-            fn_name = format_token(Function, "exec", style=style)
+            fn_name = format_function("exec", style)
             source_text = deparse_source_from_code(frame.f_code)
-            s += f" {format_token(Function, fn_name, style=style)}({source_text})"
+            s += f" {format_function(fn_name, style)}({source_text})"
         else:
             fn_name = get_call_function_name(frame)
             if fn_name:
                 source_text = deparse_source_from_code(frame.f_code)
                 if fn_name:
-                    s += f" {format_token(Function, fn_name, style=style)}({source_text})"
+                    s += f" {format_function(fn_name, style)}({source_text})"
             pass
     else:
         is_module = False

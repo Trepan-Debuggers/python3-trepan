@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2017, 2020, 2024 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2017, 2020, 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import inspect
 from xdis import findlinestarts
 
 from trepan.lib.disassemble import disassemble_bytes
+from trepan.lib.format import format_offset
 from trepan.misc import wrapped_lines
 
 # Our local modules
@@ -51,10 +52,11 @@ class InfoPC(DebuggerSubcommand):
         mainfile = self.core.filename(None)
         if self.core.is_running():
             curframe = self.proc.curframe
+            style = self.settings["style"]
             if curframe:
                 line_no = inspect.getlineno(curframe)
                 offset = curframe.f_lasti
-                self.msg(f"PC offset is {offset}.")
+                self.msg(f"PC offset is {format_offset(offset, style)}.")
                 offset = max(offset, 0)
                 code = curframe.f_code
                 co_code = code.co_code
@@ -84,7 +86,7 @@ class InfoPC(DebuggerSubcommand):
                 msg = "is not currently running. "
                 self.msg(wrapped_lines(part1, msg, self.settings["width"]))
             else:
-                self.msg("No Python program is currently running.")
+                self.errmsg("No Python program is currently running.")
                 pass
             self.msg(self.core.execution_status)
             pass
