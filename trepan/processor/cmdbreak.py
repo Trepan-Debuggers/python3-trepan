@@ -95,11 +95,8 @@ def set_break(
         func_or_code=func_or_code,
         is_code_offset = True,
     )
-    style = cmd_obj.settings["style"]
     if func_or_code and inspect.isfunction(func_or_code):
-        formatted_bp_number = format_line_number(bp.number, style)
-        cmd_obj.msg(f"Breakpoint {formatted_bp_number} set on calling function {func_or_code.__name__}()")
-        formatted_line_number = format_line_number(line_number, style)
+        cmd_obj.msg(f"Breakpoint {bp.number} set on calling function {func_or_code.__name__}()")
         part1 = f"Currently this is line {line_number} of file"
         msg = wrapped_lines(
             part1, cmd_obj.core.filename(filename), cmd_obj.settings["width"]
@@ -126,9 +123,6 @@ def set_break(
             func_str = f" of {pretty_modfunc_name(func_or_code)}"
         else:
             func_str = ""
-        if offset is not None and offset >= 0:
-            formatted_offset = format_offset(offset, style)
-            cmd_obj.msg(f"Breakpoint is at offset {formatted_offset}{func_str}")
         pass
     return True
 

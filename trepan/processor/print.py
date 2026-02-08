@@ -218,11 +218,9 @@ def print_location(proc_obj):
                 filename = pyficache.unmap_file(filename)
                 # FIXME: DRY
                 if "<string>" == filename:
-                    if not (
-                        remapped_file := pyficache.main.code2tempfile.get(frame.f_code)
-                    ):
+                    remapped_file = pyficache.main.code2tempfile.get(frame.f_code)
+                    if not (remapped_file):
                         remapped_file = create_tempfile_and_remap_filename(
->>>>>>> python-3.11
                             dbgr_obj.eval_string,
                             tempdir=proc_obj.settings("tempdir"),
                             prefix="eval_string",
@@ -274,8 +272,8 @@ def print_location(proc_obj):
                 pass
         else:
             m = re.search("^<frozen (.*)>", filename)
-            if m and (frozen_name := m.group(1)) in pyficache.file2file_remap:
-                remapped_file = pyficache.file2file_remap[frozen_name]
+            if m and m.group(1) in pyficache.file2file_remap:
+                remapped_file = pyficache.file2file_remap[m.group(1)]
                 pass
             elif filename in pyficache.file2file_remap:
                 remapped_file = pyficache.file2file_remap[filename]
@@ -285,9 +283,9 @@ def print_location(proc_obj):
                 remapped_file = pyficache.remap_file_pat(
                     filename, pyficache.main.remap_re_hash
                 )
-            elif m and frozen_name in sys.modules:
+            elif m and m.group(1) in sys.modules:
                 # try with good ol linecache and consider fixing pyficache
-                remapped_file = sys.modules[frozen_name].__file__
+                remapped_file = sys.modules[m.group(1)].__file__
                 pyficache.remap_file(remapped_file, filename)
                 filename = remapped_file
         pass
