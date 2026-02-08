@@ -2,9 +2,10 @@
 import sys
 
 from setuptools import find_packages, setup
+from xdis.version_info import IS_GRAAL
 
 SYS_VERSION = sys.version_info[0:2]
-if not ((3, 6) <= SYS_VERSION < (3, 11)):
+if not ((3, 6) <= SYS_VERSION < (3, 11)) and not IS_GRAAL:
     my_version = sys.version[0:3]
     mess = "Version %s not supported" % my_version
     if (3, 12) <= SYS_VERSION <= (3, 16):
@@ -37,8 +38,6 @@ from __pkginfo__ import (
     web,
     zip_safe,
 )
-
-__import__("pkg_resources")
 
 packages = find_packages()
 
