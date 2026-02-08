@@ -58,6 +58,9 @@ DEBUGGER_SETTINGS = {
     # Format style to use in showing disassembly
     "disasmflavor": "extended",
 
+    # Run 'disassemble' command every time we enter the debugger?
+    "autodisasm": False,
+
     # Eval as Python the unrecognized debugger commands?
     "autoeval": True,
 
