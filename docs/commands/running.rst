@@ -26,8 +26,8 @@ program, when a call or return occurs, or when an exception is raised.
 The overhead in running these callbacks slows down your
 program. Currently, the overhead can be greater than the overhead in
 ``pdb``. This is because the debugger tries to be more precise and
-careful in its tracing, and the features it provides are more powerful. In
-most cases, we can do this without a significant slowdown in the
+careful it tracing, and the features it provides are more powerful. In
+most cases, we can do this without a significant slow down in the
 debugged program.
 
 But in certain situations, the overhead in running debugged code can
