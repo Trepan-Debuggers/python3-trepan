@@ -13,8 +13,6 @@ if not ((3, 1) <= SYS_VERSION < (3, 16)):
     print(mess)
     raise Exception(mess)
 
-__import__("pkg_resources")
-
 packages = find_packages()
 
 setup(
