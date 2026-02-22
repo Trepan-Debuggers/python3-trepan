@@ -35,6 +35,7 @@ from typing import Any, Callable, Optional, Union
 
 import pyficache
 import tracer
+import trepan
 from xdis.load import check_object_path, load_module
 
 from tracer.stepping import (start_local, StepGranularity, StepType)
@@ -43,7 +44,7 @@ from tracer.sys_monitoring import FixedList, MAX_TOOL_IDS, find_hook_by_name, ms
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
 from trepan.lib.callbacks import set_callback_hooks_for_toolid
-from trepan.lib.core import TrepanCore
+from trepan.lib.sysmon_core import SysMonTrepanCore
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
@@ -106,6 +107,7 @@ class SysMonTrepan:
         self.eval_string = None
         self.settings = self.DEFAULT_INIT_OPTS["settings"].copy()
         self.tool_id: Optional[int] = None
+        self.callback_hooks = None
 
         def get_option(key: str) -> Any:
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
@@ -150,10 +152,12 @@ class SysMonTrepan:
             self.intf[-1].output = out
             pass
 
-        self.core = TrepanCore(self, core_opts)
+        self.core = SysMonTrepanCore(self, core_opts)
 
         # When set True, we'll also suspend our debug-hook tracing.
         # This gives us a way to prevent or allow self debugging.
+        # THINK ABOUT: do we need this? Can we just use what
+        # is provided by tracer?
         self.core.trace_hook_suspend = False
 
         if get_option("save_sys_argv"):
@@ -220,13 +224,13 @@ class SysMonTrepan:
         retval = None
 
 
-        ignore_filter = TraceFilter([sys.monitoring, tracer])
+        ignore_filter = TraceFilter([sys.monitoring, tracer, trepan.symon_debugger])
         self.tool_id, self.events_mask = mstart(debugger_tool_name)
-        callback_hooks = set_callback_hooks_for_toolid(self.tool_id)
+        self.callback_hooks = set_callback_hooks_for_toolid(self.tool_id)
 
         start_local(
             debugger_tool_name,
-            callback_hooks,
+            self.callback_hooks,
             self.tool_id,
             events_mask=E.LINE,
             step_type=StepType.STEP_OVER,
