@@ -1,5 +1,5 @@
 """
-Debugger callback hooks
+Debugger callback hooks for sys.monitoring callbacks.
 """
 
 import sys
@@ -23,6 +23,7 @@ E = sys.monitoring.events
 
 def call_event_callback(
     tool_id: int,
+    debugger,
     event: str,
     code: CodeType,
     instruction_offset: int,
@@ -93,7 +94,7 @@ def call_event_callback(
 
 
 def call_event_handler_return(
-    tool_id: int, code: CodeType, events_mask: int, step_type: StepType
+    tool_id: int, debugger, code: CodeType, events_mask: int, step_type: StepType
 ) -> object:
     """Returning from a call event handler. We assume events_mask does not have
     any events that are not local events.
@@ -118,6 +119,7 @@ def call_event_handler_return(
 
 def exception_event_callback(
     tool_id: int,
+    debugger,
     event: str,
     code: CodeType,
     instruction_offset: int,
@@ -155,6 +157,7 @@ def exception_event_callback(
 
 def goto_event_callback(
     tool_id: int,
+    debugger,
     event: str,
     code: CodeType,
     instruction_offset: int,
@@ -186,6 +189,7 @@ def goto_event_callback(
 
 def instruction_event_callback(
     tool_id: int,
+    debugger,
     event: str,
     code: CodeType,
     instruction_offset: int,
@@ -238,6 +242,7 @@ def instruction_event_callback(
 
 def leave_event_callback(
     tool_id: int,
+    debugger,
     event: str,
     code: CodeType,
     instruction_offset: int,
@@ -308,7 +313,7 @@ def leave_event_handler_return(tool_id: int, frame: FrameType) -> object:
     return
 
 
-def line_event_callback(tool_id: int, code: CodeType, line_number: int) -> object:
+def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int) -> object:
     """A line event callback trace function"""
 
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
@@ -357,6 +362,10 @@ def line_event_callback(tool_id: int, code: CodeType, line_number: int) -> objec
         f"\nLINE: tool id: {tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:"
         f"\n\t{code_short(code)}, line: {line_number}"
     )
+    core = debugger.core
+    core.event = "line"
+    core.processor.event_processor(frame, "line", None)
+
 
     ### end code inside hook; `events_mask` should be set.
 
@@ -364,14 +373,14 @@ def line_event_callback(tool_id: int, code: CodeType, line_number: int) -> objec
 
 
 def local_event_handler_return(
-    tool_id: int, code: CodeType, events_mask: int
+    tool_id: int, debugger, code: CodeType, events_mask: int
 ) -> object:
     """A line event callback trace function"""
     sys.monitoring.set_local_events(tool_id, code, events_mask)
     return
 
 
-def set_callback_hooks_for_toolid(tool_id: int) -> dict:
+def set_callback_hooks_for_toolid(tool_id: int, debugger) -> dict:
     """
     Augments callback handlers to include the tool-id name and event name.
     We often need to add the event name since callback handlers are shared
@@ -382,53 +391,66 @@ def set_callback_hooks_for_toolid(tool_id: int) -> dict:
     return {
         E.BRANCH_LEFT: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id, "branch left", code, instruction_offset, destination_offset
+                tool_id,
+                debugger,
+                "branch left",
+                code,
+                instruction_offset,
+                destination_offset,
             )
         ),
         E.BRANCH_RIGHT: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id, "branch right", code, instruction_offset, destination_offset
+                tool_id,
+                debugger,
+                "branch right",
+                code,
+                instruction_offset,
+                destination_offset,
             )
         ),
         E.CALL: (
             lambda code, instruction_offset, code_to_call, args: call_event_callback(
-                tool_id, "call", code, instruction_offset, code_to_call, args
+                tool_id, debugger, "call", code, instruction_offset, code_to_call, args
             )
         ),
         E.INSTRUCTION: (
             lambda code, instruction_offset: instruction_event_callback(
-                tool_id, "instruction", code, instruction_offset
+                tool_id, debugger, "instruction", code, instruction_offset
             )
         ),
         E.JUMP: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id, "jump", code, instruction_offset, destination_offset
+                tool_id, debugger, "jump", code, instruction_offset, destination_offset
             )
         ),
         E.LINE: (
-            lambda code, line_number: line_event_callback(tool_id, code, line_number)
+            lambda code, line_number: line_event_callback(
+                tool_id, code, debugger, line_number
+            )
         ),
         E.PY_RETURN: lambda code, instruction_offset, retval: leave_event_callback(
-            tool_id, "return", code, instruction_offset, retval
+            tool_id, debugger, "return", code, instruction_offset, retval
         ),
         E.PY_START: lambda code, instruction_offset: start_event_callback(
-            tool_id, code, instruction_offset
+            tool_id, debugger, code, instruction_offset
         ),
         # This is a global event
         # E.PY_UNWIND: lambda code, instruction_offset, retval: exception_event_callback(
         #     tool_id, "yield", code, instruction_offset, retval
         # ),
         E.PY_YIELD: lambda code, instruction_offset, retval: leave_event_callback(
-            tool_id, "yield", code, instruction_offset, retval
+            tool_id, debugger, "yield", code, instruction_offset, retval
         ),
         E.STOP_ITERATION: lambda code, instruction_offset, retval: exception_event_callback(
-            tool_id, "stop iteration", code, instruction_offset, retval
+            tool_id, debugger, "stop iteration", code, instruction_offset, retval
         ),
     }
 
 
 def start_event_callback(
     tool_id: int,
+    debugger,
     code: CodeType,
     instruction_offset: int,
 ) -> object:

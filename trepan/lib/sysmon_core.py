@@ -35,9 +35,7 @@ import tracer
 
 # Our local modules
 from trepan.lib.breakpoint import BreakpointManager
-from trepan.lib.callbacks import set_callback_hooks_for_toolid
 from trepan.lib.core import TrepanCore
-from trepan.lib.default import START_OPTS, STOP_OPTS
 from trepan.lib.stack import FrameInfo, count_frames
 from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
@@ -71,6 +69,8 @@ class SysMonTrepanCore(TrepanCore):
         self.current_bp = None
         self.current_thread = None
         self.debugger = debugger
+        self.tool_id = self.debugger.tool_id
+        self.debugger_tool_name = self.debugger.debugger_tool_name
 
         # Threading lock ensures that we don't have other traced threads
         # running when we enter the debugger. Later we may want to have
@@ -115,6 +115,7 @@ class SysMonTrepanCore(TrepanCore):
         self.stop_on_finish = False
 
         self.last_lineno = None
+        self.last_column_number = None
         self.last_offset = None
         self.last_filename = None
         self.different_line = True
@@ -129,10 +130,6 @@ class SysMonTrepanCore(TrepanCore):
         self.ignore_filter = get_option("ignore_filter")
 
         self.search_path = sys.path  # Source filename search path
-
-        # When trace_hook_suspend is set True, we'll suspend
-        # debugging.
-        self.trace_hook_suspend = False
 
         self.until_condition = get_option("until_condition")
 
@@ -152,52 +149,34 @@ class SysMonTrepanCore(TrepanCore):
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self, opts: InitOptions = DEFAULT_INIT_OPTS):
-        """We've already created a debugger object, but here we start
+    def start(self):
+        """A wrapper around tracer.mstart().
+
+        We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
-
-        'opts' is a hash of every known value you might want to set when
-        starting the debugger. See START_OPTS of module default.
         """
 
-        # The below is our fancy equivalent of:
-        #    sys.settrace(self._trace_dispatch)
-        # or newer
-        #  sys.monitoring
-        try:
-            self.trace_hook_suspend = True
-            # Has tracer been started?
-            if not tracer.is_started():
-                tracer.mstart(self.tool_id)
-            self.execution_status = "Running"
-        finally:
-            self.trace_hook_suspend = False
+        # The below is our fancy tracer-based equivalent of:
+        #    sys.settrace(self._trace_dispatch) or the newer
+        #    sys.monitoring.set_{local_,}events()
+        tracer.mstart(self.tool_id)
+        self.execution_status = "Started"
         return
 
-    def stop(self, options=DEFAULT_INIT_OPTS):
-        # Our version of:
-        #    sys.settrace(None)
-        try:
-            self.trace_hook_suspend = True
+    def stop(self):
+        """
+        Our version of:
+           sys.settrace(None)
+        or:
+           sys.monitoring.set_events(tool_id, 0)
 
-            def get_option(key: str) -> Any:
-                return option_set(options, key, STOP_OPTS)
 
-            args = [self.trace_dispatch]
-            remove = get_option("remove")
-            if remove:
-                args.append(remove)
-                pass
-            if tracer.is_started():
-                try:
-                    tracer.remove_hook(*args)
-                except LookupError:
-                    pass
-                pass
-        finally:
-            self.trace_hook_suspend = False
-        return
+        In addition tracing module has its own side tracking that needs to be updated.
+        And we also note his in the SysMonTrepanCore object.
+        """
+        tracer.mstop(self.debugger_tool_name)
+        self.execution_status = "Stopped"
 
     def is_break_here(self, frame):
         filename = self.canonic(frame.f_code.co_filename)
@@ -411,12 +390,6 @@ class SysMonTrepanCore(TrepanCore):
             if remove_frame_on_return:
                 del FrameInfo[frame]
             return self
-
-        if self.trace_hook_suspend:
-            # print("XXX trace_dispatch: hook suspended")
-            if remove_frame_on_return:
-                del FrameInfo[frame]
-            return None
 
         # print("XXX+ trace dispatch", frame, frame.f_lineno, event, arg) # for debugging
 

@@ -107,6 +107,7 @@ class SysMonTrepan:
         self.eval_string = None
         self.settings = self.DEFAULT_INIT_OPTS["settings"].copy()
         self.tool_id: Optional[int] = None
+        self.debugger_tool_name = debugger_tool_name
         self.callback_hooks = None
 
         def get_option(key: str) -> Any:
@@ -290,7 +291,7 @@ class SysMonTrepan:
         debug a statement via ``exec``.
         """
         res = None
-        self.core.start(opts=start_opts)
+        self.core.start()
         try:
             res = func(*args, **kwds)
         except DebuggerQuit:
@@ -329,7 +330,7 @@ class SysMonTrepan:
             expr = expr + "\n"
             pass
         retval = None
-        self.core.start(start_opts)
+        self.core.start()
         try:
             retval = eval(expr, globals_, locals_)
         except DebuggerQuit:
@@ -404,7 +405,7 @@ class SysMonTrepan:
         else:
             if is_compiled_py(self.mainpyfile):
                 compiled = get_code_from_pyc(compiled)
-            self.core.start(start_opts)
+            self.core.start()
             exec(compiled, globals_, locals_)
             retval = True
         finally:
@@ -419,7 +420,7 @@ class SysMonTrepan:
     # DEFAULT_INIT_OPTS which includes references to these.
 
     # Note: has to come after functions listed in ignore_filter.
-    ignore_items = [tracer, TrepanCore]
+    ignore_items = [tracer, SysMonTrepanCore]
     if hasattr(tracer, "tracer"):
         ignore_items.append(tracer.tracer)
     trepan_debugger = sys.modules.get("trepan.debugger")
