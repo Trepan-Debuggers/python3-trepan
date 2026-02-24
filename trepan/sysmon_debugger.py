@@ -35,23 +35,27 @@ from typing import Any, Callable, Optional, Union
 
 import pyficache
 import tracer
-import trepan
+from tracer.stepping import StepGranularity, StepType
+from tracer.sys_monitoring import (
+    MAX_TOOL_IDS,
+    FixedList,
+    find_free_hook_id,
+    find_hook_by_name,
+    mstart,
+)
+from tracer.tracefilter import TraceFilter
 from xdis.load import check_object_path, load_module
-
-from tracer.stepping import (start_local, StepGranularity, StepType)
-from tracer.sys_monitoring import FixedList, MAX_TOOL_IDS, find_hook_by_name, mstart
 
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
 from trepan.lib.callbacks import set_callback_hooks_for_toolid
-from trepan.lib.sysmon_core import SysMonTrepanCore
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
-from trepan.lib.file import is_compiled_py
+from trepan.lib.file import create_tempfile_and_remap_filename, is_compiled_py
 from trepan.lib.sighandler import SignalManager
+from trepan.lib.sysmon_core import SysMonTrepanCore
 from trepan.misc import option_set
-from tracer.tracefilter import TraceFilter
 
 try:
     from readline import get_line_buffer
@@ -73,28 +77,46 @@ def get_code_from_pyc(filename) -> types.CodeType:
     return info[3]
 
 
+def sanitize_string_for_filename(text: str) -> str:
+    """
+    Replaces occurrences of filepath characters ':', '/', and '\' with '-'.
+    """
+    for char in [":", "/", "\\", " ", "\n"]:
+        text = text.replace(char, "-")
+    return text
+
+
 class SysMonTrepan:
     """
     Class for a system.monitor debugger object.
     """
 
-    def __new__(cls, debugger_tool_name: Optional[str]=None, opts=dict()):
-        if debugger_tool_name is not None:
-            if (debugger_tool_id := find_hook_by_name(debugger_tool_name)) is not None:
-                if (self := DEBUGGERS[debugger_tool_id]) is None:
-                    raise RuntimeError(f"Found tool id {debugger_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong.")
+    def __new__(cls, sysmon_tool_name: Optional[str] = None, opts=dict()):
+        sysmon_tool_id = None
+        if sysmon_tool_name is not None:
+            if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
+                if (self := DEBUGGERS[sysmon_tool_id]) is None:
+                    raise RuntimeError(
+                        f"Found tool id {sysmon_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong."
+                    )
                 return None
-            return DEBUGGERS.get(debugger_tool_id)
+            return DEBUGGERS.get(sysmon_tool_id)
         else:
-            debugger_tool_name = "trepan3k"
-            if (debugger_tool_id := find_hook_by_name(debugger_tool_name)) is not None:
-                return DEBUGGERS.get(debugger_tool_id)
+            sysmon_tool_name = "trepan3k-sysmon"
+            if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
+                return DEBUGGERS[sysmon_tool_id]
             pass
+        if sysmon_tool_id is None:
+            sysmon_tool_id = find_free_hook_id()
+            if sysmon_tool_id is None:
+                raise RuntimeError("Cannot find a free tool id.")
+
         self = super().__new__(cls)
-        cls.init(self, debugger_tool_id, debugger_tool_name, opts)
+        cls.init(self, sysmon_tool_id, sysmon_tool_name, opts)
+        DEBUGGERS[sysmon_tool_id] = self
         return self
 
-    def init(self, debugger_tool_id: int, debugger_tool_name: str, opts: dict):
+    def init(self, sysmon_tool_id: int, sysmon_tool_name: str, opts: dict):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash 'opts', we may or may not initially
         start debugging.
@@ -107,7 +129,8 @@ class SysMonTrepan:
         self.eval_string = None
         self.settings = self.DEFAULT_INIT_OPTS["settings"].copy()
         self.tool_id: Optional[int] = None
-        self.debugger_tool_name = debugger_tool_name
+        self.sysmon_tool_name = sysmon_tool_name
+        self.sysmon_tool_id = sysmon_tool_id
         self.callback_hooks = None
 
         def get_option(key: str) -> Any:
@@ -171,11 +194,6 @@ class SysMonTrepan:
             pass
 
         self.sigmgr = SignalManager(self)
-
-        # Were we requested to activate immediately?
-        if get_option("activate"):
-            self.core.start(get_option("start_opts"))
-            pass
         return
 
     def complete(self, last_token: str, state: int):
@@ -192,10 +210,14 @@ class SysMonTrepan:
     def run(
         self,
         cmd: Union[str, types.CodeType],
+        events_mask: Optional[int] = None,
         start_opts=Optional[dict],
         globals_=Optional[dict],
         locals_=Optional[dict],
-        debugger_tool_name: Optional[str]=None
+        sysmon_tool_name: Optional[str] = None,
+        ignore_filter: Optional[TraceFilter] = None,
+        step_type: StepType = StepType.STEP_INTO,
+        step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
     ):
         """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
@@ -211,49 +233,66 @@ class SysMonTrepan:
         run_eval'able expression have that result returned and
         `run_call' if you want to debug function run_call.
         """
+        # FIXME: DRY with run_exec()
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
-        if debugger_tool_name is None:
-            debugger_tool_name="trepan3k-sysmon",
+        if sysmon_tool_name is None:
+            sysmon_tool_name = ("trepan3k-sysmon",)
 
         if not isinstance(cmd, types.CodeType):
             self.eval_string = cmd
-            cmd = cmd + "\n"
+            if not self.eval_string.endswith("\n"):
+                cmd_str = cmd + "\n"
+            pseudo_filename_path = sanitize_string_for_filename(cmd)
+            try:
+                code = compile(cmd_str, pseudo_filename_path, symbol="eval")
+            except SyntaxError:
+                code = compile(cmd_str, pseudo_filename_path, symbol="exec")
+            except Exception as e:
+                print(e)
+                return
             pass
+        elif isinstance(cmd, types.CodeType):
+            code = cmd
+        else:
+            self.intf[0].errmsg("You need to pass either a string or a code type.")
+            return
+
         retval = None
 
-
-        ignore_filter = TraceFilter([sys.monitoring, tracer, trepan.symon_debugger])
-        self.tool_id, self.events_mask = mstart(debugger_tool_name)
-        self.callback_hooks = set_callback_hooks_for_toolid(self.tool_id)
-
-        start_local(
-            debugger_tool_name,
-            self.callback_hooks,
-            self.tool_id,
-            events_mask=E.LINE,
-            step_type=StepType.STEP_OVER,
-            step_granularity=StepGranularity.LINE_NUMBER,
+        self.tool_id, self.events_mask = mstart(sysmon_tool_name, code=cmd.__code__)
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+        self.core.start(
+            events_mask=events_mask,
+            code=code,
+            trace_callbacks=self.callback_hooks,
             ignore_filter=ignore_filter,
-    )
-        self.core.start(start_opts)
+            step_type=step_type,
+            step_granularity=step_granularity,
+        )
         try:
             retval = eval(cmd, globals_, locals_)
-        except SyntaxError:
-            try:
-                exec(cmd, globals_, locals_)
-            except DebuggerQuit:
-                pass
         except DebuggerQuit:
             pass
         finally:
-            self.core.stop()
+            self.core.stop(code)
         return retval
 
-    def run_exec(self, cmd, start_opts=None, globals_=None, locals_=None):
-        """Run debugger on string `cmd' which will executed via the
+    def run_exec(
+        self,
+        stmts: Union[str, type.CodeType],
+        events_mask: Optional[int] = None,
+        start_opts=None,
+        globals_=None,
+        locals_=None,
+        sysmon_tool_name: Optional[str] = None,
+        ignore_filter: Optional[TraceFilter] = None,
+        step_type: StepType = StepType.STEP_INTO,
+        step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+    ):
+        """Run debugger on string `stmts' which will executed via the
         builtin function exec. Arguments `globals_' and `locals_' are
         the dictionaries to use for local and global variables. By
         default, the value of globals is globals(), the current global
@@ -267,45 +306,104 @@ class SysMonTrepan:
          expression that should be ``eval``d and have that result returned.
         See ``run_call`` if you want to debug function ``run_call()``.
         """
+        # FIXME: DRY with run()
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
-        if not isinstance(cmd, types.CodeType):
-            cmd = cmd + "\n"
-            pass
-        self.core.start(start_opts)
+        if sysmon_tool_name is None:
+            sysmon_tool_name = "trepan3k-sysmon"
+
+        pseudo_filename_path = None
+        if isinstance(stmts, str):
+            self.eval_string = stmts
+            if not self.eval_string.endswith("\n"):
+                self.eval_string += "\n"
+            pseudo_filename_base = sanitize_string_for_filename(stmts)[:10]
+            pseudo_filename_path = create_tempfile_and_remap_filename(
+                self.eval_string, filename=pseudo_filename_base
+            )
+            try:
+                code = compile(
+                    source=self.eval_string, filename=pseudo_filename_path, mode="exec"
+                )
+            except Exception as e:
+                print(e)
+                return
+        elif isinstance(stmts, types.CodeType):
+            code = stmts
+        else:
+            self.intf[0].errmsg("You need to pass either a string or a code type.")
+            return
+
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+        self.core.start(
+            events_mask=events_mask,
+            code=code,
+            trace_callbacks=self.callback_hooks,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
+        )
         try:
-            exec(cmd, globals_, locals_)
+            exec(code, globals_, locals_)
         except DebuggerQuit:
             pass
         finally:
-            self.core.stop()
+            self.core.stop(code=code)
         return
 
-    def run_call(self, func: Callable, *args, start_opts=None, **kwds):
+    def run_call(
+        self,
+        func: Callable,
+        events_mask: Optional[int] = None,
+        sysmon_tool_name: Optional[str] = None,
+        ignore_filter: Optional[TraceFilter] = None,
+        step_type: Optional[StepType] = None,
+        step_granularity: Optional[StepGranularity] = None,
+        *args,
+        start_opts=None,
+        **kwds,
+    ):
         """Run debugger on function call: `func(*args, **kwds)'
 
         See also ``run_eval`` if what you want to run is an eval'able
         expression have that result returned and ``run``if you want to
         debug a statement via ``exec``.
         """
+        if sysmon_tool_name is None:
+            sysmon_tool_name = ("trepan3k-sysmon",)
+
+        self.tool_id, self.events_mask = mstart(sysmon_tool_name, code=func)
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+
         res = None
-        self.core.start()
+        self.core.start(
+            events_mask=events_mask,
+            code=func,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
+        )
         try:
             res = func(*args, **kwds)
         except DebuggerQuit:
             pass
         finally:
-            self.core.stop()
+            self.core.stop(code=func)
         return res
 
     def run_eval(
         self,
         expr: Union[str, types.CodeType],
+        events_mask: Optional[int] = None,
         start_opts=None,
         globals_=None,
         locals_=None,
+        sysmon_tool_name: Optional[str] = None,
+        ignore_filter: Optional[TraceFilter] = None,
+        step_type: Optional[StepType] = None,
+        step_granularity: Optional[StepGranularity] = None,
     ):
         """Run debugger on string `expr' which will executed via the
         built-in Python function: eval; `globals_' and `locals_' are
@@ -317,27 +415,54 @@ class SysMonTrepan:
         See also `run_call' if what you to debug a function call and
         `run' if you want to debug general Python statements.
         """
-        if not isinstance(expr, (str, types.CodeType)):
-            self.intf[0].errmsg("You need to pass either a string or a code type.")
-            return
 
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
-        if not isinstance(expr, types.CodeType):
+        if sysmon_tool_name is None:
+            sysmon_tool_name = ("trepan3k-sysmon",)
+
+        pseudo_filename_path = None
+        if isinstance(expr, str):
             self.eval_string = expr
-            expr = expr + "\n"
-            pass
+            if not self.eval_string.endswith("\n"):
+                self.eval_string += "\n"
+            pseudo_filename_base = sanitize_string_for_filename(expr)[:10]
+            pseudo_filename_path = create_tempfile_and_remap_filename(
+                self.eval_string, filename=pseudo_filename_base
+            )
+            try:
+                code = compile(
+                    source=self.eval_string, filename=pseudo_filename_path, mode="eval"
+                )
+            except Exception as e:
+                print(e)
+                return
+        elif isinstance(expr, str.types.CodeType):
+            code = expr
+        else:
+            self.intf[0].errmsg("You need to pass either a string or a code type.")
+            return
+
         retval = None
-        self.core.start()
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+        self.core.start(
+            events_mask=events_mask,
+            code=code,
+            trace_callbacks=self.callback_hooks,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
+        )
         try:
             retval = eval(expr, globals_, locals_)
         except DebuggerQuit:
             pass
         finally:
-            pyficache.remove_remap_file("<string>")
-            self.core.stop()
+            if pseudo_filename_path is not None:
+                pyficache.remove_remap_file(pseudo_filename_path)
+            self.core.stop(code=code)
         return retval
 
     def run_script(self, filename, start_opts=None, globals_=None, locals_=None):

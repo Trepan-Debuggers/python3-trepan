@@ -37,19 +37,22 @@ if necessary, first.
 import os
 import sys
 import traceback
-
 from typing import Optional
-from trepan.sysmon_debugger import SysMonTrepan, DEBUGGERS
+
+from tracer.stepping import StepGranularity, StepType
+from tracer.tracefilter import TraceFilter
+
 from trepan.interfaces.server import ServerInterface
 from trepan.lib.default import DEBUGGER_SETTINGS
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
+from trepan.sysmon_debugger import DEBUGGERS, SysMonTrepan
 
 DEFAULT_DEBUG_PORT = 1955
 
 
 def debug(
     dbg_opts={},
-    debugger_tool_name: Optional[str] = None,
+    sysmon_tool_name: Optional[str] = None,
     start_opts: Optional[dict] = None,
     post_mortem: bool = True,
 ):
@@ -119,8 +122,8 @@ def debug(
     # A list of debugger profiles we might run
     dbg_initfiles = []
 
-    if debugger_tool_name is None:
-        debugger_tool_name = "trepan3k_sysmon"
+    if sysmon_tool_name is None:
+        sysmon_tool_name = "trepan3k_sysmon"
 
     # Find a debugger object in DEBUGGER.
     # If we can't find one create a new debugger.
@@ -132,7 +135,7 @@ def debug(
             debugger_obj
             for debugger_obj in DEBUGGERS
             if debugger_obj is not None
-            and debugger_obj.debugger_tool_name == debugger_tool_name
+            and debugger_obj.sysmon_tool_name == sysmon_tool_name
         ),
         None,
     )
@@ -199,7 +202,14 @@ def debugger_on_post_mortem():
     return
 
 
-def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds):
+def run_call(
+    func,
+    *args,
+    events_mask: Optional[int] = None,
+    debug_opts=DEBUGGER_SETTINGS,
+    start_opts=None,
+    **kwds
+):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
     the place that this appears in your program.
@@ -210,7 +220,7 @@ def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds)
 
     dbg = SysMonTrepan(opts=debug_opts)
     try:
-        return dbg.run_call(func, *args, **kwds)
+        return dbg.run_call(func, *args, **kwds, events_mask=events_mask)
     except Exception:
         uncaught_exception(dbg)
         pass
@@ -223,7 +233,10 @@ def run_eval(
     start_opts=None,
     globals_=None,
     locals_=None,
-    _=None,
+    events_mask: Optional[int] = None,
+    ignore_filter: Optional[TraceFilter] = None,
+    step_type: StepType = StepType.STEP_INTO,
+    step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
 ):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
@@ -238,7 +251,14 @@ def run_eval(
     dbg = SysMonTrepan(opts=debug_opts)
     try:
         return dbg.run_eval(
-            expression, start_opts=start_opts, globals_=globals_, locals_=locals_
+            expression,
+            events_mask=events_mask,
+            start_opts=start_opts,
+            globals_=globals_,
+            locals_=locals_,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
         )
     except Exception:
         dbg.core.trace_hook_suspend = True
@@ -250,10 +270,14 @@ def run_eval(
 
 def run_exec(
     statement,
+    events_mask: Optional[int] = None,
     debug_opts=DEBUGGER_SETTINGS,
     start_opts=None,
     globals_=None,
     locals_=None,
+    ignore_filter: Optional[TraceFilter] = None,
+    step_type: StepType = StepType.STEP_INTO,
+    step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
 ):
     """Execute the statement (given as a string) under debugger
     control starting with the statement subsequent to the place that
@@ -272,7 +296,14 @@ def run_exec(
     dbg = SysMonTrepan(opts=debug_opts)
     try:
         return dbg.run_exec(
-            statement, start_opts=start_opts, globals_=globals_, locals_=locals_
+            statement,
+            start_opts=start_opts,
+            globals_=globals_,
+            locals_=locals_,
+            events_mask=events_mask,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
         )
     except Exception:
         uncaught_exception(dbg)
@@ -280,9 +311,9 @@ def run_exec(
     return
 
 
-def stop(debugger_tool_name: Optional[str], opts=None):
-    if debugger_tool_name is None:
-        debugger_tool_name = "trepan3k_sysmon"
+def stop(sysmon_tool_name: Optional[str], opts=None):
+    if sysmon_tool_name is None:
+        sysmon_tool_name = "trepan3k_sysmon"
 
     debugger_obj = None
     next(
@@ -290,7 +321,7 @@ def stop(debugger_tool_name: Optional[str], opts=None):
             debugger_obj
             for debugger_obj in DEBUGGERS
             if debugger_obj is not None
-            and debugger_obj.debugger_tool_name == debugger_tool_name
+            and debugger_obj.sysmon_tool_name == sysmon_tool_name
         ),
         None,
     )
@@ -302,6 +333,8 @@ def stop(debugger_tool_name: Optional[str], opts=None):
 # Demo it
 if __name__ == "__main__":
     import tracer
+
+    E = sys.monitoring.events
 
     def plus5(n: int) -> int:
         return n + 5
@@ -320,22 +353,38 @@ if __name__ == "__main__":
         "output": debugger_output,
     }
     print('Issuing: run_eval("1+2")')
-    run_eval("1+2", debug_opts=debug_opts)
+    run_eval(
+        "1+2",
+        events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
+        debug_opts=debug_opts,
+        ignore_filter=TraceFilter([]),
+        step_type=StepType.STEP_INTO,
+        step_granularity=StepGranularity.INSTRUCTION,
+    )
     print(debugger_output.output)
-    # print('Issuing: run_exec("x=1; y=2")')
-    # run_exec("x=1; y=2", debug_opts=debug_opts)
-    debugger_input = StringArrayInput(["step", "list", "continue"])
-    debugger_output = StringArrayOutput()
-    debug_opts = {
-        "step_ignore": -1,
-        "settings": settings,
-        "input": debugger_input,
-        "output": debugger_output,
-    }
-    if len(sys.argv) > 1:
-        print("Issuing interactive: run_call(plus5, %s)" % sys.argv[1])
-        run_call(plus5, int(sys.argv[1]), debug_opts=debug_opts)
-    else:
-        print("Issuing interactive: run_call(plus5, 2)")
-        run_call(plus5, 2, debug_opts=debug_opts)
-    pass
+
+    print('Issuing: run_exec("x=1; y=2")')
+    run_exec(
+        "x=1\ny=2",
+        events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
+        debug_opts=debug_opts,
+        ignore_filter=TraceFilter([]),
+        step_type=StepType.STEP_INTO,
+        step_granularity=StepGranularity.LINE_NUMBER,
+    )
+    print(debugger_output.output)
+    # debugger_input = StringArrayInput(["step", "list", "continue"])
+    # debugger_output = StringArrayOutput()
+    # debug_opts = {
+    #     "step_ignore": -1,
+    #     "settings": settings,
+    #     "input": debugger_input,
+    #     "output": debugger_output,
+    # }
+    # if len(sys.argv) > 1:
+    #     print("Issuing interactive: run_call(plus5, %s)" % sys.argv[1])
+    #     run_call(plus5, int(sys.argv[1]), debug_opts=debug_opts)
+    # else:
+    #     print("Issuing interactive: run_call(plus5, 2)")
+    #     run_call(plus5, 2, debug_opts=debug_opts)
+    # pass

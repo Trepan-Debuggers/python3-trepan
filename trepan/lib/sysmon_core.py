@@ -28,12 +28,16 @@ handling what to do when an event is triggered."""
 import os
 import sys
 import threading
+from types import CodeType
 from typing import Any, Dict, NewType, Optional
 
 # External packages
 import tracer
+from tracer.stepping import StepGranularity, StepType
+from tracer.tracefilter import TraceFilter
 
 # Our local modules
+import trepan
 from trepan.lib.breakpoint import BreakpointManager
 from trepan.lib.core import TrepanCore
 from trepan.lib.stack import FrameInfo, count_frames
@@ -69,8 +73,8 @@ class SysMonTrepanCore(TrepanCore):
         self.current_bp = None
         self.current_thread = None
         self.debugger = debugger
-        self.tool_id = self.debugger.tool_id
-        self.debugger_tool_name = self.debugger.debugger_tool_name
+        self.sysmon_tool_id = self.debugger.sysmon_tool_id
+        self.sysmon_tool_name = self.debugger.sysmon_tool_name
 
         # Threading lock ensures that we don't have other traced threads
         # running when we enter the debugger. Later we may want to have
@@ -149,7 +153,15 @@ class SysMonTrepanCore(TrepanCore):
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self):
+    def start(
+        self,
+        events_mask: int,
+        code: CodeType,
+        trace_callbacks: Dict[int, CodeType],
+        ignore_filter: Optional[TraceFilter] = None,
+        step_type: StepType = StepType.STEP_INTO,
+        step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+    ):
         """A wrapper around tracer.mstart().
 
         We've already created a debugger object, but here we start
@@ -160,22 +172,33 @@ class SysMonTrepanCore(TrepanCore):
         # The below is our fancy tracer-based equivalent of:
         #    sys.settrace(self._trace_dispatch) or the newer
         #    sys.monitoring.set_{local_,}events()
-        tracer.mstart(self.tool_id)
+        if ignore_filter is None:
+            ignore_filter = TraceFilter([sys.monitoring, tracer, trepan])
+        tracer.start_local(
+            tool_name=self.sysmon_tool_name,
+            trace_callbacks=trace_callbacks,
+            tool_id=self.sysmon_tool_id,
+            code=code,
+            events_mask=events_mask,
+            step_type=step_type,
+            step_granularity=step_granularity,
+            ignore_filter=ignore_filter,
+        )
         self.execution_status = "Started"
         return
 
-    def stop(self):
+    def stop(self, code: Optional[CodeType] = None):
         """
         Our version of:
            sys.settrace(None)
         or:
-           sys.monitoring.set_events(tool_id, 0)
+           sys.monitoring.set_events(sysmon_tool_id, 0)
 
 
         In addition tracing module has its own side tracking that needs to be updated.
         And we also note his in the SysMonTrepanCore object.
         """
-        tracer.mstop(self.debugger_tool_name)
+        tracer.mstop(self.sysmon_tool_name, code=code)
         self.execution_status = "Stopped"
 
     def is_break_here(self, frame):

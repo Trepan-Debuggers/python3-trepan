@@ -22,7 +22,7 @@ E = sys.monitoring.events
 
 
 def call_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     event: str,
     code: CodeType,
@@ -32,7 +32,7 @@ def call_event_callback(
 ) -> object:
     """A CALL event callback trace function"""
 
-    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[tool_id]) is not None:
+    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[sysmon_tool_id]) is not None:
         if ignore_filter.is_excluded(code_to_call) or ignore_filter.is_excluded(code):
             return
 
@@ -43,7 +43,7 @@ def call_event_callback(
     # * step_type
 
     # For testing, we don't want to change events_mask. Just note it.
-    events_mask = sys.monitoring.get_local_events(tool_id, code)
+    events_mask = sys.monitoring.get_local_events(sysmon_tool_id, code)
 
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
@@ -60,7 +60,7 @@ def call_event_callback(
     step_type = frame_info.step_type
     step_granularity = frame_info.step_granularity
 
-    if child_code_info := CODE_TRACKING.get((tool_id, code_to_call), None) is not None:
+    if child_code_info := CODE_TRACKING.get((sysmon_tool_id, code_to_call), None) is not None:
         # We've seen code_to_call, it may have a local event mask that we have
         # to correct.
         # Figure out the code's new events_mask.
@@ -71,17 +71,21 @@ def call_event_callback(
                 events_mask_child = 0
                 pass
         else:
-            events_mask_child = sys.monitoring.get_local_events(tool_id, code_to_call)
+            events_mask_child = sys.monitoring.get_local_events(sysmon_tool_id, code_to_call)
             if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT):
                 events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
-        sys.monitoring.set_local_events(tool_id, code_to_call, events_mask_child)
+        sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
 
     print(
         (
-            f"\n{event.upper()}: tool id: {tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:\n\t"
+            f"\n{event.upper()}: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:\n\t"
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
     )
+    core = debugger.core
+    core.event = "line"
+    core.processor.event_processor(frame, "line", None)
+
 
     ### end code inside hook. events_mask, frame and step_type should be set.
 
@@ -89,12 +93,12 @@ def call_event_callback(
         code_to_call.__code__, CodeType
     ):
         return call_event_handler_return(
-            tool_id, code_to_call.__code__, events_mask, step_type
+            sysmon_tool_id, code_to_call.__code__, events_mask, step_type
         )
 
 
 def call_event_handler_return(
-    tool_id: int, debugger, code: CodeType, events_mask: int, step_type: StepType
+    sysmon_tool_id: int, debugger, code: CodeType, events_mask: int, step_type: StepType
 ) -> object:
     """Returning from a call event handler. We assume events_mask does not have
     any events that are not local events.
@@ -103,13 +107,13 @@ def call_event_handler_return(
         # Propagate local tracking into code object to be called and it step type.
         # FIXME: it would be better to attach it to the particular *frame*
         # that will be called.
-        sys.monitoring.set_local_events(tool_id, code, events_mask)
+        sys.monitoring.set_local_events(sysmon_tool_id, code, events_mask)
         if (
             events_mask == 0
-            and (code_info := CODE_TRACKING.get(tool_id, code)) is not None
+            and (code_info := CODE_TRACKING.get(sysmon_tool_id, code)) is not None
         ):
             if len(code_info.breakpoints) == 0:
-                del CODE_TRACKING[tool_id, code]
+                del CODE_TRACKING[sysmon_tool_id, code]
             else:
                 print(
                     f"Woah - removed event mask short_code{code} with {code_info.breakpoints}"
@@ -118,7 +122,7 @@ def call_event_handler_return(
 
 
 def exception_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     event: str,
     code: CodeType,
@@ -134,10 +138,10 @@ def exception_event_callback(
     # * frame
 
     # For testing, we don't want to change events_mask. Just note it.
-    events_mask = sys.monitoring.get_local_events(tool_id, code)
+    events_mask = sys.monitoring.get_local_events(sysmon_tool_id, code)
 
     print(
-        f"\n{event.upper()}: tool_id: {tool_id} code: {bin(events_mask)}\n\t"
+        f"\n{event.upper()}: sysmon_tool_id: {sysmon_tool_id} code: {bin(events_mask)}\n\t"
         f"{code_short(code)}, offset: *{instruction_offset}\n\treturn value: {exception}"
     )
 
@@ -152,11 +156,11 @@ def exception_event_callback(
 
     ### end code inside hook; `frame` should be set.
 
-    return leave_event_handler_return(tool_id, frame)
+    return leave_event_handler_return(sysmon_tool_id, frame)
 
 
 def goto_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     event: str,
     code: CodeType,
@@ -169,7 +173,7 @@ def goto_event_callback(
     ### The code inside the hook should set `events_mask`.
 
     # For testing, we don't want to change events_mask. Just note it.
-    events_mask = sys.monitoring.get_local_events(tool_id, code)
+    events_mask = sys.monitoring.get_local_events(sysmon_tool_id, code)
 
     # # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     # frame = sys._getframe(2)
@@ -177,18 +181,18 @@ def goto_event_callback(
 
     print(
         (
-            f"\n{event.upper()}: tool id: {tool_id}, {bin(events_mask)} ({events_mask}) code:\n\t"
+            f"\n{event.upper()}: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) code:\n\t"
             f"{code_short(code)}, offset: *{instruction_offset} to *{destination_offset}"
         )
     )
 
     ### end code inside hook; `events_mask` should be set.
 
-    return local_event_handler_return(tool_id, code, events_mask)
+    return local_event_handler_return(sysmon_tool_id, debugger, code, events_mask)
 
 
 def instruction_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     event: str,
     code: CodeType,
@@ -198,7 +202,7 @@ def instruction_event_callback(
 
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
-    orig_events_mask, events_mask = refresh_code_mask(tool_id, frame)
+    orig_events_mask, events_mask = refresh_code_mask(sysmon_tool_id, frame)
 
     if (events_mask & INSTRUCTION_LIKE_EVENTS) == 0:
         print("Woah - the reset events mask should include a instruction-like event")
@@ -209,15 +213,15 @@ def instruction_event_callback(
             "Woah - original local events mask (before reset) did not contain a instruction-like event"
         )
 
-    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[tool_id]) is not None:
+    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[sysmon_tool_id]) is not None:
         if ignore_filter.is_excluded(code):
             return
     frame_info = FRAME_TRACKING.get(frame, None)
     if frame_info is not None and frame_info.calls_to is not None:
-        clear_stale_frames(tool_id, frame_info.calls_to)
+        clear_stale_frames(sysmon_tool_id, frame_info.calls_to)
         frame_info.calls_to = None
 
-    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[tool_id]) is not None:
+    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[sysmon_tool_id]) is not None:
         if ignore_filter.is_excluded(code):
             return
 
@@ -230,18 +234,24 @@ def instruction_event_callback(
 
     print(
         (
-            f"\n{event.upper()}: tool id: {tool_id}, {bin(events_mask)} ({events_mask}) code:\n\t"
+            f"\n{event.upper()}: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) code:\n\t"
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
     )
+    print("WOOT")
+    core = debugger.core
+    print(f"WOOT {debugger}, {core} {core.event}")
+    core.event = "line"
+    core.processor.event_processor(frame, "line", None)
+    print("WOOT WOOT")
 
     ### end code inside hook; `events_mask` should be set.
 
-    return local_event_handler_return(tool_id, code, events_mask)
+    return local_event_handler_return(sysmon_tool_id, debugger, code, events_mask)
 
 
 def leave_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     event: str,
     code: CodeType,
@@ -256,10 +266,10 @@ def leave_event_callback(
     # * frame
 
     # For testing, we don't want to change events_mask. Just note it.
-    events_mask = sys.monitoring.get_local_events(tool_id, code)
+    events_mask = sys.monitoring.get_local_events(sysmon_tool_id, code)
 
     print(
-        f"\n{event.upper()}: tool_id: {tool_id} code: {bin(events_mask)} ({events_mask})\n\t"
+        f"\n{event.upper()}: sysmon_tool_id: {sysmon_tool_id} code: {bin(events_mask)} ({events_mask})\n\t"
         f"{code_short(code)}, offset: *{instruction_offset}\n\treturn value: {return_value}"
     )
 
@@ -275,11 +285,11 @@ def leave_event_callback(
     ### end code inside hook; `frame` should be set.
 
     if event != "yield":
-        return leave_event_handler_return(tool_id, frame)
+        return leave_event_handler_return(sysmon_tool_id, frame)
     # Do we want to do something special for yield?
 
 
-def leave_event_handler_return(tool_id: int, frame: FrameType) -> object:
+def leave_event_handler_return(sysmon_tool_id: int, frame: FrameType) -> object:
     """Returning from a RETURN, YIELD event handler. Note PY_UNWIND can
     skip over RETURN and YIELD events that might otherwise occur.
 
@@ -292,36 +302,37 @@ def leave_event_handler_return(tool_id: int, frame: FrameType) -> object:
         del FRAME_TRACKING[frame]
 
         code = frame.f_code
-        code_info = CODE_TRACKING.get((tool_id, code))
+        code_info = CODE_TRACKING.get((sysmon_tool_id, code))
         if code_info is not None:
             # FIXME: do we have to worry about other threads?
             if len(code_info.breakpoints) == 0:
                 # Remove any local events
-                sys.monitoring.set_local_events(tool_id, code, 0)
+                sys.monitoring.set_local_events(sysmon_tool_id, code, 0)
             # else:
             # FIXME: What should we do here for breakpoints?
             # # Do we need to remove this from CODE_TRACKING?
-            # del CODE_TRACKING[tool_id, code]
+            # del CODE_TRACKING[sysmon_tool_id, code]
 
     # If the code in frame.f_back was involved in a recursive call, or
     # another thread, it is possible that the local events for that
     # code got changed.  So be sure to set the local event mask back
     # to what it was, saved in FRAME_TRACKING at the time of the call.
     if (caller_frame := frame.f_back) is not None:
-        refresh_code_mask(tool_id, caller_frame)
+        refresh_code_mask(sysmon_tool_id, caller_frame)
 
     return
 
 
-def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int) -> object:
+def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_number: int) -> object:
     """A line event callback trace function"""
 
+    print("XXX line_event_callback")
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
     if frame.f_code != code:
         print("Woah -- code vs frame code mismatch in line event")
 
-    orig_events_mask, events_mask = refresh_code_mask(tool_id, frame)
+    orig_events_mask, events_mask = refresh_code_mask(sysmon_tool_id, frame)
     if (events_mask & E.LINE) == 0:
         print("Woah - the reset local events mask should include a line event")
         events_mask |= E.LINE
@@ -331,7 +342,7 @@ def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int
             "Woah - the original events mask (before reset) did not contain a line event"
         )
 
-    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[tool_id]) is not None:
+    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[sysmon_tool_id]) is not None:
         if ignore_filter.is_excluded(code):
             return
 
@@ -346,7 +357,7 @@ def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int
             return
 
         if frame_info.calls_to is not None:
-            clear_stale_frames(tool_id, frame_info.calls_to)
+            clear_stale_frames(sysmon_tool_id, frame_info.calls_to)
             frame_info.calls_to = None
             pass
         pass
@@ -359,7 +370,7 @@ def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int
         step_granularity = StepGranularity.LINE_NUMBER
 
     print(
-        f"\nLINE: tool id: {tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:"
+        f"\nLINE: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:"
         f"\n\t{code_short(code)}, line: {line_number}"
     )
     core = debugger.core
@@ -369,18 +380,18 @@ def line_event_callback(tool_id: int, debugger, code: CodeType, line_number: int
 
     ### end code inside hook; `events_mask` should be set.
 
-    return local_event_handler_return(tool_id, code, events_mask)
+    return local_event_handler_return(sysmon_tool_id, debugger, code, events_mask)
 
 
 def local_event_handler_return(
-    tool_id: int, debugger, code: CodeType, events_mask: int
+    sysmon_tool_id: int, debugger, code: CodeType, events_mask: int
 ) -> object:
     """A line event callback trace function"""
-    sys.monitoring.set_local_events(tool_id, code, events_mask)
+    sys.monitoring.set_local_events(sysmon_tool_id, code, events_mask)
     return
 
 
-def set_callback_hooks_for_toolid(tool_id: int, debugger) -> dict:
+def set_callback_hooks_for_toolid(sysmon_tool_id: int, debugger) -> dict:
     """
     Augments callback handlers to include the tool-id name and event name.
     We often need to add the event name since callback handlers are shared
@@ -391,7 +402,7 @@ def set_callback_hooks_for_toolid(tool_id: int, debugger) -> dict:
     return {
         E.BRANCH_LEFT: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id,
+                sysmon_tool_id,
                 debugger,
                 "branch left",
                 code,
@@ -401,7 +412,7 @@ def set_callback_hooks_for_toolid(tool_id: int, debugger) -> dict:
         ),
         E.BRANCH_RIGHT: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id,
+                sysmon_tool_id,
                 debugger,
                 "branch right",
                 code,
@@ -411,52 +422,52 @@ def set_callback_hooks_for_toolid(tool_id: int, debugger) -> dict:
         ),
         E.CALL: (
             lambda code, instruction_offset, code_to_call, args: call_event_callback(
-                tool_id, debugger, "call", code, instruction_offset, code_to_call, args
+                sysmon_tool_id, debugger, "call", code, instruction_offset, code_to_call, args
             )
         ),
         E.INSTRUCTION: (
             lambda code, instruction_offset: instruction_event_callback(
-                tool_id, debugger, "instruction", code, instruction_offset
+                sysmon_tool_id, debugger, "instruction", code, instruction_offset
             )
         ),
         E.JUMP: (
             lambda code, instruction_offset, destination_offset: goto_event_callback(
-                tool_id, debugger, "jump", code, instruction_offset, destination_offset
+                sysmon_tool_id, debugger, "jump", code, instruction_offset, destination_offset
             )
         ),
         E.LINE: (
             lambda code, line_number: line_event_callback(
-                tool_id, code, debugger, line_number
+                sysmon_tool_id, code, debugger, line_number
             )
         ),
         E.PY_RETURN: lambda code, instruction_offset, retval: leave_event_callback(
-            tool_id, debugger, "return", code, instruction_offset, retval
+            sysmon_tool_id, debugger, "return", code, instruction_offset, retval
         ),
         E.PY_START: lambda code, instruction_offset: start_event_callback(
-            tool_id, debugger, code, instruction_offset
+            sysmon_tool_id, debugger, code, instruction_offset
         ),
         # This is a global event
         # E.PY_UNWIND: lambda code, instruction_offset, retval: exception_event_callback(
-        #     tool_id, "yield", code, instruction_offset, retval
+        #     sysmon_tool_id, "yield", code, instruction_offset, retval
         # ),
         E.PY_YIELD: lambda code, instruction_offset, retval: leave_event_callback(
-            tool_id, debugger, "yield", code, instruction_offset, retval
+            sysmon_tool_id, debugger, "yield", code, instruction_offset, retval
         ),
         E.STOP_ITERATION: lambda code, instruction_offset, retval: exception_event_callback(
-            tool_id, debugger, "stop iteration", code, instruction_offset, retval
+            sysmon_tool_id, debugger, "stop iteration", code, instruction_offset, retval
         ),
     }
 
 
 def start_event_callback(
-    tool_id: int,
+    sysmon_tool_id: int,
     debugger,
     code: CodeType,
     instruction_offset: int,
 ) -> object:
     """A PY_START event callback trace function"""
 
-    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[tool_id]) is not None:
+    if (ignore_filter := sys_monitoring.MONITOR_FILTERS[sysmon_tool_id]) is not None:
         if ignore_filter.is_excluded(code):
             return
 
@@ -467,7 +478,7 @@ def start_event_callback(
     # * step_type
 
     # For testing, we don't want to change events_mask. Just note it.
-    local_events_mask = sys.monitoring.get_local_events(tool_id, code)
+    local_events_mask = sys.monitoring.get_local_events(sysmon_tool_id, code)
 
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
@@ -520,7 +531,7 @@ def start_event_callback(
 
     print(
         (
-            f"\nSTART: tool id: {tool_id}, {bin(combined_events_mask)} "
+            f"\nSTART: tool id: {sysmon_tool_id}, {bin(combined_events_mask)} "
             f"({combined_events_mask}) {step_type} code:\n\t"
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
@@ -528,4 +539,4 @@ def start_event_callback(
 
     ### end code inside hook. events_mask, frame and step_type should be set.
 
-    return local_event_handler_return(tool_id, code, combined_events_mask)
+    return local_event_handler_return(sysmon_tool_id, debugger, code, combined_events_mask)

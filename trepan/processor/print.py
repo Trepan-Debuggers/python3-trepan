@@ -20,12 +20,11 @@ import os.path as osp
 import re
 import sys
 from inspect import currentframe, ismodule
-from tempfile import NamedTemporaryFile
 from types import CodeType
-from typing import Optional
 
 import pyficache
 
+from trepan.lib.file import create_tempfile_and_remap_filename
 from trepan.lib.format import Filename, Hex, Symbol, format_line_number, format_token
 from trepan.lib.stack import (
     check_path_with_frame,
@@ -364,7 +363,7 @@ def print_location(proc_obj):
                         text,
                         filename=filename,
                         tempdir=proc_obj.settings("tempdir"),
-                        prefix=".py",
+                        suffix=".py",
                         delete=False
                     )
                     #####
@@ -456,42 +455,6 @@ def print_location(proc_obj):
         except Exception:
             pass
     return True
-
-
-def create_tempfile_and_remap_filename(
-    text: str,
-    filename: str,
-    tempdir: str,
-    prefix: Optional[str] = None,
-    suffix: str = ".py",
-    delete=False,
-) -> str:
-    """
-    Using `lines` associated with `filename`, create a temporary filename
-    using `prefix` in directory `tempdir`.
-
-    `filename is typically the `co_filename` field inside a Python
-    code object which is bogus. For example it might be <string> or <frozen runpy>
-    or some valid filename that just does not exist in our environment.
-
-    Therefore we create file name in the filesystem an use pyfcache to
-    remap that 'filename` to newly create filename with the contents given .
-    """
-
-    # FIXME: DRY code with version in cmdproc.py print_location
-    fd = NamedTemporaryFile(
-    suffix=".py",
-        prefix=prefix,
-        delete=delete,
-        dir=tempdir,
-    )
-    with fd:
-        fd.write(bytes(text, "UTF-8"))
-        remapped_file = fd.name
-        pyficache.remap_file(remapped_file, filename)
-        fd.close()
-        pass
-    return fd.name
 
 
 # Demo it

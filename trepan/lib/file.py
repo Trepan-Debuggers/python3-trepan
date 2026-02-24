@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015-2017, 2023-2024
+#   Copyright (C) 2008-2009, 2013, 2015-2017, 2023-2024, 2026
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,48 @@ import os
 import stat
 import sys
 from typing import Optional
+from tempfile import NamedTemporaryFile
 
 import pyficache
+
+
+def create_tempfile_and_remap_filename(
+    text: str,
+    filename: str,
+    tempdir: Optional[str] = None,
+    prefix: Optional[str] = None,
+    suffix: str = ".py",
+    delete=False,
+) -> str:
+    """
+    Using `lines` associated with `filename`, create a temporary filename
+    using `prefix` in directory `tempdir`.
+
+    `filename is typically the `co_filename` field inside a Python
+    code object which is bogus. For example it might be <string> or <frozen runpy>
+    or some valid filename that just does not exist in our environment.
+
+    Therefore we create file name in the filesystem an use pyfcache to
+    remap that 'filename` to newly create filename with the contents given .
+    """
+
+    if prefix is not None:
+        filename = f"{prefix}{filename}"
+
+    # FIXME: DRY code with version in cmdproc.py print_location
+    fd = NamedTemporaryFile(
+        suffix=".py",
+        prefix=filename,
+        delete=delete,
+        dir=tempdir,
+    )
+    with fd:
+        fd.write(bytes(text, "UTF-8"))
+        remapped_file = fd.name
+        pyficache.remap_file(remapped_file, filename)
+        fd.close()
+        pass
+    return fd.name
 
 
 def file_list():
