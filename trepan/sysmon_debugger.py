@@ -41,6 +41,7 @@ from tracer.sys_monitoring import (
     FixedList,
     find_free_hook_id,
     find_hook_by_name,
+    is_free_tool_id,
     mstart,
 )
 from tracer.tracefilter import TraceFilter
@@ -91,8 +92,14 @@ class SysMonTrepan:
     Class for a system.monitor debugger object.
     """
 
-    def __new__(cls, sysmon_tool_name: Optional[str] = None, opts=dict()):
-        sysmon_tool_id = None
+    def __new__(
+        cls,
+        sysmon_tool_name: Optional[str] = None,
+        sysmon_tool_id: Optional[int] = None,
+        step_type: StepType = StepType.STEP_INTO,
+        step_granularity: StepGranularity = StepGranularity.LINE_NUMBER,
+        opts=dict(),
+    ):
         if sysmon_tool_name is not None:
             if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
                 if (self := DEBUGGERS[sysmon_tool_id]) is None:
@@ -110,13 +117,27 @@ class SysMonTrepan:
             sysmon_tool_id = find_free_hook_id()
             if sysmon_tool_id is None:
                 raise RuntimeError("Cannot find a free tool id.")
+            pass
+        elif not is_free_tool_id(sysmon_tool_id):
+            raise RuntimeError(
+                f"system.monitoring tool id {sysmon_tool_id} is already in use."
+            )
 
         self = super().__new__(cls)
-        cls.init(self, sysmon_tool_id, sysmon_tool_name, opts)
+        cls.init(
+            self, sysmon_tool_id, sysmon_tool_name, step_type, step_granularity, opts
+        )
         DEBUGGERS[sysmon_tool_id] = self
         return self
 
-    def init(self, sysmon_tool_id: int, sysmon_tool_name: str, opts: dict):
+    def init(
+        self,
+        sysmon_tool_id: int,
+        sysmon_tool_name: str,
+        step_type: StepType,
+        step_granularity: StepGranularity,
+        opts: dict,
+    ):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash 'opts', we may or may not initially
         start debugging.
@@ -125,13 +146,27 @@ class SysMonTrepan:
         """
 
         self.mainpyfile = None
+
+        # We keep track of the thread because we could be stepping inside
+        # the same code but in different threads, and the stepping can be
+        # different dependant on the thread.
         self.thread = None
         self.eval_string = None
         self.settings = self.DEFAULT_INIT_OPTS["settings"].copy()
-        self.tool_id: Optional[int] = None
+
+        ###
+        # system.monitoring and tracing information
         self.sysmon_tool_name = sysmon_tool_name
         self.sysmon_tool_id = sysmon_tool_id
-        self.callback_hooks = None
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+
+        # Often the debugger stepping instructions will set step_granularity and step_type,
+        # however initially it can happen these are not set. These variables also
+        # are used to signal on return to the debugged program what kind of stepping is
+        # desired.
+        self.step_granularity = step_granularity
+        self.step_type = step_type
+        ###
 
         def get_option(key: str) -> Any:
             return option_set(opts, key, self.DEFAULT_INIT_OPTS)
@@ -287,7 +322,6 @@ class SysMonTrepan:
         start_opts=None,
         globals_=None,
         locals_=None,
-        sysmon_tool_name: Optional[str] = None,
         ignore_filter: Optional[TraceFilter] = None,
         step_type: StepType = StepType.STEP_INTO,
         step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
@@ -311,8 +345,6 @@ class SysMonTrepan:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
-        if sysmon_tool_name is None:
-            sysmon_tool_name = "trepan3k-sysmon"
 
         pseudo_filename_path = None
         if isinstance(stmts, str):
@@ -336,7 +368,6 @@ class SysMonTrepan:
             self.intf[0].errmsg("You need to pass either a string or a code type.")
             return
 
-        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
         self.core.start(
             events_mask=events_mask,
             code=code,
@@ -375,7 +406,6 @@ class SysMonTrepan:
             sysmon_tool_name = ("trepan3k-sysmon",)
 
         self.tool_id, self.events_mask = mstart(sysmon_tool_name, code=func)
-        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
 
         res = None
         self.core.start(
@@ -404,6 +434,7 @@ class SysMonTrepan:
         ignore_filter: Optional[TraceFilter] = None,
         step_type: Optional[StepType] = None,
         step_granularity: Optional[StepGranularity] = None,
+        sysmon_tool_id: Optional[int] = 5,
     ):
         """Run debugger on string `expr' which will executed via the
         built-in Python function: eval; `globals_' and `locals_' are

@@ -83,8 +83,9 @@ def call_event_callback(
         )
     )
     core = debugger.core
-    core.event = "line"
-    core.processor.event_processor(frame, "line", None)
+    core.event = "call"
+    core.execution_status = "Running"
+    core.processor.event_processor(frame, "call", None)
 
 
     ### end code inside hook. events_mask, frame and step_type should be set.
@@ -238,12 +239,10 @@ def instruction_event_callback(
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
     )
-    print("WOOT")
     core = debugger.core
-    print(f"WOOT {debugger}, {core} {core.event}")
-    core.event = "line"
-    core.processor.event_processor(frame, "line", None)
-    print("WOOT WOOT")
+    core.event = "instruction"
+    core.execution_status = "Running"
+    core.processor.event_processor(frame, "instruction", None)
 
     ### end code inside hook; `events_mask` should be set.
 
@@ -330,7 +329,7 @@ def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_numb
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
     if frame.f_code != code:
-        print("Woah -- code vs frame code mismatch in line event")
+        print("Woah -- code vs. frame code mismatch in line event")
 
     orig_events_mask, events_mask = refresh_code_mask(sysmon_tool_id, frame)
     if (events_mask & E.LINE) == 0:
@@ -375,6 +374,7 @@ def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_numb
     )
     core = debugger.core
     core.event = "line"
+    core.execution_status = "Running"
     core.processor.event_processor(frame, "line", None)
 
 
@@ -437,7 +437,7 @@ def set_callback_hooks_for_toolid(sysmon_tool_id: int, debugger) -> dict:
         ),
         E.LINE: (
             lambda code, line_number: line_event_callback(
-                sysmon_tool_id, code, debugger, line_number
+                sysmon_tool_id, debugger, code, line_number
             )
         ),
         E.PY_RETURN: lambda code, instruction_offset, retval: leave_event_callback(
@@ -486,8 +486,6 @@ def start_event_callback(
         print("Woah -- code vs frame code mismatch in line event")
 
     frame_with_frame_info = frame.f_back
-    step_type = StepType.NO_STEPPING
-    step_granularity = StepGranularity.LINE_NUMBER
     calls_to = [frame]
     while frame_with_frame_info is not None:
         frame_info = FRAME_TRACKING.get(frame_with_frame_info)
@@ -499,9 +497,15 @@ def start_event_callback(
         frame_with_frame_info = frame_with_frame_info.f_back
         calls_to.append(frame_with_frame_info)
     else:
-        print(
-            f"Woah -- can't find frame in FRAME_TRACKING with step frame_info:\n{FRAME_TRACKING}"
-        )
+        # It is possible that we don't have FRAME_TRACKING set if the
+        # caller was a builtin-funciton like eval() or exec() (or some
+        # other a C function?). One way this can happen is getting
+        # called from run_eval(), or run_exec().
+        #
+        # In these kinds of situaations, we set `step_type` and
+        # `step_granularity` using values in the debugger object.
+        step_type = debugger.step_type
+        step_granularity = debugger.step_granularity
 
     while calls_to:
         call_to_frame = calls_to.pop()
@@ -536,6 +540,10 @@ def start_event_callback(
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
     )
+    core = debugger.core
+    core.event = "start"
+    core.execution_status = "Running"
+    core.processor.event_processor(frame, "start", instruction_offset)
 
     ### end code inside hook. events_mask, frame and step_type should be set.
 

@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2008-2010, 2013-2016, 2020 2023-2026
@@ -73,12 +74,12 @@ class SysMonTrepanCore(TrepanCore):
         self.current_bp = None
         self.current_thread = None
         self.debugger = debugger
-        self.sysmon_tool_id = self.debugger.sysmon_tool_id
-        self.sysmon_tool_name = self.debugger.sysmon_tool_name
 
         # Threading lock ensures that we don't have other traced threads
-        # running when we enter the debugger. Later we may want to have
-        # a switch to control.
+        # running when we enter the debugger. We don't want to enter the same
+        # debugger at a different location, if something *inside* the debugger causes
+        # a thread switch.
+        # Also, later we may want to have a way to switch thread control.
         self.debugger_lock = threading.Lock()
 
         self.filename_cache = {}
@@ -175,9 +176,9 @@ class SysMonTrepanCore(TrepanCore):
         if ignore_filter is None:
             ignore_filter = TraceFilter([sys.monitoring, tracer, trepan])
         tracer.start_local(
-            tool_name=self.sysmon_tool_name,
+            tool_name=self.debugger.sysmon_tool_name,
             trace_callbacks=trace_callbacks,
-            tool_id=self.sysmon_tool_id,
+            tool_id=self.debugger.sysmon_tool_id,
             code=code,
             events_mask=events_mask,
             step_type=step_type,
@@ -198,7 +199,7 @@ class SysMonTrepanCore(TrepanCore):
         In addition tracing module has its own side tracking that needs to be updated.
         And we also note his in the SysMonTrepanCore object.
         """
-        tracer.mstop(self.sysmon_tool_name, code=code)
+        tracer.mstop(self.debugger.sysmon_tool_name, code=code)
         self.execution_status = "Stopped"
 
     def is_break_here(self, frame):

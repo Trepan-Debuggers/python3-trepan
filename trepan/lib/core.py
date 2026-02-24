@@ -75,8 +75,10 @@ class TrepanCore:
         self.debugger = debugger
 
         # Threading lock ensures that we don't have other traced threads
-        # running when we enter the debugger. Later we may want to have
-        # a switch to control.
+        # running when we enter the debugger. We don't want to enter the same
+        # debugger at a different location, if something *inside* the debugger causes
+        # a thread switch.
+        # Also, later we may want to have a way to switch thread control.
         self.debugger_lock = threading.Lock()
 
         self.filename_cache = {}

@@ -205,9 +205,13 @@ def debugger_on_post_mortem():
 def run_call(
     func,
     *args,
-    events_mask: Optional[int] = None,
     debug_opts=DEBUGGER_SETTINGS,
     start_opts=None,
+    events_mask: Optional[int] = None,
+    ignore_filter: Optional[TraceFilter] = None,
+    step_type: StepType = StepType.STEP_INTO,
+    step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+    sysmon_tool_id: Optional[int] = 5,
     **kwds
 ):
     """Call the function (a function or method object, not a string)
@@ -218,7 +222,12 @@ def run_call(
     returned.  The debugger prompt appears as soon as the function is
     entered."""
 
-    dbg = SysMonTrepan(opts=debug_opts)
+    dbg = SysMonTrepan(
+        opts=debug_opts,
+        sysmon_tool_id=sysmon_tool_id,
+        step_type=step_type,
+        step_granularity=step_granularity,
+    )
     try:
         return dbg.run_call(func, *args, **kwds, events_mask=events_mask)
     except Exception:
@@ -237,6 +246,7 @@ def run_eval(
     ignore_filter: Optional[TraceFilter] = None,
     step_type: StepType = StepType.STEP_INTO,
     step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+    sysmon_tool_id: Optional[int] = 5,
 ):
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
@@ -248,7 +258,12 @@ def run_eval(
     Otherwise, this function is similar to run().
     """
 
-    dbg = SysMonTrepan(opts=debug_opts)
+    dbg = SysMonTrepan(
+        opts=debug_opts,
+        sysmon_tool_id=sysmon_tool_id,
+        step_type=step_type,
+        step_granularity=step_granularity,
+    )
     try:
         return dbg.run_eval(
             expression,
@@ -259,6 +274,7 @@ def run_eval(
             ignore_filter=ignore_filter,
             step_type=step_type,
             step_granularity=step_granularity,
+            sysmon_tool_id=sysmon_tool_id,
         )
     except Exception:
         dbg.core.trace_hook_suspend = True
@@ -278,6 +294,7 @@ def run_exec(
     ignore_filter: Optional[TraceFilter] = None,
     step_type: StepType = StepType.STEP_INTO,
     step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+    sysmon_tool_id: Optional[int] = 5,
 ):
     """Execute the statement (given as a string) under debugger
     control starting with the statement subsequent to the place that
@@ -293,7 +310,12 @@ def run_exec(
     in which the code is executed; by default the dictionary of the
     module __main__ is used."""
 
-    dbg = SysMonTrepan(opts=debug_opts)
+    dbg = SysMonTrepan(
+        opts=debug_opts,
+        sysmon_tool_id=sysmon_tool_id,
+        step_type=step_type,
+        step_granularity=step_granularity,
+    )
     try:
         return dbg.run_exec(
             statement,
@@ -344,35 +366,42 @@ if __name__ == "__main__":
 
     settings = dict(DEBUGGER_SETTINGS)
     settings.update({"trace": True, "printset": tracer.ALL_EVENTS})
-    debugger_input = StringArrayInput()
-    debugger_output = StringArrayOutput()
-    debug_opts = {
-        "step_ignore": -1,
-        "settings": settings,
-        "input": debugger_input,
-        "output": debugger_output,
-    }
+
+    if len(sys.argv) == 1:
+        debugger_input = StringArrayInput(["stepi", "stepi", "continue"])
+        debugger_output = StringArrayOutput()
+        debug_opts = {
+            "step_ignore": -1,
+            "settings": settings,
+            "input": debugger_input,
+            "output": debugger_output,
+        }
+    else:
+        debug_opts = {}
+
     print('Issuing: run_eval("1+2")')
     run_eval(
-        "1+2",
-        events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
+        "(1\n+\n2)",
+        events_mask=E.LINE | E.PY_RETURN,
         debug_opts=debug_opts,
         ignore_filter=TraceFilter([]),
         step_type=StepType.STEP_INTO,
-        step_granularity=StepGranularity.INSTRUCTION,
+        step_granularity=StepGranularity.LINE_NUMBER,
+        sysmon_tool_id=3,
     )
-    print(debugger_output.output)
+    # print(debugger_output.output)
 
     print('Issuing: run_exec("x=1; y=2")')
     run_exec(
         "x=1\ny=2",
-        events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
+        events_mask=E.LINE | E.PY_RETURN,
         debug_opts=debug_opts,
         ignore_filter=TraceFilter([]),
         step_type=StepType.STEP_INTO,
         step_granularity=StepGranularity.LINE_NUMBER,
     )
-    print(debugger_output.output)
+
+    # print(debugger_output.output)
     # debugger_input = StringArrayInput(["step", "list", "continue"])
     # debugger_output = StringArrayOutput()
     # debug_opts = {
