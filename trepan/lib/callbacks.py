@@ -203,6 +203,15 @@ def instruction_event_callback(
 
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
+
+    core = debugger.core
+    if core.different_line:
+        if core.last_lineno == frame.f_lineno and core.last_offset == instruction_offset:
+            # print("WOOT instruction_event_callback in same place")
+            core.last_offset = instruction_offset
+            return
+
+    core.last_offset = instruction_offset
     orig_events_mask, events_mask = refresh_code_mask(sysmon_tool_id, frame)
 
     if (events_mask & INSTRUCTION_LIKE_EVENTS) == 0:
@@ -239,7 +248,6 @@ def instruction_event_callback(
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
     )
-    core = debugger.core
 
     if core.step_ignore > 0:
         # print(f"XXX Counting down steps: was {core.step_ignore}")
@@ -379,6 +387,8 @@ def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_numb
     )
 
     core = debugger.core
+    core.last_lineno = frame.f_lineno
+    core.last_offset = frame.f_lasti
 
     if core.step_ignore > 0:
         # print(f"XXX Counting down steps: was {core.step_ignore}")

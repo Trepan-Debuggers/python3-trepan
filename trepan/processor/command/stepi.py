@@ -90,11 +90,17 @@ class StepICommand(DebuggerCommand):
         self.proc.continue_running = True  # Break out of command read loop
 
         if is_sysmon:
+
+            # As of Python 3.14, in order to get instruction stops, we *also* need
+            # to register and track line stops.
+            events_mask = E.INSTRUCTION | E.LINE
+
             tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
                 granularity=tracer.StepType.STEP_INTO,
-                events_mask=E.INSTRUCTION,
+                events_mask=events_mask,
+                callbacks=core.debugger.callback_hooks
             )
         pass
 

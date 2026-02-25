@@ -97,6 +97,11 @@ class StepCommand(DebuggerCommand):
         elif args[0][-1] == "<":
             step_events = ["return"]
             events_mask = E.PY_RETURN
+        elif args[0][-1] == ".":
+            # As of Python 3.14, in order to get instruction stops, we *also* need
+            # to register and track line stops.
+            step_events = ["instruction", "line"]
+            events_mask = E.LINE | E.INSTRUCTION
         elif args[0][-1] == "!":
             step_events = ["exception"]
             if is_sysmon:
@@ -154,6 +159,7 @@ class StepCommand(DebuggerCommand):
                 self.proc.frame,
                 granularity=tracer.StepType.STEP_INTO,
                 events_mask=events_mask,
+                callbacks=core.debugger.callback_hooks
             )
             pass
         return True
