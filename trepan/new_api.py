@@ -36,8 +36,7 @@ if necessary, first.
 
 import os
 import sys
-import traceback
-from typing import Optional
+from typing import Any, Callable, Optional
 
 from tracer.stepping import StepGranularity, StepType
 from tracer.tracefilter import TraceFilter
@@ -193,7 +192,7 @@ def debug_for_remote_access():
         % connection_opts["PORT"],
         file=sys.stderr,
     )
-    debug(dbg_opts=dbg_opts, step_ignore=0, level=1)
+    debug(dbg_opts=dbg_opts, level=1)
 
 
 def debugger_on_post_mortem():
@@ -203,8 +202,8 @@ def debugger_on_post_mortem():
 
 
 def run_call(
-    func,
-    *args,
+    func: Callable,
+    args: tuple,
     debug_opts=DEBUGGER_SETTINGS,
     start_opts=None,
     events_mask: Optional[int] = None,
@@ -212,7 +211,7 @@ def run_call(
     step_type: StepType = StepType.STEP_INTO,
     step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
     sysmon_tool_id: Optional[int] = 5,
-    **kwds
+    kwargs: dict = {},
 ):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
@@ -229,7 +228,15 @@ def run_call(
         step_granularity=step_granularity,
     )
     try:
-        return dbg.run_call(func, *args, **kwds, events_mask=events_mask)
+        return dbg.run_call(
+            func,
+            args,
+            kwargs,
+            events_mask=events_mask,
+            ignore_filter=ignore_filter,
+            step_type=step_type,
+            step_granularity=step_granularity,
+        )
     except Exception:
         uncaught_exception(dbg)
         pass
@@ -248,7 +255,7 @@ def run_eval(
     step_type: StepType = StepType.STEP_INTO,
     step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
     sysmon_tool_id: Optional[int] = 5,
-):
+) -> Any:
     """Evaluate the expression (given as a string) under debugger
     control starting with the statement after the place that
     this appears in your program.
@@ -371,7 +378,6 @@ if __name__ == "__main__":
         debugger_input = StringArrayInput(["stepi", "stepi", "continue"])
         debugger_output = StringArrayOutput()
         debug_opts = {
-            "step_ignore": -1,
             "settings": settings,
             "input": debugger_input,
             "output": debugger_output,
@@ -403,18 +409,24 @@ if __name__ == "__main__":
     )
 
     # print(debugger_output.output)
-    # debugger_input = StringArrayInput(["step", "list", "continue"])
-    # debugger_output = StringArrayOutput()
-    # debug_opts = {
-    #     "step_ignore": -1,
-    #     "settings": settings,
-    #     "input": debugger_input,
-    #     "output": debugger_output,
-    # }
-    # if len(sys.argv) > 1:
-    #     print("Issuing interactive: run_call(plus5, %s)" % sys.argv[1])
-    #     run_call(plus5, int(sys.argv[1]), debug_opts=debug_opts)
-    # else:
-    #     print("Issuing interactive: run_call(plus5, 2)")
-    #     run_call(plus5, 2, debug_opts=debug_opts)
-    # pass
+    print("Issuing run_call(plus5, 10)")
+    if len(sys.argv) == 1:
+        debugger_input = StringArrayInput(["step", "list", "continue"])
+        debugger_output = StringArrayOutput()
+        debug_opts = {
+            "settings": settings,
+            "input": debugger_input,
+            "output": debugger_output,
+        }
+    print(
+        run_call(
+            plus5,
+            args=(2,),
+            events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
+            debug_opts=debug_opts,
+            ignore_filter=TraceFilter([]),
+            step_type=StepType.STEP_INTO,
+            step_granularity=StepGranularity.INSTRUCTION,
+            sysmon_tool_id=3,
+        )
+    )

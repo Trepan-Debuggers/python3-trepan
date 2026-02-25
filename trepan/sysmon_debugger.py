@@ -31,7 +31,7 @@ user or client-side code for connecting to server'd debugged program.
 
 import sys
 import types
-from typing import Any, Callable, Optional, Union
+from typing import Any, Optional, Union
 
 import pyficache
 import tracer
@@ -391,42 +391,43 @@ class SysMonTrepan:
 
     def run_call(
         self,
-        func: Callable,
+        func: types.FunctionType,
+        args: tuple,
+        kwargs: dict,
         events_mask: Optional[int] = None,
         sysmon_tool_name: Optional[str] = None,
         ignore_filter: Optional[TraceFilter] = None,
         step_type: Optional[StepType] = None,
         step_granularity: Optional[StepGranularity] = None,
-        *args,
         start_opts=None,
-        **kwds,
-    ):
-        """Run debugger on function call: `func(*args, **kwds)'
+    ) -> Any:
+        """Run debugger on function call: `func(*args, **kwargs)'
 
         See also ``run_eval`` if what you want to run is an eval'able
         expression have that result returned and ``run``if you want to
         debug a statement via ``exec``.
         """
         if sysmon_tool_name is None:
-            sysmon_tool_name = ("trepan3k-sysmon",)
+            sysmon_tool_name = "trepan3k-sysmon"
 
-        self.tool_id, self.events_mask = mstart(sysmon_tool_name, code=func)
-
-        res = None
+        result = None
+        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
+        code = func.__code__
         self.core.start(
             events_mask=events_mask,
-            code=func,
+            code=code,
+            trace_callbacks=self.callback_hooks,
             ignore_filter=ignore_filter,
             step_type=step_type,
             step_granularity=step_granularity,
         )
         try:
-            res = func(*args, **kwds)
+            result = func(*args, **kwargs)
         except DebuggerQuit:
             pass
         finally:
-            self.core.stop(code=func)
-        return res
+            self.core.stop(code)
+        return result
 
     def run_eval(
         self,
