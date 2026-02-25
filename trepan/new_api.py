@@ -238,11 +238,12 @@ def run_call(
 
 def run_eval(
     expression,
+    events_mask: Optional[int] = None,
+    sysmon_tool_name: Optional[str] = None,
     debug_opts=DEBUGGER_SETTINGS,
     start_opts=None,
     globals_=None,
     locals_=None,
-    events_mask: Optional[int] = None,
     ignore_filter: Optional[TraceFilter] = None,
     step_type: StepType = StepType.STEP_INTO,
     step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
@@ -261,32 +262,30 @@ def run_eval(
     dbg = SysMonTrepan(
         opts=debug_opts,
         sysmon_tool_id=sysmon_tool_id,
+        sysmon_tool_name=sysmon_tool_name,
         step_type=step_type,
         step_granularity=step_granularity,
     )
     try:
         return dbg.run_eval(
             expression,
-            events_mask=events_mask,
             start_opts=start_opts,
             globals_=globals_,
             locals_=locals_,
+            events_mask=events_mask,
             ignore_filter=ignore_filter,
             step_type=step_type,
             step_granularity=step_granularity,
-            sysmon_tool_id=sysmon_tool_id,
         )
     except Exception:
-        dbg.core.trace_hook_suspend = True
-        traceback.print_exc()
-    finally:
-        dbg.core.trace_hook_suspend = False
+        uncaught_exception(dbg)
     return
 
 
 def run_exec(
     statement,
     events_mask: Optional[int] = None,
+    sysmon_tool_name: Optional[str] = None,
     debug_opts=DEBUGGER_SETTINGS,
     start_opts=None,
     globals_=None,
@@ -313,6 +312,7 @@ def run_exec(
     dbg = SysMonTrepan(
         opts=debug_opts,
         sysmon_tool_id=sysmon_tool_id,
+        sysmon_tool_name=sysmon_tool_name,
         step_type=step_type,
         step_granularity=step_granularity,
     )
@@ -380,13 +380,14 @@ if __name__ == "__main__":
         debug_opts = {}
 
     print('Issuing: run_eval("1+2")')
+
     run_eval(
         "(1\n+\n2)",
-        events_mask=E.LINE | E.PY_RETURN,
+        events_mask=E.LINE | E.INSTRUCTION | E.PY_RETURN,
         debug_opts=debug_opts,
         ignore_filter=TraceFilter([]),
         step_type=StepType.STEP_INTO,
-        step_granularity=StepGranularity.LINE_NUMBER,
+        step_granularity=StepGranularity.INSTRUCTION,
         sysmon_tool_id=3,
     )
     # print(debugger_output.output)

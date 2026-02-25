@@ -325,7 +325,6 @@ def leave_event_handler_return(sysmon_tool_id: int, frame: FrameType) -> object:
 def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_number: int) -> object:
     """A line event callback trace function"""
 
-    print("XXX line_event_callback")
     # Below: 0 is us; 1 is our closure lambda, and 2 is the user code.
     frame = sys._getframe(2)
     if frame.f_code != code:

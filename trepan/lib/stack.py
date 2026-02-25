@@ -347,14 +347,19 @@ def frame2file(core_obj, frame, canonic=True):
         return core_obj.filename(frame.f_code.co_filename)
 
 
-def frame2filesize(frame):
+def frame2filesize(frame) -> Tuple[Optional[int], Optional[int]]:
+    frame_path = frame.f_code.co_filename
     if "__cached__" in frame.f_globals:
         bc_path = frame.f_globals["__cached__"]
     else:
         bc_path = None
-    if frame.f_code.co_filename == "<string>":
+    if frame_path == "<string>":
         # There is no source-code file to compare against.
         return None, None
+
+    elif frame_path in pyficache.file2file_remap.keys():
+        return os.stat(frame_path).st_size, None
+
     path = frame.f_globals["__file__"]
     source_path = getsourcefile(path)
     if source_path is None:

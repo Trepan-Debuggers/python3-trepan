@@ -253,6 +253,7 @@ class SysMonTrepan:
         ignore_filter: Optional[TraceFilter] = None,
         step_type: StepType = StepType.STEP_INTO,
         step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
+        sysmon_tool_id: Optional[int] = 5,
     ):
         """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
@@ -322,6 +323,7 @@ class SysMonTrepan:
         start_opts=None,
         globals_=None,
         locals_=None,
+        sysmon_tool_name: Optional[str] = None,
         ignore_filter: Optional[TraceFilter] = None,
         step_type: StepType = StepType.STEP_INTO,
         step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
@@ -340,11 +342,14 @@ class SysMonTrepan:
          expression that should be ``eval``d and have that result returned.
         See ``run_call`` if you want to debug function ``run_call()``.
         """
-        # FIXME: DRY with run()
+        # FIXME: DRY with run() and run_eval()
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
+
+        if sysmon_tool_name is None:
+            sysmon_tool_name = "trepan3k-sysmon"
 
         pseudo_filename_path = None
         if isinstance(stmts, str):
@@ -432,9 +437,8 @@ class SysMonTrepan:
         locals_=None,
         sysmon_tool_name: Optional[str] = None,
         ignore_filter: Optional[TraceFilter] = None,
-        step_type: Optional[StepType] = None,
-        step_granularity: Optional[StepGranularity] = None,
-        sysmon_tool_id: Optional[int] = 5,
+        step_type: StepType = StepType.STEP_INTO,
+        step_granularity: StepGranularity = StepGranularity.INSTRUCTION,
     ):
         """Run debugger on string `expr' which will executed via the
         built-in Python function: eval; `globals_' and `locals_' are
@@ -447,12 +451,14 @@ class SysMonTrepan:
         `run' if you want to debug general Python statements.
         """
 
+        # FIXME: DRY with run_exec() and run()
         if globals_ is None:
             globals_ = globals()
         if locals_ is None:
             locals_ = globals_
+
         if sysmon_tool_name is None:
-            sysmon_tool_name = ("trepan3k-sysmon",)
+            sysmon_tool_name = "trepan3k-sysmon"
 
         pseudo_filename_path = None
         if isinstance(expr, str):
@@ -487,7 +493,7 @@ class SysMonTrepan:
             step_granularity=step_granularity,
         )
         try:
-            retval = eval(expr, globals_, locals_)
+            retval = eval(code, globals_, locals_)
         except DebuggerQuit:
             pass
         finally:
