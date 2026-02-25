@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,9 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Our local modules
-from trepan.processor.command.base_cmd import DebuggerCommand
+import sys
+import tracer
 
+# Our local modules
+from trepan.sysmon_debugger import SysMonTrepan
+from trepan.processor.command.base_cmd import DebuggerCommand
+from trepan.processor.cmdfns import want_different_line
+
+E = sys.monitoring.events
 
 class StepICommand(DebuggerCommand):
     """**stepi** [*count*]
@@ -47,44 +53,63 @@ class StepICommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
+
+        core = self.core
+        is_sysmon = isinstance(core.debugger, SysMonTrepan)
+
         if len(args) <= 1:
             self.proc.debugger.core.step_ignore = 0
         else:
             pos = 1
             if pos == len(args) - 1:
-                self.core.step_ignore = self.proc.get_int(
+                core.step_ignore = self.proc.get_int(
                     args[pos], default=1, cmdname="stepi"
                 )
-                if self.core.step_ignore is None:
+                if core.step_ignore is None:
                     return False
                 # 0 means stop now or step 1, so we subtract 1.
-                self.core.step_ignore -= 1
+                core.step_ignore -= 1
                 pass
             elif pos != len(args):
                 self.errmsg(f"Invalid additional parameters {' '.join(args[pos])}")
                 return False
             pass
 
-        self.core.step_events = None
+        core.step_events = None
+
+        core.different_line = want_different_line(
+            args[0], self.settings["different"]
+        )
 
         # print("XXX", self.proc.frame)
         if self.proc.frame is not None:
             self.proc.frame.f_trace_opcodes = True
-        self.core.stop_level = None
-        self.core.last_frame = None
-        self.core.stop_on_finish = False
+        core.stop_level = None
+        core.last_frame = None
+        core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
+
+        if is_sysmon:
+            tracer.set_step_into(
+                core.debugger.sysmon_tool_id,
+                self.proc.frame,
+                granularity=tracer.StepType.STEP_INTO,
+                events_mask=E.INSTRUCTION,
+            )
+        pass
+
         return True
 
     pass
 
 
 if __name__ == "__main__":
-    from mock import MockDebugger
 
-    d = MockDebugger()
+    sysmon_tool_name = "trepan3k-stepi"
+    d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = StepICommand(d.core.processor)
-    for c in (["si", "5"], ["stepi", "1+2"], ["si", "foo"]):
+    cmd.proc.frame = sys._getframe(0)
+    for c in (["si"], ["si", "5"], ["si", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)

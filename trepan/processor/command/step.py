@@ -125,7 +125,7 @@ class StepCommand(DebuggerCommand):
                 if self.core.step_ignore is None:
                     return False
                 # 0 means stop now or step 1, so we subtract 1.
-                self.core.step_ignore -= 1
+                core.step_ignore -= 1
                 pass
             elif pos != len(args):
                 self.errmsg(f"Invalid additional parameters {' '.join(args[pos])}")
@@ -148,7 +148,7 @@ class StepCommand(DebuggerCommand):
         core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
 
-        if isinstance(core.debugger, SysMonTrepan):
+        if is_sysmon:
             tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
@@ -175,7 +175,7 @@ if __name__ == "__main__":
         step_granularity=tracer.StepGranularity.INSTRUCTION,
     )
 
-    for c in (["s"],  ["s", "5"], ["step", "1+2"], ["s", "foo"]):
+    for c in (["s"],  ["s", "5"], ["s", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)
