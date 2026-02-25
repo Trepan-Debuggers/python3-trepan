@@ -99,7 +99,7 @@ def call_event_callback(
 
 
 def call_event_handler_return(
-    sysmon_tool_id: int, debugger, code: CodeType, events_mask: int, step_type: StepType
+    sysmon_tool_id: int, code: CodeType, events_mask: int, step_type: StepType
 ) -> object:
     """Returning from a call event handler. We assume events_mask does not have
     any events that are not local events.
@@ -240,9 +240,15 @@ def instruction_event_callback(
         )
     )
     core = debugger.core
-    core.event = "instruction"
-    core.execution_status = "Running"
-    core.processor.event_processor(frame, "instruction", None)
+
+    if core.step_ignore > 0:
+        # print(f"XXX Counting down steps: was {core.step_ignore}")
+        core.step_ignore -= 1
+        return
+    elif core.step_ignore == 0:
+        core.event = "instruction"
+        core.execution_status = "Running"
+        core.processor.event_processor(frame, "instruction", None)
 
     ### end code inside hook; `events_mask` should be set.
 
@@ -371,10 +377,17 @@ def line_event_callback(sysmon_tool_id: int, debugger, code: CodeType, line_numb
         f"\nLINE: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:"
         f"\n\t{code_short(code)}, line: {line_number}"
     )
+
     core = debugger.core
-    core.event = "line"
-    core.execution_status = "Running"
-    core.processor.event_processor(frame, "line", None)
+
+    if core.step_ignore > 0:
+        # print(f"XXX Counting down steps: was {core.step_ignore}")
+        core.step_ignore -= 1
+        return
+    elif core.step_ignore == 0:
+        core.event = "line"
+        core.execution_status = "Running"
+        core.processor.event_processor(frame, "line", None)
 
 
     ### end code inside hook; `events_mask` should be set.

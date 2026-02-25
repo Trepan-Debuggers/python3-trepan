@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2020, 2024 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2020, 2024, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,12 +13,16 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
 import tracer
 
 # Our local modules
+from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
 
+E = sys.monitoring.events
 
 class StepCommand(DebuggerCommand):
     """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
@@ -49,7 +53,6 @@ class StepCommand(DebuggerCommand):
 
       step        # step 1 event, *any* event
       step 1      # same as above
-      step 5/5+0  # same as above
       step line   # step only line events
       step call   # step only call events
       step>       # same as above
@@ -82,14 +85,27 @@ class StepCommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
+
+        core = self.core
+        is_sysmon = isinstance(core.debugger, SysMonTrepan)
         step_events = []
+        events_mask = E.LINE
+
         if args[0][-1] == ">":
             step_events = ["call"]
+            events_mask = E.CALL
         elif args[0][-1] == "<":
             step_events = ["return"]
+            events_mask = E.PY_RETURN
         elif args[0][-1] == "!":
             step_events = ["exception"]
+            if is_sysmon:
+                self.errmsg("Exception tracing not available using sys.monitoring implementation; line stepping")
+                events_mask = E.LINE
             pass
+
+        ## FIXME beef up options so we can handle "STEP INSTRUCTION" STEP INTO" "STEP OVER" STEP OUT" "STEP CALL" "STEP RETURN"
+
         if len(args) <= 1:
             self.proc.debugger.core.step_ignore = 0
         else:
@@ -117,31 +133,49 @@ class StepCommand(DebuggerCommand):
             pass
 
         if [] == step_events:
-            self.core.step_events = None
+            core.step_events = None
         else:
-            self.core.step_events = step_events
+            core.step_events = step_events
             pass
 
-        self.core.different_line = want_different_line(
+        core.different_line = want_different_line(
             args[0], self.settings["different"]
         )
         if self.proc.frame is not None:
             self.proc.frame.f_trace_opcodes = False
-        self.core.stop_level = None
-        self.core.last_frame = None
-        self.core.stop_on_finish = False
+        core.stop_level = None
+        core.last_frame = None
+        core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
+
+        if isinstance(core.debugger, SysMonTrepan):
+            tracer.set_step_into(
+                core.debugger.sysmon_tool_id,
+                self.proc.frame,
+                granularity=tracer.StepType.STEP_INTO,
+                events_mask=events_mask,
+            )
+            pass
         return True
 
     pass
 
 
 if __name__ == "__main__":
-    from mock import MockDebugger
 
-    d = MockDebugger()
+    sysmon_tool_name = "trepan3k-step"
+    d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = StepCommand(d.core.processor)
-    for c in (["s", "5"], ["step", "1+2"], ["s", "foo"]):
+    cmd.proc.frame = sys._getframe(0)
+    tracer.start_local(
+        tool_name = sysmon_tool_name,
+        trace_callbacks = d.callback_hooks,
+        frame = cmd.proc.frame,
+        step_type=tracer.StepType.NO_STEPPING,
+        step_granularity=tracer.StepGranularity.INSTRUCTION,
+    )
+
+    for c in (["s"],  ["s", "5"], ["step", "1+2"], ["s", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)

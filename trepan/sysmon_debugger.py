@@ -37,12 +37,12 @@ import pyficache
 import tracer
 from tracer.stepping import StepGranularity, StepType
 from tracer.sys_monitoring import (
-    MAX_TOOL_IDS,
     FixedList,
+    MAX_TOOL_IDS,
     find_free_hook_id,
     find_hook_by_name,
-    is_free_tool_id,
     mstart,
+    register_tool_by_name,
 )
 from tracer.tracefilter import TraceFilter
 from xdis.load import check_object_path, load_module
@@ -100,28 +100,28 @@ class SysMonTrepan:
         step_granularity: StepGranularity = StepGranularity.LINE_NUMBER,
         opts=dict(),
     ):
-        if sysmon_tool_name is not None:
-            if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
-                if (self := DEBUGGERS[sysmon_tool_id]) is None:
-                    raise RuntimeError(
-                        f"Found tool id {sysmon_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong."
-                    )
-                return None
-            return DEBUGGERS.get(sysmon_tool_id)
-        else:
+
+        # Set up optional sysmon_tool_name and sysmon_tool_id when necessary.
+        # Also, if we have previously initialized an object, use that instead
+        # of creating a new object.
+
+        if sysmon_tool_name is None:
             sysmon_tool_name = "trepan3k-sysmon"
             if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
+                # Return previously initialized debugger object.
                 return DEBUGGERS[sysmon_tool_id]
-            pass
-        if sysmon_tool_id is None:
-            sysmon_tool_id = find_free_hook_id()
-            if sysmon_tool_id is None:
-                raise RuntimeError("Cannot find a free tool id.")
-            pass
-        elif not is_free_tool_id(sysmon_tool_id):
-            raise RuntimeError(
-                f"system.monitoring tool id {sysmon_tool_id} is already in use."
-            )
+
+        if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
+            if (self := DEBUGGERS[sysmon_tool_id]) is None:
+                raise RuntimeError(
+                    f"Found tool id {sysmon_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong."
+                )
+            return None
+
+        if sysmon_tool_id := find_free_hook_id() is None:
+            raise RuntimeError("Cannot find a free tool id.")
+
+        register_tool_by_name(sysmon_tool_name, sysmon_tool_id)
 
         self = super().__new__(cls)
         cls.init(
@@ -411,7 +411,6 @@ class SysMonTrepan:
             sysmon_tool_name = "trepan3k-sysmon"
 
         result = None
-        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
         code = func.__code__
         self.core.start(
             events_mask=events_mask,
