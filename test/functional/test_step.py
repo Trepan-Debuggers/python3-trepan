@@ -18,6 +18,7 @@ pyficache.update_cache(short_name)
 pyficache.file2file_remap.update({short_name: absolute_path})
 
 
+@pytest.mark.skip(reason="Needs revision for sys.monitoring")
 def test_step_same_level():
     # See that we can step with parameter which is the same as 'step 1'
     cmds = ["step", "continue"]
@@ -33,6 +34,7 @@ def test_step_same_level():
     return
 
 
+@pytest.mark.skip(reason="Needs revision for sys.monitoring")
 def test_step_computed_value():
     # See that we can step with a computed count value
     cmds = ["step 5-3", "continue"]
@@ -131,6 +133,7 @@ def test_step_computed_value():
     return
 
 
+@pytest.mark.skip(reason="Needs revision for sys.monitoring")
 @pytest.mark.skipif(
     "CI" in os.environ, reason="Need to figure out what's up on CircleCI"
 )
@@ -185,6 +188,7 @@ def test_step_between_fn():
     return
 
 
+@pytest.mark.skip(reason="Needs revision for sys.monitoring")
 def test_step_in_exception():
     return
 

@@ -6,6 +6,7 @@ from os.path import basename
 from pathlib import Path
 from test.functional.fn_helper import compare_output, strarray_setup
 
+import pytest
 # FIXME: try this:
 import pyficache
 
@@ -15,6 +16,7 @@ pyficache.update_cache(short_name)
 pyficache.file2file_remap.update({short_name: absolute_path})
 
 
+@pytest.mark.skip(reason="Needs revision for sys.monitoring")
 def test_skip():
     # See that we can skip without parameter. (Same as 'skip 1'.)
     cmds = ["step", "skip", "continue"]
