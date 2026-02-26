@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009-2010, 2013, 2015, 2020, 2024 Rocky Bernstein
+#  Copyright (C) 2009-2010, 2013, 2015, 2020, 2024, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,10 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+import tracer
+
 # Our local modules
+from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
 
+E = sys.monitoring.events
 
 class NextCommand(DebuggerCommand):
     """**next**[**+**|**-**] [*count*]
@@ -47,6 +52,10 @@ class NextCommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", need_stack=True, max_args=1)
 
     def run(self, args):
+
+        core = self.core
+        is_sysmon = isinstance(core.debugger, SysMonTrepan)
+
         if len(args) <= 1:
             step_ignore = 0
         else:
@@ -56,24 +65,37 @@ class NextCommand(DebuggerCommand):
             # 0 means stop now or step 1, so we subtract 1.
             step_ignore -= 1
             pass
+
         self.core.different_line = want_different_line(
             args[0], self.debugger.settings["different"]
         )
+
         if self.proc.frame is not None:
             self.proc.frame.f_trace_opcodes = False
         self.core.set_next(self.proc.frame, step_ignore)
         self.proc.continue_running = True  # Break out of command read loop
+
+        if is_sysmon:
+
+            tracer.set_step_over(
+                core.debugger.sysmon_tool_id,
+                self.proc.frame,
+                granularity=tracer.StepGranularity.INSTRUCTION,
+                events_mask=E.LINE,
+                callbacks=core.debugger.callback_hooks
+            )
         return True
 
     pass
 
 
 if __name__ == "__main__":
-    from mock import MockDebugger
 
-    d = MockDebugger()
+    sysmon_tool_name = "trepan3k-next"
+    d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = NextCommand(d.core.processor)
-    for c in (["n", "5"], ["next", "1+2"], ["n", "foo"]):
+    cmd.proc.frame = sys._getframe(0)
+    for c in (["next"], ["n", "5"], ["n", "foo"]):
         d.core.step_ignore = 0
         cmd.continue_running = False
         result = cmd.run(c)

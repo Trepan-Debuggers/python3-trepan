@@ -102,7 +102,6 @@ class StepICommand(DebuggerCommand):
                 events_mask=events_mask,
                 callbacks=core.debugger.callback_hooks
             )
-        pass
 
         return True
 
@@ -115,7 +114,7 @@ if __name__ == "__main__":
     d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = StepICommand(d.core.processor)
     cmd.proc.frame = sys._getframe(0)
-    for c in (["si"], ["si", "5"], ["si", "foo"]):
+    for c in (["stepi"], ["si", "5"], ["si", "foo"]):
         d.core.step_ignore = 0
         cmd.proc.continue_running = False
         result = cmd.run(c)

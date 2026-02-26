@@ -107,19 +107,17 @@ class SysMonTrepan:
 
         if sysmon_tool_name is None:
             sysmon_tool_name = "trepan3k-sysmon"
-            if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
-                # Return previously initialized debugger object.
-                return DEBUGGERS[sysmon_tool_id]
 
-        if (sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
-            if (self := DEBUGGERS[sysmon_tool_id]) is None:
+        if (found_sysmon_tool_id := find_hook_by_name(sysmon_tool_name)) is not None:
+            if (self := DEBUGGERS[found_sysmon_tool_id]) is None:
                 raise RuntimeError(
-                    f"Found tool id {sysmon_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong."
+                    f"Found tool id {found_sysmon_tool_id}, but it is not recorded in DEBUGGERS. Something is wrong."
                 )
-            return None
+            return self
 
-        if sysmon_tool_id := find_free_hook_id() is None:
-            raise RuntimeError("Cannot find a free tool id.")
+        if sysmon_tool_id is None:
+            if (sysmon_tool_id := find_free_hook_id()) is None:
+                raise RuntimeError("Cannot find a free tool id.")
 
         register_tool_by_name(sysmon_tool_name, sysmon_tool_id)
 
