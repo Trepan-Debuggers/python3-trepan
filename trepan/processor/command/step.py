@@ -91,10 +91,11 @@ class StepCommand(DebuggerCommand):
         step_events = []
         events_mask = E.LINE
 
-        if args[0][-1] == ">":
+        step_granularity = tracer.StepGranularity.LINE_NUMBER
+        if args[0][-1] == "<":
             step_events = ["call"]
             events_mask = E.CALL
-        elif args[0][-1] == "<":
+        elif args[0][-1] == ">":
             step_events = ["return"]
             events_mask = E.PY_RETURN
         elif args[0][-1] == ".":
@@ -102,6 +103,7 @@ class StepCommand(DebuggerCommand):
             # to register and track line stops.
             step_events = ["instruction", "line"]
             events_mask = E.LINE | E.INSTRUCTION
+            step_granularity = tracer.StepGranularity.INSTRUCTION
         elif args[0][-1] == "!":
             step_events = ["exception"]
             if is_sysmon:
@@ -157,7 +159,7 @@ class StepCommand(DebuggerCommand):
             tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
-                granularity=tracer.StepType.STEP_INTO,
+                granularity=step_granularity,
                 events_mask=events_mask,
                 callbacks=core.debugger.callback_hooks
             )

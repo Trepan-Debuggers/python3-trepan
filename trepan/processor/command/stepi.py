@@ -98,7 +98,7 @@ class StepICommand(DebuggerCommand):
             tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
-                granularity=tracer.StepType.STEP_INTO,
+                granularity=tracer.StepGranularity.INSTRUCTION,
                 events_mask=events_mask,
                 callbacks=core.debugger.callback_hooks
             )
