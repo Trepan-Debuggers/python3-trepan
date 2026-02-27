@@ -143,6 +143,7 @@ class SysMonTrepan:
         See also ``Debugger.start`` and ``Debugger.stop``.
         """
 
+        self.is_sysmon_debugger = True
         self.mainpyfile = None
 
         # We keep track of the thread because we could be stepping inside

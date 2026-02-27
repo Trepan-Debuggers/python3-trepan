@@ -108,12 +108,15 @@ def get_stack(frame: FrameType, t, botframe, proc_obj=None) -> Tuple[list, int]:
             break  # See commented alternative below
         column_number = get_column_start_from_frame(curframe)
         stack.append((curframe, curframe.f_lineno, column_number))
-        # bdb has:
-        # if f is botframe: break
+
+        # # Follow bdb?
+        # if curframe is botframe:
+        #     break
+
         curframe = curframe.f_back
         pass
     stack.reverse()
-    i = max(0, len(stack) - 1)
+    i = len(stack) - 1
     while t is not None:
         column_number = get_column_start_from_frame(t.tb_frame)
         stack.append((t.tb_frame, t.tb_lineno, column_number))
@@ -754,7 +757,19 @@ class CommandProcessor(Processor):
         self.column_number = -1
         if self.frame or exc_traceback:
             self.stack, self.curindex = get_stack(self.frame, exc_traceback, None, self)
-            self.curframe = self.stack[self.curindex][0]
+            if self.curindex >= 0:
+                self.curframe = self.stack[self.curindex][0]
+            elif self.debugger.is_sysmon_debugger:
+                # The following hack assume sysmon stack:
+                ##0 setup(self=<trepan.processor.cmdproc.CommandProcessor>)
+                ##1 process_commands(self=<trepan.processor.cmdproc.CommandProcessor>)
+                ##2 event_processor(self=<trepan.processor.cmdproc.CommandProcessor>, frame..)
+                ##3 start_event_callback(sysmon_tool_id=3, debugger=<trepan.sysmon_debugger.SysMonTrepan >, code=<code...>)
+                ##4 <lambda>(code=<code object stop ..>)
+                ##5 <place where event handler kicked in>
+                self.curframe = sys._getframe(5)
+            else:
+                self.curframe = None
             self.thread_name = Mthread.current_thread_name()
             self.list_offset = self.curframe.f_lasti
             self.list_object = self.curframe

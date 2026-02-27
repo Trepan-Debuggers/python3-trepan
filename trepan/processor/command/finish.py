@@ -20,7 +20,6 @@ import tracer
 from trepan.lib.stack import count_frames
 
 # Our local modules
-from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 
 E = sys.monitoring.events
@@ -55,9 +54,6 @@ class FinishCommand(DebuggerCommand):
 
     def run(self, args):
 
-        core = self.core
-        is_sysmon = isinstance(core.debugger, SysMonTrepan)
-
         if self.proc.stack is None:
             return False
         if len(args) <= 1:
@@ -69,14 +65,15 @@ class FinishCommand(DebuggerCommand):
             pass
 
         # print "+++ %d" % levels
+        core = self.core
         self.core.step_events = ["return"]
         self.core.stop_on_finish = True
         self.core.stop_level = count_frames(self.proc.frame) + 1 - levels
         self.core.last_frame = self.proc.frame
         self.proc.continue_running = True  # Break out of command read loop
 
-        if is_sysmon:
-            d = core.debugger
+        d = core.debugger
+        if d.is_sysmon_debugger:
             d.step_type = tracer.StepType.STEP_OUT
             d.events_mask = tracer.set_step_out(
                 core.debugger.sysmon_tool_id,
@@ -90,6 +87,7 @@ class FinishCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
+    from trepan.sysmon_debugger import SysMonTrepan
 
     sysmon_tool_name = "trepan3k-next"
     d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)

@@ -87,6 +87,7 @@ class Trepan:
         See also ``Debugger.start`` and ``Debugger.stop``.
         """
 
+        self.is_sysmon_debugger = False
         self.mainpyfile = None
         self.thread = None
         self.eval_string = None

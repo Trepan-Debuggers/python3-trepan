@@ -18,7 +18,6 @@ import sys
 import tracer
 
 # Our local modules
-from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
 
@@ -55,9 +54,6 @@ class NextCommand(DebuggerCommand):
 
     def run(self, args):
 
-        core = self.core
-        is_sysmon = isinstance(core.debugger, SysMonTrepan)
-
         if len(args) <= 1:
             step_ignore = 0
         else:
@@ -68,6 +64,7 @@ class NextCommand(DebuggerCommand):
             step_ignore -= 1
             pass
 
+        core = self.core
         self.core.different_line = want_different_line(
             args[0], self.debugger.settings["different"]
         )
@@ -77,8 +74,8 @@ class NextCommand(DebuggerCommand):
         self.core.set_next(self.proc.frame, step_ignore)
         self.proc.continue_running = True  # Break out of command read loop
 
-        if is_sysmon:
-            d = core.debugger
+        d = core.debugger
+        if d.is_sysmon_debugger:
             d.step_type = tracer.StepType.STEP_OVER
             d.events_mask = tracer.set_step_over(
                 d.sysmon_tool_id,
@@ -93,6 +90,7 @@ class NextCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
+    from trepan.sysmon_debugger import SysMonTrepan
 
     sysmon_tool_name = "trepan3k-next"
     d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)

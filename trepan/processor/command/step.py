@@ -18,7 +18,6 @@ import sys
 import tracer
 
 # Our local modules
-from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
 
@@ -89,7 +88,7 @@ class StepCommand(DebuggerCommand):
     def run(self, args):
 
         core = self.core
-        is_sysmon = isinstance(core.debugger, SysMonTrepan)
+        d = core.debugger
         step_events = []
         events_mask = E.LINE
 
@@ -108,7 +107,7 @@ class StepCommand(DebuggerCommand):
             step_granularity = tracer.StepGranularity.INSTRUCTION
         elif args[0][-1] == "!":
             step_events = ["exception"]
-            if is_sysmon:
+            if d.is_sysmon_debugger:
                 self.errmsg("Exception tracing not available using sys.monitoring implementation; line stepping")
                 events_mask = E.LINE
             pass
@@ -157,8 +156,7 @@ class StepCommand(DebuggerCommand):
         core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
 
-        if is_sysmon:
-            d = core.debugger
+        if d.is_sysmon_debugger:
             d.step_type = tracer.StepType.STEP_INTO
             d.events_mask = tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
@@ -174,6 +172,7 @@ class StepCommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
+    from trepan.sysmon_debugger import SysMonTrepan
 
     sysmon_tool_name = "trepan3k-step"
     d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)

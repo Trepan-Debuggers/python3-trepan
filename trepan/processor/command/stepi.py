@@ -18,7 +18,6 @@ import sys
 import tracer
 
 # Our local modules
-from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.cmdfns import want_different_line
 
@@ -55,10 +54,9 @@ class StepICommand(DebuggerCommand):
     def run(self, args):
 
         core = self.core
-        is_sysmon = isinstance(core.debugger, SysMonTrepan)
 
         if len(args) <= 1:
-            self.proc.debugger.core.step_ignore = 0
+            core.step_ignore = 0
         else:
             pos = 1
             if pos == len(args) - 1:
@@ -89,7 +87,8 @@ class StepICommand(DebuggerCommand):
         core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
 
-        if is_sysmon:
+        d = core.debugger
+        if d.is_sysmon_debugger:
 
             # As of Python 3.14, in order to get instruction stops, we *also* need
             # to register and track line stops.
@@ -109,6 +108,7 @@ class StepICommand(DebuggerCommand):
 
 
 if __name__ == "__main__":
+    from trepan.sysmon_debugger import SysMonTrepan
 
     sysmon_tool_name = "trepan3k-stepi"
     d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)

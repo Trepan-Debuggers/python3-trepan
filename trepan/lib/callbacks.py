@@ -449,14 +449,26 @@ def leave_event_callback(
         print("Woah! did not find frame")
         return
 
+    core = debugger.core
+    core.last_lineno = frame.f_lineno
+    core.last_offset = frame.f_lasti
+    core.event = event
+    core.execution_status = "Running"
+
+    if core.step_ignore > 0:
+        # print(f"XXX Counting down steps: was {core.step_ignore}")
+        core.step_ignore -= 1
+    elif core.step_ignore == 0:
+        core.processor.event_processor(frame, event, return_value)
+
     ### end code inside hook; `frame` should be set.
 
     if event != "yield":
-        return leave_event_handler_return(sysmon_tool_id, frame)
+        return leave_event_handler_return(sysmon_tool_id, debugger, frame)
     # Do we want to do something special for yield?
 
 
-def leave_event_handler_return(sysmon_tool_id: int, frame: FrameType) -> object:
+def leave_event_handler_return(sysmon_tool_id: int, debugger, frame: FrameType) -> object:
     """Returning from a RETURN, YIELD event handler. Note PY_UNWIND can
     skip over RETURN and YIELD events that might otherwise occur.
 
@@ -486,6 +498,10 @@ def leave_event_handler_return(sysmon_tool_id: int, frame: FrameType) -> object:
     # to what it was, saved in FRAME_TRACKING at the time of the call.
     if (caller_frame := frame.f_back) is not None:
         refresh_code_mask(sysmon_tool_id, caller_frame)
+
+    if debugger.core.event == "return" and (prev_frame := frame.f_back) is not None:
+        code = prev_frame.f_code
+        sys.monitoring.set_local_events(sysmon_tool_id, code, debugger.events_mask)
 
     # # debugging
     # caller_events_mask = sys.monitoring.get_local_events(
@@ -566,11 +582,12 @@ def line_event_callback(
 
     ### end code inside hook; `events_mask` should be set.
 
-    d = core.debugger
-    print(
-        f"XXX10 {bin(d.events_mask)} "
-        f"({events_mask}) {events_mask2str(d.events_mask)}"
-    )
+    # # debug
+    # d = core.debugger
+    # print(
+    #     f"XXX10 {bin(d.events_mask)} "
+    #     f"({events_mask}) {events_mask2str(d.events_mask)}"
+    # )
 
     return local_event_handler_return(sysmon_tool_id, debugger, code)
 
