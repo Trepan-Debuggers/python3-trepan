@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013-2015, 2020, 2023 Rocky Bernstein
+#  Copyright (C) 2009, 2013-2015, 2020, 2023, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,16 +13,22 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import sys
+import tracer
 
 from trepan.lib.stack import count_frames
 
 # Our local modules
+from trepan.sysmon_debugger import SysMonTrepan
 from trepan.processor.command.base_cmd import DebuggerCommand
 
+E = sys.monitoring.events
 
 class FinishCommand(DebuggerCommand):
     """**finish** [*level*]
+
+    Also known as "step out".
 
     Continue execution until leaving the current function. When *level* is
     specified, that many frame levels need to be popped. Note that *yield*
@@ -48,6 +54,10 @@ class FinishCommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
+
+        core = self.core
+        is_sysmon = isinstance(core.debugger, SysMonTrepan)
+
         if self.proc.stack is None:
             return False
         if len(args) <= 1:
@@ -64,24 +74,36 @@ class FinishCommand(DebuggerCommand):
         self.core.stop_level = count_frames(self.proc.frame) + 1 - levels
         self.core.last_frame = self.proc.frame
         self.proc.continue_running = True  # Break out of command read loop
+
+        if is_sysmon:
+            d = core.debugger
+            d.step_type = tracer.StepType.STEP_OUT
+            d.events_mask = tracer.set_step_out(
+                core.debugger.sysmon_tool_id,
+                self.proc.frame,
+                callbacks=core.debugger.callback_hooks
+            )
+
         return True
 
     pass
 
 
 if __name__ == "__main__":
-    from mock import MockDebugger
 
-    d = MockDebugger()
+    sysmon_tool_name = "trepan3k-next"
+    d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = FinishCommand(d.core.processor)
+    cmd.proc.frame = sys._getframe(0)
+
     # Need to have a subroutine to get at least one frame f_back.
 
     def demo_finish(cmd):
         for c in (
+            ["finish"],
             ["finish", "1"],
             ["finish", "wrong", "number", "of", "args"],
             ["finish", "5"],
-            ["finish", "0*5+1"],
         ):
             cmd.continue_running = False
             cmd.proc.stack = [
@@ -93,9 +115,8 @@ if __name__ == "__main__":
             result = cmd.run(c)
             print("Execute result: %s" % result)
             print(
-                "stop_frame %s, continue_running: %s"
+                "continue_running: %s"
                 % (
-                    cmd.core.stop_frame,
                     cmd.continue_running,
                 )
             )

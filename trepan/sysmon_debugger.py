@@ -164,6 +164,7 @@ class SysMonTrepan:
         # desired.
         self.step_granularity = step_granularity
         self.step_type = step_type
+        self.masks_sets = 0
         ###
 
         def get_option(key: str) -> Any:

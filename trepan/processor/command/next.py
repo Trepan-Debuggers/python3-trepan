@@ -27,6 +27,8 @@ E = sys.monitoring.events
 class NextCommand(DebuggerCommand):
     """**next**[**+**|**-**] [*count*]
 
+    Also known as "step over".
+
     Execute the current simple statement stopping at the next event but
     ignoring steps into function calls at this level,
 
@@ -76,11 +78,12 @@ class NextCommand(DebuggerCommand):
         self.proc.continue_running = True  # Break out of command read loop
 
         if is_sysmon:
-
-            tracer.set_step_over(
-                core.debugger.sysmon_tool_id,
+            d = core.debugger
+            d.step_type = tracer.StepType.STEP_OVER
+            d.events_mask = tracer.set_step_over(
+                d.sysmon_tool_id,
                 self.proc.frame,
-                granularity=tracer.StepGranularity.INSTRUCTION,
+                granularity=tracer.StepGranularity.LINE_NUMBER,
                 events_mask=E.LINE,
                 callbacks=core.debugger.callback_hooks
             )

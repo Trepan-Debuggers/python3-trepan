@@ -27,6 +27,8 @@ E = sys.monitoring.events
 class StepCommand(DebuggerCommand):
     """**step**[**+**|**-**|**<**|**>**|**!**] [*event*...] [*count*]
 
+    Also known as "step into".
+
     Execute the current line, stopping at the next event.
 
     With an integer argument, step that many times.
@@ -156,7 +158,9 @@ class StepCommand(DebuggerCommand):
         self.proc.continue_running = True  # Break out of command read loop
 
         if is_sysmon:
-            tracer.set_step_into(
+            d = core.debugger
+            d.step_type = tracer.StepType.STEP_INTO
+            d.events_mask = tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
                 granularity=step_granularity,
