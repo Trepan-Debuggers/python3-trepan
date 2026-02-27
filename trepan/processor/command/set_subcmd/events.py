@@ -15,35 +15,32 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import tracer
+from typing import Final, Tuple
 
 # Our local modules
+from trepan.lib.complete import complete_token
 from trepan.processor.command import base_subcmd as Mbase_subcmd
 
 
 class SetEvents(Mbase_subcmd.DebuggerSubcommand):
+    """**set events** [{+|-}*event* ...]
 
-    """**set events** [*event* ...]
+    Adds ore remove events to the list of events that the debugger will stop on.
+    Event names are shown using the "show events" command.
 
-    Sets the events that the debugger will stop on. Event names are:
-    `c_call`, `c_exception`, `c_return`, `call`, `exception`, `line`,
-    or `return`.
-
-    `all` can be used as an abbreviation for listing all event names.
-
-    Changing trace event filters works independently of turning on or off
+    Changing the trace event set works independently of turning on or off
     tracing-event printing.
 
     Examples:
     ---------
 
-      set events line        # Set trace filter for line events only.
-      set events call return # Trace calls and returns only
-      set events all         # Set trace filter to all events.
+      set events -c_call       # remove c_call events from stopping in debugger
+      set events +start        # go to debuger when start event is triggered
 
     See also:
     ---------
 
-    `set trace`, `show trace`, and `show events`. `help step` lists event names.
+    `set trace`, `show trace`, and `show events`. `show events` lists event names.
     """
 
     in_list = True
@@ -51,22 +48,31 @@ class SetEvents(Mbase_subcmd.DebuggerSubcommand):
     min_abbrev = len("ev")
     short_help = "Set execution-tracing event set"
 
+    EVENT_LIST_ACTIONS: Final[Tuple[str]] = tuple(
+        [prefix + name for name in tracer.ALL_EVENT_NAMES for prefix in ("+", "-")]
+    )
+    print(EVENT_LIST_ACTIONS)
+
+    def complete(self, prefix):
+        return complete_token(self.EVENT_LIST_ACTIONS)
+
     def run(self, args):
-        valid_args = tracer.ALL_EVENT_NAMES + ("all",)
-        eventset = []
+        eventset = set(self.debugger.settings["printset"])
         for arg in args:
-            if arg not in valid_args:
+            if arg not in self.EVENT_LIST_ACTIONS:
                 self.errmsg(f"set events: Invalid argument {arg} ignored.")
                 continue
-            if arg in tracer.ALL_EVENTS:
-                eventset += [arg]
-            elif "all" == arg:
-                eventset += tracer.ALL_EVENTS
+            event_name = arg[1:]
+            add_event = arg.startswith("+")
+            if add_event:
+                eventset.add(event_name)
+                self.errmsg(f"Event {event_name} added.")
+            else:
+                eventset.remove(event_name)
+                self.errmsg(f"Event {event_name} removed.")
             pass
-        if [] != eventset:
-            self.debugger.settings["printset"] = frozenset(eventset)
-            pass
-        return
+        self.debugger.settings["printset"] = frozenset(eventset)
+        return self.proc.commands["show"].cmds.subcmds["events"].run([])
 
     pass
 
