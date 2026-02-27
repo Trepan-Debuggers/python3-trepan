@@ -145,7 +145,7 @@ def call_event_callback(
         # to correct.
         # Figure out the code's new events_mask.
         if len(child_code_info.breakpoints) == 0:
-            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT):
+            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
                 # Clear out events mask in code that we are about to call.
                 events_mask_child = 0
             else:
@@ -157,14 +157,14 @@ def call_event_callback(
             events_mask_child = sys.monitoring.get_local_events(
                 sysmon_tool_id, code_to_call
             )
-            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT):
+            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
                 events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
                 # print(f"XXX0 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
     else:
         events_mask_child = sys.monitoring.get_local_events(
             sysmon_tool_id, code_to_call
         )
-        if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT):
+        if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
             events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
         else:
             # E.LINE is used because even if we are tracking instructions,
@@ -220,7 +220,7 @@ def call_event_handler_return(
         # that will be called.
         sys.monitoring.set_local_events(sysmon_tool_id, code, events_mask)
         if (
-            events_mask == 0
+            events_mask == E.NO_EVENTS
             and (code_info := CODE_TRACKING.get(sysmon_tool_id, code)) is not None
         ):
             if len(code_info.breakpoints) == 0:
@@ -484,13 +484,23 @@ def leave_event_handler_return(sysmon_tool_id: int, debugger, frame: FrameType) 
         code_info = CODE_TRACKING.get((sysmon_tool_id, code))
         if code_info is not None:
             # FIXME: do we have to worry about other threads?
+
+            # We are about to leave. Unless there are breakpoints in the code,
+            # clear any code frames in the current frame.
+            # If want to step into this again, the caller will have set those up.
+            # Otherwise we there may be some other code that is stepping over or
+            # stepping out that may trip over events set from this call.
             if len(code_info.breakpoints) == 0:
                 # Remove any local events
-                sys.monitoring.set_local_events(sysmon_tool_id, code, 0)
+                sys.monitoring.set_local_events(sysmon_tool_id, code, E.NO_EVENTS)
             # else:
             # FIXME: What should we do here for breakpoints?
             # # Do we need to remove this from CODE_TRACKING?
             # del CODE_TRACKING[sysmon_tool_id, code]
+        else:
+            # No information about breakpoints recorded. Assume there are none.
+            # See comment above concerning clearning breakpoints.
+            sys.monitoring.set_local_events(sysmon_tool_id, code, E.NO_EVENTS)
 
     # If the code in frame.f_back was involved in a recursive call, or
     # another thread, it is possible that the local events for that
@@ -499,6 +509,8 @@ def leave_event_handler_return(sysmon_tool_id: int, debugger, frame: FrameType) 
     if (caller_frame := frame.f_back) is not None:
         refresh_code_mask(sysmon_tool_id, caller_frame)
 
+    # Set events in caller. Note that we might be stepping to a region further
+    # down the call stack than we have previously seen.
     if debugger.core.event == "return" and (prev_frame := frame.f_back) is not None:
         code = prev_frame.f_code
         sys.monitoring.set_local_events(sysmon_tool_id, code, debugger.events_mask)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2009, 2013, 2015, 2017, 2020, 2024-2025 Rocky Bernstein
+#  Copyright (C) 2009, 2013, 2015, 2017, 2020, 2024-2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,6 +13,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import tracer
 
 from trepan.processor.cmdbreak import parse_break_cmd, set_break
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -49,7 +52,8 @@ class ContinueCommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="running", max_args=1, need_stack=True)
 
     def run(self, args):
-        if len(args) > 1:
+        has_args = len(args) > 1
+        if has_args:
             # FIXME: DRY this code. Better is to hook into tbreak.
             func, filename, lineno, condition, offset = parse_break_cmd(self.proc, args)
             if not (func is None and filename is None):
@@ -59,26 +63,37 @@ class ContinueCommand(DebuggerCommand):
             else:
                 self.errmsg(f"Did not find stopping spot for: {' '.join(args[1:])}")
                 return
-        self.core.step_events = None  # All events
-        self.core.step_ignore = -1
+
+
+        core = self.core
+        core.step_events = None  # All events
+        core.step_ignore = -1
         self.proc.continue_running = True  # Break out of command read loop
+        self.proc.fast_continue = not has_args
 
         # Try to remove debugger hook if no breakpoints are set.
-        self.proc.fast_continue = True
+        d = core.debugger
+        if d.is_sysmon_debugger:
+            d.events_mask = tracer.set_step_continue(
+                core.debugger.sysmon_tool_id,
+                self.proc.frame,
+                callbacks=core.debugger.callback_hooks
+            )
+
         return True
 
     pass
 
 
 if __name__ == "__main__":
-    import sys
+    from trepan.sysmon_debugger import SysMonTrepan
+
+    sysmon_tool_name = "trepan3k-continue"
 
     def five():
         return 5
 
-    from trepan.debugger import Trepan
-
-    d = Trepan()
+    d = SysMonTrepan(sysmon_tool_name=sysmon_tool_name)
     cmd = ContinueCommand(d.core.processor)
     cmd.proc.frame = sys._getframe()
     line = cmd.proc.frame.f_lineno

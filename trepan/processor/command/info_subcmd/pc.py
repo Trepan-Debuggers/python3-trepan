@@ -59,21 +59,15 @@ class InfoPC(DebuggerSubcommand):
                 self.msg(f"PC offset is {format_offset(offset, style)}.")
                 offset = max(offset, 0)
                 code = curframe.f_code
-                co_code = code.co_code
                 style = self.debugger.settings.get("style", "none")
                 disassemble_bytes(
                     self.msg,
                     self.msg_nocr,
-                    code=co_code,
+                    code=code,
                     lasti=offset,
                     cur_line=line_no,
                     start_line=line_no - 1,
                     end_line=line_no + 1,
-                    varnames=code.co_varnames,
-                    names=code.co_names,
-                    constants=code.co_consts,
-                    cells=code.co_cellvars,
-                    freevars=code.co_freevars,
                     line_starts=dict(findlinestarts(code)),
                     style=style,
                     end_offset=offset + 10,
