@@ -125,9 +125,6 @@ def call_event_callback(
     if isinstance(code_to_call, BuiltinFunctionType):
         event = "builtin_call"
     elif not isinstance(code_to_call, CodeType) or isinstance(code_to_call, FunctionType):
-        if isinstance(code_to_call, FunctionType):
-            event = "function_call"
-        # Might be a class, set_local_events only works on code.
         code_class = code_to_call
         for field in ("__code__", "__new__", "__init__"):
             if hasattr(code_to_call, field):

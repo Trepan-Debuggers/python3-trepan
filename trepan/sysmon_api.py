@@ -76,9 +76,9 @@ def debug(
     .. code-block:: python
 
         ... # Possibly some Python code
-        import trepan.new_api # Needed only once
+        import trepan.sysmon_api # Needed only once
         ... # Possibly some more Python code
-        trepan.new_api.debug() # You can wrap inside conditional logic too
+        trepan.sysmon_api.debug() # You can wrap inside conditional logic too
         pass  # Stop will be here.
         # Below is code you want to use the debugger to do things.
         ....  # more Python code
@@ -95,8 +95,8 @@ def debug(
        >>> from trepan.debugger import debugger_obj
        >>> type(debugger_obj)
        <type 'NoneType'>
-       >>> import trepan.new_api
-       >>> trepan.new_api.debug()
+       >>> import trepan.sysmon_api
+       >>> trepan.sysmon_api.debug()
        ...
        (SysMonTrepan) c
        >>> from trepan.debugger import debugger_obj

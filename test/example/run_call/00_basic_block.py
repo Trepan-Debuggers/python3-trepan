@@ -5,7 +5,7 @@ basic block.
 
 import sys
 from tracer.stepping import StepGranularity, StepType
-from trepan.new_api import run_call
+from trepan.sysmon_api import run_call
 
 E = sys.monitoring.events
 
