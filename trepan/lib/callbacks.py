@@ -17,7 +17,7 @@ from tracer.stepping import (
     code_short,
     refresh_code_mask,
 )
-from types import BuiltinFunctionType, CodeType, FunctionType, FrameType
+from types import BuiltinFunctionType, CodeType, FunctionType, FrameType, MethodWrapperType
 from typing import Union
 
 E = sys.monitoring.events
@@ -134,6 +134,9 @@ def call_event_callback(
                 code_to_call = getattr(code_to_call, field)
                 if isinstance(code_to_call, CodeType):
                     break
+                elif isinstance(code_to_call, MethodWrapperType):
+                    event = "c_call"
+                    break
                 pass
             pass
         else:
@@ -142,43 +145,44 @@ def call_event_callback(
             print(f"XXX4 cannot find Python code in code for {code_class}")
             return
 
-        if (
-            child_code_info := CODE_TRACKING.get((sysmon_tool_id, code_to_call), None)
-            is not None
-        ):
-            # We've seen code_to_call, it may have a local event mask that we have
-            # to correct.
-            # Figure out the code's new events_mask.
-            if len(child_code_info.breakpoints) == 0:
-                if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-                    # Clear out events mask in code that we are about to call.
-                    events_mask_child = 0
+        if event == "call":
+            if (
+                child_code_info := CODE_TRACKING.get((sysmon_tool_id, code_to_call), None)
+                is not None
+            ):
+                # We've seen code_to_call, it may have a local event mask that we have
+                # to correct.
+                # Figure out the code's new events_mask.
+                if len(child_code_info.breakpoints) == 0:
+                    if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                        # Clear out events mask in code that we are about to call.
+                        events_mask_child = 0
+                    else:
+                        # E.LINE is used because even if we are tracking instructions,
+                        # we will need to set E.LINE for instructions to have an effect.
+                        # If this changes we can consider replacing with E.INSTRUCTIONS.
+                        events_mask_child |= STEP_INTO_TRACKING | E.LINE
+                else:
+                    events_mask_child = sys.monitoring.get_local_events(
+                        sysmon_tool_id, code_to_call
+                    )
+                    if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                        events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
+                        # print(f"XXX0 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
+            else:
+                events_mask_child = sys.monitoring.get_local_events(
+                    sysmon_tool_id, code_to_call
+                )
+                if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                    events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
                 else:
                     # E.LINE is used because even if we are tracking instructions,
                     # we will need to set E.LINE for instructions to have an effect.
                     # If this changes we can consider replacing with E.INSTRUCTIONS.
                     events_mask_child |= STEP_INTO_TRACKING | E.LINE
-            else:
-                events_mask_child = sys.monitoring.get_local_events(
-                    sysmon_tool_id, code_to_call
-                )
-                if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-                    events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
-                    # print(f"XXX0 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
-        else:
-            events_mask_child = sys.monitoring.get_local_events(
-                sysmon_tool_id, code_to_call
-            )
-            if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-                events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
-            else:
-                # E.LINE is used because even if we are tracking instructions,
-                # we will need to set E.LINE for instructions to have an effect.
-                # If this changes we can consider replacing with E.INSTRUCTIONS.
-                events_mask_child |= STEP_INTO_TRACKING | E.LINE
-            # print(f"XXX1 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
+                # print(f"XXX1 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
 
-        sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
+            sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
 
     print(
         (

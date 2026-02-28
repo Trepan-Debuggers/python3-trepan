@@ -25,6 +25,8 @@ class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
 
     Show parameters of the current stack frame.
 
+    If we are in a builtin call or a C call, only the first argument is shown.
+
     See also:
     ---------
     `info locals`, `info globals`, `info frame`"""
@@ -37,6 +39,11 @@ class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
         if not self.proc.curframe:
             self.errmsg("No stack.")
             return False
+
+        if self.proc.event in ("builtin_call", "c_call"):
+            self.msg(f"Argument 0: {self.proc._saferepr(self.proc.event_arg[1])}")
+            return
+
         f = self.proc.curframe
         co = f.f_code
         # Break out display into args, varargs, keywords, and locals ?
