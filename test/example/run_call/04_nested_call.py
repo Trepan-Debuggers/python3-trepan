@@ -2,27 +2,19 @@
 Nested call testing
 
 Useful in stepping into and stepping over.
+
+Things to try:
+   * nexting over nested_functions
+   * stepping into first nested_funciton and then stepping over 2nd one
+     to see that stepping inside first nested funtion is cleared
+   * same as above but using "finish" and "continue"
+   * Stepping into "print" to see that we handle builtin functions correctly
+   * finish twice from nested_function
 """
 
-import sys
 from tracer.stepping import StepGranularity, StepType
 from typing import Tuple
 from trepan.sysmon_api import run_call
-
-E = sys.monitoring.events
-
-# def check_args() -> list:
-#     if len(sys.argv) < 3:
-#         return 3, 5
-#     args = [-1, -1]
-#     for i in range(2):
-#         try:
-#             args[i] = int(sys.argv[i + 1])
-#         except ValueError:
-#             print(f"** Expecting an integer, got: {repr(sys.argv[i])}")
-#             sys.exit(2)
-#         pass
-#     return args
 
 def nested_function(x: list) -> list:
     return x

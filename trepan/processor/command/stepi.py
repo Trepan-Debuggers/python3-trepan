@@ -84,17 +84,19 @@ class StepICommand(DebuggerCommand):
             self.proc.frame.f_trace_opcodes = True
         core.stop_level = None
         core.last_frame = None
+        core.last_last_offset = self.proc.frame.f_lasti
         core.stop_on_finish = False
         self.proc.continue_running = True  # Break out of command read loop
 
         d = core.debugger
         if d.is_sysmon_debugger:
 
-            # As of Python 3.14, in order to get instruction stops, we *also* need
-            # to register and track line stops.
             events_mask = E.INSTRUCTION | E.LINE
 
-            tracer.set_step_into(
+            # As of Python 3.14, in order to get instruction stops, we *also* need
+            # to register and track line stops.
+            d.step_type = tracer.StepType.STEP_INTO
+            d.events_mask = tracer.set_step_into(
                 core.debugger.sysmon_tool_id,
                 self.proc.frame,
                 granularity=tracer.StepGranularity.INSTRUCTION,

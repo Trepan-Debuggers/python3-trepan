@@ -112,7 +112,7 @@ def print_source_location_info(
 ):
     """Print out a source location, e.g. the first line in
     line in:
-        (/tmp.py:2:4 @21):  <module>
+        (/tmp.py:2:4 *21):  <module>
         -- 2 import sys,os
         (trepan3k)
     """
@@ -128,7 +128,7 @@ def print_source_location_info(
         else:
             mess = f"({filename}:{line_number}{col_str}"
     if f_lasti and f_lasti != -1:
-        mess += " @%d" % f_lasti
+        mess += " *%d" % f_lasti
         pass
     mess += "):"
     if fn_name and fn_name != "?":

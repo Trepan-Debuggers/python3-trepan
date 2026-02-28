@@ -1,6 +1,15 @@
 """
 The simplest of examples: stepping for line and instruction events for a single
 basic block.
+
+Things to try:
+   * [step]
+   * [step; continue]
+   * [step 2; finish]
+   * [next; finish]
+   * [finish]
+   * [continue]
+   * Stepping beyond the return to see we can step into the caller.
 """
 
 import sys

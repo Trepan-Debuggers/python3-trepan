@@ -1,12 +1,17 @@
 """
 Trace stepping over a long import.
+
+Things to try:
+   * Seeing that "next 2" for import scipy and nltk is fast
+   * Step into print and then scpicialpy.hyp1f1 shows distinguishes
+     Builtin and C function calls with arg0 set.
+   * Setting events -c_call and/or -builtin_call to see that we skip builtin and c
+     functions
+   * See that we can step into nltk.data.find, check mixed mode stepping in there.
 """
 
-import sys
 from tracer.stepping import StepGranularity, StepType
 from trepan.sysmon_api import run_call
-
-E = sys.monitoring.events
 
 def long_import():
     """

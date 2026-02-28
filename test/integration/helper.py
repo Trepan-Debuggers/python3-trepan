@@ -63,8 +63,8 @@ def run_debugger(
         tolines = f.readlines()
 
     # Filter out last instruction. For example:
-    # (gcd.py:11 @6): -> (gcd.py:11)
-    tolines = [re.sub(r" @\d+\):", "):", line) for line in tolines]
+    # (gcd.py:11 *6): -> (gcd.py:11)
+    tolines = [re.sub(r" [*]\d+\):", "):", line) for line in tolines]
 
     diff = list(
         difflib.unified_diff(fromlines, tolines, fromfile, tofile, fromdate, todate)

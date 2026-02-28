@@ -50,6 +50,7 @@ from xdis.load import check_object_path, load_module
 from trepan.exception import DebuggerQuit, DebuggerRestart
 from trepan.interfaces.user import UserInterface
 from trepan.lib.callbacks import set_callback_hooks_for_toolid
+from trepan.lib.code import find_code_for_CALL_operand
 
 # Default settings used here
 from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
@@ -391,7 +392,7 @@ class SysMonTrepan:
 
     def run_call(
         self,
-        func: types.FunctionType,
+        func,
         args: tuple,
         kwargs: dict,
         events_mask: Optional[int] = None,
@@ -411,7 +412,9 @@ class SysMonTrepan:
             sysmon_tool_name = "trepan3k-sysmon"
 
         result = None
-        code = func.__code__
+        event, code = find_code_for_CALL_operand(func)
+        if code is None:
+            raise TypeError(f"func paramenter: {func} is not something we can trace")
         self.core.start(
             events_mask=events_mask,
             code=code,
