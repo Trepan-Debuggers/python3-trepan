@@ -17,7 +17,7 @@ from tracer.stepping import (
     code_short,
     refresh_code_mask,
 )
-from types import CodeType, FunctionType, FrameType
+from types import BuiltinFunctionType, CodeType, FunctionType, FrameType
 from typing import Union
 
 E = sys.monitoring.events
@@ -83,7 +83,7 @@ def call_event_callback(
     code: CodeType,
     instruction_offset: int,
     code_to_call: Union[CodeType | FunctionType],
-    args,
+    arg0,  # 0th argument is shown only
 ) -> object:
     """A CALL event callback trace function"""
 
@@ -122,7 +122,11 @@ def call_event_callback(
     if step_granularity is None:
         step_granularity = debugger.step_granularity
 
-    if not isinstance(code_to_call, CodeType) or isinstance(code_to_call, FunctionType):
+    if isinstance(code_to_call, BuiltinFunctionType):
+        event = "builtin_call"
+    elif not isinstance(code_to_call, CodeType) or isinstance(code_to_call, FunctionType):
+        if isinstance(code_to_call, FunctionType):
+            event = "function_call"
         # Might be a class, set_local_events only works on code.
         code_class = code_to_call
         for field in ("__code__", "__new__", "__init__"):
@@ -133,47 +137,48 @@ def call_event_callback(
                 pass
             pass
         else:
-            # FIXME: we could get drastic and trap all member functions in class!
+            # FIXME: If this is a class, we could get drastic and trap
+            # all member functions in class?!
             print(f"XXX4 cannot find Python code in code for {code_class}")
             return
 
-    if (
-        child_code_info := CODE_TRACKING.get((sysmon_tool_id, code_to_call), None)
-        is not None
-    ):
-        # We've seen code_to_call, it may have a local event mask that we have
-        # to correct.
-        # Figure out the code's new events_mask.
-        if len(child_code_info.breakpoints) == 0:
-            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-                # Clear out events mask in code that we are about to call.
-                events_mask_child = 0
+        if (
+            child_code_info := CODE_TRACKING.get((sysmon_tool_id, code_to_call), None)
+            is not None
+        ):
+            # We've seen code_to_call, it may have a local event mask that we have
+            # to correct.
+            # Figure out the code's new events_mask.
+            if len(child_code_info.breakpoints) == 0:
+                if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                    # Clear out events mask in code that we are about to call.
+                    events_mask_child = 0
+                else:
+                    # E.LINE is used because even if we are tracking instructions,
+                    # we will need to set E.LINE for instructions to have an effect.
+                    # If this changes we can consider replacing with E.INSTRUCTIONS.
+                    events_mask_child |= STEP_INTO_TRACKING | E.LINE
+            else:
+                events_mask_child = sys.monitoring.get_local_events(
+                    sysmon_tool_id, code_to_call
+                )
+                if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                    events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
+                    # print(f"XXX0 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
+        else:
+            events_mask_child = sys.monitoring.get_local_events(
+                sysmon_tool_id, code_to_call
+            )
+            if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
+                events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
             else:
                 # E.LINE is used because even if we are tracking instructions,
                 # we will need to set E.LINE for instructions to have an effect.
                 # If this changes we can consider replacing with E.INSTRUCTIONS.
                 events_mask_child |= STEP_INTO_TRACKING | E.LINE
-        else:
-            events_mask_child = sys.monitoring.get_local_events(
-                sysmon_tool_id, code_to_call
-            )
-            if frame_info.steptype in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-                events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
-                # print(f"XXX0 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
-    else:
-        events_mask_child = sys.monitoring.get_local_events(
-            sysmon_tool_id, code_to_call
-        )
-        if frame_info.step_type in (StepType.STEP_OVER, StepType.STEP_OUT, StepType.NO_STEPPING):
-            events_mask_child &= ~(STEP_INTO_TRACKING | E.LINE | E.INSTRUCTION)
-        else:
-            # E.LINE is used because even if we are tracking instructions,
-            # we will need to set E.LINE for instructions to have an effect.
-            # If this changes we can consider replacing with E.INSTRUCTIONS.
-            events_mask_child |= STEP_INTO_TRACKING | E.LINE
-        # print(f"XXX1 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
+            # print(f"XXX1 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
 
-    sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
+        sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
 
     print(
         (
@@ -182,13 +187,14 @@ def call_event_callback(
         )
     )
     core = debugger.core
-    core.event = "call"
+    core.event = event
     core.execution_status = "Running"
 
+    # We don't run go into the debugger for CALL instructions if:
+    #  - the event is "call" (not "c_call" or "builtin_call"), and
+    #  - "different" is set, but we've already seen the instruction or line for it.
     if core.different_line:
-        # print(f"XXX0 {core.last_lineno} {frame.f_lineno}")
-        # print(f"XXX1 {core.last_offset} {instruction_offset}, {step_granularity}")
-        if core.last_lineno == frame.f_lineno and (
+        if event in ("call", "function_call") and core.last_lineno == frame.f_lineno and (
             step_granularity == StepGranularity.LINE_NUMBER
             or core.last_offset == instruction_offset
         ):
@@ -196,7 +202,8 @@ def call_event_callback(
             core.last_offset = instruction_offset
             return
 
-    core.processor.event_processor(frame, "call", None)
+    if event in debugger.settings["printset"]:
+        core.processor.event_processor(frame, event, (code_to_call, arg0))
 
     ### end code inside hook. events_mask, frame and step_type should be set.
 
@@ -458,7 +465,7 @@ def leave_event_callback(
     if core.step_ignore > 0:
         # print(f"XXX Counting down steps: was {core.step_ignore}")
         core.step_ignore -= 1
-    elif core.step_ignore == 0:
+    elif core.step_ignore == 0 and event in debugger.settings["printset"]:
         core.processor.event_processor(frame, event, return_value)
 
     ### end code inside hook; `frame` should be set.
@@ -654,14 +661,14 @@ def set_callback_hooks_for_toolid(sysmon_tool_id: int, debugger) -> dict:
             )
         ),
         E.CALL: (
-            lambda code, instruction_offset, code_to_call, args: call_event_callback(
+            lambda code, instruction_offset, code_to_call, arg0: call_event_callback(
                 sysmon_tool_id,
                 debugger,
                 "call",
                 code,
                 instruction_offset,
                 code_to_call,
-                args,
+                arg0,
             )
         ),
         E.INSTRUCTION: (
@@ -787,7 +794,8 @@ def start_event_callback(
     core = debugger.core
     core.event = "start"
     core.execution_status = "Running"
-    core.processor.event_processor(frame, "start", instruction_offset)
+    if "start" in debugger.settings["printset"]:
+        core.processor.event_processor(frame, "start", instruction_offset)
     debugger.events_mask = combined_events_mask
     debugger.step_type = StepType.STEP_OUT
 

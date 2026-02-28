@@ -442,12 +442,15 @@ def print_location(proc_obj):
             break
         pass
 
-    if proc_obj.event in ["return", "exception"]:
+    if proc_obj.event in ("return", "leave", "exception"):
         val = proc_obj.event_arg
         intf_obj.msg(f"R=> {proc_obj._saferepr(val)}")
         pass
+    elif proc_obj.event in ("builtin_call", "c_call"):
+        fn, arg0 = proc_obj.event_arg
+        intf_obj.msg(f"{fn}({proc_obj._saferepr(arg0)}...)")
     elif (
-        proc_obj.event == "call"
+        proc_obj.event in ("call", "start")
         and proc_obj.curframe.f_locals.get("__name__", "") != "__main__"
     ):
         try:

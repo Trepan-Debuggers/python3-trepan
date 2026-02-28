@@ -31,6 +31,7 @@ def nested_function(x: list) -> list:
 def function_which_calls_other_fns() -> Tuple[int, int]:
     x = nested_function([1, 2, 3])
     y = nested_function([4, 5, 6])
+    print(x, y)
     return x, y
 
 

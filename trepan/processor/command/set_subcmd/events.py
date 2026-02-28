@@ -51,7 +51,6 @@ class SetEvents(Mbase_subcmd.DebuggerSubcommand):
     EVENT_LIST_ACTIONS: Final[Tuple[str]] = tuple(
         [prefix + name for name in tracer.ALL_EVENT_NAMES for prefix in ("+", "-")]
     )
-    print(EVENT_LIST_ACTIONS)
 
     def complete(self, prefix):
         return complete_token(self.EVENT_LIST_ACTIONS)
