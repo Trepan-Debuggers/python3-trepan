@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2008-2009, 2013, 2015-2015 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2008-2009, 2013, 2015-2016 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class InfoArgs(Mbase_subcmd.DebuggerSubcommand):
             return False
 
         if self.proc.event in ("builtin_call", "c_call"):
-            self.msg(f"Argument 0: {self.proc._saferepr(self.proc.event_arg[1])}")
+            self.msg(f"First Argument is: {self.proc._saferepr(self.proc.event_arg[1])}")
             return
 
         f = self.proc.curframe
