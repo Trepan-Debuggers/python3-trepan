@@ -166,7 +166,7 @@ class SysMonTrepan:
         # desired.
         self.step_granularity = step_granularity
         self.step_type = step_type
-        self.masks_sets = 0
+        self.events_mask = E.NO_EVENTS
         ###
 
         def get_option(key: str) -> Any:
@@ -300,7 +300,6 @@ class SysMonTrepan:
         retval = None
 
         self.tool_id, self.events_mask = mstart(sysmon_tool_name, code=cmd.__code__)
-        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
         self.core.start(
             events_mask=events_mask,
             code=code,
@@ -319,7 +318,7 @@ class SysMonTrepan:
 
     def run_exec(
         self,
-        stmts: Union[str, type.CodeType],
+        stmts: Union[str, types.CodeType],
         events_mask: Optional[int] = None,
         start_opts=None,
         globals_=None,
@@ -486,7 +485,6 @@ class SysMonTrepan:
             return
 
         retval = None
-        self.callback_hooks = set_callback_hooks_for_toolid(self.sysmon_tool_id, self)
         self.core.start(
             events_mask=events_mask,
             code=code,

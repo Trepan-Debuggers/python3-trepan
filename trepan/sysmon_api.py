@@ -36,9 +36,10 @@ if necessary, first.
 
 import os
 import sys
+from types import CodeType
 from typing import Any, Callable, Optional
 
-from tracer.stepping import StepGranularity, StepType
+from tracer.stepping import STEP_INTO_TRACKING, StepGranularity, StepType
 from tracer.tracefilter import TraceFilter
 
 from trepan.interfaces.server import ServerInterface
@@ -47,11 +48,15 @@ from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
 from trepan.sysmon_debugger import DEBUGGERS, SysMonTrepan
 
 DEFAULT_DEBUG_PORT = 1955
-
+E = sys.monitoring.events
 
 def debug(
-    dbg_opts={},
+    debug_opts: dict={},
     sysmon_tool_name: Optional[str] = None,
+    sysmon_tool_id: Optional[int] = None,
+    code: Optional[CodeType] = None,
+    step_granularity: StepGranularity = StepGranularity.LINE_NUMBER,
+    events_mask=E.LINE | E.INSTRUCTION,
     start_opts: Optional[dict] = None,
     post_mortem: bool = True,
 ):
@@ -61,11 +66,7 @@ def debug(
     Parameters
     ----------
 
-    level : how many stack frames go back. Usually it will be
-    the default 0. But sometimes though there may be calls in setup to the debugger
-    that you may want to skip.
-
-    dbg_opts: is an optional "options" dictionary that gets fed
+    debug_opts: is an optional "options" dictionary that gets fed
               trepan.Debugger(); `
     start_opts: are the optional "options" dictionary that gets fed to
                 trepan.Debugger.core.start().
@@ -86,10 +87,10 @@ def debug(
         # want to debug anymore, but want to remove debugger trace overhead:
         trepan_new.api.stop()
 
-    Module variable _DEBUGGER_ from module ``trepan.debugger`` is used as
+    Module variable _DEBUGGER[tool_id]_ from module ``trepan.debugger`` is used as
     the debugger instance variable; it can be subsequently used to change
-    settings or alter behavior. It should be of type Debugger (found in
-    module trepan). If not, it will get changed to that type::
+    settings or alter behavior. It should be of type SysMon_Debugger (found in
+    module trepan.sysmon_debugger). If not, it will get changed to that type::
 
        $ python
        >>> from trepan.debugger import debugger_obj
@@ -104,68 +105,28 @@ def debug(
        <trepan.debugger.Debugger instance at 0x7fbcacd514d0>
        >>>
 
-    If however you want your own separate debugger instance, you can
-    create it from the debugger _class Debugger()_ from module
-    trepan.debugger::
+    """
 
-      $ python
-      >>> from trepan.debugger import Debugger
-      >>> dbgr = Debugger()  # Add options as desired
-      >>> dbgr
-      <trepan.debugger.Debugger instance at 0x2e25320>
-
-    `dbg_opts' is an optional "options" dictionary that gets fed
-    trepan.Debugger(); `start_opts' are the optional "options"
-    dictionary that gets fed to trepan.Debugger.core.start()."""
-
-    # A list of debugger profiles we might run
-    dbg_initfiles = []
-
-    if sysmon_tool_name is None:
-        sysmon_tool_name = "trepan3k_sysmon"
-
-    # Find a debugger object in DEBUGGER.
-    # If we can't find one create a new debugger.
-
-    # Find the first debugger object in DEBUGGERS or return None if no match is found.
-    debugger_obj = None
-    next(
-        (
-            debugger_obj
-            for debugger_obj in DEBUGGERS
-            if debugger_obj is not None
-            and debugger_obj.sysmon_tool_name == sysmon_tool_name
-        ),
-        None,
+    debugger = SysMonTrepan(
+        opts=debug_opts,
+        sysmon_tool_name=sysmon_tool_name,
+        sysmon_tool_id=sysmon_tool_id,
+        step_granularity=step_granularity,
     )
 
-    if debugger_obj is None:
-        debugger_obj = SysMonTrepan(dbg_opts, start_opts)
+    sysmon_tool_id = debugger.sysmon_tool_id
 
-        # Run user profile if first time and we haven't
-        # explicit set to ignore profile loading.
-        if not start_opts or start_opts.get("startup-profile", True):
-            from trepan.options import add_startup_file
+    if code is None:
+        code = sys._getframe(1).f_code
 
-            add_startup_file(dbg_initfiles)
+    events_mask |= STEP_INTO_TRACKING
+    debugger.core.start(
+        events_mask=events_mask,
+        code=code,
+        trace_callbacks=debugger.callback_hooks,
+        step_granularity=step_granularity,
+        )
 
-        pass
-
-    core = debugger_obj.core
-
-    # If we've specified profile loading, add that
-    if start_opts and start_opts.get("startup-profile", False):
-        from trepan.options import add_startup_file
-
-        add_startup_file(dbg_initfiles)
-
-    for init_cmdfile in dbg_initfiles:
-        core.processor.queue_startfile(init_cmdfile)
-
-    if not core.is_started():
-        core.add_ignore(debug, stop)
-        core.start(start_opts)
-        pass
     if post_mortem:
         debugger_on_post_mortem()
         pass
@@ -344,18 +305,18 @@ def stop(sysmon_tool_name: Optional[str], opts=None):
     if sysmon_tool_name is None:
         sysmon_tool_name = "trepan3k_sysmon"
 
-    debugger_obj = None
+    debugger = None
     next(
         (
-            debugger_obj
-            for debugger_obj in DEBUGGERS
-            if debugger_obj is not None
-            and debugger_obj.sysmon_tool_name == sysmon_tool_name
+            debugger
+            for debugger in DEBUGGERS
+            if debugger is not None
+            and debugger.sysmon_tool_name == sysmon_tool_name
         ),
         None,
     )
-    if isinstance(debugger_obj, SysMonTrepan):
-        return debugger_obj.stop(opts)
+    if isinstance(debugger, SysMonTrepan):
+        return debugger.stop(opts)
     return None
 
 

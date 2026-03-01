@@ -185,6 +185,7 @@ class SysMonTrepanCore(TrepanCore):
             step_granularity=step_granularity,
             ignore_filter=ignore_filter,
         )
+        self.debugger.events_mask = events_mask
         self.execution_status = "Started"
         return
 

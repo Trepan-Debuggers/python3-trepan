@@ -66,7 +66,9 @@ def c_return_event_callback(
 
     if DEBUG:
         debugger.core.processor.msg(
-            f"\nC_RETURN: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:\n\t"
+            f"\nC_RETURN: tool id: {sysmon_tool_id}, "
+            f"events_mask: {bin(events_mask)}  {events_mask2str(events_mask)}\n\t"
+            f"step_type: {step_type} step_granularity: {step_granularity} code:\n\t"
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
 
@@ -129,8 +131,6 @@ def call_event_callback(
         step_granularity = debugger.step_granularity
 
     event, code_to_call = find_code_for_CALL_operand(call_operand)
-    if code_to_call is None:
-        return
 
     if event == "call":
         if (
@@ -182,6 +182,8 @@ def call_event_callback(
             # print(f"XXX1 {bin(events_mask_child)} ({events_mask_child}) {code_to_call}" )
 
         sys.monitoring.set_local_events(sysmon_tool_id, code_to_call, events_mask_child)
+    else:
+        code_to_call = call_operand
 
     if DEBUG:
         debugger.core.processor.msg(
@@ -416,12 +418,12 @@ def instruction_event_callback(
     # frame = sys._getframe(2)
     # print(f"XXX FRAME: f_trace: {frame.f_trace}, f_trace_lines: {frame.f_trace_lines}, f_trace_opcodes: {frame.f_trace_opcodes}")
 
-    print(
-        (
-            f"\n{event.upper()}: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) code:\n\t"
+    if DEBUG:
+        debugger.core.processor.msg(
+            f"\n{event.upper()}: sysmon_tool_id: {sysmon_tool_id} "
+            f"events_mask: {bin(events_mask)}  {events_mask2str(events_mask)}\n\t"
             f"{code_short(code)}, offset: *{instruction_offset}"
         )
-    )
 
     if core.step_ignore > 0:
         # print(f"XXX Counting down steps: was {core.step_ignore}")
@@ -578,7 +580,8 @@ def line_event_callback(
             return
 
     frame_info = FRAME_TRACKING.get(frame, None)
-    step_type = None
+    step_type = debugger.step_type
+    step_granularity = debugger.step_granularity
     if frame_info is not None:
         step_type = frame_info.step_type
         step_granularity = frame_info.step_granularity
@@ -596,13 +599,11 @@ def line_event_callback(
     ### This is the code that gets run inside the hook, e.g. a debugger REPL.
     ### The code inside the hook should set:
 
-    if step_type is None:
-        step_type = StepType.NO_STEPPING
-        step_granularity = StepGranularity.LINE_NUMBER
-
     if DEBUG:
         debugger.core.processor.msg(
-            f"\nLINE: tool id: {sysmon_tool_id}, {bin(events_mask)} ({events_mask}) {step_type} {step_granularity} code:"
+            f"\nLINE: tool id: {sysmon_tool_id}, "
+            f"events_mask: {bin(events_mask)}  {events_mask2str(events_mask)}\n\t"
+            f"{step_type}, {step_granularity} code:"
             f"\n\t{code_short(code)}, line: {line_number}"
         )
 
@@ -621,12 +622,12 @@ def line_event_callback(
 
     ### end code inside hook; `events_mask` should be set.
 
-    # # debug
-    # d = core.debugger
-    # print(
-    #     f"XXX10 {bin(d.events_mask)} "
-    #     f"({events_mask}) {events_mask2str(d.events_mask)}"
-    # )
+    # debug
+    d = core.debugger
+    print(
+        f"XXX10 {bin(d.events_mask)} "
+        f"({events_mask}) {events_mask2str(d.events_mask)}"
+    )
 
     return local_event_handler_return(sysmon_tool_id, debugger, code)
 
@@ -648,27 +649,7 @@ def set_callback_hooks_for_toolid(sysmon_tool_id: int, debugger) -> dict:
 
     Only local callbacks are set.
     """
-    return {
-        E.BRANCH_LEFT: (
-            lambda code, instruction_offset, destination_offset: goto_event_callback(
-                sysmon_tool_id,
-                debugger,
-                "branch left",
-                code,
-                instruction_offset,
-                destination_offset,
-            )
-        ),
-        E.BRANCH_RIGHT: (
-            lambda code, instruction_offset, destination_offset: goto_event_callback(
-                sysmon_tool_id,
-                debugger,
-                "branch right",
-                code,
-                instruction_offset,
-                destination_offset,
-            )
-        ),
+    result = {
         E.C_RETURN: (
             lambda code, instruction_offset, code_to_call, arg0: c_return_event_callback(
                 sysmon_tool_id,
@@ -728,6 +709,32 @@ def set_callback_hooks_for_toolid(sysmon_tool_id: int, debugger) -> dict:
             sysmon_tool_id, debugger, "stop iteration", code, instruction_offset, retval
         ),
     }
+    if sys.version_info >= (3, 14):
+        result.update(
+            {
+                E.BRANCH_LEFT: (
+                    lambda code, instruction_offset, destination_offset: goto_event_callback(
+                        sysmon_tool_id,
+                        debugger,
+                        "branch left",
+                        code,
+                        instruction_offset,
+                        destination_offset,
+                    )
+                ),
+                E.BRANCH_RIGHT: (
+                    lambda code, instruction_offset, destination_offset: goto_event_callback(
+                        sysmon_tool_id,
+                        debugger,
+                        "branch right",
+                        code,
+                        instruction_offset,
+                        destination_offset,
+                    )
+                ),
+            }
+        )
+    return result
 
 
 def start_event_callback(
