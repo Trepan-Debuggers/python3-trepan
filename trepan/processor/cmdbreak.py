@@ -97,6 +97,7 @@ def set_break(
         func_or_code=func_or_code,
         is_code_offset = True,
     )
+
     style = cmd_obj.settings["style"]
     if func_or_code and inspect.isfunction(func_or_code):
         formatted_bp_number = format_line_number(bp.number, style)

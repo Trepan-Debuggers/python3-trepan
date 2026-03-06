@@ -70,7 +70,7 @@ class SysMonTrepanCore(TrepanCore):
         def get_option(key: str) -> Any:
             return option_set(opts, key, DEFAULT_INIT_OPTS)
 
-        self.bpmgr = BreakpointManager()
+        self.bpmgr = BreakpointManager(sysmon_tool_id=debugger.sysmon_tool_id)
         self.current_bp = None
         self.current_thread = None
         self.debugger = debugger

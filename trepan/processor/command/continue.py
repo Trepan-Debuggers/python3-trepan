@@ -16,6 +16,9 @@
 
 import sys
 import tracer
+from tracer.stepping import FRAME_TRACKING, FrameInfo
+from tracer.breakpoint import CODE_TRACKING
+from tracer.stepping import StepType
 
 from trepan.processor.cmdbreak import parse_break_cmd, set_break
 from trepan.processor.command.base_cmd import DebuggerCommand
@@ -73,13 +76,28 @@ class ContinueCommand(DebuggerCommand):
 
         # Try to remove debugger hook if no breakpoints are set.
         d = core.debugger
-        if d.is_sysmon_debugger:
-            d.events_mask = tracer.set_step_continue(
-                core.debugger.sysmon_tool_id,
-                self.proc.frame,
-                callbacks=core.debugger.callback_hooks
+        frame = self.proc.frame
+
+        code_info = CODE_TRACKING.get((d.sysmon_tool_id, frame.f_code))
+        if code_info is not None:
+            breakpoints = code_info.breakpoints
+            if len(breakpoints) != 0:
+                d.step_type = StepType.STEP_BREAKPOINT
+
+        FRAME_TRACKING[frame] = FrameInfo(
+            step_type=d.step_type,
+            step_granularity=d.step_granularity,
+            local_events_mask=d.events_mask,
+            calls_to=None,
             )
 
+
+        # set_step_continue uses above FRAME
+        d.events_mask = tracer.set_step_continue(
+            core.debugger.sysmon_tool_id,
+            frame,
+            callbacks=core.debugger.callback_hooks
+        )
         return True
 
     pass

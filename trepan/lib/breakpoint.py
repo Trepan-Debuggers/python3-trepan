@@ -21,6 +21,13 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path as osp
 from collections import defaultdict
+
+from tracer.breakpoint import (
+    Breakpoint as SysMonBreakpoint,
+    LineNumberValue,
+    clear_breakpoint,
+    set_breakpoint)
+
 from types import CodeType, ModuleType
 from typing import DefaultDict, Optional
 from types import FrameType
@@ -64,7 +71,11 @@ class Breakpoint:
         code: Optional[CodeType] = None,
         position: Optional[int] = None,
         is_code_offset: bool = True,
+        sysmon_tool_id: Optional[int] = None
     ):
+
+        self.sysmon_brkpt = None
+        self.sysmon_tool_id = sysmon_tool_id
         # FIXME: split out this top part into a part that fills out information
         if code is not None:
             if code not in code_position_cache:
@@ -104,6 +115,12 @@ class Breakpoint:
             self.column = position
             # TODO: Figure out code offset.
             self.offset = None
+
+        if code is not None and sysmon_tool_id is not None:
+            location = LineNumberValue(line_number=line_number)
+            self.sysmon_brkpt = SysMonBreakpoint(location, code)
+            self.sysmon_tool_id = sysmon_tool_id
+            set_breakpoint(sysmon_tool_id, self.sysmon_brkpt)
 
         self.condition = condition
         self.enabled = True
@@ -205,8 +222,9 @@ class BreakpointManager:
     may have different conditions associated with them.
     """
 
-    def __init__(self):
+    def __init__(self, sysmon_tool_id: Optional[int] = None):
 
+        self.sysmon_tool_id = sysmon_tool_id
         self.reset()
 
         return
@@ -305,6 +323,7 @@ class BreakpointManager:
             code,
             position,
             is_code_offset,
+            self.sysmon_tool_id,
         )
 
         # Build the internal lists of breakpoints
@@ -318,6 +337,10 @@ class BreakpointManager:
             else:
                 # Add breakpoint to list of breakpoints indexed by code object.
                 self.code2position_brkpts[code].append(brkpt)
+            location = LineNumberValue(line_number=line_number)
+            if self.sysmon_tool_id is not None:
+                brkpt.sysmon_brkpt = SysMonBreakpoint(location, code)
+                set_breakpoint(self.sysmon_tool_id, brkpt.sysmon_brkpt)
         return brkpt
 
     def delete_all_breakpoints(self) -> str:
@@ -342,6 +365,9 @@ class BreakpointManager:
         index = (bp.filename, bp.line_number)
         if index not in self.bplist:
             return False
+
+        if bp.sysmon_brkpt is not None:
+            clear_breakpoint(self.sysmon_tool_id, bp.sysmon_brkpt)
 
         # FIXME: should mark breakpoint as being a call breakpoint or not instead of doing
         # this logic.
@@ -528,6 +554,7 @@ def checkfuncname(brkpt: Breakpoint, frame: FrameType):
 
 if __name__ == "__main__":
 
+    import sys
     def foo(bp, bpmgr):
         frame = inspect.currentframe()
         assert frame
@@ -543,7 +570,11 @@ if __name__ == "__main__":
         assert frame is not None
         return frame.f_lasti
 
-    bpmgr = BreakpointManager()
+    tool_id = 3
+    tool_name = "breakpoint-test"
+    sys.monitoring.use_tool_id(tool_id, tool_name)
+
+    bpmgr = BreakpointManager(sysmon_tool_id=tool_id)
     print(bpmgr.last())
     line_number = foo.__code__.co_firstlineno
     bp = bpmgr.add_breakpoint(__file__, line_number=229, position=106, is_code_offset=True, func_or_code=foo)

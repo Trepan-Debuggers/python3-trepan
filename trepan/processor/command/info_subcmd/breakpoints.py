@@ -151,6 +151,6 @@ if __name__ == "__main__":
 
     d = Mdebugger.Trepan()
     i = Minfo.InfoCommand(d.core.processor)
-    sub = InfoBreak(i)
+    sub = InfoBreakpoints(i)
     sub.run([])
     pass

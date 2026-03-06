@@ -16,9 +16,9 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Our local modules
+from tracer.sys_monitoring import events_mask2str
 from trepan.processor.command.base_subcmd import DebuggerSubcommand
 from trepan.misc import wrapped_lines
-
 
 class InfoProgram(DebuggerSubcommand):
     """**info program**
@@ -45,12 +45,14 @@ class InfoProgram(DebuggerSubcommand):
         """Execution status of the program."""
         mainfile = self.core.filename(None)
         proc = self.proc
-        if self.core.is_running():
+        core = self.core
+        if core.is_running():
             if mainfile:
                 part1 = f"Python program '{mainfile}' is stopped."
             else:
                 part1 = "Program is stopped."
                 pass
+
             if proc.event:
                 msg = f"via a '{proc.event}' event."
             else:
@@ -58,6 +60,15 @@ class InfoProgram(DebuggerSubcommand):
             self.msg(part1)
             if proc.curframe:
                 self.msg(f"PC offset is {proc.curframe.f_lasti}.")
+
+            if hasattr(core.debugger, "events_mask"):
+                debugger = core.debugger
+                events_mask = debugger.events_mask
+                self.msg(
+                    f"Stepping: {debugger.step_type}, {debugger.step_granularity}"
+                    )
+                self.msg(
+                    f"sys.monitoring events mask: {bin(events_mask)} ({events_mask}) {events_mask2str(events_mask)}")
 
             if proc.event == "return":
                 val = proc.event_arg
@@ -87,7 +98,7 @@ class InfoProgram(DebuggerSubcommand):
             else:
                 self.msg("No Python program is currently running.")
                 pass
-            self.msg(self.core.execution_status)
+            self.msg(core.execution_status)
             pass
         return False
 

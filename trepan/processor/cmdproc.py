@@ -357,6 +357,7 @@ class CommandProcessor(Processor):
         self.process_commands()
         if filename == "<string>":
             pyficache.remove_remap_file("<string>")
+
         return self.event_processor
 
     def forget(self):
@@ -651,7 +652,7 @@ class CommandProcessor(Processor):
                         pass
                     if isinstance(current_command, list):
                         for x in current_command:
-                            if str != type(x):
+                            if not isinstance(x, str):
                                 self.errmsg(
                                     (
                                         "macro %s should return a List "
@@ -671,7 +672,7 @@ class CommandProcessor(Processor):
                         args = first.split()
                         self.cmd_queue + [current_command[1:]]
                         current_command = first
-                    elif type(current_command) == str:
+                    elif isinstance(current_command, str):
                         args = current_command.split()
                     else:
                         self.errmsg(
