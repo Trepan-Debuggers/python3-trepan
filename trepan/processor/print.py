@@ -372,9 +372,11 @@ def print_location(proc_obj):
                         intf_obj.msg(
                             "remapped string %s to file %s" % (prefix_for_source_text(source_text, 10), remapped_file)
                         )
-                    else:
+                        proc_obj.list_filename = remapped_file
+
+                    elif remapped_file is not None:
                         intf_obj.msg("remapped file %s to %s" % (filename, remapped_file))
-                    proc_obj.list_filename = remapped_file
+                        proc_obj.list_filename = remapped_file
 
                     pass
 
