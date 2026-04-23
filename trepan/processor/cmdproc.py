@@ -330,8 +330,8 @@ class CommandProcessor(Processor):
         self.event_arg = event_arg
 
         filename = frame.f_code.co_filename
-        lineno = frame.f_lineno
-        line = linecache.getline(filename, lineno, frame.f_globals)
+        self.list_lineno = frame.f_lineno
+        line = linecache.getline(filename, self.list_lineno, frame.f_globals)
         if not line:
             opts = {
                 "output": "plain",
@@ -341,7 +341,7 @@ class CommandProcessor(Processor):
             m = re.search("^<frozen (.*)>", filename)
             if m and m.group(1):
                 filename = pyficache.unmap_file(m.group(1))
-            line = pyficache.getline(filename, lineno, opts)
+            line = pyficache.getline(filename, self.list_lineno, opts)
         self.current_source_text = line
         if self.settings("skip") is not None:
             if is_def_stmt(line, frame):
@@ -590,14 +590,17 @@ class CommandProcessor(Processor):
                 pass
             pass
         run_hooks(self, self.postcmd_hooks)
-        if self.fast_continue and len(self.core.bpmgr.bplist) == 0:
-            # Remove tracing on frames and remove trace hook.
-            frame = self.curframe
-            while frame:
-                del frame.f_trace
-                frame = frame.f_back
-            self.debugger.intf[-1].msg("Fast continue...")
-            remove_hook(self.core.trace_dispatch, True)
+        if self.fast_continue:
+            if len(self.core.bpmgr.bplist) == 0:
+                # Remove tracing on frames and remove trace hook.
+                frame = self.curframe
+                while frame:
+                    del frame.f_trace
+                    frame = frame.f_back
+                self.debugger.intf[-1].msg("Fast continue...")
+                remove_hook(self.core.trace_dispatch, True)
+            else:
+                self.debugger.intf[-1].msg("Continue with breakpoint checking...")
 
         return
 

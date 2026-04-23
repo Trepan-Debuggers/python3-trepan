@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023-2024 Rocky Bernstein
+#   Copyright (C) 2008-2009, 2013, 2015, 2020, 2023-2024, 2026 Rocky Bernstein
 #   <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,11 @@ import inspect
 import os.path as osp
 import re
 
-from pyficache import code_line_info
+import columnize
+from pyficache import file2file_remap, get_linecache_info
 
 from trepan.clifns import search_file
+from trepan.lib.format import Filename, format_line_number, format_token
 from trepan.misc import wrapped_lines
 from trepan.processor.cmdbreak import parse_break_cmd
 
@@ -90,12 +92,13 @@ class InfoLine(DebuggerSubcommand):
 
     def run(self, args):
         """Current line number in source file"""
-        if not self.proc.curframe:
-            self.errmsg("No line number information available.")
-            return
-
         # info line <loc>
+        remapped_filename = None
         if len(args) == 0:
+            if not self.proc.curframe:
+                self.errmsg("Frame is needed when no line number is given.")
+                return
+
             # No line number. Use current frame line number
             line_number = inspect.getlineno(self.proc.curframe)
             filename = self.core.canonic_filename(self.proc.curframe)
@@ -109,34 +112,53 @@ class InfoLine(DebuggerSubcommand):
         else:
             self.errmsg("Wrong number of arguments.")
             return
-        if not osp.isfile(filename):
-            filename = search_file(filename, self.core.search_path, self.main_dirname)
+
+        remapped_filename = file2file_remap.get(filename, filename)
+
+        style = self.settings["style"]
+        formatted_filename = format_token(
+            Filename,
+            format_token(Filename, remapped_filename, style=style),
+            style=style,
+        )
+
+        if remapped_filename != filename:
+            self.msg(f"{filename} remapped to {formatted_filename}")
+
+        if not osp.isfile(remapped_filename):
+            filename = search_file(remapped_filename, self.core.search_path, self.main_dirname)
             pass
 
-        line_info = code_line_info(filename, line_number)
-        msg1 = 'Line %d of "%s"' % (line_number, self.core.filename(filename),)
-        if line_info:
-            msg2 = "starts at offset %d of %s and contains %d instructions" % (
-                line_info[0].offsets[0],
-                line_info[0].name,
-                len(line_info[0].offsets),
+        linecache_info = get_linecache_info(remapped_filename)
+        if line_number not in linecache_info.line_numbers:
+            self.errmsg(
+                "No line information for line %d of %s" % (line_number, formatted_filename)
             )
-            self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+            return
+
+        formatted_line_number = format_line_number(line_number, style)
+        msg1 = "Line %s of %s" % (formatted_line_number, formatted_filename)
+        line_info = linecache_info.line_info
+        line_number_offsets = line_info.get(line_number)
+        if line_number_offsets:
+            offset_data = [
+                f"{code.co_name}:*{offset}" for code, offset in line_number_offsets
+            ]
+            if len(offset_data) == 1:
+                msg2 = f"is at bytecode offset {offset_data[0]}"
+                self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+            else:
+                msg2 = "is at bytecode offsets:"
+                self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
+                self.msg(
+                    columnize.columnize(
+                        offset_data, colsep=", ", ljust=False, lineprefix="  "
+                    )
+                )
         else:
             self.errmsg(
                 "No line information for line %d of %s"
-                % (line_number, self.core.filename(filename))
-            )
-        if line_info and len(line_info) > 1:
-            self.msg(
-                wrapped_lines(
-                    "There are multiple line offsets for line number.",
-                    "Other line offsets: %s"
-                    % ", ".join(
-                        ["%s of %s" % (li.offsets[0], li.name) for li in line_info[1:]]
-                    ),
-                    self.settings["width"],
-                )
+                % (line_number, formatted_filename)
             )
         return False
 

@@ -2,6 +2,7 @@
 import sys
 
 from setuptools import find_packages, setup
+from xdis.version_info import IS_GRAAL
 
 SYS_VERSION = sys.version_info[0:2]
 if not ((3, 3) <= SYS_VERSION < (3, 6)):
@@ -39,8 +40,6 @@ from __pkginfo__ import (
     web,
     zip_safe,
 )
-
-__import__("pkg_resources")
 
 packages = find_packages()
 

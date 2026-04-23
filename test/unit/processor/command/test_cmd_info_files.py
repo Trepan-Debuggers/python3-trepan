@@ -44,7 +44,7 @@ def test_info_files():
 
     assert len(cmdhelper.msgs) == 2
     assert cmdhelper.msgs[0].index("is not cached in debugger") > 0
-    assert cmdhelper.msgs[1].startswith("Canonic name:")
+    assert cmdhelper.msgs[1].startswith("Canonic name is the same as")
 
     # Run again. File should now be cached.
 
@@ -52,7 +52,7 @@ def test_info_files():
     sub.run([])
     assert len(cmdhelper.msgs) == 2
     assert cmdhelper.msgs[0].index("is cached in debugger") > 0
-    assert cmdhelper.msgs[1].startswith("Canonic name:")
+    assert cmdhelper.msgs[1].startswith("Canonic name is the same as")
     assert "width" in sub.settings
 
     # Test all sub options with different line-widths settings

@@ -22,20 +22,24 @@ import inspect
 import linecache
 import os
 import os.path as osp
+import pyficache
 import re
+
 from opcode import opname
 from reprlib import repr
 import xdis
 from xdis import get_opcode
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
+from typing import Dict, Optional, Tuple
+import xdis
 
 from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
     Arrow,
     Filename,
-    Function,
     LineNumber,
     Return,
+    format_function,
     format_python,
     format_token,
 )
@@ -65,18 +69,38 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
+# A mapping frame to its ExtraFrameInfo.
+FrameInfo: Dict[FrameType, int] = {}
 
-def count_frames(frame, count_start=0) -> int:
+def count_frames(frame) -> int:
     """Return a count of the number of frames"""
-    count = -count_start
+    count = 0
+    # Bottommost frame depth is 1
+    depth = 1
+    frames = []
     for _ in range(1000):
         if frame is None:
             break
         else:
-            count += 1
-            frame = frame.f_back
+            depth_or_None = FrameInfo.get(frame)
+            if depth_or_None:
+                depth = depth_or_None
+                count += depth
+                break
+            else:
+                frames.append(frame)
+                count += 1
+                frame = frame.f_back
+                pass
+            pass
     else:
         return 1000
+
+    # Populate or update FrameInfo
+    while len(frames) > 0 and frame not in FrameInfo:
+        frame = frames.pop()
+        FrameInfo[frame] = depth
+        depth += 1
     return count
 
 
@@ -145,7 +169,7 @@ def format_function_name(frame, style: str) -> tuple:
         pass
     if funcname is None:
         return None, None
-    return funcname, format_token(Function, funcname, style=style)
+    return funcname, format_function(funcname, style=style)
 
 
 def format_function_and_parameters(frame, debugger, style: str) -> tuple:
@@ -164,10 +188,10 @@ def format_function_and_parameters(frame, debugger, style: str) -> tuple:
     ):
         is_module = True
         if is_eval_or_exec_stmt(frame):
-            fn_name = format_token(Function, "exec", style=style)
+            fn_name = format_function("exec", style)
             source_text = deparse_source_from_code(frame.f_code)
             s += " %s(%s)" % (
-                format_token(Function, fn_name, style=style),
+                format_function(fn_name, style=style),
                 source_text,
             )
         else:
@@ -176,14 +200,19 @@ def format_function_and_parameters(frame, debugger, style: str) -> tuple:
                 source_text = deparse_source_from_code(frame.f_code)
                 if fn_name:
                     s += " %s(%s)" % (
-                        format_token(Function, fn_name, style=style),
+                        format_function(fn_name, style=style),
                         source_text,
                     )
             pass
     else:
         is_module = False
         try:
-            params = inspect.formatargvalues(args, varargs, varkw, local_vars)
+            if is_eval_or_exec_stmt(frame):
+                # Nuke the function name
+                s = ""
+                params = get_exec_or_eval_string(frame)
+            else:
+                params = inspect.formatargvalues(args, varargs, varkw, local_vars)
             formatted_params = format_python(params, style=style)
         except Exception:
             pass
@@ -295,6 +324,9 @@ def frame2filesize(frame):
         bc_path = frame.f_globals["__cached__"]
     else:
         bc_path = None
+    if frame.f_code.co_filename == "<string>":
+        # There is no source-code file to compare against.
+        return None, None
     path = frame.f_globals["__file__"]
     source_path = getsourcefile(path)
     if source_path is None:
@@ -321,6 +353,9 @@ def frame2filesize(frame):
 def get_exec_or_eval_string(frame):
     call_frame = frame.f_back
     if call_frame is not None:
+        if IS_GRAAL:
+            # Graal's call_frame.f_code does not return graal bytecode?
+            return None
         offset = call_frame.f_lasti - 2
         code = call_frame.f_code
         while offset > 0:
@@ -570,7 +605,8 @@ if __name__ == "__main__":
         pass
 
     frame = inspect.currentframe()
-    # print(frame2filesize(frame))
+    print(frame2filesize(frame))
+
     pyc_file = osp.join(
         osp.dirname(__file__), "__pycache__", osp.basename(__file__)[:-3] + ".pyc"
     )
@@ -587,6 +623,7 @@ if __name__ == "__main__":
     dd.core.processor.stack = [(my_frame, 100)]
     dd.core.processor.curframe = my_frame
     print_stack_entry(dd.core.processor, 0, "fruity")
+    print(frame2file(dd.core, frame))
 
     print(
         format_stack_entry(
@@ -599,9 +636,10 @@ if __name__ == "__main__":
         )
     )
 
-    # print("frame count: %d" % count_frames(frame))
-    # print("frame count: %d" % count_frames(frame.f_back))
-    # print("frame count: %d" % count_frames(frame, 1))
+    count1 = count_frames(frame)
+    print("frame count: %d" % count1)
+    assert count1 == count_frames(frame)
+    print("frame count: %d" % count_frames(frame.f_back))
     # print("def statement: x=5?: %s" % repr(is_def_stmt("x=5", frame)))
     # # Not a "def" statement because frame is wrong spot
     # print(is_def_stmt("def foo():", frame))
@@ -627,10 +665,14 @@ if __name__ == "__main__":
                     dd, (frame.f_back, frame.f_back.f_code.co_firstlineno)
                 )
             )
+            dd.core.processor.curframe = frame.f_back
+            dd.core.processor.stack = [(dd.core.processor.curframe, 1)]
+            print_stack_entry(dd.core.processor, 0)
 
         _, mess = format_function_and_parameters(frame, dd, style="tango")
         print(mess)
         print(get_call_function_name(frame))
+        print("frame count: %d" % count_frames(frame))
         return
 
     print("=" * 30)

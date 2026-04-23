@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023-2024 Rocky
+#   Copyright (C) 2013, 2015, 2017-2018, 2020-2021, 2023-2024, 2026 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -20,43 +20,10 @@ counts, to parse a string for an integer, or check a string for an
 on/off setting value.
 """
 import sys
-import tempfile
-
-from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
-
-
-def source_tempfile_remap(prefix, text, tempdir=None):
-    fd = tempfile.NamedTemporaryFile(
-        suffix=".py", prefix=prefix, dir=tempdir, delete=False
-    )
-    with fd:
-        fd.write(bytes(text, "UTF-8"))
-        fd.close()
-        pass
-    return fd.name
 
 
 def deparse_fn(code):
-    try:
-        if PYTHON_VERSION_TRIPLE >= (3, 9):
-            # Don't have decompiler here yet.
-            return None
-        if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
-            from decompyle3.semantics.linemap import (
-                code_deparse_with_fragments_and_map as deparse_code,
-            )
-        else:
-            from uncompyle6.semantics.linemap import (
-                code_deparse_with_fragments_and_map as deparse_code,
-            )
-
-    except ImportError:
-        return None
-    try:
-        deparsed = deparse_code(code, is_pypy=IS_PYPY)
-        return deparsed
-    except Exception:
-        raise
+    # Don't have decompiler here yet.
     return None
 
 

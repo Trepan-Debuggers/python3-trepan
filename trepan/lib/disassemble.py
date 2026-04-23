@@ -38,7 +38,7 @@ from trepan.lib.format import (  # Opcode,
     Integer,
     Keyword,
     LineNumber,
-    Number,
+    Offset,
     Symbol,
     format_token,
 )
@@ -71,7 +71,7 @@ def dis(
     errmsg,
     x=None,
     start_line=-1,
-    end_line=None,
+    end_line=-1,
     relative_pos=False,
     style="none",
     start_offset=0,
@@ -197,7 +197,7 @@ def dis_from_file(
     errmsg,
     filename,
     start_line=-1,
-    end_line=None,
+    end_line=-1,
     style="none",
     include_header=False,
     asm_format="extended",
@@ -307,7 +307,7 @@ def print_instruction(
         msg_nocr("  ")
 
     # Column: Instruction offset from start of code sequence
-    msg_nocr(format_token(Number, repr(offset).rjust(4), style=style))
+    msg_nocr(format_token(Offset, repr(offset).rjust(4), style=style))
     msg_nocr(" ")
 
     # Column: Instruction bytes
@@ -428,7 +428,7 @@ def disassemble_bytes(
 
     labels = findlabels(code, opc)
 
-    if start_line > cur_line:
+    if start_line > cur_line or start_offset > 0:
         msg_nocr = null_print
         msg = null_print
     else:
@@ -488,7 +488,6 @@ def disassemble_bytes(
         )
 
     return code, offset
-
 
 def disassemble_instruction(
     orig_msg,
@@ -602,11 +601,14 @@ if __name__ == "__main__":
             return 1
         return fib(x - 1) + fib(x - 2)
 
-    dis_from_file(msg, msg_nocr, section, errmsg, __file__, start_line=45)
-    # curframe = inspect.currentframe()
-    # dis(msg, msg_nocr, errmsg, section, curframe,
-    #     start_line=10, end_line=40, highlight='dark')
+    # dis_from_file(msg, msg_nocr, section, errmsg, __file__, start_line=45)
     # print('-' * 40)
+
+    curframe = inspect.currentframe()
+    dis(msg, msg_nocr, errmsg, section, curframe, start_offset=4, end_offset=10)
+    print('-' * 40)
+
+    import sys; sys.exit(0)
     # does nothing because start_offset is too high:
     # dis(msg, msg_nocr, errmsg, section, curframe,
     #     start_offset=10, end_offset=20, highlight='dark')

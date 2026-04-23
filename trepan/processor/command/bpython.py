@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#  Copyright (C) 2015, 2020 Rocky Bernstein
+#  Copyright (C) 2015, 2020, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -62,13 +62,15 @@ class PythonCommand(DebuggerCommand):
                 pass
             pass
 
-        banner_tmpl = """trepan2 python shell%s
-Use dbgr(*string*) to issue debugger command: *string*"""
+        banner_tmpl = """\033[1mIPython trepan3k shell%s\033[0m
+
+Use dbgr(\x1b[3mstring\x1b[0m) to issue a non-continuing debugger command.
+"""
 
         debug = len(args) > 1 and args[1] == "-d"
         if debug:
             banner_tmpl += (
-                "\nVariable 'debugger' contains a trepan" + "debugger object."
+                "\nVariable \x1b[3mdebugger\x1b[0m) contains a trepan debugger object."
             )
             pass
         my_locals = {}
@@ -91,7 +93,7 @@ Use dbgr(*string*) to issue debugger command: *string*"""
             banner = banner_tmpl % ""
             pass
 
-        sys.ps1 = "trepan2 >>> "
+        sys.ps1 = "trepan3k >>> "
         print(banner)
         try:
             main_bpython([], my_locals)

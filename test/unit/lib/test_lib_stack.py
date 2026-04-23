@@ -3,15 +3,16 @@ import inspect
 import pytest
 import platform
 
-from trepan.lib.stack import count_frames, is_eval_or_exec_stmt
+from trepan.lib.stack import FrameInfo, count_frames, is_eval_or_exec_stmt
 
 
 def test_count_frames():
     f = inspect.currentframe()
     frame_count = count_frames(f)
+    assert frame_count == count_frames(f)
+    assert len(FrameInfo) > 0
     assert count_frames(f) > 2
     assert frame_count - 1 == count_frames(f.f_back)
-    assert frame_count - 1 == count_frames(f, 1)
     return
 
 
