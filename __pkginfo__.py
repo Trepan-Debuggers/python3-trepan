@@ -41,7 +41,7 @@ if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
 
 # Things that change more often go here.
 copyright = (
-    """Copyright (C) 2013, 2015-2021, 2023-2024 Rocky Bernstein <rocky@gnu.org>."""
+    """Copyright (C) 2013, 2015-2021, 2023-2024, 2026 Rocky Bernstein <rocky@gnu.org>."""
 )
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -64,6 +64,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
@@ -85,12 +86,12 @@ extras_require = {
 ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
-    "pyficache > 2.5.0",
-    "xdis > 6.2.0",
+    "pyficache >= 2.6.0",
+    "xdis >= 6.3.0",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
-    "term-background >= 1.0.1",
+    "term-background >= 1.0.5",
 ]
 
 if decompiler is not None:
