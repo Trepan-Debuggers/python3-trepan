@@ -22,15 +22,19 @@
 # less elegant than having it here with reduced code, albeit there
 # still is some room for improvement.
 
+import platform
 import os.path as osp
 from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
-decompiler = "uncompyle6 >= 3.9.2"
 
 pygments_version = ">=2.11.2" if IS_PYPY else ">=2.2.0"
-if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
-    decompiler = "decompyle3 >= 3.8.0"
-
+if platform.python_implementation() != "GraalVM":
+    if (3, 7) <= PYTHON_VERSION_TRIPLE < (3, 9):
+        decompiler = "decompyle3 >= 3.8.0"
+    else:
+        decompiler = "uncompyle6 >= 3.9.2"
+else:
+    decompiler = None
 
 # Python-version | package  | last-version |
 # ------------------------------------------
