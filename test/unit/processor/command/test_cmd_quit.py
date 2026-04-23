@@ -6,11 +6,13 @@ from test.unit.cmdhelper import readline_no, readline_yes, setup_unit_test_debug
 
 import pytest
 
+from xdis import IS_PYPY
 from trepan.exception import DebuggerQuit
 from trepan.processor.command.quit import QuitCommand
 
 
-@pytest.mark.skipif(sys.platform in ("win32",), reason="$Need to go over on MS Windows")
+@pytest.mark.skipif(IS_PYPY, reason="PyPy doesn't do quit properly")
+@pytest.mark.skipif(sys.platform in ("win32",), reason="Need to go over on MS Windows")
 def test_quit():
     """Test processor.command.quit.QuitCommand.run()"""
     _, cp = setup_unit_test_debugger()

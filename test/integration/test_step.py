@@ -4,7 +4,7 @@ import sys
 
 import pytest
 from helper import run_debugger
-from xdis import PYTHON_VERSION_TRIPLE
+from xdis import IS_PYPY, PYTHON_VERSION_TRIPLE
 
 
 @pytest.mark.skipif(
@@ -18,6 +18,8 @@ def test_step():
         right_template = "%s-310.right"
     elif PYTHON_VERSION_TRIPLE >= (3, 8):
         right_template = "%s-38.right"
+    elif PYTHON_VERSION_TRIPLE[:2] == (3, 7) and IS_PYPY:
+        right_template = "%s-37pypy.right"
     else:
         right_template = "%s-36.right"
     result = run_debugger(
