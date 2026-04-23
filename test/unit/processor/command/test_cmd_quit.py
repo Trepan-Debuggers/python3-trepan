@@ -1,5 +1,6 @@
 """Unit test for trepan.processor.command.quit"""
 
+import platform
 import sys
 import threading
 from test.unit.cmdhelper import readline_no, readline_yes, setup_unit_test_debugger
@@ -12,6 +13,7 @@ from trepan.processor.command.quit import QuitCommand
 
 
 @pytest.mark.skipif(IS_PYPY, reason="PyPy doesn't do quit properly")
+@pytest.mark.skipif(platform.python_implementation() in ("GraalVM",), reason="quit doesn't work here")
 @pytest.mark.skipif(sys.platform in ("win32",), reason="Need to go over on MS Windows")
 def test_quit():
     """Test processor.command.quit.QuitCommand.run()"""

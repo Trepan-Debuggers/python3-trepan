@@ -35,7 +35,6 @@ from typing import Any, Callable, Union
 
 import pyficache
 import tracer
-from tracer.tracefilter import TraceFilter
 from xdis.load import check_object_path, load_module
 
 from trepan.exception import DebuggerQuit, DebuggerRestart
@@ -47,6 +46,14 @@ from trepan.lib.default import DEBUGGER_SETTINGS, START_OPTS
 from trepan.lib.file import is_compiled_py
 from trepan.lib.sighandler import SignalManager
 from trepan.misc import option_set
+
+try:
+    from tracer.tracefilter import TraceFilter
+except ImportError:
+    # This is a hack to allow debugging TraceFilter.
+    # The problem is that tracer we have tracer and
+    # tracer.tracer and the two can get confused.
+    from tracefilter import TraceFilter
 
 try:
     from readline import get_line_buffer
@@ -368,7 +375,9 @@ class Trepan:
     # DEFAULT_INIT_OPTS which includes references to these.
 
     # Note: has to come after functions listed in ignore_filter.
-    ignore_items = [tracer, tracer.tracer, TrepanCore]
+    ignore_items = [tracer, TrepanCore]
+    if hasattr(tracer, "tracer"):
+        ignore_items.append(tracer.tracer)
     trepan_debugger = sys.modules.get("trepan.debugger")
     if trepan_debugger is not None:
         ignore_items.append(trepan_debugger)
