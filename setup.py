@@ -21,6 +21,24 @@ if not ((3, 6) <= SYS_VERSION < (3, 11)) and not IS_GRAAL:
     print(mess)
     raise Exception(mess)
 
+# Get the package information used in setup().
+from __pkginfo__ import (
+    __version__,
+    author,
+    author_email,
+    classifiers,
+    entry_points,
+    extras_require,
+    install_requires,
+    license,
+    long_description,
+    modname,
+    py_modules,
+    short_desc,
+    web,
+    zip_safe,
+)
+
 packages = find_packages()
 
 setup(
