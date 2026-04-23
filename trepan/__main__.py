@@ -278,12 +278,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
         if mainpyfile != mainpyfile_noopt and readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that." % __title__)
-            print("%s: Substituting non-compiled name: {mainpyfile_noopt}" % __title__)
             if opts.module is None:
                 # We are not debugging module.
-                print(f"{__title__}: Compiled Python script given and we can't use that.")
-                print(f"{__title__}: Substituting non-compiled name: {mainpyfile_noopt}")
+                print("%s: Compiled Python script given and we can't use that." % __title__)
+                print("%s: Substituting non-compiled name: {mainpyfile_noopt}" % __title__)
             mainpyfile = mainpyfile_noopt
             pass
 

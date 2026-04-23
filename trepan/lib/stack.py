@@ -30,8 +30,6 @@ from reprlib import repr
 import xdis
 from xdis import get_opcode
 from xdis.version_info import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE
-from typing import Dict, Optional, Tuple
-import xdis
 
 from trepan.lib.bytecode import op_at_frame
 from trepan.lib.format import (
@@ -70,7 +68,7 @@ _with_local_varname = re.compile(r"_\[[0-9+]]")
 opc = xdis.get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
 
 # A mapping frame to its ExtraFrameInfo.
-FrameInfo: Dict[FrameType, int] = {}
+FrameInfo = {}
 
 def count_frames(frame) -> int:
     """Return a count of the number of frames"""
@@ -217,12 +215,13 @@ def format_function_and_parameters(frame, debugger, style: str) -> tuple:
         except Exception:
             pass
         else:
-            maxargstrsize = debugger.settings["maxargstrsize"]
-            if len(params) >= maxargstrsize:
-                params = "%s...)" % params[0:maxargstrsize]
-                formatted_params = format_python(params, style=style)
-                pass
-            s += formatted_params
+            if params:
+                maxargstrsize = debugger.settings["maxargstrsize"]
+                if len(params) >= maxargstrsize:
+                    params = "%s...)" % params[0:maxargstrsize]
+                    formatted_params = format_python(params, style=style)
+                    pass
+                s += formatted_params
         pass
 
     return is_module, s
@@ -262,6 +261,9 @@ def format_return_and_location(
                     s += " in %s" % func_name
             elif not is_eval_or_exec_stmt(frame) and not is_pseudo_file:
                 s += " file"
+            remapped_filename = pyficache.main.code2tempfile.get(frame.f_code)
+            if remapped_filename:
+                filename = remapped_filename
         elif s == "?()":
             func_name = is_eval_or_exec_stmt(frame)
             if func_name:
@@ -353,26 +355,21 @@ def frame2filesize(frame):
 def get_exec_or_eval_string(frame):
     call_frame = frame.f_back
     if call_frame is not None:
-        if IS_GRAAL:
-            # Graal's call_frame.f_code does not return graal bytecode?
-            return None
-        offset = call_frame.f_lasti - 2
+        offset = call_frame.f_lasti
         code = call_frame.f_code
-        while offset > 0:
-            inst = list(
-                xdis.bytecode.get_logical_instruction_at_offset(
-                    code.co_code, offset, opc, constants=code.co_consts
-                )
-            )[0]
+        instructions = tuple(xdis.bytecode.get_instructions_bytes(code, opc))
+        inst, inst_num = next((inst, i) for i, inst in enumerate(instructions) if inst.offset == offset)
+        for inst_num in range(inst_num - 1, 0, -1):
+            inst = instructions[inst_num]
             if inst.opname == "LOAD_CONST":
                 return inst.argval
             elif inst.opname == "LOAD_NAME":
-                arg_name = call_frame.f_code.co_names[inst.argval]
+                arg_name = call_frame.f_code.co_names[inst.arg]
                 return call_frame.f_locals[arg_name]
             else:
                 break
-            offset -= 2
-
+            pass
+        pass
     return None
 
 

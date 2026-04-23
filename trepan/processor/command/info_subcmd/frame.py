@@ -154,7 +154,7 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
             self.msg("  current line number: %s" % frame.f_lineno)
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
+            self.msg("  current line number: %s: %s" % (formatted_line_number, formatted_text))
 
         f_lasti = frame.f_lasti
         if f_lasti >= 0:

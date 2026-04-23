@@ -432,14 +432,14 @@ def process_options(pkg_version: str, sys_argv: list, option_list=None):
         try:
             module = importlib.import_module(opts.module)
             if module.__file__.endswith("__init__.py"):
-                main_module = f"{opts.module}.__main__"
+                main_module = "%s.__main__" % opts.module
                 importlib.import_module(main_module)
                 opts.module = main_module
         except ImportError:
-            print(f"No module named {opts.module}")
+            print("No module named %s" % opts.module)
             sys.exit(3)
         except Exception as e:
-            print(f"Unexpected exception importing {opts.module}:\n\t{e}")
+            print("Unexpected exception importing %s:\n\t%s" % (opts.module, e))
             sys.exit(4)
         pass
 
@@ -516,12 +516,12 @@ if __name__ == "__main__":
     import pprint
 
     def doit(version, arg_str):
-        print("Test %s" %, version)
+        print("Test %s" % version)
         print("options '%s'" % arg_str)
         args = arg_str.split()
         opts, _, _ = process_options(version, args)
         pp.pprint(vars(opts))
-        print(f"sys.argv: {sys.argv})")
+        print("sys.argv: %s" % sys.argv)
         print("")
         return
 
@@ -535,7 +535,7 @@ if __name__ == "__main__":
          "trepan3k --server")
 
     doit("4: --command option",
-         f"trepan3k --command {__file__} bar baz")
+         "trepan3k --command %s bar baz" % __file__)
 
     doit("5", "trepan3k --server --client")
     doit("6", "trepan3k --style=emacs")
@@ -551,5 +551,4 @@ if __name__ == "__main__":
     # --help exits, so must be last
     doit("9: show help",
          "trepan3k --help")
->>>>>>> python-3.6-to-3.10
     pass

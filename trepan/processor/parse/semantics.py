@@ -97,7 +97,7 @@ class LocationGrok(GenericASTTraversal, object):
                 else:
                     assert (
                         True
-                    ), f"n_location: Something's is wrong; {node[-1]} should be NUMBER OR ADDRESS"
+                    ), "n_location: Something's is wrong; %s should be NUMBER OR ADDRESS" % node[-1]
             else:
                 offset = 0
                 is_address = True
@@ -114,7 +114,7 @@ class LocationGrok(GenericASTTraversal, object):
                 else:
                     assert (
                         True
-                    ), f"n_location: Something's is wrong; {node} node be NUMBER or NUMBER COLON ADDRESS"
+                    ), "n_location: Something's is wrong; %s node be NUMBER or NUMBER COLON ADDRESS" % node
         elif node[0] == "ADDRESS":
             is_address = True
             offset = int(node[0].value[1:])

@@ -98,7 +98,7 @@ color_scheme[Token.Literal.String] = (purple, "yellow")
 pyficache.dark_terminal_formatter.colorscheme = color_scheme
 pyficache.light_terminal_formatter.colorscheme = color_scheme
 
-terminal_formatters: Dict[str, Terminal256Formatter] = {}
+terminal_formatters = {}
 
 def format_token(token_type, token_value: str, style) -> str:
     """
@@ -405,6 +405,7 @@ color_tf = RSTTerminalFormatter(colorscheme=color_scheme)
 mono_tf = MonoRSTTerminalFormatter()
 python_lexer = PythonLexer()
 
+
 def format_function(function: str, style: str) -> str:
     """Add terminal formatting for function.
     """
@@ -422,13 +423,13 @@ def format_offset(offset: int, style: str, format_spec="%d", show_offset_mark=Fa
     """Add terminal formatting for line number.
     """
     if show_offset_mark:
-        offset_str = format_spec % f"*{offset}"
+        offset_str = format_spec % ("*" + str(offset))
     else:
         offset_str = format_spec % offset
     return format_token(Offset, offset_str, style)
 
 
-def format_python(python_str: str, style: Optional[str]) -> str:
+def format_python(python_str: str, style) -> str:
     """Add terminial formatting for a Python string
     ``python_str``, using pygments style ``style``.
     """

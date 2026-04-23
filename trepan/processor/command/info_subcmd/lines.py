@@ -108,14 +108,14 @@ class InfoOffsets(DebuggerSubcommand):
         )
 
         if remapped_filename != filename:
-            self.msg(f"{filename} remapped to {formatted_filename}")
+            self.msg("%s remapped to %s" % (filename, formatted_filename))
 
         linecache_info = get_linecache_info(remapped_filename)
         style = self.settings["style"]
         if linecache_info:
             self.section("Line:   fn, offset for table for %s" % filename)
         if linecache_info:
-            self.section(f"Line:   fn, offset for table for {formatted_filename}")
+            self.section("Line:   fn, offset for table for %s" % formatted_filename)
             lines = []
             linecache_info = get_linecache_info(remapped_filename)
             line_info = linecache_info.line_info

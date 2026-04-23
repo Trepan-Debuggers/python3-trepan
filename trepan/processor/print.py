@@ -22,7 +22,6 @@ import sys
 from inspect import currentframe, ismodule
 from tempfile import NamedTemporaryFile
 from types import CodeType
-from typing import Optional
 
 import pyficache
 
@@ -116,6 +115,11 @@ def print_source_location_info(
             mess = "(%s:%s remapped %s" % (remapped_file, line_number, filename)
         else:
             mess = "(%s:%d remapped %s" % (remapped_file, line_number, filename)
+    else:
+        if remapped_line_number != -1:
+            mess = "(%s:%d" % (filename, remapped_line_number)
+        else:
+            mess = "(%s:%d" % (filename, line_number)
     if f_lasti and f_lasti != -1:
         mess += " @%d" % f_lasti
         pass
@@ -471,7 +475,7 @@ def create_tempfile_and_remap_filename(
     text: str,
     filename: str,
     tempdir: str,
-    prefix: Optional[str] = None,
+    prefix = None,
     suffix: str = ".py",
     delete=False,
 ) -> str:

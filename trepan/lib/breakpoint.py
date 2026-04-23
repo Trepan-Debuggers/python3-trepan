@@ -20,9 +20,8 @@ This code is a rewrite of the stock python bdb.Breakpoint"""
 __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path as osp
+import types
 from collections import defaultdict
-from types import CodeType, ModuleType
-from xdis import load_module
 
 
 class Breakpoint:
@@ -119,8 +118,10 @@ class Breakpoint:
 
         if self.line_number == -1:
             line_str = ""
-        else:
+        elif isinstance(self.line_number, int):
             line_str = ":%d" % self.line_number
+        else:
+            line_str = ""
         if self.column is not None:
             column_str = ":%d" % self.column
         else:
@@ -246,7 +247,7 @@ class BreakpointManager:
         # xdis.unmarshal may return its own code type for Graal or
         # non-CPython implementations. xdis may do this in
         # order to include additional code info.
-        if iscode(func_or_code):
+        if isinstance(func_or_code, types.CodeType):
             code = func_or_code
         # FIXME: don't know how to handle modules in 3.6...
         # elif isinstance(func_or_code, ModuleType):
@@ -263,10 +264,10 @@ class BreakpointManager:
         #             position = 0
         #         if line_number == -1:
         #             line_number = code.co_firstlineno
-
-            # else:
-            #     print("Don't know what to do with frozen module %s" % func_or_code)
-            #     return
+        #
+        #     else:
+        #        print("Don't know what to do with frozen module %s" % func_or_code)
+        #        return
         elif hasattr(func_or_code, "__code__"):
             code = func_or_code.__code__
             if line_number == -1:
@@ -331,23 +332,10 @@ class BreakpointManager:
         index = (bp.filename, bp.line_number)
         if index not in self.bplist:
             return False
-
-        # FIXME: should mark breakpoint as being a call breakpoint or not instead of doing
-        # this logic.
-        brkpts = self.codecall_brkpts[bp.code] if bp.offset is None else self.code2position_brkpts[bp.code]
-        if not brkpts:
-            brkpts = self.code2position_brkpts[bp.code]
-
-        assert brkpts, f"Should have a list of breakpoints set in {bp.code}"
-        if bp in brkpts:
-            brkpts.remove(bp)
-
         self.bplist[index].remove(bp)
         if not self.bplist[index]:
             # No more breakpoints for this file:line combo
             del self.bplist[index]
-
-
         return True
 
     def delete_breakpoint_by_number(self, bpnum: int) -> tuple:
@@ -468,19 +456,19 @@ class BreakpointManager:
         """A list of breakpoints by breakpoint number.  Each entry is
         None or an instance of Breakpoint.  Index 0 is unused, except
         for marking an effective break .... see effective()."""
-        self.bpbynumber: list = [None]
+        self.bpbynumber = [None]
 
         # Keep a mapping from code object to breakpoints that are currently
         # active in that code. By keeping this mapping, we avoid
         # tracing frames that do not have breakpoints in their
         # corresponding code objects.
-        self.code2position_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+        self.code2position_brkpts = defaultdict(list)
 
         # Keep a mapping from code object for call events only to breakpoints that are currently
         # active in that code. By keeping this mapping, we avoid
         # tracing frames that do not have breakpoints in their
         # corresponding code objects.
-        self.codecall_brkpts: DefaultDict[CodeType, list] = defaultdict(list)
+        self.codecall_brkpts = defaultdict(list)
 
         self.bplist = defaultdict(list)
 
@@ -504,7 +492,7 @@ def checkfuncname(brkpt: Breakpoint, frame):
 
     # Breakpoint set via function code object
     # Graal code objects are not native
-    if frame.f_code != brkpt.code and not IS_GRAAL and brkpt.offset is not None:
+    if frame.f_code != brkpt.code and brkpt.offset is not None:
         # It's not a function call, but rather execution of def statement.
         return False
 
@@ -581,8 +569,8 @@ if __name__ == "__main__":
         print("Stop at bp3: %s" % checkfuncname(bp3, frame))
         return
 
-    bp2 = bpmgr.add_breakpoint(None, -1, -1, True, False, None, foo)
-    foo(bp2, bpmgr)
+    # bp2 = bpmgr.add_breakpoint(None, -1, -1, True, False, None, foo)
+    # foo(bp2, bpmgr)
     bp3 = bpmgr.add_breakpoint(
         __file__, line_number, 0, is_code_offset=True, temporary=True, func_or_code=foo
     )

@@ -199,7 +199,7 @@ class TrepanCore:
                 filename = new_filename
         return self.canonic(filename)
 
-    def filename(self, filename=None) -> Optional[str]:
+    def filename(self, filename=None):
         """Return filename or the basename of that depending on the
         basename setting"""
         if filename is None:
@@ -352,7 +352,7 @@ class TrepanCore:
             else:
                 msg = ""
                 pass
-            self.stop_reason = f"at {msg}call breakpoint {bp.number}"
+            self.stop_reason = "at %scall breakpoint %d" % (msg, bp.number)
             self.event = "brkpt"
             return True
         return False

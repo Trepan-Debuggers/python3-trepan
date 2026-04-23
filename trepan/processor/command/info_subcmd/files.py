@@ -65,7 +65,7 @@ class InfoFiles(DebuggerSubcommand):
             pass
 
         style = self.settings["style"]
-        m = f"{format_token(Filename, filename, style=style)} is"
+        m = "%s is" % format_token(Filename, filename, style=style)
         filename_cache = self.core.filename_cache
         if filename in filename_cache:
             m += " cached in debugger"

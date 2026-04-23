@@ -1,6 +1,7 @@
 """Unit test for trepan.options"""
 
 import sys
+
 from test.unit.cmdhelper import setup_unit_test_debugger
 
 import pytest

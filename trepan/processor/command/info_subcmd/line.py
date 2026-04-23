@@ -123,7 +123,7 @@ class InfoLine(DebuggerSubcommand):
         )
 
         if remapped_filename != filename:
-            self.msg(f"{filename} remapped to {formatted_filename}")
+            self.msg("%s remapped to %s" % (filename, formatted_filename))
 
         if not osp.isfile(remapped_filename):
             filename = search_file(remapped_filename, self.core.search_path, self.main_dirname)
@@ -142,10 +142,10 @@ class InfoLine(DebuggerSubcommand):
         line_number_offsets = line_info.get(line_number)
         if line_number_offsets:
             offset_data = [
-                f"{code.co_name}:*{offset}" for code, offset in line_number_offsets
+                "%s:*%d" % (code.co_name, offset) for code, offset in line_number_offsets
             ]
             if len(offset_data) == 1:
-                msg2 = f"is at bytecode offset {offset_data[0]}"
+                msg2 = "is at bytecode offset {%s}" % offset_data[0]
                 self.msg(wrapped_lines(msg1, msg2, self.settings["width"]))
             else:
                 msg2 = "is at bytecode offsets:"

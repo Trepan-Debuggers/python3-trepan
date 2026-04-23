@@ -22,7 +22,6 @@
 # less elegant than having it here with reduced code, albeit there
 # still is some room for improvement.
 
-import platform
 import os.path as osp
 from xdis import PYTHON_VERSION_TRIPLE
 
@@ -32,8 +31,8 @@ if (3, 0) <= PYTHON_VERSION_TRIPLE < (3, 3):
 else:
     pygments_version = ">= 2.2.0"
 
-
-    """Copyright (C) 2013, 2015-2021, 2023-2026 Rocky Bernstein <rocky@gnu.org>."""
+copyright = (
+"""Copyright (C) 2013, 2015-2021, 2023-2026 Rocky Bernstein <rocky@gnu.org>."""
 )
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -86,10 +85,8 @@ install_requires = [
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
     "term-background >= 1.0.5",
+    "uncompyle6 >= 3.9.2",
 ]
-
-if decompiler is not None:
-    install_requires.append(decompiler)
 
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"
