@@ -102,6 +102,9 @@ class FrameCommand(DebuggerCommand):
         self.stack, self.curindex = get_stack(frame, None, self.proc)
         self.proc.stack, self.proc.curindex = self.stack, self.curindex
         self.proc.frame_thread_name = thread_name
+        self.proc.curframe = frame
+        self.proc.list_lineno = self.curframe.f_lineno - 1
+        self.proc.list_offset = self.curframe.f_lasti
         return
 
     def one_arg_run(self, position_str):

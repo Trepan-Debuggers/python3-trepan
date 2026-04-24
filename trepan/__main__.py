@@ -79,13 +79,20 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     # options that belong to this debugger. The original options to
     # invoke the debugger and script are in global sys_argv
 
+    if opts.module is not None:
+        mainpyfile = opts.module
+        if len(sys_argv) == 0:
+            sys_argv.append(mainpyfile)
+        else:
+            sys_argv[0] = mainpyfile
+
     if len(sys_argv) == 0:
         # No program given to debug. Set to go into a command loop
         # anyway
         mainpyfile = None
     else:
         mainpyfile = sys_argv[0]  # Get script filename.
-        if not osp.isfile(mainpyfile):
+        if not osp.isfile(mainpyfile) and opts.module is None:
             mainpyfile = whence_file(mainpyfile)
             is_readable = readable(mainpyfile)
             if is_readable is None:
@@ -218,7 +225,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                     info = disassemble_file(
                         mainpyfile,
                         outstream=fd,
-                        asm_format="extended-bytes",
+                        asm_format="extended",
                         show_source=False,
                     )
                     code_module = info[1]
@@ -243,7 +250,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
                                 % (__title__, embedded_filename, pyasm_name),
                                 file=sys.stderr,
                             )
-                            pyficache.remap_file(pyasm_name, embedded_filename)
+                            pyficache.remap_file(pyasm_name, embedded_filename, is_pyasm=True)
 
                 else:
                     decompile_file = fd.name
@@ -271,8 +278,10 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # use non-optimized alternative.
         mainpyfile_noopt = pyficache.resolve_name_to_path(mainpyfile)
         if mainpyfile != mainpyfile_noopt and readable(mainpyfile_noopt):
-            print("%s: Compiled Python script given and we can't use that." % __title__)
-            print("%s: Substituting non-compiled name: {mainpyfile_noopt}" % __title__)
+            if opts.module is None:
+                # We are not debugging module.
+                print("%s: Compiled Python script given and we can't use that." % __title__)
+                print("%s: Substituting non-compiled name: {mainpyfile_noopt}" % __title__)
             mainpyfile = mainpyfile_noopt
             pass
 
@@ -294,7 +303,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
         # right.
 
         try:
-            if dbg.program_sys_argv and mainpyfile:
+            if (dbg.program_sys_argv or opts.module) and mainpyfile:
                 normal_termination = dbg.run_script(mainpyfile)
                 if not normal_termination:
                     break

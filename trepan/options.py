@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-1 -*-
-#   Copyright (C) 2013-2015, 2023-2025 Rocky Bernstein <rocky@gnu.org>
+#   Copyright (C) 2013-2015, 2023-2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import codecs
+import importlib
 import os
 import sys
 from optparse import OptionParser
@@ -210,6 +211,14 @@ def process_options(pkg_version: str, sys_argv: list, option_list=None):
     )
 
     optparser.add_option(
+        "-m",
+        dest="module",
+        action="store",
+        type="string",
+        metavar="module",
+        help="Run library module as a script.",
+    )
+    optparser.add_option(
         "--main",
         dest="main",
         action="store_true",
@@ -354,8 +363,17 @@ def process_options(pkg_version: str, sys_argv: list, option_list=None):
 
     sys.argv = sys_argv
 
-    # Here is where we *parse* arguments
-    (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
+    # If the -m option is present, only parse options before it and
+    # leave -m and the following module/args alone.
+    if "-m" in sys_argv[1:]:
+        m_index_end = sys_argv.index("-m") + 2
+        # Parse only the arguments before '-m mod'
+        (opts, _) = optparser.parse_args(sys_argv[1:m_index_end])
+        # Preserve the -m and everything after as the script/module args
+        sys.argv = sys_argv[m_index_end :]
+    else:
+        # Here is where we *parse* arguments
+        (opts, sys.argv) = optparser.parse_args(sys_argv[1:])
 
     if opts.edit_mode not in ("vi", "emacs"):
         sys.stderr.write(
@@ -409,6 +427,21 @@ def process_options(pkg_version: str, sys_argv: list, option_list=None):
             print("Unexpected error in opening debugger output file %s" % opts.output)
             print(sys.exc_info()[0])
             sys.exit(2)
+        pass
+
+    if opts.module:
+        try:
+            module = importlib.import_module(opts.module)
+            if module.__file__.endswith("__init__.py"):
+                main_module = "%s.__main__" % opts.module
+                importlib.import_module(main_module)
+                opts.module = main_module
+        except ImportError:
+            print("No module named %s" % opts.module)
+            sys.exit(3)
+        except Exception as e:
+            print("Unexpected exception importing %s:\n\t%s" % (opts.module, e))
+            sys.exit(4)
         pass
 
     return opts, dbg_opts, sys.argv
@@ -484,19 +517,39 @@ if __name__ == "__main__":
     import pprint
 
     def doit(version, arg_str):
+        print("Test %s" % version)
         print("options '%s'" % arg_str)
         args = arg_str.split()
         opts, _, _ = process_options(version, args)
         pp.pprint(vars(opts))
+        print("sys.argv: %s" % sys.argv)
         print("")
         return
 
     pp = pprint.PrettyPrinter(indent=4)
-    doit("1.1", "__file__")
-    doit("1.2", "%s foo bar" % __file__)
-    doit("1.3", "%s --server" % __file__)
-    doit("1.3", "%s --command %s bar baz" % (__file__, __file__))
-    doit("1.4", "%s --server --client" % __file__)
-    doit("1.5", "%s --style=emacs" % __file__)
-    doit("1.6", "%s --help" % __file__)  # exits, so must be last
+
+    doit("1: no options.",
+         "trepan3k")
+    doit("2; program and argument",
+         "trepan3k foo bar")
+    doit("3: one trepan3k option",
+         "trepan3k --server")
+
+    doit("4: --command option",
+         "trepan3k --command %s bar baz" % __file__)
+
+    doit("5", "trepan3k --server --client")
+    doit("6", "trepan3k --style=emacs")
+
+    # -F bytes foo.pyc should be passed to pydisasm
+    doit("7: trepan3k option with program having its own options",
+         "trepan3k --trace pydisasm -F bytes foo.pyc")
+
+    # Options after -m pydebug should be passed to pydebug
+    doit("8: -m option with arguments to module",
+         "trepan3k --trace -m dis --host 0.0.0.0")
+
+    # --help exits, so must be last
+    doit("9: show help",
+         "trepan3k --help")
     pass

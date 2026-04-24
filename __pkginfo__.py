@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2025 Rocky Bernstein
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2026 Rocky Bernstein
 # <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -24,21 +24,11 @@
 
 import os.path as osp
 
-decompiler = "uncompyle6 >= 3.9.2"
 
 pygments_version = "pygments>=1.6"
 
-
-# Python-version | package  | last-version |
-# ------------------------------------------
-# 3.2            | pip      | 8.1.2        |
-# 3.1            | pygments | 2.0.0        |
-# 3.3            | pip      | 10.0.1       |
-# 3.4            | pip      | 19.1.1       |
-
-# Things that change more often go here.
 copyright = (
-    """Copyright (C) 2013, 2015-2021, 2023-2025 Rocky Bernstein <rocky@gnu.org>."""
+"""Copyright (C) 2013, 2015-2021, 2023-2026 Rocky Bernstein <rocky@gnu.org>."""
 )
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -63,6 +53,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
@@ -84,16 +75,14 @@ extras_require = {
 ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
-    "pyficache > 2.5.0",
-    "xdis > 6.2.0",
+    "pyficache >= 2.6.0",
+    "xdis >= 6.3.0",
     pygments_version,
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
-    "term-background >= 1.0.1",
+    "term-background >= 1.0.5",
+    "uncompyle6 >= 3.9.2",
 ]
-
-if decompiler is not None:
-    install_requires.append(decompiler)
 
 license = "GPL3"
 mailing_list = "python-debugger@googlegroups.com"

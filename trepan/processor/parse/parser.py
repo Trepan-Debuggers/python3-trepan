@@ -134,12 +134,14 @@ class LocationParser(GenericASTBuilder):
 
         # Note no space is allowed between FILENAME COLON, and NUMBER
         location    ::= FILENAME COLON NUMBER
+        location    ::= FILENAME COLON ADDRESS
         location    ::= FUNCNAME
 
         # If just a number, offset or address is given, the filename is implied
         location    ::= NUMBER
         location    ::= OFFSET
         location    ::= ADDRESS
+        location    ::= NUMBER COLON ADDRESS
 
         # For tokens we accept anything. Were really just
         # going to use the underlying string from the part

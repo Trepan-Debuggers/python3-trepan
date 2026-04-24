@@ -39,8 +39,6 @@ from __pkginfo__ import (
     zip_safe,
 )
 
-__import__("pkg_resources")
-
 packages = find_packages()
 
 setup(

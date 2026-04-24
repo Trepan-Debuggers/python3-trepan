@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2024 Rocky Bernstein <rocky@gnu.org>
+# Copyright (C) 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,57 +17,29 @@
 import inspect
 import sys
 
-from xdis.version_info import PYTHON_VERSION_TRIPLE
-
 # Our local modules
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.command.base_submgr import SubcommandMgr
 
-if PYTHON_VERSION_TRIPLE >= (3, 4):
-    from importlib import reload
-else:
-    import imp
-    import os.path as osp
-    import sys
-    import types
+from importlib import import_module
 
-    _RELOADING = {}
 
-    def reload(module):
-        """Reload the module and return it.
+def reload(module):
+    name = module.__name__
 
-        The module must have been successfully imported before.
+    # Get the loader (if it exists)
+    loader = getattr(module, '__loader__', None)
 
-        """
+    # Re-execute the code
+    # This runs the module body again in the same __dict__
+    if loader is not None:
+        loader.load_module(name)
+    else:
+        # Fallback for older modules
+        with open(module.__file__, 'rb') as f:
+            exec(compile(f.read(), module.__file__, 'exec'), module.__dict__)
 
-        if not module or not isinstance(module, types.ModuleType):
-            raise TypeError("reload() argument must be module")
-        try:
-            name = module.__spec__.name
-        except AttributeError:
-            name = module.__name__
-
-        if sys.modules.get(name) is not module:
-            msg = "module {} not in sys.modules"
-            raise ImportError(msg.format(name), name=name)
-        if name in _RELOADING:
-            return _RELOADING[name]
-        _RELOADING[name] = module
-        command_name = name.split(".")[-1]
-        cmd_dir = osp.dirname(module.__file__)
-        if cmd_dir not in sys.path:
-            sys.path.append(cmd_dir)
-        try:
-            file, file_pathname, details = imp.find_module(command_name)
-            imp.load_module(name, file, file_pathname, details)
-            # The module may have replaced itself in sys.modules!
-            return sys.modules[name]
-        finally:
-            try:
-                del _RELOADING[name]
-            except KeyError:
-                pass
-
+    return sys.modules[name]
 
 class ReloadCommand(DebuggerCommand):
     """**reload** *command-name*
@@ -91,10 +63,18 @@ class ReloadCommand(DebuggerCommand):
     def run(self, args):
         cmd_name = args[1]
         proc = self.proc
-        if cmd_name in proc.commands:
-            command_module = importlib.import_module(proc.commands[cmd_name].__module__)
-            # importlib.reload(command_module)
-            classnames = [tup[0] for tup in inspect.getmembers(command_module, inspect.isclass) if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))]
+        if len(args) == 2:
+            cmd_name = proc.aliases.get(cmd_name, cmd_name)
+            if cmd_name not in proc.commands:
+                self.errmsg('command "%s" not found as a debugger command"' % cmd_name )
+                return
+            command_module = import_module(proc.commands[cmd_name].__module__)
+            reload(command_module)
+            classnames = [
+                tup[0]
+                for tup in inspect.getmembers(command_module, inspect.isclass)
+                if ("DebuggerCommand" != tup[0] and tup[0].endswith("Command"))
+            ]
             if len(classnames) == 1:
                 try:
                     instance = getattr(command_module, classnames[0])(proc)
@@ -106,10 +86,44 @@ class ReloadCommand(DebuggerCommand):
 
                 # FIXME: should we also replace object in proc.cmd_instances?
                 proc.commands[cmd_name] = instance
-                self.msg('reloaded command "%s"' % cmd_name)
+                self.msg('reloaded command: "%s"' % cmd_name)
+            pass
         else:
-            self.errmsg('command "%s" not found as a debugger command"' % cmd_name )
-        return
+            assert len(args) == 3
+            subcmd_mgr = proc.commands.get(cmd_name)
+            if subcmd_mgr is None:
+                self.errmsg("cannot find %s in list of commands" % cmd_name)
+                return
+            if not isinstance(subcmd_mgr, SubcommandMgr):
+                self.errmsg("command %s does not have subcommands" % cmd_name)
+                return
+            subcmd_name = args[2]
+            subcmd = subcmd_mgr.cmds.subcmds.get(subcmd_name)
+            if subcmd is None:
+                self.errmsg(
+                    'command "%s" does not have subcommand ' '"%s"' % (cmd_name, subcmd_name)
+                )
+                return
+
+            subcommand_module = import_module(subcmd.__module__)
+            reload(subcommand_module)
+            classnames = [
+                tup[0] for tup in inspect.getmembers(subcommand_module, inspect.isclass) if str(tup[0]) != "DebuggerSubcommand"
+            ]
+            if len(classnames) == 1:
+                try:
+                    instance = getattr(subcommand_module, classnames[0])(subcmd)
+                except Exception:
+                    self.errmsg(
+                        "Error loading %s from mod_name, sys.exc_info()[0]" % classnames[0]
+                    )
+                    return
+
+                subcmd_mgr.cmds.subcmds[subcmd_name] = instance
+                self.msg('reloaded subcommand: "%s %s"' % (cmd_name, subcmd_name))
+            return
+
+    pass
 
 
 # Demo it

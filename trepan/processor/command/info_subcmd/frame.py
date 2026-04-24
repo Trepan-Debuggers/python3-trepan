@@ -20,8 +20,13 @@ from pyficache import getline, highlight_string
 
 from trepan.lib.complete import complete_token
 from trepan.lib.disassemble import PYTHON_OPCODES as python_opcodes
-from trepan.lib.format import Function, Keyword, format_token
-from trepan.lib.stack import format_function_name
+from trepan.lib.format import Keyword, format_function, format_line_number, format_token
+from trepan.lib.stack import (
+    format_function_name,
+    get_exec_or_eval_string,
+    is_eval_or_exec_stmt
+)
+
 from trepan.lib.thred import current_thread_name
 from trepan.processor import frame as Mframe
 from trepan.processor.print import format_code, format_frame
@@ -126,14 +131,16 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
         self.msg("  function name: %s" % formatted_func_name)
         func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
+        if is_eval_or_exec_stmt(frame):
+            func_args = get_exec_or_eval_string(frame)
+        else:
+            f_args, f_varargs, f_keywords, f_locals = inspect.getargvalues(frame)
+            func_args = inspect.formatargvalues(f_args, f_varargs, f_keywords, f_locals)
         formatted_func_signature = highlight_string(func_args, style=style).strip()
         self.msg("  function args: %s" % formatted_func_signature)
 
-        formatted_thread_name = format_token(Function, current_thread_name(), style=style)
+        formatted_thread_name = format_function(current_thread_name(), style=style)
         self.msg("  thread: %s" % formatted_thread_name)
-        # signature = highlight_string(inspect.signature(frame))
-        # self.msg(f"  signature : {signature}")
-
         if hasattr(frame, "f_restricted"):
             self.msg("  restricted execution: %s" % frame.f_restricted)
 
@@ -142,11 +149,12 @@ class InfoFrame(Mbase_subcmd.DebuggerSubcommand):
         file_path = code.co_filename
 
         line_text = getline(file_path, line_number, {"style": style})
+        formatted_line_number = format_line_number(frame.f_lineno, style)
         if line_text is None:
             self.msg("  current line number: %s" % frame.f_lineno)
         else:
             formatted_text = highlight_string(line_text.strip(), style=style)
-            self.msg("  current line number: %s: %s" % (frame.f_lineno, formatted_text))
+            self.msg("  current line number: %s: %s" % (formatted_line_number, formatted_text))
 
         f_lasti = frame.f_lasti
         if f_lasti >= 0:

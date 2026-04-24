@@ -1,14 +1,13 @@
 """Unit test for trepan.options"""
 
 import sys
-from test.unit.cmdhelper import setup_unit_test_debugger
 
-import pytest
+from test.unit.cmdhelper import setup_unit_test_debugger
 
 from trepan.options import postprocess_options, process_options
 
 
-if not sys.platform in ("win32",):
+if sys.platform not in ("win32",):
     def test_options():
         """
         Test trepan.options.process_options() and trepan.options.postprocess.

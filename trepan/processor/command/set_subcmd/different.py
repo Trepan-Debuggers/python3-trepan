@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2009, 2013, 2015-2016, 2020 Rocky Bernstein
+#   Copyright (C) 2009, 2013, 2015-2016, 2020, 2026 Rocky Bernstein
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@ from trepan.processor.command.base_subcmd import DebuggerSetBoolSubcommand
 class SetDifferent(DebuggerSetBoolSubcommand):
     """**set different** [ **on** | **off** ]
 
-    Set different line location between consecutive debugger stops.
+    Set different location between consecutive debugger stops.
 
     By default, the debugger traces all events possible including line,
-    exceptions, call and return events. Just this alone may mean that for
-    any given source line several consecutive stops at a given line may
+    exceptions, opcode, call and return events. Just this alone may mean that
+    for any given source line several consecutive stops at a given line may
     occur. Independent of this, Python allows one to put several commands
     in a single source line of code. When a programmer does this, it might
     be because the programmer thinks of the line as one unit.

@@ -35,6 +35,7 @@ def set_break(
     force=False,
     offset=None,
 ):
+
     if line_number is None and offset is None:
         part1 = (
             """I don't understand '%s' as a line number, offset, or function name"""
@@ -197,8 +198,9 @@ if __name__ == "__main__":
     # print '-' * 10
     cmdproc.frame = sys._getframe()
     cmdproc.setup()
-    # FIXME: we should not need ot set setting
+    # FIXME: we should not need to set setting
     cmdproc.settings = d.settings
+    set_break(cmdproc, "set_break", __file__, 39, True, False, [], offset=0)
     set_break(cmdproc, "set_break", __file__, 51, True, False, [])
     for cmd in (
         "break '''c:\\tmp\\foo.bat''':1",

@@ -69,6 +69,8 @@ def completer(self, str, state, last_token=""):
         return [None]
         # return match_pairs.map do |name, cmd|
         #   ["#{name} #{args[1..-1].join(' ')}"]
+    elif len(match_pairs) == 0:
+        return ["", None]
 
     # len(match_pairs) == 1
     if str[-1] == " " and str.rstrip().endswith(token):

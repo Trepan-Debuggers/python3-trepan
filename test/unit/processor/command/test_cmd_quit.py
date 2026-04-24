@@ -10,7 +10,7 @@ from trepan.exception import DebuggerQuit
 from trepan.processor.command.quit import QuitCommand
 
 
-if not (sys.platform in ("win32",)):
+if sys.platform not in ("win32",):
     def test_quit():
         """Test processor.command.quit.QuitCommand.run()"""
         _, cp = setup_unit_test_debugger()

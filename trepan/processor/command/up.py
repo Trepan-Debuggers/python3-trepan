@@ -18,7 +18,6 @@
 from trepan.processor.command.base_cmd import DebuggerCommand
 from trepan.processor.frame import adjust_relative, frame_complete
 
-
 class UpCommand(DebuggerCommand):
     signum = -1  # This is what distinguishes us from "down"
 
