@@ -237,12 +237,15 @@ def format_function_and_parameters(
         except Exception:
             pass
         else:
-            maxargstrsize = debugger.settings["maxargstrsize"]
-            if len(params) >= maxargstrsize:
-                params = f"{params[0:maxargstrsize]}...)"
-                formatted_params = format_python(params, style=style)
+            if params:
+                maxargstrsize = debugger.settings["maxargstrsize"]
+                if len(params) >= maxargstrsize:
+                    params = f"{params[0:maxargstrsize]}...)"
+                    formatted_params = format_python(params, style=style)
+                    pass
+                s += formatted_params
                 pass
-            s += formatted_params
+            pass
         pass
 
     return is_module, s
@@ -394,7 +397,7 @@ def get_exec_or_eval_string(frame: FrameType) -> Optional[str]:
             elif inst.opname == "LOAD_CONST":
                 return inst.argval
             elif inst.opname == "LOAD_NAME":
-                arg_name = call_frame.f_code.co_names[inst.argval]
+                arg_name = call_frame.f_code.co_names[inst.arg]
                 return call_frame.f_locals[arg_name]
             else:
                 break
