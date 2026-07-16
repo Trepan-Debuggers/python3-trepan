@@ -38,7 +38,8 @@ import os
 import sys
 import traceback
 
-from trepan.debugger import Trepan, debugger_obj
+import trepan
+from trepan.debugger import Trepan
 from trepan.interfaces.server import ServerInterface
 from trepan.lib.default import DEBUGGER_SETTINGS
 from trepan.post_mortem import post_mortem_excepthook, uncaught_exception
@@ -135,20 +136,17 @@ def debug(
     trepan.Debugger(); `start_opts' are the optional "options"
     dictionary that gets fed to trepan.Debugger.core.start()."""
 
-    # We have a global debugger_obj that we reuse
-    global debugger_obj
-
     # A list of debugger profiles we might run
     dbg_initfiles = []
 
-    if debugger_obj is None:
+    if trepan.debugger_obj is None:
         # If debugger_obj has not been set this is the first time
         # we are entering the debugger.
         # create the object, and set to run the user's
         # debugger initialization profile
 
-        debugger_obj = Trepan(dbg_opts)
-        debugger_obj.core.add_ignore(debug, stop)
+        trepan.debugger_obj = Trepan(dbg_opts)
+        trepan.debugger_obj.core.add_ignore(debug, stop)
 
         # Run user profile if first time and we haven't
         # explicit set to ignore profile loading.
@@ -159,7 +157,7 @@ def debug(
 
         pass
 
-    core = debugger_obj.core
+    core = trepan.debugger_obj.core
     frame = sys._getframe(0 + level)
     core.set_next(frame)
 
@@ -295,8 +293,8 @@ def run_exec(
     return
 
 def stop(opts=None):
-    if isinstance(debugger_obj, Trepan):
-        return debugger_obj.stop(opts)
+    if isinstance(trepan.debugger_obj, Trepan):
+        return trepan.debugger_obj.stop(opts)
     return None
 
 

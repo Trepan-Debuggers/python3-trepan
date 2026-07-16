@@ -22,6 +22,8 @@ import sys
 import tempfile
 
 import pyficache
+import trepan
+
 from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
@@ -70,7 +72,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
     dbg_opts["orig_sys_argv"] = orig_sys_argv
 
     if dbg is None:
-        dbg = Trepan(dbg_opts)
+        dbg = trepan.debugger_obj = Trepan(dbg_opts)
         dbg.core.add_ignore(main)
 
     postprocess_options(dbg, opts)
