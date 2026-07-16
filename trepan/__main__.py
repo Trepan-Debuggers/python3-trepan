@@ -24,8 +24,6 @@ import tempfile
 import pyficache
 import trepan
 
-from typing import Optional
-
 from xdis import PYTHON_IMPLEMENTATION, PYTHON_VERSION_TRIPLE, load_module
 from xdis.disasm import disassemble_file
 from xdis.version_info import version_tuple_to_str
@@ -41,9 +39,6 @@ from trepan.options import postprocess_options, process_options
 from trepan.version import __version__
 
 package = "trepan"
-
-trepan_dbg: Optional[Trepan] = None
-
 
 # The name of the debugger we are currently going by.
 __title__ = package

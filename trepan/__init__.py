@@ -165,14 +165,12 @@ keeping developers happy is a good thing.(TM)
 
 Copyright (C) 2008-2009, 2013-2016, 2021-2022, 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 """
-from typing import Optional
 
 __docformat__ = "restructuredtext"
 
 from trepan.version import __version__
 import trepan.__main__ as __main__
-from trepan.debugger import Trepan
 
-debugger_obj: Optional[Trepan] = None
+debugger_obj = None
 
 __all__ = ["__main__", "__version__", "debugger_obj"]
