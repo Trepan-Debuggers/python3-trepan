@@ -163,10 +163,16 @@ keeping developers happy is a good thing.(TM)
 * more testable. Much more unit and functional tests. More of _pydb_'s
   integration test will eventually be added.
 
-Copyright (C) 2008-2009, 2013-2016, 2021-2022, 2024 Rocky Bernstein <rocky@gnu.org>
+Copyright (C) 2008-2009, 2013-2016, 2021-2022, 2024, 2026 Rocky Bernstein <rocky@gnu.org>
 """
+from typing import Optional
+
 __docformat__ = "restructuredtext"
 
 from trepan.version import __version__
+import trepan.__main__ as __main__
+from trepan.debugger import Trepan
 
-__all__ = ["__version__"]
+debugger_obj: Optional[Trepan] = None
+
+__all__ = ["__main__", "__version__", "debugger_obj"]

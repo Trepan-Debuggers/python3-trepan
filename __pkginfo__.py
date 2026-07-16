@@ -1,4 +1,4 @@
-# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2025 Rocky Bernstein
+# Copyright (C) 2013, 2015-2018, 2020-2021, 2023-2026 Rocky Bernstein
 # <rocky@gnu.org>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -79,8 +79,8 @@ extras_require = {
 ftp_url = None
 install_requires = [
     "columnize >= 0.3.10",
-    "pyficache >= 2.6.0",
-    "xdis >= 6.3.0",
+    "pyficache > 2.5.0",
+    "xdis > 6.2.0",
     "pygments %s" % pygments_version,
     "spark_parser >= 1.8.9,<1.9.2",
     "tracer >= 1.9.0",
