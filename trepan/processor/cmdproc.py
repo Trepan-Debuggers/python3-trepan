@@ -172,6 +172,7 @@ class CommandProcessor(Processor):
         self.event2short = dict(EVENT2SHORT)
         self.event2short["signal"] = "?!"
         self.event2short["brkpt"] = "xx"
+        self.event2short["debug"] = "db"  # debug() call
 
         self.optional_modules = ("ipython", "bpy")
         self.cmd_instances = self._populate_commands()
