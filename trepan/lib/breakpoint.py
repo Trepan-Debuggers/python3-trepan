@@ -32,9 +32,10 @@ from xdis import load_module
 
 
 class Breakpoint:
-    """Breakpoint class implements temporary breakpoints, ignore
-    counts, disabling and (re)-enabling breakpoints and breakpoint
-    conditionals.
+    """Breakpoint class implementing the data involving a breakpoint.
+    This includes whether the breakpoint is temporary (deleted after it is hit),
+    how many times the breakpoint was hit,
+    whether it is disabled, or has a condition associated with the breakpoint.
 
     If is_code_offset is True, position is a code offset. Otherwise, it
     is a 0-origin column offset.
@@ -46,9 +47,6 @@ class Breakpoint:
 
     Internally, we always try to find a code offset from the other values:
     line_number, or line_number and column, or 0 if just code object.
-
-    Internally, we always try to find a column number from the other values:
-    line_number, or line_number and code_offset.
 
     To do this, we need deep undertanding of Python code objects, which we get
     from pyficache.
