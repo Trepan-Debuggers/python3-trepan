@@ -177,12 +177,32 @@ def debug(
     if post_mortem:
         debugger_on_post_mortem()
         pass
+
+    # Add breakpoint to list of breakpoints if it is not there.
+    # And if it is there determine whether it has been disabled.
+    bpmgr = core.bpmgr
+    code = frame.f_code
+    filename = code.co_filename
+    line_number = frame.f_lineno
+
+    bp = bpmgr.find_breakpoint(filename, line_number)
+    if bp is None:
+        bp = core.bpmgr.add_breakpoint(
+            filename=filename,
+            line_number=line_number,
+            is_code_offset=False,
+            condition=None,
+            func_or_code=code)
+    elif not bp.enabled:
+        core.step_ignore = -1
+        return
+
     if 0 == step_ignore:
         frame = sys._getframe(1 + level)
         core.stop_reason = "at a debug() call"
         old_trace_hook_suspend = core.trace_hook_suspend
         core.trace_hook_suspend = True
-        core.processor.event_processor(frame, "line", None)
+        core.processor.event_processor(frame, "debug", None)
         core.trace_hook_suspend = old_trace_hook_suspend
     else:
         core.step_ignore = step_ignore - 1

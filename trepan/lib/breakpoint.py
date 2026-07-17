@@ -422,7 +422,7 @@ class BreakpointManager:
             self.delete_breakpoint(bp)
         return bpnums
 
-    def find_bp(self, filename: str, line_number: int, frame):
+    def find_bp(self, filename: str, line_number: int, frame) -> tuple:
         """Determine which breakpoint for this file:line is to be acted upon.
 
         Called only if we know there is a bpt at this
@@ -471,6 +471,22 @@ class BreakpointManager:
                 pass
             pass
         return (None, None)
+
+    def find_breakpoint(self, filename: str, line_number: int) -> Optional[Breakpoint]:
+        """Check for a breakpoint() or trepan.api.debug call
+
+        Called only if we know there is a breakpoint at this
+        location.  Returns breakpoint that was triggered and a flag
+        that indicates if it is ok to delete a temporary breakpoint.
+
+        """
+        possibles = self.bplist[filename, line_number]
+        if len(possibles) > 0:
+            # Count every hit when bp is enabled
+            b = possibles[0]
+            b.hits += 1
+            return b
+        return None
 
     def last(self):
         return len(self.bpbynumber) - 1
