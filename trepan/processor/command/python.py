@@ -17,7 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import code
 import sys
-from typing import Callable
 
 from trepan.interfaces.server import ServerInterface
 
@@ -156,8 +155,8 @@ pyrepl_console = None
 
 # Modified from code.py
 def interact(
-    msg_func: Callable,
-    errmsg_func: Callable,
+    msg_func,
+    errmsg_func,
     banner=None,
     readfunc=None,
     my_locals=None,
