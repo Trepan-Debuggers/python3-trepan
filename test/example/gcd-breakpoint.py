@@ -30,10 +30,10 @@ def gcd(a, b):
         (a, b) = (b, a)
 
     if a <= 0:
-        breakpoint()
+        from trepan.api import debug; debug()
         return None
     if a == 1 or b - a == 0:
-        breakpoint()
+        from trepan.api import debug; debug()
         return a
     return gcd(b - a, a)
 

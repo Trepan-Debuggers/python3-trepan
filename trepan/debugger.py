@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2025
+#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2026
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -168,7 +168,7 @@ class Trepan:
             return results[state]
         return
 
-    def run(self, cmd, start_opts=None, globals_=None, locals_=None):
+    def run(self, cmd, start_opts: Optional[dict]=None, globals_=None, locals_=None):
         """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
         are the dictionaries to use for local and global variables. By
