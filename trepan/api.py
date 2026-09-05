@@ -39,8 +39,6 @@ import os
 import sys
 import traceback
 
-from typing import Optional
-
 import trepan
 from trepan.debugger import Trepan
 from trepan.interfaces.server import ServerInterface
@@ -187,6 +185,7 @@ def debug(
     code = frame.f_code
     filename = code.co_filename
     line_number = frame.f_lineno
+    last_i = frame.f_lasti
 
     bp = bpmgr.find_breakpoint(filename, line_number)
     if bp is None:
@@ -199,10 +198,12 @@ def debug(
                 code = frame.f_code
                 filename = code.co_filename
                 line_number = frame.f_lineno
+                last_i = frame.f_lasti
 
         bp = core.bpmgr.add_breakpoint(
             filename=filename,
             line_number=line_number,
+            offset=last_i,
             is_code_offset=False,
             condition=None,
             func_or_code=code,
@@ -247,7 +248,7 @@ def debugger_on_post_mortem():
     return
 
 
-def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts:Optional[dict]=None, **kwds):
+def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
     the place that this appears in your program.

@@ -168,7 +168,7 @@ class Trepan:
             return results[state]
         return
 
-    def run(self, cmd, start_opts: Optional[dict]=None, globals_=None, locals_=None):
+    def run(self, cmd, start_opt=None, globals_=None, locals_=None):
         """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
         are the dictionaries to use for local and global variables. By

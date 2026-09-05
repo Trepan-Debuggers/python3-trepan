@@ -71,8 +71,7 @@ class Breakpoint:
             self.offset = position
         else:
             self.column = position
-            # TODO: Figure out code offset.
-            self.offset = None
+            self.offset = offset
 
         self.condition = condition
         self.enabled = True
@@ -217,7 +216,7 @@ class BreakpointManager:
             )
         bp = self.bpbynumber[i]
         if bp is None:
-            return (False, f"Breakpoint {i} previously deleted.", None)
+            return (False, "Breakpoint %d previously deleted." % i, None)
         return (True, None, bp)
 
     def add_breakpoint(
@@ -300,6 +299,7 @@ class BreakpointManager:
             temporary,
             condition,
             code,
+            offset,
             position,
             is_code_offset,
             is_breakpoint_call,
@@ -459,7 +459,7 @@ class BreakpointManager:
             pass
         return (None, None)
 
-    def find_breakpoint(self, filename: str, line_number: int) -> Optional[Breakpoint]:
+    def find_breakpoint(self, filename: str, line_number: int):
         """Check for a breakpoint() or trepan.api.debug call
 
         Called only if we know there is a breakpoint at this
