@@ -188,7 +188,7 @@ class BreakpointManager:
 
         return
 
-    def bpnumbers(self)-> list[int]:
+    def bpnumbers(self)-> list:
         """Returns a list of strings of breakpoint numbers"""
         return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
