@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2025
+#   Copyright (C) 2008-2010, 2013-2015, 2018, 2023-2026
 #   Rocky Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ user or client-side code for connecting to server'd debugged program.
 
 import sys
 import types
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 import pyficache
 import tracer
@@ -169,7 +169,7 @@ class Trepan:
             return results[state]
         return
 
-    def run(self, cmd, start_opts=None, globals_=None, locals_=None):
+    def run(self, cmd, start_opts: Optional[dict]=None, globals_=None, locals_=None):
         """Run debugger on string `cmd' using builtin function eval
         and if that builtin exec.  Arguments `globals_' and `locals_'
         are the dictionaries to use for local and global variables. By
@@ -238,7 +238,7 @@ class Trepan:
             self.core.stop()
         return
 
-    def run_call(self, func: Callable, *args, start_opts=None, **kwds):
+    def run_call(self, func: Callable, *args, start_opts: Optional[dict]=None, **kwds):
         """Run debugger on function call: `func(*args, **kwds)'
 
         See also ``run_eval`` if what you want to run is an eval'able

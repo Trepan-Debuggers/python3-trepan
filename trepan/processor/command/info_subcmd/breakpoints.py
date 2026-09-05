@@ -48,6 +48,7 @@ class InfoBreakpoints(Mbase_subcmd.DebuggerSubcommand):
                 breakpoint already  hit 1 time
         3   breakpoint    keep y     20 at /tmp/fib.py:6
                 stop only if x > 0
+        4   breakpoint()  keep y     30 at /tmp/fib.py:6
 
     See also:
     ---------
@@ -76,11 +77,13 @@ class InfoBreakpoints(Mbase_subcmd.DebuggerSubcommand):
             column_str = ":%d" % (bp.column + 1)
         else:
             column_str = ""
+        brkpt_type = "breakpoint()" if bp.is_breakpoint_call else "breakpoint"
         if bp.offset is None:
             self.msg(
-                "%-4dbreakpoint    %s  any at %s:%d%s"
+                "%-4d%-12s  %s  any at %s:%d%s"
                 % (
                     bp.number,
+                    brkpt_type,
                     disp,
                     self.core.filename(bp.filename),
                     bp.line_number,
@@ -89,9 +92,10 @@ class InfoBreakpoints(Mbase_subcmd.DebuggerSubcommand):
             )
         else:
             self.msg(
-                "%-4dbreakpoint    %s %4s at %s:%d%s"
+                "%-4d%-12s  %s %4s at %s:%d%s"
                 % (
                     bp.number,
+                    brkpt_type,
                     disp,
                     "*" + str(bp.offset),
                     self.core.filename(bp.filename),
