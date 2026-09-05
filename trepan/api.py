@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2025 Rocky
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2026 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -34,9 +34,12 @@ if necessary, first.
 # functions below.  It also doesn't work once we add the exception handling
 # we see below. So for now, we'll live with the code duplication.
 
+import inspect
 import os
 import sys
 import traceback
+
+from typing import Optional
 
 import trepan
 from trepan.debugger import Trepan
@@ -187,12 +190,24 @@ def debug(
 
     bp = bpmgr.find_breakpoint(filename, line_number)
     if bp is None:
+
+        frame = inspect.currentframe()
+        if frame is not None and frame.f_code.co_filename == filename:
+            # Don't log the breakpoint as being in trepan.api. Instead, back one frame.
+            frame = frame.f_back
+            if frame is not None:
+                code = frame.f_code
+                filename = code.co_filename
+                line_number = frame.f_lineno
+
         bp = core.bpmgr.add_breakpoint(
             filename=filename,
             line_number=line_number,
             is_code_offset=False,
             condition=None,
-            func_or_code=code)
+            func_or_code=code,
+            is_breakpoint_call=True
+        )
     elif not bp.enabled:
         core.step_ignore = -1
         return
@@ -232,7 +247,7 @@ def debugger_on_post_mortem():
     return
 
 
-def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds):
+def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts:Optional[dict]=None, **kwds):
     """Call the function (a function or method object, not a string)
     with the given arguments starting with the statement after
     the place that this appears in your program.
@@ -242,6 +257,8 @@ def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds)
     entered."""
 
     dbg = Trepan(opts=debug_opts)
+    if start_opts is not None:
+        kwds["start_opts"] = start_opts
     try:
         return dbg.run_call(func, *args, **kwds)
     except Exception:
