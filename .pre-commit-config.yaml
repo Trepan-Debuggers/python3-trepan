@@ -5,11 +5,15 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: check-merge-conflict
-      - id: debug-statements
-        stages: [pre-commit]
-      - id: end-of-file-fixer
-        stages: [pre-commit]
+    - id: check-merge-conflict
+    - id: debug-statements
+      stages: [pre-commit]
+      exclude: ChangeLog-spell-corrected.diff|mathics/builtin/system.py
+    - id: end-of-file-fixer
+      stages: [pre-commit]
+      exclude: ChangeLog-spell-corrected.diff
+    - id: trailing-whitespace
+      exclude: ChangeLog-spell-corrected.diff
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
@@ -18,12 +22,20 @@ repos:
   - repo: https://github.com/psf/black
     rev: 25.11.0
     hooks:
-      - id: black
-    language_version: python3
-    stages: [pre-commit]
-    additional_dependencies: ["click"]
-    exclude: 'trepan/version.py'
+    - id: black
+      language_version: python3
+      stages: [pre-commit]
+      additional_dependencies: ["click"]
+      exclude: 'trepan/version.py'
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.31.0  # Use the latest version
     hooks:
       - id: check-github-workflows
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        args:
+          - --install-types
+          - --ignore-missing-imports
+          - --non-interactive

@@ -32,9 +32,10 @@ from xdis import IS_GRAAL, iscode, load_module
 
 
 class Breakpoint:
-    """Breakpoint class implements temporary breakpoints, ignore
-    counts, disabling and (re)-enabling breakpoints and breakpoint
-    conditionals.
+    """Breakpoint class implementing the data involving a breakpoint.
+    This includes whether the breakpoint is temporary (deleted after it is hit),
+    how many times the breakpoint was hit,
+    whether it is disabled, or has a condition associated with the breakpoint.
 
     If is_code_offset is True, position is a code offset. Otherwise, it
     is a 0-origin column offset.
@@ -46,9 +47,6 @@ class Breakpoint:
 
     Internally, we always try to find a code offset from the other values:
     line_number, or line_number and column, or 0 if just code object.
-
-    Internally, we always try to find a column number from the other values:
-    line_number, or line_number and code_offset.
 
     To do this, we need deep undertanding of Python code objects, which we get
     from pyficache.
@@ -64,6 +62,7 @@ class Breakpoint:
         code: Optional[CodeType] = None,
         position: Optional[int] = None,
         is_code_offset: bool = True,
+        is_breakpoint_call: bool = False
     ):
         # FIXME: split out this top part into a part that fills out information
         if code is not None:
@@ -123,6 +122,8 @@ class Breakpoint:
 
         # Number of times to ignore breakpoint before stopping
         self.ignore = 0
+
+        self.is_breakpoint_call = is_breakpoint_call
 
         self.line_number = line_number
         self.number = bp_number
@@ -185,9 +186,13 @@ class Breakpoint:
         't': temporary breakpoint
         'B': enabled breakpoint
         'b': disabled breakpoint
+        'x': disabled breakpoint()
+        'X': enabled breakpoint()
         """
         if self.temporary:
             return "t"
+        elif self.is_breakpoint_call:
+            return "X" if self.enabled else "x"
         elif self.enabled:
             return "B"
         return "b"
@@ -211,7 +216,7 @@ class BreakpointManager:
 
         return
 
-    def bpnumbers(self):
+    def bpnumbers(self)-> list[int]:
         """Returns a list of strings of breakpoint numbers"""
         return ["%d" % bp.number for bp in self.bpbynumber if bp is not None]
 
@@ -233,7 +238,7 @@ class BreakpointManager:
             )
         bp = self.bpbynumber[i]
         if bp is None:
-            return (False, "Breakpoint %d previously deleted." % i, None)
+            return (False, f"Breakpoint {i} previously deleted.", None)
         return (True, None, bp)
 
     def add_breakpoint(
@@ -245,6 +250,7 @@ class BreakpointManager:
         temporary: bool = False,
         condition: Optional[str] = None,
         func_or_code=None,
+        is_breakpoint_call: bool = False,
     ):
         """
         Add a breakpoint in ``filename`` at line number ``line_number``.
@@ -256,6 +262,7 @@ class BreakpointManager:
         The parameter ``position`` is -1 when we want a breakpoint on a call event.
         """
         bpnum = len(self.bpbynumber)
+
         if filename:
             filename = osp.realpath(filename)
 
@@ -311,6 +318,7 @@ class BreakpointManager:
             code,
             position,
             is_code_offset,
+            is_breakpoint_call,
         )
 
         # Build the internal lists of breakpoints
@@ -372,6 +380,8 @@ class BreakpointManager:
         success, msg, bp = self.get_breakpoint(bpnum)
         if not success:
             return False, msg
+        if bp.is_breakpoint_call:
+            return False, "Cannot delete a breakpoint() call; use disable instead."
         self.delete_breakpoint(bp)
         return (True, "")
 
@@ -487,6 +497,15 @@ class BreakpointManager:
             b.hits += 1
             return b
         return None
+
+    def needs_no_tracing(self) -> bool:
+        """
+        Return True if all breakpoints do not need any sys.tracing
+        support, i.e. they are handled either by explicit breakpoint() calls
+        or the newer debug protocal handles the breakpoints
+        """
+        # return len(self.bplist) == 0
+        return all(not getattr(item, 'is_breakpoint_call', False) for item in self.bplist)
 
     def last(self):
         return len(self.bpbynumber) - 1
