@@ -187,6 +187,7 @@ def debug(
     code = frame.f_code
     filename = code.co_filename
     line_number = frame.f_lineno
+    last_i = frame.f_lasti
 
     bp = bpmgr.find_breakpoint(filename, line_number)
     if bp is None:
@@ -199,6 +200,7 @@ def debug(
                 code = frame.f_code
                 filename = code.co_filename
                 line_number = frame.f_lineno
+                last_i = frame.f_lasti
 
         bp = core.bpmgr.add_breakpoint(
             filename=filename,
@@ -206,7 +208,8 @@ def debug(
             is_code_offset=False,
             condition=None,
             func_or_code=code,
-            is_breakpoint_call=True
+            is_breakpoint_call=True,
+            offset=last_i,
         )
     elif not bp.enabled:
         core.step_ignore = -1

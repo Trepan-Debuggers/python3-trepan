@@ -592,7 +592,7 @@ class CommandProcessor(Processor):
             pass
         run_hooks(self, self.postcmd_hooks)
         if self.fast_continue:
-            if self.core.bpmgr.needs_no_tracing:
+            if self.core.bpmgr.needs_no_tracing():
                 # Remove tracing on frames and remove trace hook.
                 frame = self.curframe
                 while frame:

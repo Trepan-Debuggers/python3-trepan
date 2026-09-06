@@ -30,7 +30,7 @@ import os.path as osp
 import sys
 import threading
 from types import FrameType
-from typing import Any, Dict, NewType, Optional
+from typing import Any, Optional
 
 # External packages
 import pyficache
@@ -45,9 +45,7 @@ from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
 from trepan.processor.trace import PrintProcessor
 
-InitOptions = NewType("InitOptions", Dict[str, Any])
-
-DEFAULT_INIT_OPTS: InitOptions = {
+DEFAULT_INIT_OPTS: dict[str, Any] = {
     "processor": None,
     # How many step events to skip before
     # entering event processor? Zero (0) means stop at the next one.
@@ -58,7 +56,7 @@ DEFAULT_INIT_OPTS: InitOptions = {
 
 
 class TrepanCore:
-    def __init__(self, debugger, opts: InitOptions = DEFAULT_INIT_OPTS):
+    def __init__(self, debugger, opts = DEFAULT_INIT_OPTS):
         """Create a debugger object. But depending on the value of
         key 'start' inside hash `opts', we may or may not initially
         start tracing events (i.e. enter the debugger).
@@ -232,7 +230,7 @@ class TrepanCore:
         be debugged"""
         return self.ignore_filter.remove(frame_or_fn)
 
-    def start(self, opts: InitOptions = DEFAULT_INIT_OPTS):
+    def start(self, opts = DEFAULT_INIT_OPTS):
         """We've already created a debugger object, but here we start
         debugging in earnest. We can also turn off debugging (but have
         the hooks suspended or not) using 'stop'.
