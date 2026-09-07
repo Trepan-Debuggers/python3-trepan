@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2025 Rocky
+#   Copyright (C) 2008-2009, 2013-2017, 2019-2021, 2023-2026 Rocky
 #   Bernstein <rocky@gnu.org>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@ if necessary, first.
 # functions below.  It also doesn't work once we add the exception handling
 # we see below. So for now, we'll live with the code duplication.
 
+import inspect
 import os
 import sys
 import traceback
@@ -177,12 +178,47 @@ def debug(
     if post_mortem:
         debugger_on_post_mortem()
         pass
+
+    # Add breakpoint to list of breakpoints if it is not there.
+    # And if it is there determine whether it has been disabled.
+    bpmgr = core.bpmgr
+    code = frame.f_code
+    filename = code.co_filename
+    line_number = frame.f_lineno
+    last_i = frame.f_lasti
+
+    bp = bpmgr.find_breakpoint(filename, line_number)
+    if bp is None:
+
+        frame = inspect.currentframe()
+        if frame is not None and frame.f_code.co_filename == filename:
+            # Don't log the breakpoint as being in trepan.api. Instead, back one frame.
+            frame = frame.f_back
+            if frame is not None:
+                code = frame.f_code
+                filename = code.co_filename
+                line_number = frame.f_lineno
+                last_i = frame.f_lasti
+
+        bp = core.bpmgr.add_breakpoint(
+            filename=filename,
+            line_number=line_number,
+            offset=last_i,
+            is_code_offset=False,
+            condition=None,
+            func_or_code=code,
+            is_breakpoint_call=True
+        )
+    elif not bp.enabled:
+        core.step_ignore = -1
+        return
+
     if 0 == step_ignore:
         frame = sys._getframe(1 + level)
         core.stop_reason = "at a debug() call"
         old_trace_hook_suspend = core.trace_hook_suspend
         core.trace_hook_suspend = True
-        core.processor.event_processor(frame, "line", None)
+        core.processor.event_processor(frame, "debug", None)
         core.trace_hook_suspend = old_trace_hook_suspend
     else:
         core.step_ignore = step_ignore - 1
@@ -222,6 +258,8 @@ def run_call(func, *args, debug_opts=DEBUGGER_SETTINGS, start_opts=None, **kwds)
     entered."""
 
     dbg = Trepan(opts=debug_opts)
+    if start_opts is not None:
+        kwds["start_opts"] = start_opts
     try:
         return dbg.run_call(func, *args, **kwds)
     except Exception:
