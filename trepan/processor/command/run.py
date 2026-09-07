@@ -39,6 +39,11 @@ class RunCommand(DebuggerCommand):
     DebuggerCommand.setup(locals(), category="support", max_args=0)
 
     def run(self, args):
+        # The below is a hack.
+        # If for some reason we trace into this code,
+        # setting "execution_status" to "Running" will allow
+        # us to step or continue runningt the code.
+        self.core.execution_status = "Running"
         confirmed = False
         if len(args) <= 1:
             if "!" != args[0][-1]:
