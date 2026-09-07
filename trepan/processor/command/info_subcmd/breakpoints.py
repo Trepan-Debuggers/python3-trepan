@@ -78,7 +78,8 @@ class InfoBreakpoints(Mbase_subcmd.DebuggerSubcommand):
         else:
             column_str = ""
         brkpt_type = "breakpoint()" if bp.is_breakpoint_call else "breakpoint"
-        if bp.offset is None:
+        if bp.offset == -1:
+            # We have a line or line/number offset, so any offset matches.
             self.msg(
                 "%-4d%-12s  %s  any at %s:%d%s"
                 % (
