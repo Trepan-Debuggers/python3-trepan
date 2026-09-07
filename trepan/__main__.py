@@ -73,7 +73,7 @@ def main(dbg=None, sys_argv=list(sys.argv)):
 
     if dbg is None:
         dbg = trepan.debugger_obj = Trepan(dbg_opts)
-        dbg.core.add_ignore(main)
+        dbg.core.add_ignore(main, trepan.api.debug)
 
     postprocess_options(dbg, opts)
 
@@ -323,6 +323,8 @@ def main(dbg=None, sys_argv=list(sys.argv)):
             break
         except DebuggerRestart:
             dbg.core.execution_status = "Restart requested"
+            # for debug:
+            # dbg.core.execution_status = "Running"
             if dbg.program_sys_argv:
                 sys.argv = list(dbg.program_sys_argv)
                 part1 = "Restarting %s with arguments:" % dbg.core.filename(mainpyfile)

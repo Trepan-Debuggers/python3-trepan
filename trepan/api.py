@@ -207,7 +207,8 @@ def debug(
             is_code_offset=False,
             condition=None,
             func_or_code=code,
-            is_breakpoint_call=True
+            is_breakpoint_call=True,
+            offset=last_i,
         )
     elif not bp.enabled:
         core.step_ignore = -1

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2010, 2012-2015, 2020, 2023-2024 Rocky Bernstein
+#  Copyright (C) 2010, 2012-2015, 2020, 2023-2024, 2026 Rocky Bernstein
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -49,25 +49,31 @@ class DebugCommand(DebuggerCommand):
                 self.proc.print_location()
             pass
 
-        old_lock = self.core.debugger_lock
-        old_stop_level = self.core.stop_level
-        old_different_line = self.core.stop_level
+        core = self.core
+        old_lock = core.debugger_lock
+        old_stop_level = core.stop_level
+        old_different_line = core.stop_level
         self.proc.debug_nest += 1
 
-        self.core.debugger_lock = threading.Lock()
-        self.core.stop_level = None
-        self.core.different_line = None
+        core.debugger_lock = threading.Lock()
+        core.stop_level = None
+        core.different_line = None
         global_vars = curframe.f_globals
         local_vars = curframe.f_locals
 
         self.section("ENTERING NESTED DEBUGGER")
 
-        self.core.step_ignore = 2  # call_tracing will stop in itself.
+        core.step_ignore = 2  # call_tracing will stop in itself.
+        # The below is a sentinal to "Fast continue" processing that indicates
+        # to to remove tracing beyond this frame.
+        trepan_fast_continue_stop = True
+
         try:
             ret = sys.call_tracing(eval, (arg, global_vars, local_vars))
+        except Exception as e:
+            self.errmsg(f"Exception {e}")
+        else:
             self.msg("R=> %s" % self.proc._saferepr(ret))
-        except Exception:
-            pass
         self.section("LEAVING NESTED DEBUGGER")
 
         self.core.debugger_lock = old_lock

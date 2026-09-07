@@ -30,7 +30,7 @@ class Breakpoint:
     how many times the breakpoint was hit,
     whether it is disabled, or has a condition associated with the breakpoint.
 
-    If is_code_offset is True, position is a code offset. Otherwise, it
+    If attribute is_code_offset is True, position is a code offset. Otherwise, it
     is a 0-origin column offset.
 
     The code offset for start of a method, module, or function is always 0.
@@ -43,6 +43,12 @@ class Breakpoint:
 
     To do this, we need deep undertanding of Python code objects, which we get
     from pyficache.
+
+    Attribute offset is the code offset, when is_code_offset is true, it is ignored and
+    should be the same value as position. However when is_code_offset is False, then
+    we have a line or line/column position. Here offset can be the code offset when there
+    is a unique value, but since line or line/column might have many offsets associated with them,
+    the sentinal value -1 is used to indicate any possible offset.
     """
 
     def __init__(
@@ -56,7 +62,8 @@ class Breakpoint:
         offset=None,
         position=None,
         is_code_offset=True,
-        is_breakpoint_call = False
+        is_breakpoint_call = False,
+        offset: int = -1 # default is any possible code offset
     ):
         # FIXME: split out this top part into a part that fills out information
         if code is not None:
@@ -230,6 +237,7 @@ class BreakpointManager:
         condition=None,
         func_or_code=None,
         is_breakpoint_call: bool = False,
+        offset: int =  -1 # default is any possible code offset
     ):
         """
         Add a breakpoint in ``filename`` at line number ``line_number``.
@@ -303,6 +311,7 @@ class BreakpointManager:
             position,
             is_code_offset,
             is_breakpoint_call,
+            offset,
         )
 
         # Build the internal lists of breakpoints
@@ -481,8 +490,13 @@ class BreakpointManager:
         support, i.e. they are handled either by explicit breakpoint() calls
         or the newer debug protocal handles the breakpoints
         """
-        # return len(self.bplist) == 0
-        return all(not getattr(item, 'is_breakpoint_call', False) for item in self.bplist)
+        for bp_list in self.bplist.values():
+            for bp in bp_list:
+                if hasattr(bp, "is_breakpoint_call") and not bp.is_breakpoint_call:
+                    # print(f"XXX0 {bp} needs tracing")
+                    return False
+        # print(f"XXX does not need tracing")
+        return True
 
     def last(self):
         return len(self.bpbynumber) - 1

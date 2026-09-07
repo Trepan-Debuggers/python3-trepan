@@ -65,6 +65,7 @@ class TrepanCore:
         def get_option(key: str):
             return option_set(opts, key, DEFAULT_INIT_OPTS)
 
+        self.add_hook_opts = {}
         self.bpmgr = BreakpointManager()
         self.current_bp = None
         self.current_thread = None
@@ -246,7 +247,7 @@ class TrepanCore:
             def get_option(key: str):
                 return option_set(opts, key, START_OPTS)
 
-            add_hook_opts = get_option("add_hook_opts")
+            self.add_hook_opts = get_option("add_hook_opts")
 
             # Has tracer been started?
             if not tracer.is_started() or get_option("force"):
@@ -254,10 +255,10 @@ class TrepanCore:
                 if opts:
                     tracer_start_opts.update(opts.get("tracer_start", {}))
                 tracer_start_opts["trace_func"] = self.trace_dispatch
-                tracer_start_opts["add_hook_opts"] = add_hook_opts
+                tracer_start_opts["add_hook_opts"] = self.add_hook_opts
                 tracer.start(tracer_start_opts)
             elif not tracer.find_hook(self.trace_dispatch):
-                tracer.add_hook(self.trace_dispatch, add_hook_opts)
+                tracer.add_hook(self.trace_dispatch, self.add_hook_opts)
                 pass
             self.execution_status = "Running"
         finally:
