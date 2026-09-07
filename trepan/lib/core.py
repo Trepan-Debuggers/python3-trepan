@@ -30,7 +30,7 @@ import os.path as osp
 import sys
 import threading
 from types import FrameType
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # External packages
 import pyficache
@@ -45,7 +45,7 @@ from trepan.misc import option_set
 from trepan.processor.cmdproc import CommandProcessor
 from trepan.processor.trace import PrintProcessor
 
-DEFAULT_INIT_OPTS: dict[str, Any] = {
+DEFAULT_INIT_OPTS: Dict[str, Any] = {
     "processor": None,
     # How many step events to skip before
     # entering event processor? Zero (0) means stop at the next one.
