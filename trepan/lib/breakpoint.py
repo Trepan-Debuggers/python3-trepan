@@ -59,11 +59,10 @@ class Breakpoint:
         temporary=False,
         condition=None,
         code=None,
-        offset=None,
         position=None,
         is_code_offset=True,
         is_breakpoint_call = False,
-        offset: int = -1 # default is any possible code offset
+        offset=-1 # default is any possible code offset
     ):
         # FIXME: split out this top part into a part that fills out information
         if code is not None:
@@ -229,8 +228,7 @@ class BreakpointManager:
     def add_breakpoint(
         self,
         filename,
-        line_number=None,
-        offset: int = -1,
+        line_number=-1,
         position: int = -1,
         is_code_offset: bool = True,
         temporary: bool = False,
@@ -307,7 +305,6 @@ class BreakpointManager:
             temporary,
             condition,
             code,
-            offset,
             position,
             is_code_offset,
             is_breakpoint_call,

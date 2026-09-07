@@ -203,7 +203,6 @@ def debug(
         bp = core.bpmgr.add_breakpoint(
             filename=filename,
             line_number=line_number,
-            offset=last_i,
             is_code_offset=False,
             condition=None,
             func_or_code=code,

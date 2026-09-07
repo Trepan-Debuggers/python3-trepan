@@ -71,7 +71,7 @@ class DebugCommand(DebuggerCommand):
         try:
             ret = sys.call_tracing(eval, (arg, global_vars, local_vars))
         except Exception as e:
-            self.errmsg(f"Exception {e}")
+            self.errmsg("Exception %s" % e)
         else:
             self.msg("R=> %s" % self.proc._saferepr(ret))
         self.section("LEAVING NESTED DEBUGGER")
