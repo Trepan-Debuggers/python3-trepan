@@ -21,10 +21,10 @@ __all__ = ["BreakpointManager", "Breakpoint"]
 
 import os.path as osp
 from collections import defaultdict
-from types import CodeType, ModuleType
+from types import CodeType
 from typing import DefaultDict, Optional
 from types import FrameType
-from xdis import IS_GRAAL, iscode, load_module
+from xdis import IS_GRAAL, iscode
 
 
 class Breakpoint:
