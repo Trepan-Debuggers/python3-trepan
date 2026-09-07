@@ -63,6 +63,10 @@ class DebugCommand(DebuggerCommand):
         self.section("ENTERING NESTED DEBUGGER")
 
         self.core.step_ignore = 2  # call_tracing will stop in itself.
+        # The below is a sentinal to "Fast continue" processing that indicates
+        # to to remove tracing beyond this frame.
+        trepan_fast_continue_stop = True
+
         try:
             ret = sys.call_tracing(eval, (arg, global_vars, local_vars))
             self.msg("R=> %s" % self.proc._saferepr(ret))
