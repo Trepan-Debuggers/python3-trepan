@@ -184,36 +184,29 @@ def debug(
     # Add breakpoint to list of breakpoints if it is not there.
     # And if it is there determine whether it has been disabled.
     bpmgr = core.bpmgr
-    code = frame.f_code
-    filename = code.co_filename
-    line_number = frame.f_lineno
-    last_i = frame.f_lasti
 
-    bp = bpmgr.find_breakpoint(filename, line_number)
-    if bp is None:
+    # Don't log the breakpoint as being in trepan.api. Instead, back up one frame.
+    frame = frame.f_back
+    if frame is not None:
+        code = frame.f_code
+        filename = code.co_filename
+        line_number = frame.f_lineno
+        last_i = frame.f_lasti
 
-        frame = inspect.currentframe()
-        if frame is not None and frame.f_code.co_filename == filename:
-            # Don't log the breakpoint as being in trepan.api. Instead, back one frame.
-            frame = frame.f_back
-            if frame is not None:
-                code = frame.f_code
-                filename = code.co_filename
-                line_number = frame.f_lineno
-                last_i = frame.f_lasti
-
-        bp = core.bpmgr.add_breakpoint(
-            filename=filename,
-            line_number=line_number,
-            is_code_offset=False,
-            condition=None,
-            func_or_code=code,
-            is_breakpoint_call=True,
-            offset=last_i,
-        )
-    elif not bp.enabled:
-        core.step_ignore = -1
-        return
+        bp = bpmgr.find_breakpoint(filename, line_number)
+        if bp is None:
+            bp = core.bpmgr.add_breakpoint(
+                filename=filename,
+                line_number=line_number,
+                is_code_offset=False,
+                condition=None,
+                func_or_code=code,
+                is_breakpoint_call=True,
+                offset=last_i,
+            )
+        elif not bp.enabled:
+            core.step_ignore = -1
+            return
 
     if 0 == step_ignore:
         frame = sys._getframe(1 + level)
